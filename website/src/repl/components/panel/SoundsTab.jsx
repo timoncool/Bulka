@@ -10,12 +10,46 @@ import { ActionButton } from '../button/action-button.jsx';
 import { confirmDialog } from '@src/repl/util.mjs';
 import { clearIDB, userSamplesDBConfig } from '@src/repl/idbutils.mjs';
 import { prebake } from '@src/repl/prebake.mjs';
+import { isTauri } from '../../../tauri.mjs';
+import ClipboardDocumentIcon from '@heroicons/react/20/solid/ClipboardDocumentIcon';
+import DocumentPlusIcon from '@heroicons/react/20/solid/DocumentPlusIcon';
 
 const getSamples = (samples) =>
   Array.isArray(samples) ? samples.length : typeof samples === 'object' ? Object.values(samples).length : 1;
 
 function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function copyToClipboard(text) {
+  try {
+    if (isTauri()) {
+      const { writeText } = await import('@tauri-apps/plugin-clipboard-manager');
+      await writeText(text);
+    } else {
+      await navigator.clipboard.writeText(text);
+    }
+    return true;
+  } catch (e) {
+    console.error('Failed to copy:', e);
+    return false;
+  }
+}
+
+function insertIntoEditor(text) {
+  const editor = window.strudelMirror;
+  if (editor?.view) {
+    const view = editor.view;
+    const { state } = view;
+    const { from, to } = state.selection.main;
+    view.dispatch({
+      changes: { from, to, insert: text },
+      selection: { anchor: from + text.length },
+    });
+    view.focus();
+    return true;
+  }
+  return false;
 }
 
 export function SoundsTab() {
@@ -116,51 +150,77 @@ export function SoundsTab() {
 
       <div className="min-h-0 max-h-full grow overflow-auto  text-sm break-normal bg-background p-2 rounded-md">
         {soundEntries.map(([name, { data, onTrigger }]) => {
+          const sampleCount =
+            data?.type === 'sample'
+              ? `(${getSamples(data.samples)})`
+              : data?.type === 'wavetable'
+                ? `(${getSamples(data.tables)})`
+                : data?.type === 'soundfont'
+                  ? `(${data.fonts.length})`
+                  : '';
           return (
-            <span
-              key={name}
-              className="cursor-pointer hover:opacity-50"
-              onMouseDown={async () => {
-                const ctx = getAudioContext();
-                const params = {
-                  note: ['synth', 'soundfont'].includes(data.type) ? 'a3' : undefined,
-                  s: name,
-                  n: numRef.current,
-                  clip: 1,
-                  release: 0.5,
-                  sustain: 1,
-                  duration: 0.5,
-                };
-                const onended = () => trigRef.current?.node?.disconnect();
-                // Attempt to play the sample and retry every 200ms until 10 attempts have been reached
-                let errMsg;
-                for (let attempt = 0; attempt < 10; attempt++) {
-                  try {
-                    // Pre-load the sample by calling onTrigger with a future time
-                    // This triggers the loading but schedules playback for later
-                    const time = ctx.currentTime + 0.05; // Give 50ms for loading
-                    const ref = await onTrigger(time, params, onended);
-                    trigRef.current = ref;
-                    if (ref?.node) {
-                      connectToDestination(ref.node);
-                      break;
+            <span key={name} className="inline-flex items-center mr-2 mb-1">
+              <span
+                className="cursor-pointer hover:opacity-50"
+                onMouseDown={async () => {
+                  const ctx = getAudioContext();
+                  const params = {
+                    note: ['synth', 'soundfont'].includes(data.type) ? 'a3' : undefined,
+                    s: name,
+                    n: numRef.current,
+                    clip: 1,
+                    release: 0.5,
+                    sustain: 1,
+                    duration: 0.5,
+                  };
+                  const onended = () => trigRef.current?.node?.disconnect();
+                  // Attempt to play the sample and retry every 200ms until 10 attempts have been reached
+                  let errMsg;
+                  for (let attempt = 0; attempt < 10; attempt++) {
+                    try {
+                      // Pre-load the sample by calling onTrigger with a future time
+                      // This triggers the loading but schedules playback for later
+                      const time = ctx.currentTime + 0.05; // Give 50ms for loading
+                      const ref = await onTrigger(time, params, onended);
+                      trigRef.current = ref;
+                      if (ref?.node) {
+                        connectToDestination(ref.node);
+                        break;
+                      }
+                    } catch (err) {
+                      errMsg = err;
                     }
-                  } catch (err) {
-                    errMsg = err;
+                    if (attempt == 9) {
+                      console.warn('Failed to trigger sound after 10 attempts' + (errMsg ? `: ${errMsg}` : ''));
+                    } else {
+                      await wait(200);
+                    }
                   }
-                  if (attempt == 9) {
-                    console.warn('Failed to trigger sound after 10 attempts' + (errMsg ? `: ${errMsg}` : ''));
-                  } else {
-                    await wait(200);
-                  }
-                }
-              }}
-            >
-              {' '}
-              {name}
-              {data?.type === 'sample' ? `(${getSamples(data.samples)})` : ''}
-              {data?.type === 'wavetable' ? `(${getSamples(data.tables)})` : ''}
-              {data?.type === 'soundfont' ? `(${data.fonts.length})` : ''}
+                }}
+              >
+                {name}
+                {sampleCount}
+              </span>
+              <button
+                className="ml-0.5 p-0.5 hover:opacity-50 hover:bg-foreground/10 rounded"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  copyToClipboard(name);
+                }}
+                title="Скопировать название"
+              >
+                <ClipboardDocumentIcon className="w-3 h-3" />
+              </button>
+              <button
+                className="p-0.5 hover:opacity-50 hover:bg-foreground/10 rounded"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  insertIntoEditor(`s("${name}")`);
+                }}
+                title="Вставить в редактор"
+              >
+                <DocumentPlusIcon className="w-3 h-3" />
+              </button>
             </span>
           );
         })}
