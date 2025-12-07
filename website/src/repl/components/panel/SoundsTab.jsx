@@ -1,9 +1,11 @@
 import useEvent from '@src/useEvent.mjs';
 import { useStore } from '@nanostores/react';
 import { getAudioContext, soundMap, connectToDestination } from '@strudel/webaudio';
-import { useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { settingsMap, soundFilterType, useSettings } from '../../../settings.mjs';
 import { ButtonGroup } from './Forms.jsx';
+import Squares2X2Icon from '@heroicons/react/20/solid/Squares2X2Icon';
+import ListBulletIcon from '@heroicons/react/20/solid/ListBulletIcon';
 import ImportSoundsButton from './ImportSoundsButton.jsx';
 import { Textbox } from '../textbox/Textbox.jsx';
 import { ActionButton } from '../button/action-button.jsx';
@@ -60,6 +62,7 @@ export function SoundsTab() {
   const [search, setSearch] = useState('');
   const [showPackFilter, setShowPackFilter] = useState(false);
   const [expandedPacks, setExpandedPacks] = useState(new Set());
+  const [viewMode, setViewMode] = useState('tree'); // 'flat' или 'tree'
   const { BASE_URL } = import.meta.env;
   const baseNoTrailing = BASE_URL.endsWith('/') ? BASE_URL.slice(0, -1) : BASE_URL;
 
@@ -193,6 +196,80 @@ export function SoundsTab() {
   const trigRef = useRef();
   const numRef = useRef(0);
 
+  // Функция для рендеринга одного звука
+  const renderSound = useCallback((name, { data, onTrigger }) => {
+    const sampleCount =
+      data?.type === 'sample'
+        ? `(${getSamples(data.samples)})`
+        : data?.type === 'wavetable'
+          ? `(${getSamples(data.tables)})`
+          : data?.type === 'soundfont'
+            ? `(${data.fonts.length})`
+            : '';
+    return (
+      <span key={name} className="inline-flex items-center mr-2 mb-1">
+        <span
+          className="cursor-pointer hover:opacity-50"
+          onMouseDown={async () => {
+            const ctx = getAudioContext();
+            const params = {
+              note: ['synth', 'soundfont'].includes(data.type) ? 'a3' : undefined,
+              s: name,
+              n: numRef.current,
+              clip: 1,
+              release: 0.5,
+              sustain: 1,
+              duration: 0.5,
+            };
+            const onended = () => trigRef.current?.node?.disconnect();
+            let errMsg;
+            for (let attempt = 0; attempt < 10; attempt++) {
+              try {
+                const time = ctx.currentTime + 0.05;
+                const ref = await onTrigger(time, params, onended);
+                trigRef.current = ref;
+                if (ref?.node) {
+                  connectToDestination(ref.node);
+                  break;
+                }
+              } catch (err) {
+                errMsg = err;
+              }
+              if (attempt == 9) {
+                console.warn('Failed to trigger sound after 10 attempts' + (errMsg ? `: ${errMsg}` : ''));
+              } else {
+                await wait(200);
+              }
+            }
+          }}
+        >
+          {name}
+          {sampleCount}
+        </span>
+        <button
+          className="ml-0.5 p-0.5 hover:opacity-50 hover:bg-foreground/10 rounded"
+          onClick={(e) => {
+            e.stopPropagation();
+            copyToClipboard(name);
+          }}
+          title="Скопировать название"
+        >
+          <ClipboardDocumentIcon className="w-3 h-3" />
+        </button>
+        <button
+          className="p-0.5 hover:opacity-50 hover:bg-foreground/10 rounded"
+          onClick={(e) => {
+            e.stopPropagation();
+            insertIntoEditor(`s("${name}")`);
+          }}
+          title="Вставить в редактор"
+        >
+          <DocumentPlusIcon className="w-3 h-3" />
+        </button>
+      </span>
+    );
+  }, []);
+
   // stop current sound on mouseup
   useEvent('mouseup', () => {
     const ref = trigRef.current;
@@ -209,7 +286,26 @@ export function SoundsTab() {
   });
   return (
     <div id="sounds-tab" className="px-4 flex gap-2 flex-col w-full h-full text-foreground">
-      <Textbox placeholder="Поиск" value={search} onChange={(v) => setSearch(v)} />
+      <div className="flex gap-2 items-center">
+        <Textbox placeholder="Поиск" value={search} onChange={(v) => setSearch(v)} className="flex-grow" />
+        {/* Переключатель режима отображения */}
+        <div className="flex gap-1 shrink-0">
+          <button
+            onClick={() => setViewMode('tree')}
+            className={`p-1.5 rounded ${viewMode === 'tree' ? 'bg-foreground/20' : 'hover:bg-foreground/10'}`}
+            title="Древовидный вид"
+          >
+            <ListBulletIcon className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => setViewMode('flat')}
+            className={`p-1.5 rounded ${viewMode === 'flat' ? 'bg-foreground/20' : 'hover:bg-foreground/10'}`}
+            title="Плоский список"
+          >
+            <Squares2X2Icon className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
 
       <div className=" flex shrink-0 flex-wrap">
         <ButtonGroup
@@ -290,82 +386,18 @@ export function SoundsTab() {
         />
       )}
 
-      <div className="min-h-0 max-h-full grow overflow-auto  text-sm break-normal bg-background p-2 rounded-md">
-        {soundEntries.map(([name, { data, onTrigger }]) => {
-          const sampleCount =
-            data?.type === 'sample'
-              ? `(${getSamples(data.samples)})`
-              : data?.type === 'wavetable'
-                ? `(${getSamples(data.tables)})`
-                : data?.type === 'soundfont'
-                  ? `(${data.fonts.length})`
-                  : '';
-          return (
-            <span key={name} className="inline-flex items-center mr-2 mb-1">
-              <span
-                className="cursor-pointer hover:opacity-50"
-                onMouseDown={async () => {
-                  const ctx = getAudioContext();
-                  const params = {
-                    note: ['synth', 'soundfont'].includes(data.type) ? 'a3' : undefined,
-                    s: name,
-                    n: numRef.current,
-                    clip: 1,
-                    release: 0.5,
-                    sustain: 1,
-                    duration: 0.5,
-                  };
-                  const onended = () => trigRef.current?.node?.disconnect();
-                  // Attempt to play the sample and retry every 200ms until 10 attempts have been reached
-                  let errMsg;
-                  for (let attempt = 0; attempt < 10; attempt++) {
-                    try {
-                      // Pre-load the sample by calling onTrigger with a future time
-                      // This triggers the loading but schedules playback for later
-                      const time = ctx.currentTime + 0.05; // Give 50ms for loading
-                      const ref = await onTrigger(time, params, onended);
-                      trigRef.current = ref;
-                      if (ref?.node) {
-                        connectToDestination(ref.node);
-                        break;
-                      }
-                    } catch (err) {
-                      errMsg = err;
-                    }
-                    if (attempt == 9) {
-                      console.warn('Failed to trigger sound after 10 attempts' + (errMsg ? `: ${errMsg}` : ''));
-                    } else {
-                      await wait(200);
-                    }
-                  }
-                }}
-              >
-                {name}
-                {sampleCount}
-              </span>
-              <button
-                className="ml-0.5 p-0.5 hover:opacity-50 hover:bg-foreground/10 rounded"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  copyToClipboard(name);
-                }}
-                title="Скопировать название"
-              >
-                <ClipboardDocumentIcon className="w-3 h-3" />
-              </button>
-              <button
-                className="p-0.5 hover:opacity-50 hover:bg-foreground/10 rounded"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  insertIntoEditor(`s("${name}")`);
-                }}
-                title="Вставить в редактор"
-              >
-                <DocumentPlusIcon className="w-3 h-3" />
-              </button>
-            </span>
-          );
-        })}
+      <div className="min-h-0 max-h-full grow overflow-auto text-sm break-normal bg-background p-2 rounded-md">
+        {/* Древовидный режим */}
+        {viewMode === 'tree' && soundEntries.length > 0 && (
+          <TreeView
+            packData={packedSounds}
+            expandedPacks={expandedPacks}
+            onTogglePack={handleTogglePack}
+            renderSound={renderSound}
+          />
+        )}
+        {/* Плоский режим */}
+        {viewMode === 'flat' && soundEntries.map(([name, soundData]) => renderSound(name, soundData))}
         {!soundEntries.length && soundsFilter === 'importSounds' ? (
           <div className="prose dark:prose-invert min-w-full pt-2 pb-8 px-4">
             <ImportSoundsButton onComplete={() => settingsMap.setKey('soundsFilter', 'user')} />
