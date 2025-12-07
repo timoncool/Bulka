@@ -1,0 +1,395 @@
+---
+title: Галерея треков
+layout: ../../layouts/MainLayout.astro
+---
+
+import { MiniRepl } from '../../docs/MiniRepl';
+
+# Галерея треков от сообщества
+
+Лучшие треки и каверы, созданные сообществом Strudel. Нажмите play, чтобы послушать!
+
+---
+
+## Blue Monday — New Order
+
+Кавер на классику синтипопа от **eefano**.
+
+<MiniRepl
+  client:visible
+  tune={`// "Blue Monday" - New Order
+// cover @by eefano
+stack(
+  s("bd!2 [bd*4]!2 bd!4").slow(8).bank("SequentialCircuitsDrumtracks"),
+  s("~ hh").bank("SequentialCircuitsDrumtracks"),
+  n("<[[2 ~] [2 ~] 2 3] [[3 ~] [3 ~] 3 3]>@4 [-1 ~] -1 -1 [0 ~] 0 0 [0 ~] 0 0 [0 ~] 0 0")
+    .slow(8).scale("d2:minor").s("gm_lead_8_bass_lead")
+).cpm(130)`}
+/>
+
+---
+
+## Stranger Things Theme
+
+Атмосферная тема из сериала Netflix от **eefano**.
+
+<MiniRepl
+  client:visible
+  tune={`// "Stranger Things" Theme
+// cover @by eefano
+setcps(0.7)
+
+$: n("0 2 4 6 7 6 4 2")
+  .scale("<c3:major>/2")
+  .s("supersaw")
+  .distort(0.7)
+  .superimpose((x) => x.detune("<0.5>"))
+  .lpenv(perlin.slow(3).range(1, 4))
+  .lpf(perlin.slow(2).range(100, 2000))
+  .gain(0.3)
+
+$: "<a1 e2>/8".clip(0.8).struct("x*8").s("supersaw").note()`}
+/>
+
+---
+
+## Enjoy The Silence — Depeche Mode
+
+Кавер на хит Depeche Mode от **eefano**.
+
+<MiniRepl
+  client:visible
+  tune={`// "Enjoy The Silence" - Depeche Mode
+// cover @by eefano
+setCps(113/60/4)
+
+const scala = cat('c minor')
+stack(
+  "<[3,5,0] [5,0,2] [0,2,4] [2,4,-1]>".scale(scala).note().s("recorder_bass_sus").gain(1.5).clip(1).release(0.5),
+  "<[2@3 3] [0@3 2] [4@3 6] [2@3 3] [0@3 1] [-1@3 -2] -3 [0 1]>".scale(scala).transpose(12).note().s("ocarina").gain(0.6).clip(1).release(0.1),
+  "<-4 -2 0 -1>".struct("[[x ~]!2 x x@0.5 [x ~]!2 x@0.5 [x ~]!2]").scale(scala).note().s("triangle").gain(0.8).clip(1).sustain(0.8),
+  s("bd!4,[~ sd]!2,[~ hh!2 hh*2]!2").bank("AlesisHR16").clip(1).gain(0.08)
+)`}
+/>
+
+---
+
+## Waltz No. 2 — Дмитрий Шостакович
+
+Классический вальс в live coding интерпретации от **eefano**.
+
+<MiniRepl
+  client:visible
+  tune={`// "Waltz #2" - Dmitri Shostakovich
+// cover @by eefano
+setcps(160/60/3)
+
+$: n("<<0 -1> [4,5]!2>*3")
+  .chord("<Cm@10 Fm@4 G@4 Cm@4 Fm@2 Bb@2 Eb Ab>")
+  .anchor('f2').mode('root').voicing()
+  .piano().room(0.6)
+
+$: "<4 [2@2 1] [0@4 0 1]@2 [2 0 2] [4@2 5] 4 3>"
+  .scale("c4:minor").note()
+  .s("gm_oboe:2").gain(0.5).room(0.6)`}
+/>
+
+---
+
+## Endless Tarantella
+
+Бесконечная итальянская тарантелла с генеративными элементами от **eefano**.
+
+<MiniRepl
+  client:visible
+  tune={`// "Endless Tarantella"
+// @by eefano
+setcps(140/60)
+
+let pizza = rand.range(0,16).segment(16).slow(16)
+
+$: pizza.pick(["4 ~ 4","7 ~ 7","4","4 ~ 4","5 ~ 5","5 6 5","4","4 ~ 5","4@2 3","3 ~ 4","3@2 2","2 ~ 3","4 5 4","3 2 1","0","7 ~ 7"])
+  .scale("a:minor").s('gm_clarinet').note()
+
+$: pizza.pick([0,0,0,0,1,1,0,0,2,2,0,0,2,2,0,0]).fast(2)
+  .pick(["[0 ~] [-3 ~]","[3 ~] [-2 ~]","[1 ~] [-3 ~]"]).slow(2)
+  .scale("a2:minor").s('gm_tuba').note().lpf(800)
+
+$: s("tambourine")`}
+/>
+
+---
+
+## Pump Up The Jam — Technotronic
+
+Классика евродэнса от **eefano**. Сложный кавер с множеством слоёв.
+
+<MiniRepl
+  client:visible
+  tune={`// "Pump Up The Jam" - Technotronic (simplified)
+// @by eefano
+stack(
+  // Басовая линия
+  "[0 ~ ~ 0 ~ ~ 0 ~] <[[~ [0 1]] [2 ~]] ~>"
+    .scale("c2:minor").note().clip(0.9)
+    .s("sawtooth").lpf(300).gain(0.8),
+  // Аккорды
+  "[~@2 [0,-2,-4] [0,-2,-4]]"
+    .scale("c4:minor").note().clip(0.7)
+    .s("sawtooth").adsr("0.07:.1:0.6:0.1").gain(0.4),
+  // Ударные
+  stack(
+    s("bd*4").lpf(150).gain(1),
+    s("[~ cp]*2").gain(0.5),
+    s("oh*16").gain(0.12).release(0),
+    s("hh*4").gain(0.20)
+  ).bank("RolandTR909").velocity(0.7)
+).cpm(124.5/4).room(0.3)`}
+/>
+
+---
+
+## The Rhythm of the Night — Corona
+
+Евродэнс хит 90-х от **eefano**.
+
+<MiniRepl
+  client:visible
+  tune={`// "The Rhythm Of The Night" - Corona
+// @by eefano
+stack(
+  // Мелодия
+  "2 0 ~@4 6 4 6 4 ~@4 [4 3]@3 ~@6 4 7 6 [4@2 ~]"
+    .slow(4).scale("c4:minor").note()
+    .s("gm_lead_1_square").room(0.4).delay(0.3).gain(0.7),
+  // Аккорды
+  "Ab Cm Bb F@2".slow(5)
+    .chord().anchor("F4").voicing()
+    .s("gm_synth_strings_1").gain(0.4),
+  // Бас
+  "2 ~@2 2 ~@2 2 ~@3 2 ~@3 2 ~"
+    .n().scale("c2:minor").note()
+    .s("gm_synth_bass_1").lpf(1500).gain(0.7),
+  // Ударные
+  stack(
+    s("bd*4").gain(0.8),
+    s("[~ oh]*4").gain(0.14),
+    s("hh*16").gain(0.09),
+    s("[~ cp]*2").gain(0.4)
+  ).bank("RolandTR909").room(0.2)
+).cpm(128/4)`}
+/>
+
+---
+
+## Pyramid Song — Radiohead
+
+Сложный кавер на Radiohead с нестандартными ритмами от **eefano**.
+
+<MiniRepl
+  client:visible
+  tune={`// "Pyramid Song" - Radiohead (simplified)
+// @by eefano
+setcps(104/60/4)
+
+// Аккорды пианино
+$: n("<<0 -1> [4,5]!2>*3")
+  .chord("<F#m@10 G@4 A@4 F#m@4>")
+  .anchor('f#2').mode('root').voicing()
+  .piano().room(0.6).gain(0.7)
+
+// Ударные
+$: s("<[bd,rd] ~ [~ sd] [bd,rd] ~ [~ sd] [bd,rd] ~ ~ [~ sd]>*2")
+  .bank('Linn9000').lpf(1000).room(0.2).gain(0.4)`}
+/>
+
+---
+
+## Минимал Техно
+
+Оригинальный минималистичный техно грув.
+
+<MiniRepl
+  client:visible
+  tune={`// Minimal Techno Groove
+stack(
+  s("bd*4").gain(1.2),
+  s("~ cp").room(0.3).delay(0.2),
+  s("hh*8").gain(0.5).pan(sine.range(0.3, 0.7)),
+  note("g1*2 [~ g1] g1 [g1 a1]")
+    .s("sawtooth")
+    .lpf(sine.slow(8).range(200, 1200))
+    .lpq(12)
+    .gain(0.6)
+).cpm(130)`}
+/>
+
+---
+
+## Acid House
+
+Классический acid звук с TB-303 стилем.
+
+<MiniRepl
+  client:visible
+  tune={`// Acid House 303
+stack(
+  // 303 bassline
+  note("c2 c2 [c2 c3] c2 c2 [~ c2] eb2 [c2 g1]")
+    .s("sawtooth")
+    .lpf(sine.slow(4).range(200, 3000))
+    .lpq(18)
+    .lpenv(6)
+    .lpa(0.01)
+    .lpd(0.1)
+    .gain(0.7)
+    .distort(0.4),
+  // Drums
+  stack(
+    s("bd*4"),
+    s("[~ cp]*2").room(0.2),
+    s("[~ oh]*4").gain(0.3),
+    s("hh*8").gain(0.4)
+  ).bank("RolandTR909")
+).cpm(126)`}
+/>
+
+---
+
+## Ambient Drone
+
+Атмосферный эмбиент с длинными нотами.
+
+<MiniRepl
+  client:visible
+  tune={`// Ambient Drone
+stack(
+  note("[c3,e3,g3,b3]")
+    .s("sawtooth")
+    .lpf(600)
+    .attack(3)
+    .release(5)
+    .room(0.9)
+    .size(0.95)
+    .slow(8)
+    .gain(0.4),
+  note("c2")
+    .s("sine")
+    .gain(0.25)
+    .slow(16),
+  note("[g4,b4,d5]")
+    .s("triangle")
+    .attack(2)
+    .release(4)
+    .room(0.8)
+    .delay(0.5)
+    .gain(0.15)
+    .slow(12)
+)`}
+/>
+
+---
+
+## Drum & Bass
+
+Быстрый DnB грув с разбитым ритмом.
+
+<MiniRepl
+  client:visible
+  tune={`// Drum & Bass
+stack(
+  // Amen-style break
+  s("[bd ~] ~ [~ bd] ~, ~ [~ sd] ~ sd, [hh hh]*4")
+    .bank("RolandTR909")
+    .room(0.15),
+  // Reese bass
+  note("<c2 [c2 eb2] c2 [bb1 c2]>")
+    .s("sawtooth")
+    .lpf(400)
+    .lpq(4)
+    .gain(0.7)
+    .room(0.2)
+).fast(2).cpm(174)`}
+/>
+
+---
+
+## Lo-Fi Hip-Hop
+
+Расслабленный lo-fi бит для учёбы.
+
+<MiniRepl
+  client:visible
+  tune={`// Lo-Fi Hip-Hop
+stack(
+  s("bd [~ bd] ~ bd").slow(2),
+  s("~ sd").slow(2).room(0.4),
+  s("hh*4").gain(0.25).speed(0.9),
+  note("<[c4,e4,g4] [a3,c4,e4] [f3,a3,c4] [g3,b3,d4]>")
+    .s("piano")
+    .slow(2)
+    .room(0.5)
+    .lpf(2000)
+    .gain(0.6)
+).cpm(85)`}
+/>
+
+---
+
+## Полиритмия
+
+Сложные полиритмические наложения.
+
+<MiniRepl
+  client:visible
+  tune={`// Polyrhythmic Groove
+stack(
+  s("bd*4"),
+  s("cp*3").gain(0.7),
+  s("hh*5").gain(0.4),
+  s("rim*7").gain(0.3),
+  note("c3*3, e3*4, g3*5")
+    .s("pluck")
+    .room(0.4)
+    .gain(0.5)
+).cpm(120)`}
+/>
+
+---
+
+## Евклидовы ритмы
+
+Африканские и кубинские ритмы через евклидов алгоритм.
+
+<MiniRepl
+  client:visible
+  tune={`// Euclidean Rhythms
+stack(
+  s("bd(3,8)"),           // Кубинский тресильо
+  s("sd(5,8)").gain(0.6), // Cinquillo
+  s("hh(7,8)").gain(0.4),
+  s("cp(2,8)").room(0.3),
+  note("c2(3,8), g2(5,8)")
+    .s("triangle")
+    .gain(0.5)
+).cpm(110)`}
+/>
+
+---
+
+## Ресурсы
+
+### Коллекции треков
+- [eefano/strudel-songs-collection](https://github.com/eefano/strudel-songs-collection) — 75+ каверов и оригинальных композиций
+- [awesome-strudel](https://github.com/terryds/awesome-strudel) — курируемая коллекция ресурсов
+
+### Авторы
+- **eefano** — автор большинства каверов, невероятная работа по воссозданию известных треков
+- **KAIXI** — каверы на Grimes, Charli XCX
+- **Lewis** — Blue Monday и другие
+
+### Поделитесь своим треком!
+Создали крутой трек? Поделитесь им:
+1. На [Tidal Club форуме](https://club.tidalcycles.org/t/strudel-pattern-thread/4044)
+2. В [Discord сообществе](https://discord.com/invite/HGEdXmRkzT)
+3. Сделайте PR в репозиторий проекта
