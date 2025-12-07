@@ -42,6 +42,23 @@ export async function prebake() {
       pack: 'uzu-wavetables',
     }),
     samples(`${baseCDN}/mridangam.json`, `${baseCDN}/mrid/`, { prebake: true, tag: 'drum-machines', pack: 'mridangam' }),
+    // Локальные паки семплов
+    samples('./samples/dough-amen/strudel.json', './samples/dough-amen/', {
+      prebake: true,
+      pack: 'dough-amen',
+    }),
+    samples('./samples/dough-waveforms/strudel.json', './samples/dough-waveforms/', {
+      prebake: true,
+      pack: 'dough-waveforms',
+    }),
+    samples('./samples/samples-flbass/strudel.json', './samples/samples-flbass/', {
+      prebake: true,
+      pack: 'samples-flbass',
+    }),
+    samples('./samples/sounds-repetition/strudel.json', './samples/sounds-repetition/', {
+      prebake: true,
+      pack: 'sounds-repetition',
+    }),
     samples(
       {
         casio: ['casio/high.wav', 'casio/low.wav', 'casio/noise.wav'],

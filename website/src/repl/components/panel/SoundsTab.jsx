@@ -186,11 +186,11 @@ export function SoundsTab() {
     settingsMap.setKey('enabledPacks', JSON.stringify([]));
   });
 
-  const isPackEnabled = useEvent((packName) => {
+  const isPackEnabled = (packName) => {
     if (enabledPacks === 'all') return true;
     if (!Array.isArray(enabledPacks)) return false;
     return enabledPacks.includes(packName);
-  });
+  };
 
   // holds mutable ref to current triggered sound
   const trigRef = useRef();
