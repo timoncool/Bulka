@@ -7,13 +7,13 @@ import { MiniRepl } from '../../docs/MiniRepl';
 import { JsDoc } from '../../docs/JsDoc';
 import Colors from '../../docs/Colors.jsx';
 
-# Using CSound with Strudel
+# Использование CSound с Strudel
 
-🧪 Strudel has experimental support for csound, using [@csound/browser](https://www.npmjs.com/package/@csound/browser).
+🧪 Strudel имеет экспериментальную поддержку csound, используя [@csound/browser](https://www.npmjs.com/package/@csound/browser).
 
-## Importing .orc files
+## Импорт .orc файлов
 
-To use existing csound instruments, you can load and use an orc file from an URL like this:
+Чтобы использовать существующие инструменты csound, вы можете загрузить и использовать orc файл из URL следующим образом:
 
 <MiniRepl
   client:only="react"
@@ -23,9 +23,9 @@ note("c a f e").csound('FM1')
 `}
 />
 
-Note that the above url uses the `github:` shortcut, which resolves to the raw file on github, but you can use any URL you like.
+Обратите внимание, что вышеуказанный URL использует сокращение `github:`, которое разрешается в raw файл на github, но вы можете использовать любой URL по вашему желанию.
 
-The awesome [`livecode.orc by Steven Yi`](https://github.com/kunstmusik/csound-live-code) comes packed with many sounds ready for use:
+Замечательный [`livecode.orc by Steven Yi`](https://github.com/kunstmusik/csound-live-code) поставляется с множеством готовых к использованию звуков:
 
 <MiniRepl
   client:only="react"
@@ -82,9 +82,9 @@ note("c a f e").csound(cat(
 ))`}
 />
 
-## Writing your own instruments
+## Написание собственных инструментов
 
-You can define your own instrument(s) with `loadCsound` like this:
+Вы можете определить свой собственный инструмент(ы) с помощью `loadCsound` следующим образом:
 
 <MiniRepl
   client:only="react"
@@ -121,34 +121,34 @@ endin\`
 .csound('CoolSynth')`}
 />
 
-## Parameters
+## Параметры
 
-The `.csound` function sends the following p values:
+Функция `.csound` отправляет следующие p значения:
 
 |     |                                  |
 | --- | -------------------------------- |
-| p1  | instrument name e.g. `CoolSynth` |
-| p2  | time offset, when it should play |
-| p3  | the duration of the event / hap  |
-| p4  | frequency in Hertz               |
-| p5  | normalized `gain`, 0-1           |
+| p1  | имя инструмента, например `CoolSynth` |
+| p2  | смещение времени, когда он должен играть |
+| p3  | длительность события / hap  |
+| p4  | частота в герцах               |
+| p5  | нормализованный `gain`, 0-1           |
 
-There is an alternative `.csoundm` function with a different flavor:
+Существует альтернативная функция `.csoundm` с другим подходом:
 
 |     |                                   |
 | --- | --------------------------------- |
-| p4  | midi key number, unrounded, 0-127 |
+| p4  | номер midi клавиши, неокругленный, 0-127 |
 | p5  | midi velocity, 0-127              |
 
-In both cases, p4 is derived from the value of `freq` or `note`.
+В обоих случаях p4 получается из значения `freq` или `note`.
 
-## Limitations / Future Plans
+## Ограничения / Планы на будущее
 
-Apart from the above listed p values, no other parameter can be patterned so far.
-This also means that [audio effects](/learn/effects/) will not work.
-In the future, the integration could be improved by passing all patterned control parameters to the csound instrument.
-This could work by a unique [channel](https://kunstmusik.github.io/icsc2022-csound-web/tutorial2-interacting-with-csound/#step-4---writing-continuous-data-channels)
-for each value. Channels could be read [like this](https://github.com/csound/csound/blob/master/Android/CsoundForAndroid/CsoundAndroidExamples/src/main/res/raw/multitouch_xy.csd).
-Also, it might make sense to have a standard library of csound instruments for strudel's effects.
+Помимо перечисленных выше p значений, никакие другие параметры пока не могут быть использованы в pattern.
+Это также означает, что [аудио эффекты](/learn/effects/) работать не будут.
+В будущем интеграция может быть улучшена путем передачи всех параметров управления pattern в инструмент csound.
+Это может работать через уникальный [channel](https://kunstmusik.github.io/icsc2022-csound-web/tutorial2-interacting-with-csound/#step-4---writing-continuous-data-channels)
+для каждого значения. Каналы могут быть прочитаны [вот так](https://github.com/csound/csound/blob/master/Android/CsoundForAndroid/CsoundAndroidExamples/src/main/res/raw/multitouch_xy.csd).
+Также может иметь смысл иметь стандартную библиотеку csound инструментов для эффектов strudel.
 
-Now, let's dive into the [Functional JavaScript API](/functions/intro)
+Теперь давайте погрузимся в [Functional JavaScript API](/functions/intro)

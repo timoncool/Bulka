@@ -8,17 +8,17 @@ import { JsDoc } from '../../docs/JsDoc';
 
 # Mini-notation
 
-Just like [Tidal Cycles](https://tidalcycles.org/), Strudel uses a so called "Mini-Notation", which is a custom language that is designed for writing rhythmic patterns using little amounts of text.
+Так же как и [Tidal Cycles](https://tidalcycles.org/), Strudel использует так называемый "Mini-Notation", который представляет собой специальный язык, предназначенный для записи ритмических patterns с использованием небольшого количества текста.
 
-## Note
+## Примечание
 
-This page just explains the entirety of the Mini-Notation syntax.
-If you are just getting started with Strudel, you can learn the basics of the Mini-Notation in a more practical manner in the [workshop](/workshop/first-sounds).
-After that, you can come back here if you want to understand every little detail.
+Эта страница объясняет весь синтаксис Mini-Notation целиком.
+Если вы только начинаете работать со Strudel, вы можете изучить основы Mini-Notation более практичным способом в [workshop](/workshop/first-sounds).
+После этого вы можете вернуться сюда, если хотите понять каждую мелочь.
 
-## Example
+## Пример
 
-Before diving deeper into the details, here is a flavour of how the Mini-Notation looks like:
+Прежде чем углубляться в детали, вот как выглядит Mini-Notation:
 
 <MiniRepl
   client:idle
@@ -43,86 +43,86 @@ Before diving deeper into the details, here is a flavour of how the Mini-Notatio
 >\`)`}
 />
 
-## Mini Notation Format
+## Формат Mini Notation
 
-The snippet above is enclosed in backticks (`), which allows you to write multi-line strings.
+Приведенный выше фрагмент заключен в обратные кавычки (`), что позволяет писать многострочные строки.
 
-You can also use regular double quotes (`"`) for single line mini-notation, as we have done already.
+Вы также можете использовать обычные двойные кавычки (`"`) для однострочного mini-notation, как мы уже делали.
 
-If you do just want to get a regular string that is _not_ parsed as mini-notation, use single quotes (`'`).
+Если вы хотите получить обычную строку, которая _не_ парсится как mini-notation, используйте одинарные кавычки (`'`).
 
-## Sequences of events in a cycle
+## Последовательности events в cycle
 
-We can play more notes by separating them with spaces:
+Мы можем воспроизвести больше нот, разделив их пробелами:
 
 <MiniRepl client:idle tune={`note("c e g b")`} punchcard />
 
-Here, those four notes are squashed into one cycle, so each note is a quarter second long.
-Try adding or removing notes and notice how the tempo changes!
+Здесь эти четыре ноты сжаты в один cycle, поэтому каждая нота длится четверть секунды.
+Попробуйте добавить или удалить ноты и обратите внимание, как меняется темп!
 
 <MiniRepl client:idle tune={`note("c d e f g a b")`} punchcard />
 
-Note that the overall duration of time does not change, and instead each note length decreases.
-This is a key idea, as it illustrates the 'Cycle' in TidalCycles!
+Обратите внимание, что общая продолжительность времени не меняется, вместо этого уменьшается длительность каждой ноты.
+Это ключевая идея, так как она иллюстрирует 'Cycle' в TidalCycles!
 
-Each space-separated note in this sequence is an _event_.
-The time duration of each event is based on the speed or tempo of the cycle, and how many events are present.
-Taking the two examples above, we have four and eight events respectively, and since they have the same cycle duration, they each have to fit their events inside the same amount of time.
+Каждая нота, разделенная пробелом в этой последовательности, является _event_.
+Продолжительность времени каждого event зависит от скорости или темпа cycle и от того, сколько events присутствует.
+Возьмем два приведенных выше примера: у нас четыре и восемь events соответственно, и поскольку у них одинаковая длительность cycle, каждому нужно вместить свои events в одно и то же количество времени.
 
-This is perhaps counter-intuitive if you are used to adding notes in a sequencer or piano roll and the overall length increasing.
-But, it will begin to make sense as we go through more elements of mini-notation.
+Это, возможно, противоречит интуиции, если вы привыкли добавлять ноты в секвенсор или piano roll, и общая длина увеличивается.
+Но это начнет иметь смысл, когда мы рассмотрим больше элементов mini-notation.
 
-## Multiplication
+## Умножение
 
-A sequence can be sped up by multiplying it by a number using the asterisk symbol (`*`):
+Последовательность можно ускорить, умножив ее на число с помощью символа звездочки (`*`):
 
 <MiniRepl client:idle tune={`note("[e5 b4 d5 c5]*2")`} punchcard />
 
-The multiplication by two here means that the sequence will play twice per cycle.
+Умножение на два здесь означает, что последовательность будет воспроизводиться дважды за cycle.
 
-Multiplications can also be decimal (`*2.75`):
+Умножения также могут быть десятичными (`*2.75`):
 
 <MiniRepl client:idle tune={`note("[e5 b4 d5 c5]*2.75")`} punchcard />
 
-## Division
+## Деление
 
-Contrary to multiplication, division can slow the sequence down by enclosing it in brackets and dividing it by a number (`/2`):
+В противоположность умножению, деление может замедлить последовательность, заключив ее в скобки и разделив на число (`/2`):
 
 <MiniRepl client:idle tune={`note("[e5 b4 d5 c5]/2")`} punchcard />
 
-The division by two means that the sequence will be played over the course of two cycles.
-You can also use decimal numbers for any tempo you like (`/2.75`).
+Деление на два означает, что последовательность будет воспроизводиться в течение двух cycles.
+Вы также можете использовать десятичные числа для любого темпа, который вам нравится (`/2.75`).
 
 <MiniRepl client:idle tune={`note("[e5 b4 d5 c5]/2.75")`} punchcard />
 
-## Angle Brackets
+## Угловые скобки
 
-Using angle brackets `<>`, we can define the sequence length based on the number of events:
+Используя угловые скобки `<>`, мы можем определить длину последовательности на основе количества events:
 
 <MiniRepl client:idle tune={`note("<e5 b4 d5 c5>")`} punchcard />
 
-The above snippet is the same as:
+Приведенный выше фрагмент аналогичен:
 
 <MiniRepl client:idle tune={`note("[e5 b4 d5 c5]/4")`} punchcard />
 
-The advantage of the angle brackets, is that we can add more events without needing to change the number at the end.
+Преимущество угловых скобок в том, что мы можем добавлять больше events без необходимости изменять число в конце.
 
 <MiniRepl client:idle tune={`note("<e5 b4 d5 c5 e5>")`} punchcard />
 
 <MiniRepl client:idle tune={`note("<e5 b4 d5 c5 e5 b4>")`} punchcard />
 
-This is more similar to traditional music sequencers and piano rolls, where adding a note increases the perceived overall duration.
-We can also play a certain number of notes per cycle by using angle brackets with multiplication:
+Это более похоже на традиционные музыкальные секвенсоры и piano rolls, где добавление ноты увеличивает воспринимаемую общую продолжительность.
+Мы также можем воспроизводить определенное количество нот за cycle, используя угловые скобки с умножением:
 
 <MiniRepl client:idle tune={`note("<e5 b4 d5 c5 a4 c5>*8")`} punchcard />
 
-Now we are playing 8 notes per cycle!
+Теперь мы воспроизводим 8 нот за cycle!
 
-## Subdividing time with bracket nesting
+## Подразделение времени с вложенными скобками
 
-To create more interesting rhythms, you can _nest_ or _enclose_ sequences (put sequences inside sequences) with brackets `[]`, like this:
+Чтобы создать более интересные ритмы, вы можете _вложить_ или _заключить_ последовательности (поместить последовательности внутрь последовательностей) с помощью скобок `[]`, вот так:
 
-Compare the difference between the following:
+Сравните разницу между следующими:
 
 <MiniRepl client:idle tune={`note("e5 b4 c5 d5 c5 b4")`} />
 <MiniRepl client:idle tune={`note("e5 [b4 c5] d5 c5 b4")`} />
@@ -130,61 +130,61 @@ Compare the difference between the following:
 <MiniRepl client:idle tune={`note("e5 [b4 c5] d5 [c5 b4 d5 e5]")`} />
 <MiniRepl client:idle tune={`note("e5 [b4 c5] d5 [c5 b4 [d5 e5]]")`} />
 
-What's going on here? When we nest/enclose multiple events inside brackets (`[]`), their duration becomes the length of one event in the outer sequence.
+Что здесь происходит? Когда мы вкладываем/заключаем несколько events внутри скобок (`[]`), их длительность становится равной длине одного event во внешней последовательности.
 
-This is a very simple change to make, but it has profound consequences.
-Remember what we said earlier about how the cycles in tidal stay the same length, and the individual event lengths are divided up in this cycle?
-Well, what this means is that in TidalCycles, not only can you divide time any way you want, and you can also subdivide time any way you want!
+Это очень простое изменение, но оно имеет глубокие последствия.
+Помните, что мы говорили ранее о том, как cycles в tidal остаются одинаковой длины, а длительности отдельных events делятся в этом cycle?
+Что ж, это означает, что в TidalCycles вы не только можете делить время любым способом, но и можете подразделять время любым способом!
 
-## Rests
+## Паузы
 
-The "~" represents a rest, and will create silence between other events:
+Символ "~" представляет паузу и создаст тишину между другими events:
 
 <MiniRepl client:idle tune={`note("[b4 [~ c5] d5 e5]")`} punchcard />
 
-## Parallel / polyphony
+## Параллельность / полифония
 
-Using commas, we can play chords.
-The following are the same:
+Используя запятые, мы можем воспроизводить аккорды.
+Следующие примеры одинаковы:
 
 <MiniRepl client:idle tune={`note("[g3,b3,e4]")`} />
 <MiniRepl client:idle tune={`note("g3,b3,e4")`} punchcard canvasHeight={80} />
 
-But to play multiple chords in a sequence, we have to wrap them in brackets:
+Но чтобы воспроизвести несколько аккордов в последовательности, нужно обернуть их в скобки:
 
 <MiniRepl client:idle tune={`note("<[g3,b3,e4] [a3,c3,e4] [b3,d3,f#4] [b3,e4,g4]>*2")`} punchcard />
 
-## Elongation
+## Удлинение
 
-With the "@" symbol, we can specify temporal "weight" of a sequence child:
+С помощью символа "@" мы можем указать временной "вес" дочернего элемента последовательности:
 
 <MiniRepl client:idle tune={`note("<[g3,b3,e4]@2 [a3,c3,e4] [b3,d3,f#4]>*2")`} punchcard />
 
-Here, the first chord has a weight of 2, making it twice the length of the other chords. The default weight is 1.
+Здесь первый аккорд имеет вес 2, что делает его в два раза длиннее других аккордов. Вес по умолчанию — 1.
 
-## Replication
+## Повторение
 
-Using "!" we can repeat without speeding up:
+Используя "!" мы можем повторять без ускорения:
 
 <MiniRepl client:idle tune={`note("<[g3,b3,e4]!2 [a3,c3,e4] [b3,d3,f#4]>*2")`} punchcard />
 
-## Randomness
+## Случайность
 
-Events with a "?" placed after them will have a 50% chance of being removed from the pattern:
+Events с "?" после них будут иметь 50% шанс быть удаленными из pattern:
 
 <MiniRepl client:idle tune={`note("[g3,b3,e4]*8?")`} punchcard />
 
-Adding a number between 0 and 1 after the "?" will affect the likelihood of the event being removed. For example, events with "?0.1" placed after them will have a 10% chance of being removed:
+Добавление числа между 0 и 1 после "?" повлияет на вероятность удаления event. Например, events с "?0.1" после них будут иметь 10% шанс быть удаленными:
 
 <MiniRepl client:idle tune={`note("[g3,b3,e4]*8?0.1")`} punchcard />
 
-Events separated by a "|" will be chosen from at random:
+Events, разделенные "|", будут выбраны случайным образом:
 
 <MiniRepl client:idle tune={`note("[g3,b3,e4] | [a3,c3,e4] | [b3,d3,f#4]")`} punchcard />
 
-## Mini-notation review
+## Обзор mini-notation
 
-To recap what we've learned so far, compare the following patterns:
+Чтобы подытожить то, что мы узнали до сих пор, сравните следующие patterns:
 
 <MiniRepl client:idle tune={`note("<g3 b3 e4 [a3,c3,e4] [b3,d3,f#4]>*2")`} />
 <MiniRepl client:idle tune={`note("<[g3,b3,e4] [a3,c3,e4] [b3,d3,f#4]>*2")`} />
@@ -198,35 +198,35 @@ To recap what we've learned so far, compare the following patterns:
 
 ## Euclidian rhythms
 
-Using round brackets after an event, we can create rhythmical sub-divisions based on three parameters: `beats`, `segments` and `offset`.
-This algorithm can be found in many different types of music software, and is often referred to as a [Euclidean rhythm](https://en.wikipedia.org/wiki/Euclidean_rhythm) sequencer, after computer scientist Godfriend Toussaint.
-Why is it interesting? Well, consider the following simple example:
+Используя круглые скобки после event, мы можем создавать ритмические подразделения на основе трех параметров: `beats`, `segments` и `offset`.
+Этот алгоритм можно найти во многих различных типах музыкального программного обеспечения, и он часто называется секвенсором [Euclidean rhythm](https://en.wikipedia.org/wiki/Euclidean_rhythm), в честь компьютерного ученого Годфрида Туссена.
+Почему это интересно? Рассмотрим следующий простой пример:
 
 <MiniRepl client:idle tune={`s("bd(3,8,0)")`} punchcard canvasHeight={50} />
 
-Sound familiar?
-This is a popular Euclidian rhythm going by various names, such as "Pop Clave".
-These rhythms can be found in all musical cultures, and the Euclidian rhythm algorithm allows us to express them extremely easily.
-Writing this rhythm out in full require describing:
+Звучит знакомо?
+Это популярный Euclidian rhythm, известный под различными названиями, такими как "Pop Clave".
+Эти ритмы можно найти во всех музыкальных культурах, и алгоритм Euclidian rhythm позволяет нам выразить их чрезвычайно легко.
+Написание этого ритма полностью требует описания:
 
 <MiniRepl client:idle tune={`s("bd ~ ~ bd ~ ~ bd ~")`} punchcard canvasHeight={50} />
 
-But using the Euclidian rhythm notation, we only need to express "3 beats over 8 segments, starting on position 1".
+Но используя нотацию Euclidian rhythm, нам нужно выразить только "3 удара на 8 сегментов, начиная с позиции 1".
 
-This makes it easy to write patterns with interesting rhythmic structures and variations that still sound familiar:
+Это упрощает написание patterns с интересными ритмическими структурами и вариациями, которые все еще звучат знакомо:
 
 <MiniRepl client:idle tune={`note("e5(2,8) b4(3,8) d5(2,8) c5(3,8)").slow(2)`} punchcard canvasHeight={50} />
 
-Note that since the example above does not use the third `offset` parameter, it can be written simply as `"(3,8)"`.
+Обратите внимание, что поскольку в приведенном выше примере не используется третий параметр `offset`, его можно записать просто как `"(3,8)"`.
 
 <MiniRepl client:idle tune={`s("bd(3,8)")`} punchcard canvasHeight={50} />
 
-Let's look at those three parameters in detail.
+Давайте подробно рассмотрим эти три параметра.
 
 ### Beats
 
-`beats`: the first parameter controls how may beats will be played.
-Compare these:
+`beats`: первый параметр контролирует, сколько ударов будет воспроизведено.
+Сравните эти:
 
 <MiniRepl client:idle tune={`s("bd(2,8)")`} punchcard canvasHeight={50} />
 <MiniRepl client:idle tune={`s("bd(5,8)")`} punchcard canvasHeight={50} />
@@ -234,7 +234,7 @@ Compare these:
 
 ### Segments
 
-`segments`: the second parameter controls the total amount of segments the beats will be distributed over:
+`segments`: второй параметр контролирует общее количество сегментов, по которым будут распределены удары:
 
 <MiniRepl client:idle tune={`s("bd(3,4)")`} punchcard canvasHeight={50} />
 <MiniRepl client:idle tune={`s("bd(3,8)")`} punchcard canvasHeight={50} />
@@ -242,21 +242,21 @@ Compare these:
 
 ### Offsets
 
-`offset`: the third (optional) parameter controls the starting position for distributing the beats.
-We need a secondary rhythm to hear the difference:
+`offset`: третий (необязательный) параметр контролирует начальную позицию для распределения ударов.
+Нам нужен вторичный ритм, чтобы услышать разницу:
 
 <MiniRepl client:idle tune={`s("bd(3,8,0), hh cp")`} punchcard />
 <MiniRepl client:idle tune={`s("bd(3,8,3), hh cp")`} punchcard />
 <MiniRepl client:idle tune={`s("bd(3,8,5), hh cp")`} punchcard />
 
-## Mini-notation exercise
+## Упражнение по mini-notation
 
-The most fun thing about the mini-notation, is that everything you have just learned can be combined in various ways!
+Самое интересное в mini-notation — это то, что все, что вы только что изучили, можно комбинировать различными способами!
 
-Starting with this one `n`, can you make a _pattern string_ that uses every single mini-notation element above?
+Начиная с этого одного `n`, можете ли вы создать _строку pattern_, которая использует каждый отдельный элемент mini-notation, упомянутый выше?
 
 <MiniRepl client:idle tune={`n("60")`} />
 
 <br />
 
-Next: How do [Samples](/learn/samples) play into this?
+Далее: Как [Samples](/learn/samples) вписываются в это?

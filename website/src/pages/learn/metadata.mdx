@@ -1,14 +1,14 @@
 ---
-title: Music metadata
+title: Метаданные музыки
 layout: ../../layouts/MainLayout.astro
 ---
 
 import { MiniRepl } from '../../docs/MiniRepl';
 import { JsDoc } from '../../docs/JsDoc';
 
-# Music metadata
+# Метаданные музыки
 
-You can optionally add some music metadata in your Strudel code, by using tags in code comments:
+Вы можете опционально добавить некоторые метаданные музыки в свой код Strudel, используя теги в комментариях:
 
 ```js
 // @title Hey Hoo
@@ -16,11 +16,11 @@ You can optionally add some music metadata in your Strudel code, by using tags i
 // @license CC BY-NC-SA
 ```
 
-Like other comments, those are ignored by Strudel, but it can be used by other tools to retrieve some information about the music.
+Как и другие комментарии, они игнорируются Strudel, но могут использоваться другими инструментами для получения информации о музыке.
 
-## Alternative syntax
+## Альтернативный синтаксис
 
-You can also use comment blocks:
+Вы также можете использовать блоки комментариев:
 
 ```js
 /*
@@ -30,33 +30,33 @@ You can also use comment blocks:
 */
 ```
 
-Or define multiple tags in one line:
+Или определить несколько тегов в одной строке:
 
 ```js
 // @title Hey Hoo @by Sam Tagada @license CC BY-NC-SA
 ```
 
-The `title` tag has an alternative syntax using quotes (must be defined at the very begining):
+Тег `title` имеет альтернативный синтаксис с использованием кавычек (должен быть определен в самом начале):
 
 ```js
 // "Hey Hoo" @by Sam Tagada
 ```
 
-## Tags list
+## Список тегов
 
-Available tags are:
+Доступные теги:
 
-- `@title`: music title
-- `@by`: music author(s), separated by comma, eventually followed with a link in `<>` (ex: `@by John Doe <https://example.com>`)
-- `@license`: music license(s), e.g. CC BY-NC-SA. Unsure? [Choose a creative commons license here](https://creativecommons.org/choose/)
-- `@details`: some additional information about the music
-- `@url`: web page(s) related to the music (git repo, soundcloud link, etc.)
-- `@genre`: music genre(s) (pop, jazz, etc)
-- `@album`: music album name
+- `@title`: название музыки
+- `@by`: автор(ы) музыки, разделенные запятой, опционально с ссылкой в `<>` (например: `@by John Doe <https://example.com>`)
+- `@license`: лицензия(и) музыки, например CC BY-NC-SA. Не уверены? [Выберите creative commons лицензию здесь](https://creativecommons.org/choose/)
+- `@details`: дополнительная информация о музыке
+- `@url`: веб-страница(ы), связанные с музыкой (git репозиторий, ссылка soundcloud и т.д.)
+- `@genre`: жанр(ы) музыки (pop, jazz и т.д.)
+- `@album`: название музыкального альбома
 
-## Multiple values
+## Несколько значений
 
-Some of them accepts several values, using the comma or new line separator, or duplicating the tag:
+Некоторые из них принимают несколько значений, используя разделитель запятой или новой строки, или дублируя тег:
 
 ```js
 /*
@@ -68,7 +68,7 @@ Some of them accepts several values, using the comma or new line separator, or d
 */
 ```
 
-You can also add optional prefixes and use tags where you want:
+Вы также можете добавлять опциональные префиксы и использовать теги где угодно:
 
 ```js
 /*
@@ -79,14 +79,14 @@ samples @by Jimmy
 note("a3 c#4 e4 a4") // @by Sandy
 ```
 
-## Multiline
+## Многострочные
 
-If a tag doesn't accept a list, it can take multi-line values:
+Если тег не принимает список, он может принимать многострочные значения:
 
 ```js
 /*
-@details I wrote this song in February 19th, 2023.
-         It was around midnight and I was lying on
-         the sofa in the living room.
+@details Я написал эту песню 19 февраля 2023 года.
+         Было около полуночи, и я лежал на
+         диване в гостиной.
 */
 ```

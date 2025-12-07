@@ -1,28 +1,28 @@
 ---
-title: Build Arpeggios
+title: Создание Arpeggios
 layout: ../../layouts/MainLayout.astro
 ---
 
 import { MiniRepl } from '../../docs/MiniRepl';
 import { JsDoc } from '../../docs/JsDoc';
 
-Note: This has been (partly) translated from https://tidalcycles.org/docs/patternlib/howtos/buildarpeggios
+Примечание: Это было (частично) переведено с https://tidalcycles.org/docs/patternlib/howtos/buildarpeggios
 
-# Build Arpeggios
+# Создание Arpeggios
 
-This page will teach you how to get started writing arpeggios using different techniques. It is a good way to learn Strudel in a more intuitive way.
+Эта страница научит вас, как начать писать arpeggios, используя различные техники. Это хороший способ изучить Strudel более интуитивно.
 
-## Arpeggios from notes
+## Arpeggios из нот
 
-Start with a simple sequence of notes:
+Начните с простой последовательности нот:
 
 <MiniRepl tune={`note("c a f e").piano().slow(2)`} client:idle />
 
-Now, let's play one per cycle:
+Теперь давайте проигрывать по одной на cycle:
 
 <MiniRepl tune={`note("<c a f e>").piano().slow(2)`} client:idle />
 
-On top of that, put a copy of the sequence, offset in time and pitch:
+Поверх этого поместите копию последовательности, сдвинутую по времени и высоте:
 
 <MiniRepl
   tune={`"<c a f e>".off(1/8, add(7))
@@ -30,7 +30,7 @@ On top of that, put a copy of the sequence, offset in time and pitch:
   client:idle
 />
 
-Add some structure to the original sequence:
+Добавьте структуру в исходную последовательность:
 
 <MiniRepl
   tune={`"<c*2 a(3,8) f(3,8,2) e*2>"
@@ -39,7 +39,7 @@ Add some structure to the original sequence:
   client:idle
 />
 
-Reverse in one speaker:
+Реверсируем в одном динамике:
 
 <MiniRepl
   tune={`"<c*2 a(3,8) f(3,8,2) e*2>"
@@ -49,7 +49,7 @@ Reverse in one speaker:
   client:idle
 />
 
-Let's add another layer:
+Давайте добавим ещё один слой:
 
 <MiniRepl
   tune={`"<c*2 a(3,8) f(3,8,2) e*2>"
@@ -60,10 +60,10 @@ Let's add another layer:
   client:idle
 />
 
-- added slow(2) to approximate tidals cps
-- n was replaced with note, because using n does not work as note for samples
-- legato 2 was removed because it does not work in combination with rev (bug)
+- добавлен slow(2) для приближения к cps tidal
+- n был заменён на note, потому что использование n не работает как note для samples
+- legato 2 был удалён, потому что не работает в комбинации с rev (баг)
 
-## Arpeggios from chords
+## Arpeggios из аккордов
 
 TODO

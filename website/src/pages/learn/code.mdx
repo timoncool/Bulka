@@ -1,24 +1,24 @@
 ---
-title: Coding syntax
+title: Синтаксис кодирования
 layout: ../../layouts/MainLayout.astro
 ---
 
 import { MiniRepl } from '../../docs/MiniRepl';
 import { JsDoc } from '../../docs/JsDoc';
 
-# Coding Syntax
+# Синтаксис кодирования
 
-Let's take a step back and understand how the syntax in Strudel works.
+Давайте сделаем шаг назад и разберемся, как работает синтаксис в Strudel.
 
-Take a look at this simple example:
+Взгляните на этот простой пример:
 
 <MiniRepl client:idle tune={`note("c a f e").s("piano")`} />
 
-- We have a word `note` which is followed by some brackets `()` with some words/letters/numbers inside, surrounded by quotes `"c a f e"`
-- Then we have a dot `.` followed by another similar piece of code `s("piano")`.
-- We can also see these texts are _highlighted_ using colours: word `note` is purple, the brackets `()` are grey, and the content inside the `""` are green. (The colors could be different if you've changed the default theme)
+- У нас есть слово `note`, за которым следуют скобки `()` с некоторыми словами/буквами/цифрами внутри, окруженными кавычками `"c a f e"`
+- Затем у нас есть точка `.`, за которой следует еще один похожий фрагмент кода `s("piano")`.
+- Мы также видим, что эти тексты _подсвечены_ с использованием цветов: слово `note` фиолетовое, скобки `()` серые, а содержимое внутри `""` зеленое. (Цвета могут отличаться, если вы изменили тему по умолчанию)
 
-What happens if we try to 'break' this pattern in different ways?
+Что произойдет, если мы попытаемся "сломать" этот паттерн разными способами?
 
 <MiniRepl client:idle tune={`note(c a f e).s(piano)`} />
 
@@ -26,30 +26,30 @@ What happens if we try to 'break' this pattern in different ways?
 
 <MiniRepl client:idle tune={`note["c a f e"].s{"piano"}`} />
 
-Ok, none of these seem to work...
+Хорошо, кажется, ни один из них не работает...
 
 <MiniRepl client:idle tune={`s("piano").note("c a f e")`} />
 
-This one does work, but now we only hear the first note...
+Этот работает, но теперь мы слышим только первую ноту...
 
-So what is going on here?
+Так что же здесь происходит?
 
-# Functions, arguments and chaining
+# Функции, аргументы и цепочки
 
-So far, we've seen the following syntax:
+До сих пор мы видели следующий синтаксис:
 
 ```
 xxx("foo").yyy("bar")
 ```
 
-Generally, `xxx` and `yyy` are called [_functions_](<https://en.wikipedia.org/wiki/Function_(computer_programming)>), while `foo` and `bar` are called function [_arguments_ or _parameters_](<https://en.wikipedia.org/wiki/Parameter_(computer_programming)>).
-So far, we've used the functions to declare which aspect of the sound we want to control, and their arguments for the actual data.
-The `yyy` function is called a [_chained_ function](https://en.wikipedia.org/wiki/Method_chaining), because it is preceded with a dot (`.`).
+В общем, `xxx` и `yyy` называются [_функциями_](<https://en.wikipedia.org/wiki/Function_(computer_programming)>), в то время как `foo` и `bar` называются [_аргументами_ или _параметрами_](<https://en.wikipedia.org/wiki/Parameter_(computer_programming)>) функции.
+До сих пор мы использовали функции для объявления того, каким аспектом звука мы хотим управлять, а их аргументы - для фактических данных.
+Функция `yyy` называется [_цепной_ функцией](https://en.wikipedia.org/wiki/Method_chaining), потому что перед ней стоит точка (`.`).
 
-Generally, the idea with chaining is that code such as `a("this").b("that").c("other")` allows `a`, `b` and `c` functions to happen in a specified order, without needing to write them as three separate lines of code.
-You can think of this as being similar to chaining audio effects together using guitar pedals or digital audio effects.
+В общем, идея цепочек заключается в том, что код вроде `a("this").b("that").c("other")` позволяет функциям `a`, `b` и `c` выполняться в определенном порядке, без необходимости писать их как три отдельные строки кода.
+Вы можете думать об этом как о соединении аудиоэффектов вместе с помощью гитарных педалей или цифровых аудиоэффектов.
 
-Strudel makes heavy use of chained functions. Here is a more sophisticated example:
+Strudel активно использует цепные функции. Вот более сложный пример:
 
 <MiniRepl
   client:idle
@@ -60,9 +60,9 @@ Strudel makes heavy use of chained functions. Here is a more sophisticated examp
 .room(0.5)`}
 />
 
-## Write your own chained function
+## Напишите свою собственную цепную функцию
 
-You can write your own chained function using `register`. Here's the above chain but registered as a reusable, chained function.
+Вы можете написать свою собственную цепную функцию, используя `register`. Вот приведенная выше цепочка, зарегистрированная как переиспользуемая цепная функция.
 
 <MiniRepl
   client:idle
@@ -75,26 +75,26 @@ You can write your own chained function using `register`. Here's the above chain
 note("a3 c#4 e4 a4").effectChain()`}
 />
 
-Try adding `.rev()` after `effectChain()` to hear further effects added.
+Попробуйте добавить `.rev()` после `effectChain()`, чтобы услышать дополнительные эффекты.
 
-# Comments
+# Комментарии
 
-The `//` in the example above is a line comment, resulting in the `delay` function being ignored.
-It is a handy way to quickly turn code on and off.
-Try uncommenting this line by deleting `//` and refreshing the pattern.
-You can also use the keyboard shortcut `cmd-/` to toggle comments on and off.
+`//` в приведенном выше примере - это строчный комментарий, в результате которого функция `delay` игнорируется.
+Это удобный способ быстро включать и выключать код.
+Попробуйте раскомментировать эту строку, удалив `//` и обновив паттерн.
+Вы также можете использовать сочетание клавиш `cmd-/` для переключения комментариев.
 
-You might noticed that some comments in the REPL samples include some words starting with a "@", like `@by` or `@license`.
-Those are just a convention to define some information about the music. We will talk about it in the [Music metadata](/learn/metadata) section.
+Вы могли заметить, что некоторые комментарии в примерах REPL содержат слова, начинающиеся с "@", например `@by` или `@license`.
+Это всего лишь соглашение для определения некоторой информации о музыке. Мы поговорим об этом в разделе [Метаданные музыки](/learn/metadata).
 
-# Strings
+# Строки
 
-Ok, so what about the content inside the quotes (e.g. `"c a f e"`)?
-In JavaScript, as in most programming languages, this content is referred to as being a [_string_](<https://en.wikipedia.org/wiki/String_(computer_science)>).
-A string is simply a sequence of individual characters.
-In TidalCycles, double quoted strings are used to write _patterns_ using the mini-notation, and you may hear the phrase _pattern string_ from time to time.
-If you want to create a regular string and not a pattern, you can use single quotes, e.g. `'C minor'` will not be parsed as Mini Notation.
+Хорошо, а что насчет содержимого внутри кавычек (например, `"c a f e"`)?
+В JavaScript, как и в большинстве языков программирования, это содержимое называется [_строкой_](<https://en.wikipedia.org/wiki/String_(computer_science)>).
+Строка - это просто последовательность отдельных символов.
+В TidalCycles строки в двойных кавычках используются для написания _patterns_ с использованием mini-notation, и время от времени вы можете услышать фразу _pattern string_.
+Если вы хотите создать обычную строку, а не паттерн, вы можете использовать одинарные кавычки, например, `'C minor'` не будет интерпретироваться как Mini Notation.
 
-The good news is, that this covers most of the JavaScript syntax needed for Strudel!
+Хорошая новость в том, что это охватывает большую часть синтаксиса JavaScript, необходимого для Strudel!
 
 <br />

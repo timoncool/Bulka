@@ -6,35 +6,35 @@ layout: ../../layouts/MainLayout.astro
 import { MiniRepl } from '../../docs/MiniRepl';
 import { JsDoc } from '../../docs/JsDoc';
 
-# Stepwise patterning (experimental)
+# Stepwise patterning (экспериментально)
 
-This is a developing area of strudel, and behaviour might change or be renamed in future versions. Feedback and ideas are welcome!
+Это развивающаяся область strudel, и поведение может измениться или быть переименовано в будущих версиях. Отзывы и идеи приветствуются!
 
-## Introduction
+## Введение
 
-Usually in strudel, the only reference point for most pattern transformations is the _cycle_. Now it is possible to also work with _steps_, via a growing range of functions.
+Обычно в strudel единственной точкой отсчета для большинства преобразований patterns является _cycle_. Теперь также возможно работать с _шагами_ (steps) через растущий набор функций.
 
-For example usually when you `fastcat` two patterns together, the cycles will be squashed into half a cycle each:
+Например, обычно когда вы используете `fastcat` для объединения двух patterns, cycles будут сжаты в половину cycle каждый:
 
 <MiniRepl client:idle tune={`fastcat("bd hh hh", "bd hh hh cp hh").sound()`} />
 
-With the new stepwise `stepcat` function, the steps of the two patterns will be evenly distributed across the cycle:
+С новой stepwise функцией `stepcat`, шаги двух patterns будут равномерно распределены по cycle:
 
 <MiniRepl client:idle tune={`stepcat("bd hh hh", "bd hh hh cp hh").sound()`} />
 
-By default, steps are counted according to the 'top level' in mini-notation. For example `"a [b c] d e"` has five events in it per cycle, but is counted as four steps, where `[b c]` is counted as a single step.
+По умолчанию шаги подсчитываются в соответствии с 'верхним уровнем' в mini-notation. Например, `"a [b c] d e"` имеет пять событий в cycle, но считается как четыре шага, где `[b c]` считается как один шаг.
 
-However, you can mark a different metrical level to count steps relative to, using a `^` at the start of a sub-pattern. If we do this to the subpattern in our example: `"a [^b c] d e"`, then the pattern is now counted as having _eight_ steps. This is because 'b' and 'c' are each counted as single steps, and the events in the pattern are twice as long, and so counted as two steps each.
+Однако вы можете отметить другой метрический уровень для подсчета шагов, используя `^` в начале sub-pattern. Если мы сделаем это с subpattern в нашем примере: `"a [^b c] d e"`, то pattern теперь будет считаться имеющим _восемь_ шагов. Это потому, что 'b' и 'c' каждый считаются как отдельные шаги, а события в pattern в два раза длиннее, и поэтому считаются как два шага каждое.
 
-## Pacing the steps
+## Управление темпом шагов
 
-Some stepwise functions don't appear to do very much on their own, for example these two examples of the `expand` function sound exactly the same despite being expanded by different amounts:
+Некоторые stepwise функции сами по себе не кажутся делающими много, например, эти два примера функции `expand` звучат абсолютно одинаково, несмотря на разные значения расширения:
 
 <MiniRepl client:idle tune={`"c a f e".expand(2).note().sound("folkharp")`} />
 
 <MiniRepl client:idle tune={`"c a f e".expand(4).note().sound("folkharp")`} />
 
-The number of steps per cycle is being changed behind the scenes, but on its own, that doesn't do anything. You will hear a difference however, once you use another stepwise function with it, for example `stepcat`:
+Количество шагов на cycle изменяется за кулисами, но само по себе это ничего не делает. Однако вы услышите разницу, когда используете другую stepwise функцию вместе с ней, например `stepcat`:
 
 <MiniRepl
   client:idle
@@ -48,9 +48,9 @@ The number of steps per cycle is being changed behind the scenes, but on its own
   .sound("folkharp")`}
 />
 
-You should be able to hear that `expand` increases the duration of the steps of the first subpattern, proportionally to the second one.
+Вы должны услышать, что `expand` увеличивает длительность шагов первого subpattern пропорционально второму.
 
-You can also change the speed of a pattern to match a given number of steps per cycle, with the `pace` function:
+Вы также можете изменить скорость pattern в соответствии с заданным количеством шагов на cycle с помощью функции `pace`:
 
 <MiniRepl
   client:idle
@@ -66,19 +66,19 @@ You can also change the speed of a pattern to match a given number of steps per 
   .pace(8)`}
 />
 
-The first example has ten steps, and the second example has 18 steps, but are then both played a rate of 8 steps per cycle.
+Первый пример имеет десять шагов, а второй пример - 18 шагов, но затем оба воспроизводятся со скоростью 8 шагов на cycle.
 
-The argument to `expand` can also be patterned, and will be treated in a stepwise fashion. This means that the patterns from the changing values in the argument will be `stepcat`ted together:
+Аргумент `expand` также может быть pattern, и будет обрабатываться в stepwise манере. Это означает, что patterns из изменяющихся значений в аргументе будут объединены с помощью `stepcat`:
 
 <MiniRepl client:idle tune={`note("c a f e").sound("folkharp").expand("3 2 1 1 2 3")`} />
 
-This results in a dense pattern, because the different expanded versions are squashed into a single cycle. `pace` is again handy here for slowing down the pattern to a particular number of steps per cycle:
+Это приводит к плотному pattern, потому что разные расширенные версии сжаты в один cycle. `pace` снова удобен здесь для замедления pattern до определенного количества шагов на cycle:
 
 <MiniRepl client:idle tune={`note("c a f e").sound("folkharp").expand("3 2 1 1 2 3").pace(8)`} />
 
-Earlier versions of many of these functions had `s_` prefixes, and the `pace` function was previously known as `steps`. These still exist as aliases, but may have changed behaviour and will soon be removed. Please update your patterns!
+Ранние версии многих из этих функций имели префикс `s_`, а функция `pace` ранее была известна как `steps`. Они все еще существуют как псевдонимы, но поведение могло измениться, и скоро они будут удалены. Пожалуйста, обновите ваши patterns!
 
-## Stepwise functions
+## Stepwise функции
 
 ### pace
 
