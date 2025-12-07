@@ -52,7 +52,7 @@ export function Header({ context, embedded = false }) {
           {!isZen && (
             <div className="space-x-2">
               <span style={{ fontFamily: "'Fredoka', sans-serif", color: '#D4A574' }}>bulka</span>
-              <span className="text-sm font-medium">REPL</span>
+              <span className="text-sm font-medium">редактор</span>
               {!isEmbedded && isButtonRowHidden && (
                 <a href={`${baseNoTrailing}/learn`} className="text-sm opacity-25 font-medium">
                   ДОКИ
@@ -66,7 +66,7 @@ export function Header({ context, embedded = false }) {
         <div className="flex max-w-full overflow-auto text-foreground px-1 md:px-2">
           <button
             onClick={handleTogglePlay}
-            title={started ? 'стоп' : 'плей'}
+            title={started ? 'стоп' : 'играть'}
             className={cx(
               !isEmbedded ? 'p-2' : 'px-2',
               'hover:opacity-50',
@@ -76,7 +76,7 @@ export function Header({ context, embedded = false }) {
             {!pending ? (
               <span className={cx('flex items-center space-x-2')}>
                 {started ? <StopCircleIcon className="w-6 h-6" /> : <PlayCircleIcon className="w-6 h-6" />}
-                {!isEmbedded && <span>{started ? 'стоп' : 'плей'}</span>}
+                {!isEmbedded && <span>{started ? 'стоп' : 'играть'}</span>}
               </span>
             ) : (
               <>загрузка...</>

@@ -41,9 +41,9 @@ export function WelcomeTab({ context }) {
         <a href="https://codeberg.org/uzu/strudel/src/branch/main/LICENSE" target="_blank">
           GNU Affero General Public License
         </a>
-        . Исходный код доступен на{' '}
-        <a href="https://codeberg.org/uzu/strudel" target="_blank">
-          Codeberg
+        . Исходный код Bulka доступен на{' '}
+        <a href="https://github.com/timoncool/Bulka" target="_blank">
+          GitHub
         </a>
         . Информация о лицензировании звуков:{' '}
         <a href="https://github.com/felixroos/dough-samples/blob/main/README.md">dough-samples</a>.
@@ -52,6 +52,17 @@ export function WelcomeTab({ context }) {
           Open Collective
         </a>
         {' '}💖
+      </p>
+      <p>
+        Проект развивается{' '}
+        <a href="https://t.me/nerual_dreming" target="_blank">
+          Nerual Dreming
+        </a>
+        {' '}— основателем{' '}
+        <a href="https://artgeneration.me/" target="_blank">
+          ArtGeneration.me
+        </a>
+        , техноблогером и нейро-евангелистом.
       </p>
     </div>
   );
