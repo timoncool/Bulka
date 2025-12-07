@@ -6,10 +6,21 @@ note("c3 eb3 g3 bb3").s("gm_epiano1").slow(2)
   note("c4 eb4 g4").s("gm_pad_choir").slow(4).gain(.5)
 )`;
 
-export const bumpStreet = `// froos - "22 bump street", licensed with CC BY-NC-SA 4.0
-// NOTE: This tune requires external samples from strudel.cc
+// Drum machines tune - uses local JSON + GitHub audio files
+export const drumDemo = \`// Drum machines demo (RolandTR808)
+// Load drum samples from local JSON (audio from GitHub)
+samples('./tidal-drum-machines.json', 'github:ritchse/tidal-drum-machines/main/machines/')
+
+s("bd sd bd [sd sd*2]").bank('RolandTR808').gain(0.8)
+.stack(
+  s("hh*8").bank('RolandTR808').gain(0.4),
+  s("~ cp ~ cp").bank('RolandTR808').gain(0.6)
+)\`;
+
+export const bumpStreet = \`// froos - "22 bump street", licensed with CC BY-NC-SA 4.0
+// Uses local JSON for drum machines
 samples('github:felixroos/samples')
-samples('https://strudel.cc/tidal-drum-machines.json', 'github:ritchse/tidal-drum-machines/main/machines/')
+samples('./tidal-drum-machines.json', 'github:ritchse/tidal-drum-machines/main/machines/')
 
 "<[0,<6 7 9>,13,<17 20 22 26>]!2>/2"
   // make it 22 edo
@@ -43,7 +54,7 @@ samples('https://strudel.cc/tidal-drum-machines.json', 'github:ritchse/tidal-dru
 export const trafficFlam = `// froos - "traffic flam", licensed with CC BY-NC-SA 4.0
 
 samples('github:felixroos/samples')
-samples('https://strudel.cc/tidal-drum-machines.json', 'github:ritchse/tidal-drum-machines/main/machines/')
+samples('./tidal-drum-machines.json', 'github:ritchse/tidal-drum-machines/main/machines/')
 
 addVoicings('hip', {
   m11: ['2M 3m 4P 7m'],
@@ -79,7 +90,7 @@ export const funk42 = `// froos - how to funk in 42 lines of code
 // thanks to peach for the transcription: https://www.youtube.com/watch?v=8eiPXvIgda4
 
 samples('github:felixroos/samples')
-samples('https://strudel.cc/tidal-drum-machines.json', 'github:ritchse/tidal-drum-machines/main/machines/')
+samples('./tidal-drum-machines.json', 'github:ritchse/tidal-drum-machines/main/machines/')
 
 setcps(.5)
 
