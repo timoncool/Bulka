@@ -1,56 +1,56 @@
 ---
-title: Sounds
+title: Звуки
 layout: ../../layouts/MainLayout.astro
 ---
 
 import { MiniRepl } from '../../docs/MiniRepl';
 
-# Sounds
+# Звуки
 
-Let's take a closer look about how sounds are implemented in the webaudio output.
+Давайте подробнее рассмотрим, как звуки реализованы в выводе webaudio.
 
-## Registering a sound
+## Регистрация звука
 
-All sounds are registered in the sound map, using the the `registerSound` function:
+Все звуки регистрируются в карте звуков, используя функцию `registerSound`:
 
 ```ts
 function registerSound(
-  name: string, // The name of the sound that should be given to `s`, e.g. `mysaw`
-  // The function called by the scheduler to trigger the sound:
+  name: string, // Имя звука, которое должно быть передано в `s`, например `mysaw`
+  // Функция, вызываемая планировщиком для запуска звука:
   (
-    time: number, // The audio context time the sound should start
-    value: object, // The value of the `Hap`
-    onended: () => void // A callback that should be fired when the sound has ended
+    time: number, // Время audio context, когда звук должен начаться
+    value: object, // Значение `Hap`
+    onended: () => void // Обратный вызов, который должен быть вызван, когда звук закончился
   ) => {
-    node: AudioNode, // node to connect to rest of the effects chain
-    stop: (time:number) => void // a function that will stop the sound
+    node: AudioNode, // node для подключения к остальной цепи эффектов
+    stop: (time:number) => void // функция, которая остановит звук
   },
-  data: object // meta data, only for ui logic in sounds tab
+  data: object // мета-данные, только для логики ui во вкладке звуков
 );
 ```
 
-When `registerSound` is called, it registers `{ onTrigger, data }` under the given `name` in a [nanostore map](https://github.com/nanostores/nanostores#maps).
+Когда вызывается `registerSound`, он регистрирует `{ onTrigger, data }` под заданным `name` в [nanostore map](https://github.com/nanostores/nanostores#maps).
 
-### Example
+### Пример
 
-This might be a bit abstract, so here is a minimal example:
+Это может быть немного абстрактно, поэтому вот минимальный пример:
 
 ```js
 registerSound(
   'mysaw',
   (time, value, onended) => {
-    let { freq } = value; // destructure control params
+    let { freq } = value; // деструктуризация контрольных параметров
     const ctx = getAudioContext();
-    // create oscillator
+    // создать осциллятор
     const o = new OscillatorNode(ctx, { type: 'sawtooth', frequency: Number(freq) });
     o.start(time);
-    // add gain node to level down osc
+    // добавить gain node для снижения уровня osc
     const g = new GainNode(ctx, { gain: 0.3 });
-    // connect osc to gain
+    // подключить osc к gain
     const node = o.connect(g);
-    // this function can be called from outside to stop the sound
+    // эту функцию можно вызвать извне для остановки звука
     const stop = (time) => o.stop(time);
-    // ended will be fired when stop has been fired
+    // ended будет вызван, когда stop был вызван
     o.addEventListener('ended', () => {
       o.disconnect();
       g.disconnect();
@@ -60,16 +60,16 @@ registerSound(
   },
   { type: 'synth' },
 );
-// use the sound
+// использовать звук
 freq(220, 440, 330).s('mysaw');
 ```
 
-You can actually use this code in the [REPL](https://strudel.cc/) and it'll work.
-After evaluating the code, you should see `mysaw` in listed in the sounds tab.
+Вы можете фактически использовать этот код в [REPL](https://strudel.cc/) и он будет работать.
+После оценки кода вы должны увидеть `mysaw` в списке во вкладке звуков.
 
-## Playing sounds
+## Воспроизведение звуков
 
-Now here is what happens when a sound is played:
-When the webaudio output plays a `Hap`, it will lookup and call the `onTrigger` function for the given `s`.
-The returned `node` can then be connected to the rest of the standard effects chain
-Having the stop function separate allows playing sounds via midi too, where you don't know how long the noteon will last
+Теперь вот что происходит, когда звук воспроизводится:
+Когда вывод webaudio воспроизводит `Hap`, он найдет и вызовет функцию `onTrigger` для заданного `s`.
+Возвращенный `node` затем может быть подключен к остальной стандартной цепи эффектов
+Наличие отдельной функции stop позволяет воспроизводить звуки через midi тоже, где вы не знаете, как долго будет длиться noteon
