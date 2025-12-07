@@ -142,7 +142,107 @@ export function useReplContext() {
       } else {
         /* const { code: randomTune, name } = await getRandomTune();
         code = randomTune; */
-        code = '$: s("[bd <hh oh>]*2").bank("tr909").dec(.4)';
+        code = `// @title Pixel Sunrise
+// @by Nerual Dreming
+
+cpm(180/2);
+
+stack(
+  arrange(
+    // === БЛОК 1: ВСТУПЛЕНИЕ ===
+    [4,
+      stack(
+        s("bd sd bd [sd sd*2]").crush(6).gain(0.1).bank("RolandTR808"),
+        s("hh*16").gain(0.08).bank("RolandTR808").bpf(sine.range(500, 4000).slow(6)).bpq(4).pan(sine.slow(5))
+      )
+      ._scope()
+    ],
+
+    // === БЛОК 2: ОСНОВНАЯ ЧАСТЬ ===
+    [16,
+      stack(
+        stack(
+          s("bd sd bd [sd sd*2]").crush(6).gain(0.1).bank("RolandTR808"),
+          s("hh*16").gain(0.08).bank("RolandTR808").bpf(sine.range(500, 4000).slow(6)).bpq(4).pan(sine.slow(5))
+        )._scope(),
+
+        n("0").chord("<Am F C G>").voicing()
+          .s("square").decay(0.1).sustain(0).lpf(400).gain(0.12)
+          .pan(sine.slow(8))
+          ._scope(),
+
+        n("0").chord("<Am F C G>").mode("root:c1").voicing()
+          .s("triangle").lpf(sine.range(150, 500).slow(16)).lpq(3).room(0.5).gain(0.08)
+          .pan(sine.slow(12))
+          ._scope(),
+
+        n("<0 2 4 5 7 5 4 2 7 5 9 7 11 9 7 5>").chord("<Am F C G>").voicing()
+          .s("square").decay(0.15).sustain(0).gain(0.1)
+          .phaser(sine.slow(6).range(2, 6))
+          .jux(x => x.gain(0.5).speed(0.99))
+          ._scope(),
+
+        n("~ 4 ~ 3 ~ 2 ~ 0")
+          .chord("<Am F C G>")
+          .voicing()
+          .s("triangle").decay(0.3).sustain(0).gain(0.08).room(0.4)
+          .phaser(sine.slow(9).range(1, 5))
+          .jux(x => x.gain(0.6).speed(1.01))
+          ._scope()
+      )
+    ],
+
+    // === БЛОК 3: БРЕЙКДАУН ===
+    [8,
+      stack(
+        chord("<Am F C G>").voicing().s("sawtooth").attack(1).release(1.5).lpf(800).gain(0.07)
+          .phaser(1)
+          .pan(sine.slow(10))
+          ._scope(),
+        n("4 3 2 0 2 3 4 5")
+          .chord("<Am F C G>").voicing()
+          .s("triangle").decay(0.4).sustain(0).gain(0.1)
+          .phaser(4)
+          .delay(0.25).delayfeedback(0.5)
+          .pan(sine.slow(4))
+          ._scope()
+      )
+    ],
+
+    // === БЛОК 4: КОНЦОВКА ===
+    [8,
+      stack(
+        stack(
+          s("bd sd bd [sd sd*2]").crush(6).gain(0.1).bank("RolandTR808"),
+          s("hh*16").gain(0.08).bank("RolandTR808").bpf(sine.range(500, 4000).slow(6)).bpq(4).pan(sine.slow(5))
+        )._scope(),
+
+        n("0").chord("<Am F C G>").voicing()
+          .s("square").decay(0.1).sustain(0).lpf(400).gain(0.12)
+          .pan(sine.slow(8))
+          ._scope(),
+        n("0").chord("<Am F C G>").mode("root:c1").voicing()
+          .s("triangle").lpf(sine.range(150, 500).slow(16)).lpq(3).room(0.5).gain(0.08)
+          .pan(sine.slow(12))
+          ._scope(),
+
+        n("<0 2 4 5 7 5 4 2 7 5 9 7 11 9 7 5>").chord("<Am F C G>").voicing()
+          .s("square").decay(0.15).sustain(0).gain(0.1)
+          .phaser(sine.slow(6).range(2, 6))
+          .jux(x => x.gain(0.5).speed(0.99))
+          ._scope(),
+
+        n("~ 4 ~ 3 ~ 2 ~ 0")
+          .chord("<Am F C G>")
+          .voicing()
+          .s("triangle").decay(0.3).sustain(0).gain(0.08).room(0.4)
+          .phaser(sine.slow(9).range(1, 5))
+          .jux(x => x.gain(0.6).speed(1.01))
+          ._scope()
+      )
+    ]
+  )
+).gain(0.15);`;
         msg = `Default code has been loaded`;
       }
       editor.setCode(code);
