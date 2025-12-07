@@ -5,13 +5,13 @@ layout: ../../layouts/MainLayout.astro
 
 import { MiniRepl } from '../../docs/MiniRepl';
 
-see https://strudel.cc/?zMEo5kowGrFc
+смотрите https://strudel.cc/?zMEo5kowGrFc
 
 # Microrhythms
 
-Inspired by this [Mini-Lecture on Microrhythm Notation](https://www.youtube.com/watch?v=or7B6vI3jOo), let's look at how we can express microrhythms with Strudel.
+Вдохновлённые этой [Мини-лекцией о нотации Microrhythm](https://www.youtube.com/watch?v=or7B6vI3jOo), давайте посмотрим, как мы можем выразить microrhythms с помощью Strudel.
 
-The timestamps of the first rhythm are `0 1/5 1/2 2/3 1`. We could naively express this with a stack:
+Временные метки первого ритма - `0 1/5 1/2 2/3 1`. Мы могли бы наивно выразить это с помощью stack:
 
 <MiniRepl
   client:idle
@@ -24,24 +24,24 @@ The timestamps of the first rhythm are `0 1/5 1/2 2/3 1`. We could naively expre
 ))`}
 />
 
-While this works, it has two problems:
+Хотя это работает, у этого есть две проблемы:
 
-- it is not very compact
-- the durations are wrong, e.g. the first note takes up the whole cycle
+- это не очень компактно
+- длительности неправильные, например, первая нота занимает весь cycle
 
-In the video, the duration of a timestamp is calculated by subtracting it from the next timestamp:
+В видео длительность временной метки вычисляется путём вычитания её из следующей временной метки:
 
 - 1/5 - 0 = 1/5 = 6/30
 - 1/2 - 1/5 = 3/10 = 9/30
 - 2/3 - 1/2 = 1/6 = 5/30
 - 1 - 2/3 = 1/3 = 10/30
 
-Using those, we can now express the rhythm much shorter:
+Используя их, мы теперь можем выразить ритм гораздо короче:
 
 <MiniRepl client:idle tune={`s("hh").struct("x@6 x@9 x@5 x@10")`} />
 
-The problems of the first notation are now fixed: it is much shorter and the durations are correct.
-Still, this notation involved calculating the durations by hand, which could be automated:
+Проблемы первой нотации теперь исправлены: она гораздо короче, и длительности правильные.
+Тем не менее, эта нотация требовала вычисления длительностей вручную, что можно автоматизировать:
 
 <MiniRepl
   client:idle
@@ -55,9 +55,9 @@ Still, this notation involved calculating the durations by hand, which could be 
 s('hh').micro(0, 1/5, 1/2, 2/3)`}
 />
 
-This notation is even shorter and it allows directly filling in the timestamps!
+Эта нотация ещё короче, и она позволяет напрямую вводить временные метки!
 
-This is the second example of the video:
+Это второй пример из видео:
 
 <MiniRepl
   client:idle
@@ -71,4 +71,4 @@ This is the second example of the video:
 s('hh').micro(0, 1/6, 2/5, 2/3, 3/4)`}
 />
 
-with bass: https://strudel.cc/?sTglgJJCPIeY
+с басом: https://strudel.cc/?sTglgJJCPIeY

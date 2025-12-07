@@ -1,5 +1,5 @@
 ---
-title: Understanding Cycles
+title: Понимание Cycles
 layout: ../../layouts/MainLayout.astro
 ---
 
@@ -7,43 +7,43 @@ import { MiniRepl } from '../../docs/MiniRepl';
 import { PitchSlider } from '../../components/PitchSlider';
 import Box from '@components/Box.astro';
 
-# Understanding Cycles
+# Понимание Cycles
 
-The concept of cycles is very central to be able to understand how Strudel works.
-Strudel's mother language, TidalCycles, even has it in its name.
+Концепция cycles является центральной для понимания того, как работает Strudel.
+Материнский язык Strudel, TidalCycles, даже имеет это в своем названии.
 
-## Cycles and BPM
+## Cycles и BPM
 
-In most music software, the unit BPM (beats per minute) is used to set the tempo.
-Strudel expresses tempo as CPS (cycles per second), with a default of 0.5 CPS:
+В большинстве музыкальных программ для установки темпа используется единица BPM (ударов в минуту).
+Strudel выражает темп как CPS (cycles в секунду), по умолчанию 0.5 CPS:
 
 <MiniRepl client:visible tune={`s("bd")`} />
 
-Here we can hear the 0.5CPS in action: The kick repeats once every two seconds.
-Let's make it 4 kicks:
+Здесь мы можем услышать 0.5CPS в действии: Бочка повторяется один раз каждые две секунды.
+Давайте сделаем 4 бочки:
 
 <MiniRepl client:visible tune={`s("bd bd bd bd")`} />
 
-Now we have 4 kicks per cycle, but the whole pattern still plays at 0.5CPS.
-In terms of BPM, most musicians would tell you this is playing at 120bpm.
-What about this one:
+Теперь у нас 4 бочки на cycle, но весь pattern все еще воспроизводится на 0.5CPS.
+С точки зрения BPM, большинство музыкантов скажут вам, что это воспроизводится на 120bpm.
+А как насчет этого:
 
 <MiniRepl client:visible tune={`s("bd hh bd hh")`} />
 
-Because the second sound is now a hihat, the tempo feels slower again.
-This brings us to an important realization:
+Поскольку второй звук теперь хай-хэт, темп снова ощущается медленнее.
+Это приводит нас к важному осознанию:
 
 <Box>
 
-Tempo is based on perception.
-The choice of sounds also has an impact on the tempo feel.
-This is why the same CPS can produce different perceived tempos.
+Темп основан на восприятии.
+Выбор звуков также влияет на ощущение темпа.
+Вот почему один и тот же CPS может создавать разные воспринимаемые темпы.
 
 </Box>
 
-## Setting CPM
+## Установка CPM
 
-If you're familiar with BPM, you can use the `setcpm` method to set the global tempo in cycles per minute:
+Если вы знакомы с BPM, вы можете использовать метод `setcpm` для установки глобального темпа в cycles в минуту:
 
 <MiniRepl
   client:visible
@@ -51,7 +51,7 @@ If you're familiar with BPM, you can use the `setcpm` method to set the global t
 s("bd hh")`}
 />
 
-If you want to add more beats per cycle, you might want to divide the cpm:
+Если вы хотите добавить больше ударов на cycle, вы можете разделить cpm:
 
 <MiniRepl
   client:visible
@@ -59,7 +59,7 @@ If you want to add more beats per cycle, you might want to divide the cpm:
 s("bd sd bd rim, hh*8")`}
 />
 
-Or using 2 beats per cycle:
+Или используя 2 удара на cycle:
 
 <MiniRepl
   client:visible
@@ -67,26 +67,26 @@ Or using 2 beats per cycle:
 s("bd sd, hh*4")`}
 />
 
-You can use the `setcps` method to set the global tempo in cycles per second. `setcpm(x)` is the same as `setcps(x / 60)`.
+Вы можете использовать метод `setcps` для установки глобального темпа в cycles в секунду. `setcpm(x)` это то же самое, что `setcps(x / 60)`.
 
 <Box>
 
-To set a specific bpm, use `setcpm(bpm/bpc)`
+Чтобы установить конкретный bpm, используйте `setcpm(bpm/bpc)`
 
-- bpm: the target beats per minute
-- bpc: the number of perceived beats per cycle
+- bpm: целевые удары в минуту
+- bpc: количество воспринимаемых ударов на cycle
 
 </Box>
 
-## Cycles and Bars
+## Cycles и такты
 
-Also in most music software, multiple beats form a bar (or measure).
-The so called time signature specifies how many beats are in each bar.
-In many types of music, it is common to use 4 beats per bar, also known as 4/4 time.
-Many music programs use it as a default.
+Также в большинстве музыкальных программ несколько ударов образуют такт (или меру).
+Так называемый размер такта определяет, сколько ударов в каждом такте.
+Во многих типах музыки обычно используется 4 удара на такт, также известный как размер 4/4.
+Многие музыкальные программы используют его по умолчанию.
 
-Strudel does not a have concept of bars or measures, there are only cycles.
-How you use them is up to you. Above, we've had this example:
+Strudel не имеет концепции тактов или мер, есть только cycles.
+Как вы их используете - решать вам. Выше у нас был этот пример:
 
 <MiniRepl
   client:visible
@@ -94,19 +94,19 @@ How you use them is up to you. Above, we've had this example:
 s("bd sd bd rim, hh*8")`}
 />
 
-This could be interpreted as 4/4 time with a tempo of 110bpm.
-We could write out multiple bars like this:
+Это можно интерпретировать как размер 4/4 с темпом 110bpm.
+Мы могли бы написать несколько тактов так:
 
 <MiniRepl
   client:visible
   tune={`setcpm(110/4)
 s(\`<
-[bd sd bd rim, hh*8] 
+[bd sd bd rim, hh*8]
 [bd sd bd rim*2, hh*8]
 >\`)`}
 />
 
-Instead of writing out each bar separately, we could express this much shorter:
+Вместо того чтобы выписывать каждый такт отдельно, мы могли бы выразить это гораздо короче:
 
 <MiniRepl
   client:visible
@@ -114,21 +114,21 @@ Instead of writing out each bar separately, we could express this much shorter:
 s("bd <sd rim*<1 2>>,hh*4")`}
 />
 
-Here we can see that thinking in cycles rather than bars simplifies things a lot!
-These types of simplifications work because of the repetitive nature of rhythm.
-In computational terms, you could say the former notation has a lot of redundancy.
+Здесь мы можем видеть, что мышление в cycles, а не в тактах, значительно упрощает дело!
+Эти типы упрощений работают из-за повторяющейся природы ритма.
+В вычислительных терминах можно сказать, что прежняя нотация имеет много избыточности.
 
-## Time Signatures
+## Размеры такта
 
-To get a time signature, just change the number of elements per bar. Here is a rhythm with 7 beats:
+Чтобы получить размер такта, просто измените количество элементов на такт. Вот ритм с 7 ударами:
 
 <MiniRepl client:visible tune={`s("bd ~ rim bd bd rim ~")`} />
 
-or with 5:
+или с 5:
 
 <MiniRepl client:visible tune={`s("bd hh hh bd hh hh bd rim bd hh")`} />
 
-We could also write multiple bars with different time signatures:
+Мы также могли бы написать несколько тактов с разными размерами:
 
 <MiniRepl
   client:visible
@@ -139,9 +139,9 @@ s(\`<
 >\`)`}
 />
 
-Here we switch between 3/4 and 4/4, keeping the same tempo.
+Здесь мы переключаемся между 3/4 и 4/4, сохраняя один и тот же темп.
 
-If we don't specify the length, we get what's called a metric modulation:
+Если мы не указываем длину, мы получаем то, что называется метрической модуляцией:
 
 <MiniRepl
   client:visible
@@ -152,4 +152,4 @@ s(\`<
 >\`)`}
 />
 
-Now the 3 elements get the same time as the 4 elements, which is why the tempo changes.
+Теперь 3 элемента получают то же время, что и 4 элемента, поэтому темп меняется.

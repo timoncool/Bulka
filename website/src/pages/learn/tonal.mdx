@@ -1,20 +1,20 @@
 ---
-title: Tonal Functions
+title: Тональные функции
 layout: ../../layouts/MainLayout.astro
 ---
 
 import { MiniRepl } from '../../docs/MiniRepl';
 import { JsDoc } from '../../docs/JsDoc';
 
-# Tonal Functions
+# Тональные функции
 
-These functions use [tonaljs](https://github.com/tonaljs/tonal) to provide helpers for musical operations.
+Эти функции используют [tonaljs](https://github.com/tonaljs/tonal) для предоставления помощников для музыкальных операций.
 
 ### voicing()
 
 <JsDoc client:idle name="voicing" h={0} />
 
-Here's an example of how you can play chords and a bassline:
+Вот пример того, как можно играть аккорды и басовую линию:
 
 <MiniRepl
   client:idle
@@ -33,19 +33,19 @@ Here's an example of how you can play chords and a bassline:
 
 ### transpose(semitones)
 
-Transposes all notes to the given number of semitones:
+Транспонирует все ноты на заданное количество полутонов:
 
 <MiniRepl client:only="react" tune={`"[c2 c3]*4".transpose("<0 -2 5 3>").note()`} />
 
-This method gets really exciting when we use it with a pattern as above.
+Этот метод становится действительно интересным, когда мы используем его с pattern, как показано выше.
 
-Instead of numbers, scientific interval notation can be used as well:
+Вместо чисел можно использовать научную нотацию интервалов:
 
 <MiniRepl client:only="react" tune={`"[c2 c3]*4".transpose("<1P -2M 4P 3m>").note()`} />
 
 ### scaleTranspose(steps)
 
-Transposes notes inside the scale by the number of steps:
+Транспонирует ноты внутри гаммы на количество шагов:
 
 <MiniRepl
   client:idle
@@ -57,11 +57,11 @@ Transposes notes inside the scale by the number of steps:
 
 ### rootNotes(octave = 2)
 
-Turns chord symbols into root notes of chords in given octave.
+Превращает символы аккордов в основные ноты аккордов в заданной октаве.
 
 <MiniRepl client:only="react" tune={`"<C^7 A7b13 Dm7 G7>*2".rootNotes(3).note()`} />
 
-Together with layer, struct and voicings, this can be used to create a basic backing track:
+Вместе с layer, struct и voicings это может быть использовано для создания базового аккомпанемента:
 
 <MiniRepl
   client:idle
