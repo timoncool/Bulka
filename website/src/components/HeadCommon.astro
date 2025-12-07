@@ -11,12 +11,20 @@ const baseNoTrailing = BASE_URL.endsWith('/') ? BASE_URL.slice(0, -1) : BASE_URL
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width" />
 <meta name="generator" content={Astro.generator} />
-<link rel="alternate" type="application/rss+xml" title={`RSS Feed for strudel.cc`} href="/rss.xml" />
+<link rel="alternate" type="application/rss+xml" title={`RSS Feed for Bulka`} href="/rss.xml" />
 <link rel="icon" type="image/svg+xml" href={`${baseNoTrailing}/favicon.ico`} />
+
+<!-- Fredoka Font for Bulka branding -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&display=swap" rel="stylesheet" />
+
+<!-- Iconify for noto:bread icon -->
+<script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
 
 <meta
   name="description"
-  content="Strudel is a music live coding environment for the browser, porting the TidalCycles pattern language to JavaScript."
+  content="Bulka — русскоязычный форк Strudel, платформы для лайв-кодинга музыки в браузере (based on Strudel by Alex McLean)."
 />
 <link rel="icon" href={`${baseNoTrailing}/favicon.ico`} />
 <link rel="apple-touch-icon" href={`${baseNoTrailing}/icons/apple-icon-180.png`} sizes="180x180" />

@@ -1,6 +1,6 @@
 {
-  "short_name": "Strudel REPL",
-  "name": "Strudel REPL - Tidal Patterns in JavaScript",
+  "short_name": "Bulka REPL",
+  "name": "Bulka REPL — Лайв-кодинг музыки (based on Strudel)",
   "icons": [
     {
       "src": "favicon.ico",
@@ -10,6 +10,6 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#1a1a2e",
+  "background_color": "#1a1a2e"
 }

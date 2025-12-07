@@ -1,49 +1,58 @@
-# strudel
+# 🍞 Bulka
 
-Live coding patterns on the web
-https://strudel.cc/
+**Bulka** — это русскоязычный форк проекта [Strudel](https://strudel.cc/), платформы для лайв-кодинга музыки в браузере.
 
-- Try it here: <https://strudel.cc>
-- Docs: <https://strudel.cc/learn>
-- Technical Blog Post: <https://loophole-letters.vercel.app/strudel>
-- 1 Year of Strudel Blog Post: <https://loophole-letters.vercel.app/strudel1year>
-- 2 Years of Strudel Blog Post: <https://strudel.cc/blog/#year-2>
+> Основан на Strudel от Alex McLean и сообщества TidalCycles. Все права на оригинальный код принадлежат авторам Strudel.
 
-## Running Locally
+## Что такое Bulka?
 
-After cloning the project, you can run the REPL locally:
+Bulka — это локализованная и дополненная версия Strudel, адаптированная для русскоязычных пользователей. Проект сохраняет всю мощь оригинального Strudel, добавляя:
 
-1. Install [Node.js](https://nodejs.org/) 18 or newer
-2. Install [pnpm](https://pnpm.io/installation)
-3. Install dependencies by running the following command:
+- 🇷🇺 Русскоязычный интерфейс и документацию
+- 🎨 Обновлённый дизайн с золотистой цветовой схемой
+- 🎵 Дополнительные возможности и улучшения
+
+## Оригинальный проект
+
+- Официальный сайт Strudel: <https://strudel.cc/>
+- Документация: <https://strudel.cc/learn>
+- Репозиторий: <https://codeberg.org/uzu/strudel>
+
+## Запуск локально
+
+1. Установите [Node.js](https://nodejs.org/) 18 или новее
+2. Установите [pnpm](https://pnpm.io/installation)
+3. Установите зависимости:
    ```bash
    pnpm i
    ```
-4. Run the development server:
+4. Запустите сервер разработки:
    ```bash
    pnpm dev
    ```
 
-## Using Strudel In Your Project
+## Использование в вашем проекте
 
-This project is organized into many [packages](./packages), which are also available on [npm](https://www.npmjs.com/search?q=%40strudel).
+Проект организован в виде множества [пакетов](./packages), которые также доступны на [npm](https://www.npmjs.com/search?q=%40strudel).
 
-Read more about how to use these in your own project [here](https://strudel.cc/technical-manual/project-start).
+Подробнее об использовании в своём проекте читайте [здесь](https://strudel.cc/technical-manual/project-start).
 
-You will need to abide by the terms of the [GNU Affero Public Licence v3](LICENSE). As such, Strudel code can only be shared within free/open source projects under the same license -- see the license for details.
+Вы должны соблюдать условия [GNU Affero Public License v3](LICENSE). Код Strudel/Bulka может распространяться только в рамках свободных/открытых проектов под той же лицензией.
 
-Licensing info for the default sound banks can be found over on the [dough-samples](https://github.com/felixroos/dough-samples/blob/main/README.md) repository.
+Информация о лицензировании звуковых банков по умолчанию находится в репозитории [dough-samples](https://github.com/felixroos/dough-samples/blob/main/README.md).
 
-## Contributing
+## Авторство и благодарности
 
-There are many ways to contribute to this project! See [contribution guide](./CONTRIBUTING.md). You can find the full list of contributors [here](https://codeberg.org/uzu/strudel/activity/contributors).
+- **Оригинальный проект Strudel**: [Alex McLean](https://slab.org) и сообщество
+- **TidalCycles**: <https://tidalcycles.org/>
+- **Полный список контрибьюторов**: [здесь](https://codeberg.org/uzu/strudel/activity/contributors)
 
-## Community
+## Сообщество
 
-There is a #strudel channel on the TidalCycles discord: <https://discord.com/invite/HGEdXmRkzT>
+- Discord канал #strudel: <https://discord.com/invite/HGEdXmRkzT>
+- Форум TidalCycles: <https://club.tidalcycles.org/>
+- Mastodon: <a rel="me" href="https://social.toplap.org/@strudel">social.toplap.org/@strudel</a>
 
-You can also ask questions and find related discussions on the tidal club forum: <https://club.tidalcycles.org/>
+## Лицензия
 
-The discord and forum is shared with the haskell (tidal) and python (vortex) siblings of this project.
-
-We also have a mastodon account: <a rel="me" href="https://social.toplap.org/@strudel">social.toplap.org/@strudel</a>
+GNU Affero General Public License v3.0 — см. файл [LICENSE](LICENSE)

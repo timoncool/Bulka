@@ -1,8 +1,8 @@
 {
-  "name": "@strudel/monorepo",
+  "name": "@bulka/monorepo",
   "version": "0.5.0",
   "private": true,
-  "description": "Port of tidalcycles to javascript",
+  "description": "Bulka - русскоязычный форк Strudel для лайв-кодинга музыки (based on Strudel by Alex McLean)",
   "scripts": {
     "setup": "pnpm i",
     "pretest": "npm run jsdoc-json",
@@ -36,6 +36,7 @@
   "keywords": [
     "tidalcycles",
     "strudel",
+    "bulka",
     "pattern",
     "livecoding",
     "algorave"

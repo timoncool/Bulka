@@ -37,8 +37,8 @@ export function Header({ context, embedded = false }) {
           <div
             className={cx(
               'mt-[1px]',
-              started && !isCSSAnimationDisabled && 'animate-spin',
-              'cursor-pointer text-blue-500',
+              started && !isCSSAnimationDisabled && 'animate-bounce',
+              'cursor-pointer',
               isZen && 'fixed top-2 right-4',
             )}
             onClick={() => {
@@ -47,11 +47,11 @@ export function Header({ context, embedded = false }) {
               }
             }}
           >
-            <span className="block text-foreground rotate-90">꩜</span>
+            <span className="block text-2xl">🍞</span>
           </div>
           {!isZen && (
             <div className="space-x-2">
-              <span className="">strudel</span>
+              <span style={{ fontFamily: "'Fredoka', sans-serif", color: '#D4A574' }}>bulka</span>
               <span className="text-sm font-medium">REPL</span>
               {!isEmbedded && isButtonRowHidden && (
                 <a href={`${baseNoTrailing}/learn`} className="text-sm opacity-25 font-medium">

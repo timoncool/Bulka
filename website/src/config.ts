@@ -1,13 +1,13 @@
 export const SITE = {
-  title: 'Strudel',
-  description: 'Strudel is a music live coding editor that brings TidalCycles to the browser.',
+  title: 'Bulka',
+  description: 'Bulka — русскоязычный форк Strudel, платформы для лайв-кодинга музыки в браузере (based on Strudel by Alex McLean).',
   defaultLanguage: 'en',
 };
 
 export const OPEN_GRAPH = {
   image: {
     src: 'https://strudel.cc/icon.png',
-    alt: 'Strudel Logo',
+    alt: 'Bulka Logo',
   },
 };
 
@@ -55,7 +55,7 @@ export const SIDEBAR: Sidebar = {
   },
   en: {
     Presentation: [
-      { text: 'What is Strudel?', link: 'workshop/getting-started' },
+      { text: 'Что такое Bulka?', link: 'workshop/getting-started' },
       { text: 'Showcase', link: 'intro/showcase' },
       { text: 'Blog', link: 'blog' },
       /* { text: 'Community Bakery', link: 'bakery' }, */
@@ -107,10 +107,10 @@ export const SIDEBAR: Sidebar = {
       { text: 'Cycles', link: 'understand/cycles' },
       { text: 'Voicings', link: 'understand/voicings' },
       { text: 'Pattern Alignment', link: 'technical-manual/alignment' },
-      { text: 'Strudel vs Tidal', link: 'learn/strudel-vs-tidal' },
+      { text: 'Bulka vs Tidal', link: 'learn/strudel-vs-tidal' },
     ],
     Development: [
-      { text: 'Strudel in your Project', link: 'technical-manual/project-start' },
+      { text: 'Bulka в вашем проекте', link: 'technical-manual/project-start' },
       { text: 'Packages', link: 'technical-manual/packages' },
       { text: 'REPL', link: 'technical-manual/repl' },
       { text: 'Sounds', link: 'technical-manual/sounds' },
