@@ -7,7 +7,7 @@ note("c3 eb3 g3 bb3").s("gm_epiano1").slow(2)
 )`;
 
 // Drum machines tune - fully local samples
-export const drumDemo = \`// Drum machines demo (RolandTR808)
+export const drumDemo = `// Drum machines demo (RolandTR808)
 // All samples are 100% local - zero external dependencies!
 samples('./tidal-drum-machines.json', './samples/tidal-drum-machines/machines/')
 samples('./samples/Dirt-Samples/strudel.json')
@@ -18,9 +18,9 @@ s("bd sd bd [sd sd*2]").bank('RolandTR808').gain(0.8)
 .stack(
   s("hh*8").bank('RolandTR808').gain(0.4),
   s("~ cp ~ cp").bank('RolandTR808').gain(0.6)
-)\`;
+)`;
 
-export const bumpStreet = \`// froos - "22 bump street", licensed with CC BY-NC-SA 4.0
+export const bumpStreet = `// froos - "22 bump street", licensed with CC BY-NC-SA 4.0
 // All samples 100% local
 samples('./tidal-drum-machines.json', './samples/tidal-drum-machines/machines/')
 samples('./samples/Dirt-Samples/strudel.json')
