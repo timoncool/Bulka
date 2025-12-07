@@ -37,16 +37,16 @@ async function copyToClipboard(text) {
 }
 
 function insertIntoEditor(text) {
-  const editor = window.strudelMirror;
-  if (editor?.view) {
-    const view = editor.view;
-    const { state } = view;
+  const strudelMirror = window.strudelMirror;
+  if (strudelMirror?.editor) {
+    const editor = strudelMirror.editor;
+    const { state } = editor;
     const { from, to } = state.selection.main;
-    view.dispatch({
+    editor.dispatch({
       changes: { from, to, insert: text },
       selection: { anchor: from + text.length },
     });
-    view.focus();
+    editor.focus();
     return true;
   }
   return false;
