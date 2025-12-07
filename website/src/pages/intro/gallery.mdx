@@ -13,18 +13,16 @@ import { MiniRepl } from '../../docs/MiniRepl';
 
 ## Blue Monday — New Order
 
-Кавер на культовый синтипоп трек от **eefano**.
+Кавер от **eefano**.
 
 <MiniRepl
   client:visible
   tune={`// "Blue Monday" - New Order
-// cover @by eefano
-samples('github:tidalcycles/dirt-samples')
+// @by eefano
 stack(
   s("bd!2 [bd*4]!2 bd!4").slow(8).bank("SequentialCircuitsDrumtracks"),
   s("~ hh").bank("SequentialCircuitsDrumtracks"),
-  n("<[[2 ~] [2 ~] 2 3] [[3 ~] [3 ~] 3 3]>@4 [-1 ~] -1 -1 [0 ~] 0 0 [0 ~] 0 0 [0 ~] 0 0")
-    .slow(8).scale("d2:minor").s("gm_lead_8_bass_lead")
+  n("<[[2 ~] [2 ~] 2 3] [[3 ~] [3 ~] 3 3]>@4 [-1 ~] -1 -1 [0 ~] 0 0 [0 ~] 0 0 [0 ~] 0 0").slow(8).scale("d2:minor").s("gm_lead_8_bass_lead")
 ).cpm(130)`}
 />
 
@@ -32,12 +30,12 @@ stack(
 
 ## Stranger Things Theme
 
-Атмосферная тема из сериала Netflix от **eefano**.
+Кавер от **eefano**.
 
 <MiniRepl
   client:visible
   tune={`// "Stranger Things" Theme
-// cover @by eefano
+// @by eefano
 setcps(0.7)
 
 $: n("0 2 4 6 7 6 4 2")
@@ -56,13 +54,12 @@ $: "<a1 e2>/8".clip(0.8).struct("x*8").s("supersaw").note()`}
 
 ## Pump Up The Jam — Technotronic
 
-Евродэнс классика от **eefano**. Сложный кавер с множеством слоёв.
+Кавер от **eefano**.
 
 <MiniRepl
   client:visible
   tune={`// "Pump Up The Jam" - Technotronic
-// cover @by eefano
-samples('github:tidalcycles/dirt-samples')
+// @by eefano
 const pickRestart = register('pickRestart', (arr, pat) => pat.pick(arr.map((x)=>x.restart(pat.collect().fmap(v=>v+1)))))
 
 stack(
@@ -85,309 +82,24 @@ stack(
 
 ---
 
-## The Rhythm of the Night — Corona
-
-Евродэнс хит 90-х от **eefano**.
-
-<MiniRepl
-  client:visible
-  tune={`// "The Rhythm Of The Night" - Corona
-// cover @by eefano
-samples('github:tidalcycles/dirt-samples')
-
-stack(
-"<0 1@4 0 1@4>".pick([
-  "~@6 [6 ~]!2"
-  ,"2:-1 0:-1 ~@4 6:1 4:-1".slow(2)
-]).fmap((v) => {
-  const arr = Array.isArray(v) ? v : [v, 0];
-  return {n: arr[0], penv: arr[1]};
-}).scale("c4:minor").s("gm_lead_1_square").room(0.4).delay(0.3).gain(0.7)
-
-,"Ab Cm Bb F@2".slow(5)
-  .chord().anchor("F4").voicing().s("gm_synth_strings_1").gain(0.4)
-
-,"2 ~@2 2 ~@2 2 ~@3 2 ~@3 2 ~"
-  .n().scale("c2:minor").note().s("gm_synth_bass_1").lpf(1500).gain(0.7)
-
-,stack(
-  s("bd*4").gain(0.8),
-  s("[~ oh]*4").gain(0.14),
-  s("hh*16").gain(0.09),
-  s("[~ cp]*2").gain(0.4)
-).bank("RolandTR909").room(0.2)
-
-).cpm(128/4)`}
-/>
-
----
-
-## Waltz No. 2 — Дмитрий Шостакович
-
-Классический вальс в live coding интерпретации от **eefano**.
-
-<MiniRepl
-  client:visible
-  tune={`// "Waltz #2" - Dmitri Shostakovich
-// cover @by eefano
-samples('github:tidalcycles/dirt-samples')
-
-$: "<4 [2@2 1] [0@4 0 1]@2 [2 0 2] [4@2 5] 4 3>"
-  .scale("c4:minor").note().s("gm_oboe:2").gain(0.5)
-
-$: n("<<0 -1> [4,5]!2>*3")
-  .chord("<Cm@10 Fm@4 G@4 Cm@4 Fm@2 Bb@2 Eb Ab>")
-  .anchor('f2').mode('root').voicing().piano().room(0.6)
-
-all(x=>x.cps(sine.segment(32).slow(16).mul(30).add(160).div(60*3)))`}
-/>
-
----
-
-## Endless Tarantella
-
-Бесконечная итальянская тарантелла с генеративными элементами от **eefano**.
-
-<MiniRepl
-  client:visible
-  tune={`// "Endless Tarantella"
-// @by eefano
-samples('github:tidalcycles/dirt-samples')
-setcps(140/60)
-
-let pizza = rand.range(0,16).segment(16).slow(16)
-
-$: pizza.pick(["4 ~ 4","7 ~ 7","4","4 ~ 4","5 ~ 5","5 6 5","4","4 ~ 5","4@2 3","3 ~ 4","3@2 2","2 ~ 3","4 5 4","3 2 1","0","7 ~ 7"])
-  .scale("a:minor").s('gm_clarinet').note()
-
-$: pizza.pick([0,0,0,0,1,1,0,0,2,2,0,0,2,2,0,0]).fast(2)
-  .pick(["[0 ~] [-3 ~]","[3 ~] [-2 ~]","[1 ~] [-3 ~]"]).slow(2)
-  .scale("a2:minor").s('gm_tuba').note().lpf(800)
-
-$: pizza.pick([0,0,0,0,1,1,0,0,2,2,0,0,2,2,0,0]).fast(2)
-  .pick(["[~@2 [0,2,4]]!2","[~@2 [1,3,5]]!2","[~@2 [4,-1,1]]!2"]).slow(2)
-  .scale("a3:minor").s('gm_harmonica').note()
-
-$: s("tambourine")`}
-/>
-
----
-
-## Pyramid Song — Radiohead
-
-Сложный кавер на Radiohead с нестандартными ритмами от **eefano**.
-
-<MiniRepl
-  client:visible
-  tune={`// "Pyramid Song" - Radiohead
-// cover @by eefano
-samples('github:tidalcycles/dirt-samples')
-setcps(104/60/4)
-
-let chr = {X:"f#2,c#3,a#3,c#4,f#4", Y:"g2,d3,b3,d4,f#4", Z:"a2,e3,a3,c#4,f#4"}
-
-$: "<[[X X]@3 Y@2 [Z Z]@3] [[Z Y]@3 Y@2 [X X]@3]>/2"
-  .pickOut(chr).note().piano().gain(0.7).room(.6)
-
-$: s("<[bd,rd] ~ [~ sd] [bd,rd] ~ [~ sd] [bd,rd] ~ ~ [~ sd]>*2")
-  .bank('Linn9000').lpf(1000).room(0.2).gain(0.4)`}
-/>
-
----
-
-## Enjoy The Silence — Depeche Mode
-
-Кавер на хит Depeche Mode от **eefano**.
-
-<MiniRepl
-  client:visible
-  tune={`// "Enjoy The Silence" - Depeche Mode
-// cover @by eefano
-samples('github:tidalcycles/dirt-samples')
-setCps(113/60/4)
-
-const scala = cat('c minor')
-stack(
-  "<[3,5,0] [5,0,2] [0,2,4] [2,4,-1]>".scale(scala).note().s("gm_recorder").gain(1).clip(1).release(0.5),
-  "<[2@3 3] [0@3 2] [4@3 6] [2@3 3] [0@3 1] [-1@3 -2] -3 [0 1]>".scale(scala).transpose(12).note().s("gm_ocarina").gain(0.5).clip(1),
-  "<-4 -2 0 -1>".struct("[[x ~]!2 x x@0.5 [x ~]!2 x@0.5 [x ~]!2]").scale(scala).note().s("triangle").gain(0.7),
-  s("bd!4,[~ sd]!2,[~ hh!2 hh*2]!2").bank("AlesisHR16").clip(1).gain(0.5)
-)`}
-/>
-
----
-
-## Минимал Техно
-
-Гипнотический минималистичный грув.
-
-<MiniRepl
-  client:visible
-  tune={`// Minimal Techno
-samples('github:tidalcycles/dirt-samples')
-stack(
-  s("bd*4").bank("RolandTR909").gain(1),
-  s("~ cp").bank("RolandTR909").room(0.3),
-  s("hh*8").bank("RolandTR909").gain(0.5).pan(sine.range(0.3, 0.7)),
-  note("g1*2 [~ g1] g1 [g1 a1]")
-    .s("sawtooth")
-    .lpf(sine.slow(8).range(200, 1200))
-    .lpq(12)
-    .gain(0.6)
-).cpm(130)`}
-/>
-
----
-
-## Acid House
-
-Классический acid с TB-303 стилем.
-
-<MiniRepl
-  client:visible
-  tune={`// Acid House 303
-samples('github:tidalcycles/dirt-samples')
-stack(
-  note("c2 c2 [c2 c3] c2 c2 [~ c2] eb2 [c2 g1]")
-    .s("sawtooth")
-    .lpf(sine.slow(4).range(200, 3000))
-    .lpq(18)
-    .lpenv(6)
-    .lpa(0.01)
-    .lpd(0.1)
-    .gain(0.6)
-    .distort(0.3),
-  s("bd*4, [~ cp]*2, [~ oh]*4, hh*8")
-    .bank("RolandTR909").gain(0.6)
-).cpm(126)`}
-/>
-
----
-
-## Ambient Drone
-
-Атмосферный эмбиент с длинными нотами.
-
-<MiniRepl
-  client:visible
-  tune={`// Ambient Drone
-stack(
-  note("[c3,e3,g3,b3]")
-    .s("sawtooth")
-    .lpf(600)
-    .attack(3)
-    .release(5)
-    .room(0.9)
-    .size(0.95)
-    .slow(8)
-    .gain(0.4),
-  note("c2").s("sine").gain(0.25).slow(16),
-  note("[g4,b4,d5]")
-    .s("triangle")
-    .attack(2).release(4)
-    .room(0.8).delay(0.5)
-    .gain(0.15).slow(12)
-)`}
-/>
-
----
-
-## Drum & Bass
-
-Быстрый DnB грув с amen break.
-
-<MiniRepl
-  client:visible
-  tune={`// Drum & Bass with Amen
-samples('github:yaxu/clean-breaks')
-stack(
-  s("amen").fit().chop(8)
-    .slice(8, "<0 1 2 3 4*2 5 6 [6 7]>")
-    .cut(1).room(0.15).gain(0.8),
-  note("<c2 [c2 eb2] c2 [bb1 c2]>")
-    .s("sawtooth")
-    .lpf(400).lpq(4)
-    .gain(0.6)
-).fast(2).cpm(174)`}
-/>
-
----
-
-## Lo-Fi Hip-Hop
-
-Расслабленный lo-fi бит.
-
-<MiniRepl
-  client:visible
-  tune={`// Lo-Fi Hip-Hop
-samples('github:tidalcycles/dirt-samples')
-stack(
-  s("bd [~ bd] ~ bd").slow(2).bank("RolandTR808"),
-  s("~ sd").slow(2).bank("RolandTR808").room(0.4),
-  s("hh*4").bank("RolandTR808").gain(0.3),
-  note("<[c4,e4,g4] [a3,c4,e4] [f3,a3,c4] [g3,b3,d4]>")
-    .s("piano").slow(2).room(0.5).lpf(2000).gain(0.6)
-).cpm(85)`}
-/>
-
----
-
-## Евклидовы ритмы
-
-Африканские и кубинские ритмы через евклидов алгоритм.
-
-<MiniRepl
-  client:visible
-  tune={`// Euclidean Rhythms
-samples('github:tidalcycles/dirt-samples')
-stack(
-  s("bd(3,8)").bank("RolandTR909"),
-  s("sd(5,8)").bank("RolandTR909").gain(0.6),
-  s("hh(7,8)").bank("RolandTR909").gain(0.4),
-  s("cp(2,8)").bank("RolandTR909").room(0.3),
-  note("c2(3,8), g2(5,8)").s("sawtooth").lpf(500).gain(0.5)
-).cpm(110)`}
-/>
-
----
-
-## House Groove
-
-Классический хаус.
-
-<MiniRepl
-  client:visible
-  tune={`// Classic House
-samples('github:tidalcycles/dirt-samples')
-stack(
-  s("bd*4").bank("RolandTR909"),
-  s("[~ hh]*4").bank("RolandTR909").gain(0.4),
-  s("~ cp").bank("RolandTR909").room(0.3),
-  note("<[c3,e3,g3] [a2,c3,e3] [f2,a2,c3] [g2,b2,d3]>")
-    .s("gm_organ_1").slow(2).room(0.4).gain(0.6),
-  note("c2*4").s("sawtooth").lpf(200).gain(0.5)
-).cpm(122)`}
-/>
-
----
-
 ## Ресурсы сообщества
 
-### Коллекции треков
-- [eefano/strudel-songs-collection](https://github.com/eefano/strudel-songs-collection) — 75+ каверов
-- [awesome-strudel](https://github.com/terryds/awesome-strudel) — курируемая коллекция
-
-### Прямые ссылки на треки
+### Прямые ссылки на треки (работают на strudel.cc)
 | Трек | Автор | Ссылка |
 |------|-------|--------|
-| Grimes – Music 4 Machines | KAIXI | [strudel.cc](https://strudel.cc/?sOc7cVTqJHUU) |
-| Charli XCX – 360 | KAIXI | [strudel.cc](https://strudel.cc/?2ErYTSUotoaQ) |
-| Radiohead – Pyramid Song | eefano | [strudel.cc](https://strudel.cc/?MeMCjUtlCAoK) |
-| Technotronic – Pump Up The Jam | eefano | [strudel.cc](https://strudel.cc/?UAVGnDf_1EV1) |
-| Corona – Rhythm of the Night | eefano | [strudel.cc](https://strudel.cc/?ReHB6EHNb81b) |
-| Billie Eilish – Birds of a Feather | saga_3k | [strudel.cc](https://strudel.cc/?yTnr825wyd9V) |
+| Grimes – Music 4 Machines | KAIXI | [открыть](https://strudel.cc/?sOc7cVTqJHUU) |
+| Charli XCX – 360 | KAIXI | [открыть](https://strudel.cc/?2ErYTSUotoaQ) |
+| Radiohead – Pyramid Song | eefano | [открыть](https://strudel.cc/?MeMCjUtlCAoK) |
+| Technotronic – Pump Up The Jam | eefano | [открыть](https://strudel.cc/?UAVGnDf_1EV1) |
+| Corona – Rhythm of the Night | eefano | [открыть](https://strudel.cc/?ReHB6EHNb81b) |
+| Billie Eilish – Birds of a Feather | saga_3k | [открыть](https://strudel.cc/?yTnr825wyd9V) |
+| Shostakovich – Waltz No.2 | eefano | [открыть](https://strudel.cc/?o2VwC4Jq66XI) |
+| Happy Birthday | eefano | [открыть](https://strudel.cc/?DLqP6rcF6lZc) |
+
+### Коллекции
+- [eefano/strudel-songs-collection](https://github.com/eefano/strudel-songs-collection) — 75+ каверов
+- [awesome-strudel](https://github.com/terryds/awesome-strudel) — курируемая коллекция
 
 ### Поделитесь своим треком!
 1. На [Tidal Club форуме](https://club.tidalcycles.org/t/strudel-pattern-thread/4044)
 2. В [Discord](https://discord.com/invite/HGEdXmRkzT)
-3. PR в репозиторий проекта
