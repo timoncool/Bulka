@@ -423,7 +423,7 @@ function s4() {
 }
 
 /**
- * Overrides the css of highlighted events. Make sure to use single quotes!
+ * Переопределяет css для выделенных событий. Обязательно используйте одинарные кавычки!
  * @name markcss
  * @example
  * note("c a f e")

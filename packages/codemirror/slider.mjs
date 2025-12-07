@@ -114,13 +114,13 @@ export const sliderPlugin = ViewPlugin.fromClass(
 );
 
 /**
- * Displays a slider widget to allow the user manipulate a value
+ * Отображает widget-слайдер, позволяющий пользователю манипулировать значением
  *
  * @name slider
- * @param {number} value Initial value
- * @param {number} min Minimum value - optional, defaults to 0
- * @param {number} max Maximum value - optional, defaults to 1
- * @param {number} step Step size - optional
+ * @param {number} value Начальное значение
+ * @param {number} min Минимальное значение - необязательно, по умолчанию 0
+ * @param {number} max Максимальное значение - необязательно, по умолчанию 1
+ * @param {number} step Размер шага - необязательно
  */
 export let slider = (value) => {
   console.warn('slider will only work when the transpiler is used... passing value as is');

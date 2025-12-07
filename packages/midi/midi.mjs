@@ -123,7 +123,7 @@ function githubPath(base, subpath = '') {
 }
 
 /**
- * configures the default midimap, which is used when no "midimap" port is set
+ * Настраивает midimap по умолчанию, который используется когда параметр "midimap" не задан
  * @example
  * defaultmidimap({ lpf: 74 })
  * $: note("c a f e").midi();
@@ -136,7 +136,7 @@ export function defaultmidimap(mapping) {
 let loadCache = {};
 
 /**
- * Adds midimaps to the registry. Inside each midimap, control names (e.g. lpf) are mapped to cc numbers.
+ * Добавляет midimaps в реестр. Внутри каждого midimap имена контролов (например lpf) сопоставляются с номерами cc.
  * @example
  * midimaps({ mymap: { lpf: 74 } })
  * $: note("c a f e")
@@ -290,9 +290,9 @@ function sendNote(note, velocity, duration, device, midichan, targetTime) {
 }
 
 /**
- * MIDI output: Opens a MIDI output port.
- * @param {string | number} midiport MIDI device name or index defaulting to 0
- * @param {object} options Additional MIDI configuration options
+ * MIDI output: Открывает порт вывода MIDI.
+ * @param {string | number} midiport Имя MIDI устройства или индекс, по умолчанию 0
+ * @param {object} options Дополнительные опции конфигурации MIDI
  * @example
  * note("c4").midichan(1).midi('IAC Driver Bus 1')
  * @example
@@ -481,8 +481,8 @@ let listeners = {};
 const refs = {};
 
 /**
- * MIDI input: Opens a MIDI input port to receive MIDI control change messages.
- * @param {string | number} input MIDI device name or index defaulting to 0
+ * MIDI input: Открывает порт ввода MIDI для приёма MIDI control change сообщений.
+ * @param {string | number} input Имя MIDI устройства или индекс, по умолчанию 0
  * @returns {Function}
  * @example
  * let cc = await midin('IAC Driver Bus 1')

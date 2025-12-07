@@ -110,7 +110,7 @@ export function getCommonSampleInfo(hapValue, bank) {
   return { transpose, url, index, midi, label };
 }
 
-/** Selects entries from `source` and renames them via `map` */
+/** Выбирает записи из `source` и переименовывает их через `map` */
 export const pickAndRename = (source, map) => {
   return Object.fromEntries(Object.entries(map).map(([newKey, oldKey]) => [newKey, source[oldKey]]));
 };

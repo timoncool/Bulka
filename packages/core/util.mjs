@@ -71,7 +71,7 @@ export const getEventOffsetMs = (targetTimeSeconds, currentTimeSeconds) => {
 };
 
 /**
- * @deprecated does not appear to be referenced or invoked anywhere in the codebase
+ * @deprecated не используется и не вызывается нигде в кодовой базе
  * @noAutocomplete
  */
 export const getFreq = (noteOrMidi) => {
@@ -83,7 +83,7 @@ export const getFreq = (noteOrMidi) => {
 
 const pcs = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
 /**
- * @deprecated only used in workshop (first-notes)
+ * @deprecated используется только в workshop (first-notes)
  * @noAutocomplete
  */
 export const midi2note = (n) => {

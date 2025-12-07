@@ -233,7 +233,7 @@ export async function fetchSampleMap(url) {
 }
 
 /**
- * Loads a collection of samples to use with `s`
+ * Загружает коллекцию sample для использования с `s`
  * @example
  * samples('github:tidalcycles/dirt-samples');
  * s("[bd ~]*2, [~ hh]*2, ~ sd")

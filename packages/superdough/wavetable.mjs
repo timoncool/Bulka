@@ -178,7 +178,7 @@ export function registerWaveTable(key, tables, params) {
 }
 
 /**
- * Loads a collection of wavetables to use with `s`
+ * Загружает коллекцию wavetable для использования с `s`
  *
  * @name tables
  */

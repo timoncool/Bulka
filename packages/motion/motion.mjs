@@ -3,7 +3,7 @@
 import { signal } from '../core/signal.mjs';
 
 /**
- *  The accelerometer's x-axis value ranges from 0 to 1.
+ *  Значение акселерометра по оси x в диапазоне от 0 до 1.
  * @name accelerationX
  * @return {Pattern}
  * @synonyms accX
@@ -13,7 +13,7 @@ import { signal } from '../core/signal.mjs';
  */
 
 /**
- *  The accelerometer's y-axis value ranges from 0 to 1.
+ *  Значение акселерометра по оси y в диапазоне от 0 до 1.
  * @name accelerationY
  * @return {Pattern}
  * @synonyms accY
@@ -23,7 +23,7 @@ import { signal } from '../core/signal.mjs';
  */
 
 /**
- *  The accelerometer's z-axis value ranges from 0 to 1.
+ *  Значение акселерометра по оси z в диапазоне от 0 до 1.
  * @name accelerationZ
  * @return {Pattern}
  * @synonyms accZ
@@ -33,7 +33,7 @@ import { signal } from '../core/signal.mjs';
  */
 
 /**
- *  The device's gravity x-axis value ranges from 0 to 1.
+ *  Значение гравитации устройства по оси x в диапазоне от 0 до 1.
  * @name gravityX
  * @return {Pattern}
  * @synonyms gravX
@@ -43,7 +43,7 @@ import { signal } from '../core/signal.mjs';
  */
 
 /**
- *  The device's gravity y-axis value ranges from 0 to 1.
+ *  Значение гравитации устройства по оси y в диапазоне от 0 до 1.
  * @name gravityY
  * @return {Pattern}
  * @synonyms gravY
@@ -53,7 +53,7 @@ import { signal } from '../core/signal.mjs';
  */
 
 /**
- *  The device's gravity z-axis value ranges from 0 to 1.
+ *  Значение гравитации устройства по оси z в диапазоне от 0 до 1.
  * @name gravityZ
  * @return {Pattern}
  * @synonyms gravZ
@@ -63,7 +63,7 @@ import { signal } from '../core/signal.mjs';
  */
 
 /**
- *  The device's rotation around the alpha-axis value ranges from 0 to 1.
+ *  Значение вращения устройства вокруг оси alpha в диапазоне от 0 до 1.
  * @name rotationAlpha
  * @return {Pattern}
  * @synonyms rotA, rotZ, rotationZ
@@ -73,7 +73,7 @@ import { signal } from '../core/signal.mjs';
  */
 
 /**
- *  The device's rotation around the beta-axis value ranges from 0 to 1.
+ *  Значение вращения устройства вокруг оси beta в диапазоне от 0 до 1.
  * @name rotationBeta
  * @return {Pattern}
  * @synonyms rotB, rotX, rotationX
@@ -83,7 +83,7 @@ import { signal } from '../core/signal.mjs';
  */
 
 /**
- *  The device's rotation around the gamma-axis value ranges from 0 to 1.
+ *  Значение вращения устройства вокруг оси gamma в диапазоне от 0 до 1.
  * @name rotationGamma
  * @return {Pattern}
  * @synonyms rotG, rotY, rotationY
@@ -93,7 +93,7 @@ import { signal } from '../core/signal.mjs';
  */
 
 /**
- *  The device's orientation alpha value ranges from 0 to 1.
+ *  Значение ориентации устройства alpha в диапазоне от 0 до 1.
  * @name orientationAlpha
  * @return {Pattern}
  * @synonyms oriA, oriZ, orientationZ
@@ -103,7 +103,7 @@ import { signal } from '../core/signal.mjs';
  */
 
 /**
- *  The device's orientation beta value ranges from 0 to 1.
+ *  Значение ориентации устройства beta в диапазоне от 0 до 1.
  * @name orientationBeta
  * @return {Pattern}
  * @synonyms oriB, oriX, orientationX
@@ -113,7 +113,7 @@ import { signal } from '../core/signal.mjs';
  */
 
 /**
- *  The device's orientation gamma value ranges from 0 to 1.
+ *  Значение ориентации устройства gamma в диапазоне от 0 до 1.
  * @name orientationGamma
  * @return {Pattern}
  * @synonyms oriG, oriY, orientationY
@@ -123,7 +123,7 @@ import { signal } from '../core/signal.mjs';
  */
 
 /**
- *  The device's absolute orientation alpha value ranges from 0 to 1.
+ *  Значение абсолютной ориентации устройства alpha в диапазоне от 0 до 1.
  * @name absoluteOrientationAlpha
  * @return {Pattern}
  * @synonyms absOriA, absOriZ, absoluteOrientationZ
@@ -133,7 +133,7 @@ import { signal } from '../core/signal.mjs';
  */
 
 /**
- *  The device's absolute orientation beta value ranges from 0 to 1.
+ *  Значение абсолютной ориентации устройства beta в диапазоне от 0 до 1.
  * @name absoluteOrientationBeta
  * @return {Pattern}
  * @synonyms absOriB, absOriX, absoluteOrientationX
@@ -143,7 +143,7 @@ import { signal } from '../core/signal.mjs';
  */
 
 /**
- *  The device's absolute orientation gamma value ranges from 0 to 1.
+ *  Значение абсолютной ориентации устройства gamma в диапазоне от 0 до 1.
  * @name absoluteOrientationGamma
  * @return {Pattern}
  * @synonyms absOriG, absOriY, absoluteOrientationY

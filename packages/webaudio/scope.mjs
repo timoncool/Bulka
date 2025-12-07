@@ -96,14 +96,14 @@ function clearScreen(smear = 0, smearRGB = `0,0,0`, ctx = getDrawContext()) {
 }
 
 /**
- * Renders an oscilloscope for the frequency domain of the audio signal.
+ * Рендерит осциллограф для частотной области аудиосигнала.
  * @name fscope
- * @param {string} color line color as hex or color name. defaults to white.
- * @param {number} scale scales the y-axis. Defaults to 0.25
- * @param {number} pos y-position relative to screen height. 0 = top, 1 = bottom of screen
- * @param {number} lean y-axis alignment where 0 = top and 1 = bottom
- * @param {number} min min value
- * @param {number} max max value
+ * @param {string} color Цвет линии в виде hex или названия цвета. По умолчанию белый.
+ * @param {number} scale Масштабирует ось y. По умолчанию 0.25
+ * @param {number} pos Позиция по оси y относительно высоты экрана. 0 = верх, 1 = низ экрана
+ * @param {number} lean Выравнивание по оси y, где 0 = верх и 1 = низ
+ * @param {number} min Минимальное значение
+ * @param {number} max Максимальное значение
  * @example
  * s("sawtooth").fscope()
  */
@@ -119,16 +119,16 @@ Pattern.prototype.fscope = function (config = {}) {
 };
 
 /**
- * Renders an oscilloscope for the time domain of the audio signal.
+ * Рендерит осциллограф для временной области аудиосигнала.
  * @name scope
  * @synonyms tscope
- * @param {object} config optional config with options:
- * @param {boolean} align if 1, the scope will be aligned to the first zero crossing. defaults to 1
- * @param {string} color line color as hex or color name. defaults to white.
- * @param {number} thickness line thickness. defaults to 3
- * @param {number} scale scales the y-axis. Defaults to 0.25
- * @param {number} pos y-position relative to screen height. 0 = top, 1 = bottom of screen
- * @param {number} trigger amplitude value that is used to align the scope. defaults to 0.
+ * @param {object} config Опциональная конфигурация с параметрами:
+ * @param {boolean} align Если 1, осциллограф будет выровнен по первому пересечению нуля. По умолчанию 1
+ * @param {string} color Цвет линии в виде hex или названия цвета. По умолчанию белый.
+ * @param {number} thickness Толщина линии. По умолчанию 3
+ * @param {number} scale Масштабирует ось y. По умолчанию 0.25
+ * @param {number} pos Позиция по оси y относительно высоты экрана. 0 = верх, 1 = низ экрана
+ * @param {number} trigger Значение амплитуды, используемое для выравнивания осциллографа. По умолчанию 0.
  * @example
  * s("sawtooth")._scope()
  */

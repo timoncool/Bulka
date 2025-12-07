@@ -99,13 +99,13 @@ export function repl({
   };
 
   /**
-   * Changes the global tempo to the given cycles per minute
+   * Изменяет глобальный темп на указанное количество cycles в минуту
    *
    * @name setcpm
    * @alias setCpm
-   * @param {number} cpm cycles per minute
+   * @param {number} cpm cycles в минуту
    * @example
-   * setcpm(140/4) // =140 bpm in 4/4
+   * setcpm(140/4) // =140 bpm в 4/4
    * $: s("bd*4,[- sd]*2").bank('tr707')
    */
   const setCpm = (cpm) => {

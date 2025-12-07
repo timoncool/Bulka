@@ -13,13 +13,13 @@ function applyGainCurve(val) {
 }
 
 /**
- * Equal Power Crossfade function.
- * Smoothly transitions between signals A and B, maintaining consistent perceived loudness.
+ * Функция кроссфейда с равной мощностью.
+ * Плавно переключает между сигналами A и B, поддерживая постоянную воспринимаемую громкость.
  *
- * @param {number} a - Signal A (can be a single value or an array value in buffer processing).
- * @param {number} b - Signal B (can be a single value or an array value in buffer processing).
- * @param {number} m - Crossfade parameter (0.0 = all A, 1.0 = all B, 0.5 = equal mix).
- * @returns {number} Crossfaded output value.
+ * @param {number} a - Сигнал A (может быть одиночным значением или значением массива при обработке буфера).
+ * @param {number} b - Сигнал B (может быть одиночным значением или значением массива при обработке буфера).
+ * @param {number} m - Параметр кроссфейда (0.0 = только A, 1.0 = только B, 0.5 = равная смесь).
+ * @returns {number} Выходное значение кроссфейда.
  */
 function crossfade(a, b, m) {
   const aGain = Math.sin((1 - m) * 0.5 * Math.PI);

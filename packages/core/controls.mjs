@@ -94,11 +94,11 @@ export function registerMultiControl(names, maxControls, ...aliases) {
 }
 
 /**
- * Select a sound / sample by name. When using mininotation, you can also optionally supply 'n' and 'gain' parameters
- * separated by ':'.
+ * Выбирает звук / sample по имени. При использовании mininotation можно также опционально указать параметры 'n' и 'gain',
+ * разделённые ':'.
  *
  * @name s
- * @param {string | Pattern} sound The sound / pattern of sounds to pick
+ * @param {string | Pattern} sound Звук / pattern звуков для выбора
  * @synonyms sound
  * @example
  * s("bd hh")
@@ -109,10 +109,10 @@ export function registerMultiControl(names, maxControls, ...aliases) {
 export const { s, sound } = registerControl(['s', 'n', 'gain'], 'sound');
 
 /**
- * Position in the wavetable of the wavetable oscillator
+ * Позиция в wavetable wavetable oscillator
  *
  * @name wt
- * @param {number | Pattern} position Position in the wavetable from 0 to 1
+ * @param {number | Pattern} position Позиция в wavetable от 0 до 1
  * @synonyms wavetablePosition
  * @example
  * s("squelch").bank("wt_digital").seg(8).note("F1").wt("0 0.25 0.5 0.75 1")
@@ -120,100 +120,100 @@ export const { s, sound } = registerControl(['s', 'n', 'gain'], 'sound');
 export const { wt, wavetablePosition } = registerControl('wt', 'wavetablePosition');
 
 /**
- * Amount of envelope applied wavetable oscillator's position envelope
+ * Количество envelope, применяемое к position envelope wavetable oscillator
  *
  * @name wtenv
- * @param {number | Pattern} amount between 0 and 1
+ * @param {number | Pattern} amount от 0 до 1
  */
 export const { wtenv } = registerControl('wtenv');
 /**
- * Attack time of the wavetable oscillator's position envelope
+ * Время attack position envelope wavetable oscillator
  *
  * @name wtattack
  * @synonyms wtatt
- * @param {number | Pattern} time attack time in seconds
+ * @param {number | Pattern} time время attack в секундах
  */
 export const { wtattack, wtatt } = registerControl('wtattack', 'wtatt');
 
 /**
- * Decay time of the wavetable oscillator's position envelope
+ * Время decay position envelope wavetable oscillator
  *
  * @name wtdecay
  * @synonyms wtdec
- * @param {number | Pattern} time decay time in seconds
+ * @param {number | Pattern} time время decay в секундах
  */
 export const { wtdecay, wtdec } = registerControl('wtdecay', 'wtdec');
 
 /**
- * Sustain time of the wavetable oscillator's position envelope
+ * Время sustain position envelope wavetable oscillator
  *
  * @name wtsustain
  * @synonyms wtsus
- * @param {number | Pattern} gain sustain level (0 to 1)
+ * @param {number | Pattern} gain уровень sustain (от 0 до 1)
  */
 export const { wtsustain, wtsus } = registerControl('wtsustain', 'wtsus');
 
 /**
- * Release time of the wavetable oscillator's position envelope
+ * Время release position envelope wavetable oscillator
  *
  * @name wtrelease
  * @synonyms wtrel
- * @param {number | Pattern} time release time in seconds
+ * @param {number | Pattern} time время release в секундах
  */
 export const { wtrelease, wtrel } = registerControl('wtrelease', 'wtrel');
 
 /**
- * Rate of the LFO for the wavetable oscillator's position
+ * Частота LFO для позиции wavetable oscillator
  *
  * @name wtrate
- * @param {number | Pattern} rate rate in hertz
+ * @param {number | Pattern} rate частота в герцах
  */
 export const { wtrate } = registerControl('wtrate');
 /**
- * cycle synced rate of the LFO for the wavetable oscillator's position
+ * Частота LFO для позиции wavetable oscillator, синхронизированная с циклами
  *
  * @name wtsync
- * @param {number | Pattern} rate rate in cycles
+ * @param {number | Pattern} rate частота в циклах
  */
 export const { wtsync } = registerControl('wtsync');
 
 /**
- * Depth of the LFO for the wavetable oscillator's position
+ * Глубина LFO для позиции wavetable oscillator
  *
  * @name wtdepth
- * @param {number | Pattern} depth depth of modulation
+ * @param {number | Pattern} depth глубина модуляции
  */
 export const { wtdepth } = registerControl('wtdepth');
 
 /**
- * Shape of the LFO for the wavetable oscillator's position
+ * Форма LFO для позиции wavetable oscillator
  *
  * @name wtshape
- * @param {number | Pattern} shape Shape of the lfo (0, 1, 2, ..)
+ * @param {number | Pattern} shape Форма lfo (0, 1, 2, ..)
  */
 export const { wtshape } = registerControl('wtshape');
 
 /**
- * DC offset of the LFO for the wavetable oscillator's position
+ * Смещение DC LFO для позиции wavetable oscillator
  *
  * @name wtdc
- * @param {number | Pattern} dcoffset dc offset. set to 0 for unipolar
+ * @param {number | Pattern} dcoffset смещение dc. установите 0 для unipolar
  */
 export const { wtdc } = registerControl('wtdc');
 
 /**
- * Skew of the LFO for the wavetable oscillator's position
+ * Искажение LFO для позиции wavetable oscillator
  *
  * @name wtskew
- * @param {number | Pattern} skew How much to bend the LFO shape
+ * @param {number | Pattern} skew Насколько сильно изгибать форму LFO
  */
 export const { wtskew } = registerControl('wtskew');
 
 /**
- * Amount of warp (alteration of the waveform) to apply to the wavetable oscillator
+ * Количество warp (изменения формы волны), применяемое к wavetable oscillator
  *
  * @name warp
- * @param {number | Pattern} amount Warp of the wavetable from 0 to 1
+ * @param {number | Pattern} amount Warp wavetable от 0 до 1
  * @synonyms wavetableWarp
  * @example
  * s("basique").bank("wt_digital").seg(8).note("F1").warp("0 0.25 0.5 0.75 1")
@@ -222,89 +222,89 @@ export const { wtskew } = registerControl('wtskew');
 export const { warp, wavetableWarp } = registerControl('warp', 'wavetableWarp');
 
 /**
- * Attack time of the wavetable oscillator's warp envelope
+ * Время attack warp envelope wavetable oscillator
  *
  * @name warpattack
  * @synonyms warpatt
- * @param {number | Pattern} time attack time in seconds
+ * @param {number | Pattern} time время attack в секундах
  */
 export const { warpattack, warpatt } = registerControl('warpattack', 'warpatt');
 
 /**
- * Decay time of the wavetable oscillator's warp envelope
+ * Время decay warp envelope wavetable oscillator
  *
  * @name warpdecay
  * @synonyms warpdec
- * @param {number | Pattern} time decay time in seconds
+ * @param {number | Pattern} time время decay в секундах
  */
 export const { warpdecay, warpdec } = registerControl('warpdecay', 'warpdec');
 
 /**
- * Sustain time of the wavetable oscillator's warp envelope
+ * Время sustain warp envelope wavetable oscillator
  *
  * @name warpsustain
  * @synonyms warpsus
- * @param {number | Pattern} gain sustain level (0 to 1)
+ * @param {number | Pattern} gain уровень sustain (от 0 до 1)
  */
 export const { warpsustain, warpsus } = registerControl('warpsustain', 'warpsus');
 
 /**
- * Release time of the wavetable oscillator's warp envelope
+ * Время release warp envelope wavetable oscillator
  *
  * @name warprelease
  * @synonyms warprel
- * @param {number | Pattern} time release time in seconds
+ * @param {number | Pattern} time время release в секундах
  */
 export const { warprelease, warprel } = registerControl('warprelease', 'warprel');
 
 /**
- * Rate of the LFO for the wavetable oscillator's warp
+ * Частота LFO для warp wavetable oscillator
  *
  * @name warprate
- * @param {number | Pattern} rate rate in hertz
+ * @param {number | Pattern} rate частота в герцах
  */
 export const { warprate } = registerControl('warprate');
 
 /**
- * Depth of the LFO for the wavetable oscillator's warp
+ * Глубина LFO для warp wavetable oscillator
  *
  * @name warpdepth
- * @param {number | Pattern} depth depth of modulation
+ * @param {number | Pattern} depth глубина модуляции
  */
 export const { warpdepth } = registerControl('warpdepth');
 
 /**
- * Shape of the LFO for the wavetable oscillator's warp
+ * Форма LFO для warp wavetable oscillator
  *
  * @name warpshape
- * @param {number | Pattern} shape Shape of the lfo (0, 1, 2, ..)
+ * @param {number | Pattern} shape Форма lfo (0, 1, 2, ..)
  */
 export const { warpshape } = registerControl('warpshape');
 
 /**
- * DC offset of the LFO for the wavetable oscillator's warp
+ * Смещение DC LFO для warp wavetable oscillator
  *
  * @name warpdc
- * @param {number | Pattern} dcoffset dc offset. set to 0 for unipolar
+ * @param {number | Pattern} dcoffset смещение dc. установите 0 для unipolar
  */
 export const { warpdc } = registerControl('warpdc');
 
 /**
- * Skew of the LFO for the wavetable oscillator's warp
+ * Искажение LFO для warp wavetable oscillator
  *
  * @name warpskew
- * @param {number | Pattern} skew How much to bend the LFO shape
+ * @param {number | Pattern} skew Насколько сильно изгибать форму LFO
  */
 export const { warpskew } = registerControl('warpskew');
 
 /**
- * Type of warp (alteration of the waveform) to apply to the wavetable oscillator.
+ * Тип warp (изменения формы волны), применяемый к wavetable oscillator.
  *
- * The current options are: none, asym, bendp, bendm, bendmp, sync, quant, fold, pwm, orbit,
+ * Доступные варианты: none, asym, bendp, bendm, bendmp, sync, quant, fold, pwm, orbit,
  * spin, chaos, primes, binary, brownian, reciprocal, wormhole, logistic, sigmoid, fractal, flip
  *
  * @name warpmode
- * @param {number | string | Pattern} mode Warp mode
+ * @param {number | string | Pattern} mode Режим warp
  * @synonyms wavetableWarpMode
  * @example
  * s("morgana").bank("wt_digital").seg(8).note("F1").warp("0 0.25 0.5 0.75 1")
@@ -314,10 +314,10 @@ export const { warpskew } = registerControl('warpskew');
 export const { warpmode, wavetableWarpMode } = registerControl('warpmode', 'wavetableWarpMode');
 
 /**
- * Amount of randomness of the initial phase of the wavetable oscillator.
+ * Количество случайности начальной фазы wavetable oscillator.
  *
  * @name wtphaserand
- * @param {number | Pattern} amount Randomness of the initial phase. Between 0 (not random) and 1 (fully random)
+ * @param {number | Pattern} amount Случайность начальной фазы. От 0 (не случайно) до 1 (полностью случайно)
  * @synonyms wavetablePhaseRand
  * @example
  * s("basique").bank("wt_digital").seg(16).wtphaserand("<0 1>")
@@ -326,23 +326,23 @@ export const { warpmode, wavetableWarpMode } = registerControl('warpmode', 'wave
 export const { wtphaserand, wavetablePhaseRand } = registerControl('wtphaserand', 'wavetablePhaseRand');
 
 /**
- * Amount of envelope applied wavetable oscillator's position envelope
+ * Количество envelope, применяемое к position envelope wavetable oscillator
  *
  * @name warpenv
- * @param {number | Pattern} amount between 0 and 1
+ * @param {number | Pattern} amount от 0 до 1
  */
 export const { warpenv } = registerControl('warpenv');
 
 /**
- * cycle synced rate of the LFO for the wavetable warp position
+ * Частота LFO для warp позиции wavetable, синхронизированная с циклами
  *
  * @name warpsync
- * @param {number | Pattern} rate rate in cycles
+ * @param {number | Pattern} rate частота в циклах
  */
 export const { warpsync } = registerControl('warpsync');
 
 /**
- * Define a custom webaudio node to use as a sound source.
+ * Определяет пользовательский webaudio node для использования в качестве источника звука.
  *
  * @name source
  * @synonyms src
@@ -352,27 +352,27 @@ export const { warpsync } = registerControl('warpsync');
  */
 export const { source, src } = registerControl('source', 'src');
 /**
- * Selects the given index from the sample map.
- * Numbers too high will wrap around.
- * `n` can also be used to play midi numbers, but it is recommended to use `note` instead.
+ * Выбирает указанный индекс из карты sample.
+ * Слишком большие числа будут циклически повторяться.
+ * `n` также можно использовать для воспроизведения midi-нот, но рекомендуется использовать `note`.
  *
  * @name n
- * @param {number | Pattern} value sample index starting from 0
+ * @param {number | Pattern} value индекс sample, начиная с 0
  * @example
  * s("bd sd [~ bd] sd,hh*6").n("<0 1>")
  */
 // also see https://codeberg.org/uzu/strudel/pulls/63
 export const { n } = registerControl('n');
 /**
- * Plays the given note name or midi number. A note name consists of
+ * Воспроизводит указанное имя ноты или midi-номер. Имя ноты состоит из:
  *
- * - a letter (a-g or A-G)
- * - optional accidentals (b or #)
- * - optional (possibly negative) octave number (0-9). Defaults to 3
+ * - буквы (a-g или A-G)
+ * - опциональных знаков альтерации (b или #)
+ * - опционального (возможно отрицательного) номера октавы (0-9). По умолчанию 3
  *
- * Examples of valid note names: `c`, `bb`, `Bb`, `f#`, `c3`, `A4`, `Eb2`, `c#5`
+ * Примеры допустимых имён нот: `c`, `bb`, `Bb`, `f#`, `c3`, `A4`, `Eb2`, `c#5`
  *
- * You can also use midi numbers instead of note names, where 69 is mapped to A4 440Hz in 12EDO.
+ * Также можно использовать midi-номера вместо имён нот, где 69 соответствует A4 440Hz в 12EDO.
  *
  * @name note
  * @example
@@ -387,10 +387,10 @@ export const { n } = registerControl('n');
 export const { note } = registerControl(['note', 'n']);
 
 /**
- * A pattern of numbers that speed up (or slow down) samples while they play. Currently only supported by osc / superdirt.
+ * Pattern чисел, которые ускоряют (или замедляют) sample во время воспроизведения. В настоящее время поддерживается только в osc / superdirt.
  *
  * @name accelerate
- * @param {number | Pattern} amount acceleration.
+ * @param {number | Pattern} amount ускорение.
  * @superdirtOnly
  * @example
  * s("sax").accelerate("<0 1 2 4 8 16>").slow(2).osc()
@@ -398,7 +398,7 @@ export const { note } = registerControl(['note', 'n']);
  */
 export const { accelerate } = registerControl('accelerate');
 /**
- * Sets the velocity from 0 to 1. Is multiplied together with gain.
+ * Устанавливает силу нажатия от 0 до 1. Умножается вместе с gain.
  *
  * @name velocity
  * @example
@@ -408,17 +408,17 @@ export const { accelerate } = registerControl('accelerate');
  */
 export const { velocity } = registerControl('velocity');
 /**
- * Controls the gain by an exponential amount.
+ * Управляет gain экспоненциальным образом.
  *
  * @name gain
- * @param {number | Pattern} amount gain.
+ * @param {number | Pattern} amount громкость.
  * @example
  * s("hh*8").gain(".4!2 1 .4!2 1 .4 1").fast(2)
  *
  */
 export const { gain } = registerControl('gain');
 /**
- * Gain applied after all effects have been processed.
+ * Gain, применяемый после обработки всех эффектов.
  *
  * @name postgain
  * @example
@@ -428,10 +428,10 @@ export const { gain } = registerControl('gain');
  */
 export const { postgain } = registerControl('postgain');
 /**
- * Like `gain`, but linear.
+ * Как `gain`, но линейный.
  *
  * @name amp
- * @param {number | Pattern} amount gain.
+ * @param {number | Pattern} amount громкость.
  * @superdirtOnly
  * @example
  * s("bd*8").amp(".1*2 .5 .1*2 .5 .1 .5").osc()
@@ -439,10 +439,10 @@ export const { postgain } = registerControl('postgain');
  */
 export const { amp } = registerControl('amp');
 /**
- * Amplitude envelope attack time: Specifies how long it takes for the sound to reach its peak value, relative to the onset.
+ * Время attack амплитудного envelope: Определяет, сколько времени требуется звуку для достижения пикового значения относительно начала.
  *
  * @name attack
- * @param {number | Pattern} attack time in seconds.
+ * @param {number | Pattern} attack время в секундах.
  * @synonyms att
  * @example
  * note("c3 e3 f3 g3").attack("<0 .1 .5>")
@@ -451,13 +451,13 @@ export const { amp } = registerControl('amp');
 export const { attack, att } = registerControl('attack', 'att');
 
 /**
- * Sets the Frequency Modulation Harmonicity Ratio.
- * Controls the timbre of the sound.
- * Whole numbers and simple ratios sound more natural,
- * while decimal numbers and complex ratios sound metallic.
+ * Устанавливает коэффициент гармоничности частотной модуляции.
+ * Управляет тембром звука.
+ * Целые числа и простые соотношения звучат более естественно,
+ * тогда как десятичные числа и сложные соотношения звучат металлически.
  *
- * A number may be added afterwards to control the harmonicity of
- * any of the 8 individual FMs (e.g. `fmh2`)
+ * Можно добавить номер для управления гармоничностью
+ * любого из 8 индивидуальных FM (например, `fmh2`)
  *
  * @name fmh
  * @param {number | Pattern} harmonicity
@@ -471,16 +471,16 @@ export const { attack, att } = registerControl('attack', 'att');
 export const { fmh, fmh1, fmh2, fmh3, fmh4, fmh5, fmh6, fmh7, fmh8 } = registerMultiControl(['fmh', 'fmi'], 8, 'fmh');
 
 /**
- * Sets the Frequency Modulation of the synth.
- * Controls the modulation index, which defines the brightness of the sound.
+ * Устанавливает частотную модуляцию синтезатора.
+ * Управляет индексом модуляции, который определяет яркость звука.
  *
- * A number may be added afterwards to control the modulation index of
- * any of the 8 individual FMs (e.g. `fm3`). Also, FMs may be routed into
- * each other with matrix commands like `fm13`, which would send `fm1` back into
+ * Можно добавить номер для управления индексом модуляции
+ * любого из 8 индивидуальных FM (например, `fm3`). Также FM могут маршрутизироваться друг в друга
+ * с помощью матричных команд типа `fm13`, которая отправит `fm1` обратно в
  * `fm3`
  *
  * @name fmi
- * @param {number | Pattern} brightness modulation index
+ * @param {number | Pattern} brightness индекс модуляции
  * @synonyms fm
  * @example
  * note("c e g b g e")
@@ -497,10 +497,10 @@ export const { fmi, fmi1, fmi2, fmi3, fmi4, fmi5, fmi6, fmi7, fmi8, fm, fm1, fm2
 
 // fm envelope
 /**
- * Ramp type of fm envelope. Exp might be a bit broken..
+ * Тип нарастания fm envelope. Exp может работать некорректно..
  *
- * A number may be added afterwards to control the envelope of
- * any of the 8 individual FMs (e.g. `fmenv4`)
+ * Можно добавить номер для управления envelope
+ * любого из 8 индивидуальных FM (например, `fmenv4`)
  *
  * @name fmenv
  * @param {number | Pattern} type lin | exp
@@ -519,14 +519,14 @@ export const { fmenv, fmenv1, fmenv2, fmenv3, fmenv4, fmenv5, fmenv6, fmenv7, fm
 );
 
 /**
- * Attack time for the FM envelope: time it takes to reach maximum modulation
+ * Время attack для FM envelope: время, необходимое для достижения максимальной модуляции
  *
- * A number may be added afterwards to control the attack of the envelope of
- * any of the 8 individual FMs (e.g. `fmatt5`)
+ * Можно добавить номер для управления attack envelope
+ * любого из 8 индивидуальных FM (например, `fmatt5`)
  *
  * @name fmattack
  * @synonyms fmatt
- * @param {number | Pattern} time attack time
+ * @param {number | Pattern} time время attack
  * @example
  * note("c e g b g e")
  * .fm(4)
@@ -556,13 +556,13 @@ export const {
 } = registerMultiControl('fmattack', 8, 'fmatt');
 
 /**
- * Waveform of the fm modulator
+ * Форма волны fm модулятора
  *
- * A number may be added afterwards to control the waveform
- * any of the 8 individual FMs (e.g. `fmwave6`)
+ * Можно добавить номер для управления формой волны
+ * любого из 8 индивидуальных FM (например, `fmwave6`)
  *
  * @name fmwave
- * @param {number | Pattern} wave waveform
+ * @param {number | Pattern} wave форма волны
  * @example
  * n("0 1 2 3".fast(4)).scale("d:minor").s("sine").fmwave("<sine square sawtooth crackle>").fm(4).fmh(2.01)
  * @example
@@ -575,14 +575,14 @@ export const { fmwave, fmwave1, fmwave2, fmwave3, fmwave4, fmwave5, fmwave6, fmw
 );
 
 /**
- * Decay time for the FM envelope: seconds until the sustain level is reached after the attack phase.
+ * Время decay для FM envelope: секунды до достижения уровня sustain после фазы attack.
  *
- * A number may be added afterwards to control the decay of the envelope of
- * any of the 8 individual FMs (e.g. `fmdec6`)
+ * Можно добавить номер для управления decay envelope
+ * любого из 8 индивидуальных FM (например, `fmdec6`)
  *
  * @name fmdecay
  * @synonyms fmdec
- * @param {number | Pattern} time decay time
+ * @param {number | Pattern} time время decay
  * @example
  * note("c e g b g e")
  * .fm(4)
@@ -613,14 +613,14 @@ export const {
 } = registerMultiControl('fmdecay', 8, 'fmdec');
 
 /**
- * Sustain level for the FM envelope: how much modulation is applied after the decay phase
+ * Уровень sustain для FM envelope: какая модуляция применяется после фазы decay
  *
- * A number may be added afterwards to control the sustain of the envelope of
- * any of the 8 individual FMs (e.g. `fmsus7`)
+ * Можно добавить номер для управления sustain envelope
+ * любого из 8 индивидуальных FM (например, `fmsus7`)
  *
  * @name fmsustain
  * @synonyms fmsus
- * @param {number | Pattern} level sustain level
+ * @param {number | Pattern} level уровень sustain
  * @example
  * note("c e g b g e")
  * .fm(4)
@@ -651,14 +651,14 @@ export const {
 } = registerMultiControl('fmsustain', 8, 'fmsus');
 
 /**
- * Release time for the FM envelope: how much modulation is applied after the note is released
+ * Время release для FM envelope: какая модуляция применяется после отпускания ноты
  *
- * A number may be added afterwards to control the release of the envelope of
- * any of the 8 individual FMs (e.g. `fmrel8`)
+ * Можно добавить номер для управления release envelope
+ * любого из 8 индивидуальных FM (например, `fmrel8`)
  *
  * @name fmrelease
  * @synonyms fmrel
- * @param {number | Pattern} time release time
+ * @param {number | Pattern} time время release
  *
  */
 export const {
@@ -694,10 +694,10 @@ for (let i = 0; i <= 8; i++) {
 }
 
 /**
- * Select the sound bank to use. To be used together with `s`. The bank name (+ "_") will be prepended to the value of `s`.
+ * Выбирает банк звуков для использования. Используется вместе с `s`. Имя банка (+ "_") будет добавлено к значению `s`.
  *
  * @name bank
- * @param {string | Pattern} bank the name of the bank
+ * @param {string | Pattern} bank имя банка
  * @example
  * s("bd sd [~ bd] sd").bank('RolandTR909') // = s("RolandTR909_bd RolandTR909_sd")
  *
@@ -705,10 +705,10 @@ for (let i = 0; i <= 8; i++) {
 export const { bank } = registerControl('bank');
 
 /**
- * mix control for the chorus effect
+ * Управление микшированием эффекта chorus
  *
  * @name chorus
- * @param {string | Pattern} chorus mix amount between 0 and 1
+ * @param {string | Pattern} chorus количество микширования от 0 до 1
  * @example
  * note("d d a# a").s("sawtooth").chorus(.5)
  *
@@ -721,11 +721,11 @@ export const { analyze } = registerControl('analyze');
 export const { fft } = registerControl('fft');
 
 /**
- * Amplitude envelope decay time: the time it takes after the attack time to reach the sustain level.
- * Note that the decay is only audible if the sustain value is lower than 1.
+ * Время decay амплитудного envelope: время, которое требуется после attack для достижения уровня sustain.
+ * Обратите внимание, что decay слышен только если значение sustain меньше 1.
  *
  * @name decay
- * @param {number | Pattern} time decay time in seconds
+ * @param {number | Pattern} time время decay в секундах
  * @synonyms dec
  * @example
  * note("c3 e3 f3 g3").decay("<.1 .2 .3 .4>").sustain(0)
@@ -733,10 +733,10 @@ export const { fft } = registerControl('fft');
  */
 export const { decay, dec } = registerControl('decay', 'dec');
 /**
- * Amplitude envelope sustain level: The level which is reached after attack / decay, being sustained until the offset.
+ * Уровень sustain амплитудного envelope: Уровень, который достигается после attack / decay и поддерживается до окончания.
  *
  * @name sustain
- * @param {number | Pattern} gain sustain level between 0 and 1
+ * @param {number | Pattern} gain уровень sustain от 0 до 1
  * @synonyms sus
  * @example
  * note("c3 e3 f3 g3").decay(.2).sustain("<0 .1 .4 .6 1>")
@@ -744,10 +744,10 @@ export const { decay, dec } = registerControl('decay', 'dec');
  */
 export const { sustain, sus } = registerControl('sustain', 'sus');
 /**
- * Amplitude envelope release time: The time it takes after the offset to go from sustain level to zero.
+ * Время release амплитудного envelope: Время, которое требуется после окончания для перехода от уровня sustain к нулю.
  *
  * @name release
- * @param {number | Pattern} time release time in seconds
+ * @param {number | Pattern} time время release в секундах
  * @synonyms rel
  * @example
  * note("c3 e3 g3 c4").release("<0 .1 .4 .6 1>/2")
@@ -757,11 +757,11 @@ export const { release, rel } = registerControl('release', 'rel');
 export const { hold } = registerControl('hold');
 // TODO: in tidal, it seems to be normalized
 /**
- * Sets the center frequency of the **b**and-**p**ass **f**ilter. When using mininotation, you
- * can also optionally supply the 'bpq' parameter separated by ':'.
+ * Устанавливает центральную частоту **b**and-**p**ass **f**ilter. При использовании mininotation можно
+ * также опционально указать параметр 'bpq', разделённый ':'.
  *
  * @name bpf
- * @param {number | Pattern} frequency center frequency
+ * @param {number | Pattern} frequency центральная частота
  * @synonyms bandf, bp
  * @example
  * s("bd sd [~ bd] sd,hh*6").bpf("<1000 2000 4000 8000>")
@@ -770,10 +770,10 @@ export const { hold } = registerControl('hold');
 export const { bandf, bpf, bp } = registerControl(['bandf', 'bandq', 'bpenv'], 'bpf', 'bp');
 // TODO: in tidal, it seems to be normalized
 /**
- * Sets the **b**and-**p**ass **q**-factor (resonance).
+ * Устанавливает **b**and-**p**ass **q**-фактор (резонанс).
  *
  * @name bpq
- * @param {number | Pattern} q q factor
+ * @param {number | Pattern} q q-фактор
  * @synonyms bandq
  * @example
  * s("bd sd [~ bd] sd").bpf(500).bpq("<0 1 2 3>")
@@ -783,11 +783,11 @@ export const { bandf, bpf, bp } = registerControl(['bandf', 'bandq', 'bpenv'], '
 // ['bpq'],
 export const { bandq, bpq } = registerControl('bandq', 'bpq');
 /**
- * A pattern of numbers from 0 to 1. Skips the beginning of each sample, e.g. `0.25` to cut off the first quarter from each sample.
+ * Pattern чисел от 0 до 1. Пропускает начало каждого sample, например, `0.25` обрезает первую четверть каждого sample.
  *
  * @memberof Pattern
  * @name begin
- * @param {number | Pattern} amount between 0 and 1, where 1 is the length of the sample
+ * @param {number | Pattern} amount от 0 до 1, где 1 это длина sample
  * @example
  * samples({ rave: 'rave/AREUREADY.wav' }, 'github:tidalcycles/dirt-samples')
  * s("rave").begin("<0 .25 .5 .75>").fast(2)
@@ -795,35 +795,35 @@ export const { bandq, bpq } = registerControl('bandq', 'bpq');
  */
 export const { begin } = registerControl('begin');
 /**
- * The same as .begin, but cuts off the end off each sample.
+ * То же, что .begin, но обрезает конец каждого sample.
  *
  * @memberof Pattern
  * @name end
- * @param {number | Pattern} length 1 = whole sample, .5 = half sample, .25 = quarter sample etc..
+ * @param {number | Pattern} length 1 = весь sample, .5 = половина sample, .25 = четверть sample и т.д.
  * @example
  * s("bd*2,oh*4").end("<.1 .2 .5 1>").fast(2)
  *
  */
 export const { end } = registerControl('end');
 /**
- * Loops the sample.
- * Note that the tempo of the loop is not synced with the cycle tempo.
- * To change the loop region, use loopBegin / loopEnd.
+ * Зацикливает sample.
+ * Обратите внимание, что темп loop не синхронизирован с темпом цикла.
+ * Для изменения области loop используйте loopBegin / loopEnd.
  *
  * @name loop
- * @param {number | Pattern} on If 1, the sample is looped
+ * @param {number | Pattern} on Если 1, sample зациклен
  * @example
  * s("casio").loop(1)
  *
  */
 export const { loop } = registerControl('loop');
 /**
- * Begin to loop at a specific point in the sample (inbetween `begin` and `end`).
- * Note that the loop point must be inbetween `begin` and `end`, and before `loopEnd`!
- * Note: Samples starting with wt_ will automatically loop! (wt = wavetable)
+ * Начинает loop в определённой точке sample (между `begin` и `end`).
+ * Обратите внимание, что точка loop должна находиться между `begin` и `end`, и перед `loopEnd`!
+ * Примечание: Sample, начинающиеся с wt_, автоматически зацикливаются! (wt = wavetable)
  *
  * @name loopBegin
- * @param {number | Pattern} time between 0 and 1, where 1 is the length of the sample
+ * @param {number | Pattern} time от 0 до 1, где 1 это длина sample
  * @synonyms loopb
  * @example
  * s("space").loop(1)
@@ -832,11 +832,11 @@ export const { loop } = registerControl('loop');
 export const { loopBegin, loopb } = registerControl('loopBegin', 'loopb');
 /**
  *
- * End the looping section at a specific point in the sample (inbetween `begin` and `end`).
- * Note that the loop point must be inbetween `begin` and `end`, and after `loopBegin`!
+ * Заканчивает секцию loop в определённой точке sample (между `begin` и `end`).
+ * Обратите внимание, что точка loop должна находиться между `begin` и `end`, и после `loopBegin`!
  *
  * @name loopEnd
- * @param {number | Pattern} time between 0 and 1, where 1 is the length of the sample
+ * @param {number | Pattern} time от 0 до 1, где 1 это длина sample
  * @synonyms loope
  * @example
  * s("space").loop(1)
@@ -844,10 +844,10 @@ export const { loopBegin, loopb } = registerControl('loopBegin', 'loopb');
  */
 export const { loopEnd, loope } = registerControl('loopEnd', 'loope');
 /**
- * Bit crusher effect.
+ * Эффект bit crusher.
  *
  * @name crush
- * @param {number | Pattern} depth between 1 (for drastic reduction in bit-depth) to 16 (for barely no reduction).
+ * @param {number | Pattern} depth от 1 (сильное снижение битности) до 16 (почти без снижения).
  * @example
  * s("<bd sd>,hh*3").fast(2).crush("<16 8 7 6 5 4 3 2>")
  *
@@ -855,10 +855,10 @@ export const { loopEnd, loope } = registerControl('loopEnd', 'loope');
 // ['clhatdecay'],
 export const { crush } = registerControl('crush');
 /**
- * Fake-resampling for lowering the sample rate. Caution: This effect seems to only work in chromium based browsers
+ * Имитация ресэмплинга для снижения частоты дискретизации. Внимание: Этот эффект, похоже, работает только в браузерах на основе chromium
  *
  * @name coarse
- * @param {number | Pattern} factor 1 for original 2 for half, 3 for a third and so on.
+ * @param {number | Pattern} factor 1 для оригинала, 2 для половины, 3 для трети и так далее.
  * @example
  * s("bd sd [~ bd] sd,hh*8").coarse("<1 4 8 16 32>")
  *
@@ -866,11 +866,11 @@ export const { crush } = registerControl('crush');
 export const { coarse } = registerControl('coarse');
 
 /**
- * Modulate the amplitude of a sound with a continuous waveform
+ * Модулирует амплитуду звука непрерывной формой волны
  *
  * @name tremolo
  * @synonyms trem
- * @param {number | Pattern} speed modulation speed in HZ
+ * @param {number | Pattern} speed скорость модуляции в Гц
  * @example
  * note("d d d# d".fast(4)).s("supersaw").tremolo("<3 2 100> ").tremoloskew("<.5>")
  *
@@ -878,11 +878,11 @@ export const { coarse } = registerControl('coarse');
 export const { tremolo } = registerControl(['tremolo', 'tremolodepth', 'tremoloskew', 'tremolophase'], 'trem');
 
 /**
- * Modulate the amplitude of a sound with a continuous waveform
+ * Модулирует амплитуду звука непрерывной формой волны
  *
  * @name tremolosync
  * @synonyms tremsync
- * @param {number | Pattern} cycles modulation speed in cycles
+ * @param {number | Pattern} cycles скорость модуляции в циклах
  * @example
  * note("d d d# d".fast(4)).s("supersaw").tremolosync("4").tremoloskew("<1 .5 0>")
  *
@@ -893,7 +893,7 @@ export const { tremolosync } = registerControl(
 );
 
 /**
- * Depth of amplitude modulation
+ * Глубина амплитудной модуляции
  *
  * @name tremolodepth
  * @synonyms tremdepth
@@ -904,11 +904,11 @@ export const { tremolosync } = registerControl(
  */
 export const { tremolodepth } = registerControl('tremolodepth', 'tremdepth');
 /**
- * Alter the shape of the modulation waveform
+ * Изменяет форму волны модуляции
  *
  * @name tremoloskew
  * @synonyms tremskew
- * @param {number | Pattern} amount between 0 & 1, the shape of the waveform
+ * @param {number | Pattern} amount от 0 до 1, форма волны
  * @example
  * note("{f a c e}%16").s("sawtooth").tremsync(4).tremoloskew("<.5 0 1>")
  *
@@ -916,11 +916,11 @@ export const { tremolodepth } = registerControl('tremolodepth', 'tremdepth');
 export const { tremoloskew } = registerControl('tremoloskew', 'tremskew');
 
 /**
- * Alter the phase of the modulation waveform
+ * Изменяет фазу волны модуляции
  *
  * @name tremolophase
  * @synonyms tremphase
- * @param {number | Pattern} offset the offset in cycles of the modulation
+ * @param {number | Pattern} offset смещение в циклах модуляции
  * @example
  * note("{f a c e}%16").s("sawtooth").tremsync(4).tremolophase("<0 .25 .66>")
  *
@@ -928,7 +928,7 @@ export const { tremoloskew } = registerControl('tremoloskew', 'tremskew');
 export const { tremolophase } = registerControl('tremolophase', 'tremphase');
 
 /**
- * Shape of amplitude modulation
+ * Форма амплитудной модуляции
  *
  * @name tremoloshape
  * @synonyms tremshape
@@ -939,7 +939,7 @@ export const { tremolophase } = registerControl('tremolophase', 'tremphase');
  */
 export const { tremoloshape } = registerControl('tremoloshape', 'tremshape');
 /**
- * Filter overdrive for supported filter types
+ * Перегрузка filter для поддерживаемых типов filter
  *
  * @name drive
  * @param {number | Pattern} amount
@@ -950,13 +950,13 @@ export const { tremoloshape } = registerControl('tremoloshape', 'tremshape');
 export const { drive } = registerControl('drive');
 
 /**
- * Modulate the amplitude of an orbit to create a "sidechain" like effect.
+ * Модулирует амплитуду orbit для создания эффекта типа "sidechain".
  *
- * Can be applied to multiple orbits with the ':' mininotation, e.g. `duckorbit("2:3")`
+ * Может применяться к нескольким orbit с помощью ':' mininotation, например, `duckorbit("2:3")`
  *
  * @name duckorbit
  * @synonyms duck
- * @param {number | Pattern} orbit target orbit
+ * @param {number | Pattern} orbit целевой orbit
  * @example
  * $: n(run(16)).scale("c:minor:pentatonic").s("sawtooth").delay(.7).orbit(2)
  * $: s("bd:4!4").beat("0,4,8,11,14",16).duckorbit(2).duckattack(0.2).duckdepth(1)
@@ -969,13 +969,13 @@ export const { drive } = registerControl('drive');
 export const { duck } = registerControl('duckorbit', 'duck');
 
 /**
- * The amount of ducking applied to target orbit
+ * Количество ducking, применяемое к целевому orbit
  *
- * Can vary across orbits with the ':' mininotation, e.g. `duckdepth("0.3:0.1")`.
- * Note: this requires first applying the effect to multiple orbits with e.g. `duckorbit("2:3")`.
+ * Может варьироваться между orbit с помощью ':' mininotation, например, `duckdepth("0.3:0.1")`.
+ * Примечание: это требует сначала применить эффект к нескольким orbit, например, `duckorbit("2:3")`.
  *
  * @name duckdepth
- * @param {number | Pattern} depth depth of modulation from 0 to 1
+ * @param {number | Pattern} depth глубина модуляции от 0 до 1
  * @example
  * stack( n(run(8)).scale("c:minor").s("sawtooth").delay(.7).orbit(2), s("bd:4!4").beat("0,4,8,11,14",16).duckorbit(2).duckattack(0.2).duckdepth("<1 .9 .6 0>"))
  * @example
@@ -987,27 +987,27 @@ export const { duck } = registerControl('duckorbit', 'duck');
 export const { duckdepth } = registerControl('duckdepth');
 
 /**
- * The time required for the ducked signal(s) to reach their lowest volume.
- * Can be used to prevent clicking or for creative rhythmic effects.
+ * Время, необходимое для того, чтобы обработанный сигнал(ы) достиг самой низкой громкости.
+ * Может использоваться для предотвращения щелчков или для творческих ритмических эффектов.
  *
- * Can vary across orbits with the ':' mininotation, e.g. `duckonset("0:0.003")`.
- * Note: this requires first applying the effect to multiple orbits with e.g. `duckorbit("2:3")`.
+ * Может варьироваться между orbit с помощью ':' mininotation, например, `duckonset("0:0.003")`.
+ * Примечание: это требует сначала применить эффект к нескольким orbit, например, `duckorbit("2:3")`.
  *
  * @name duckonset
  * @synonyms duckons
  *
- * @param {number | Pattern} time The onset time in seconds
+ * @param {number | Pattern} time Время начала в секундах
  * @example
- * // Clicks
+ * // Щелчки
  * sound: freq("63.2388").s("sine").orbit(2).gain(4)
  * duckerWithClick: s("bd*4").duckorbit(2).duckattack(0.3).duckonset(0).postgain(0)
  * @example
- * // No clicks
+ * // Без щелчков
  * sound: freq("63.2388").s("sine").orbit(2).gain(4)
  * duckerWithoutClick: s("bd*4").duckorbit(2).duckattack(0.3).duckonset(0.01).postgain(0)
  * @example
- * // Rhythmic
- * noise: s("pink").distort("2:1").orbit(4) // used rhythmically with 0.3 onset below
+ * // Ритмичный
+ * noise: s("pink").distort("2:1").orbit(4) // используется ритмично с 0.3 onset ниже
  * hhat: s("hh*16").orbit(7)
  * ducker: s("bd*4").bank("tr909").duckorbit("4:7").duckonset("0.3:0.003").duckattack(0.25)
  *
@@ -1015,15 +1015,15 @@ export const { duckdepth } = registerControl('duckdepth');
 export const { duckonset } = registerControl('duckonset', 'duckons');
 
 /**
- * The time required for the ducked signal(s) to return to their normal volume.
+ * Время, необходимое для того, чтобы обработанный сигнал(ы) вернулся к нормальной громкости.
  *
- * Can vary across orbits with the ':' mininotation, e.g. `duckonset("0:0.003")`.
- * Note: this requires first applying the effect to multiple orbits with e.g. `duckorbit("2:3")`.
+ * Может варьироваться между orbit с помощью ':' mininotation, например, `duckonset("0:0.003")`.
+ * Примечание: это требует сначала применить эффект к нескольким orbit, например, `duckorbit("2:3")`.
  *
  * @name duckattack
  * @synonyms duckatt
  *
- * @param {number | Pattern} time The attack time in seconds
+ * @param {number | Pattern} time Время attack в секундах
  * @example
  * sound: n(run(8)).scale("c:minor").s("sawtooth").delay(.7).orbit(2)
  * ducker: s("bd:4!4").beat("0,4,8,11,14",16).duckorbit(2).duckattack("<0.2 0 0.4>").duckdepth(1)
@@ -1036,12 +1036,12 @@ export const { duckonset } = registerControl('duckonset', 'duckons');
 export const { duckattack } = registerControl('duckattack', 'duckatt');
 
 /**
- * Create byte beats with custom expressions
+ * Создаёт byte beat с пользовательскими выражениями
  *
  * @name byteBeatExpression
  * @synonyms bbexpr
  *
- * @param {number | Pattern} byteBeatExpression bitwise expression for creating bytebeat
+ * @param {number | Pattern} byteBeatExpression побитовое выражение для создания bytebeat
  * @example
  * s("bytebeat").bbexpr('t*(t>>15^t>>66)')
  *
@@ -1049,12 +1049,12 @@ export const { duckattack } = registerControl('duckattack', 'duckatt');
 export const { byteBeatExpression, bbexpr } = registerControl('byteBeatExpression', 'bbexpr');
 
 /**
- * Create byte beats with custom expressions
+ * Создаёт byte beat с пользовательскими выражениями
  *
  * @name byteBeatStartTime
  * @synonyms bbst
  *
- * @param {number | Pattern} byteBeatStartTime in samples (t)
+ * @param {number | Pattern} byteBeatStartTime в sample (t)
  * @example
  * note("c3!8".add("{0 0 12 0 7 5 3}%8")).s("bytebeat:5").bbst("<3 1>".mul(10000))._scope()
  *
@@ -1062,12 +1062,12 @@ export const { byteBeatExpression, bbexpr } = registerControl('byteBeatExpressio
 export const { byteBeatStartTime, bbst } = registerControl('byteBeatStartTime', 'bbst');
 
 /**
- * Allows you to set the output channels on the interface
+ * Позволяет установить выходные каналы на интерфейсе
  *
  * @name channels
  * @synonyms ch
  *
- * @param {number | Pattern} channels pattern the output channels
+ * @param {number | Pattern} channels pattern выходных каналов
  * @example
  * note("e a d b g").channels("3:4")
  *
@@ -1075,7 +1075,7 @@ export const { byteBeatStartTime, bbst } = registerControl('byteBeatStartTime', 
 export const { channels, ch } = registerControl('channels', 'ch');
 
 /**
- * Controls the pulsewidth of the pulse oscillator
+ * Управляет шириной импульса pulse oscillator
  *
  * @name pw
  * @param {number | Pattern} pulsewidth
@@ -1087,7 +1087,7 @@ export const { channels, ch } = registerControl('channels', 'ch');
 export const { pw } = registerControl(['pw', 'pwrate', 'pwsweep']);
 
 /**
- * Controls the lfo rate for the pulsewidth of the pulse oscillator
+ * Управляет частотой lfo для ширины импульса pulse oscillator
  *
  * @name pwrate
  * @param {number | Pattern} rate
@@ -1099,7 +1099,7 @@ export const { pw } = registerControl(['pw', 'pwrate', 'pwsweep']);
 export const { pwrate } = registerControl('pwrate');
 
 /**
- * Controls the lfo sweep for the pulsewidth of the pulse oscillator
+ * Управляет sweep lfo для ширины импульса pulse oscillator
  *
  * @name pwsweep
  * @param {number | Pattern} sweep
@@ -1110,11 +1110,11 @@ export const { pwrate } = registerControl('pwrate');
 export const { pwsweep } = registerControl('pwsweep');
 
 /**
- * Phaser audio effect that approximates popular guitar pedals.
+ * Аудио эффект phaser, приближенный к популярным гитарным педалям.
  *
  * @name phaser
  * @synonyms ph
- * @param {number | Pattern} speed speed of modulation
+ * @param {number | Pattern} speed скорость модуляции
  * @example
  * n(run(8)).scale("D:pentatonic").s("sawtooth").release(0.5)
  * .phaser("<1 2 4 8>")
@@ -1127,11 +1127,11 @@ export const { phaserrate, ph, phaser } = registerControl(
 );
 
 /**
- * The frequency sweep range of the lfo for the phaser effect. Defaults to 2000
+ * Диапазон частотного sweep lfo для эффекта phaser. По умолчанию 2000
  *
  * @name phasersweep
  * @synonyms phs
- * @param {number | Pattern} phasersweep most useful values are between 0 and 4000
+ * @param {number | Pattern} phasersweep наиболее полезные значения между 0 и 4000
  * @example
  * n(run(8)).scale("D:pentatonic").s("sawtooth").release(0.5)
  * .phaser(2).phasersweep("<800 2000 4000>")
@@ -1140,11 +1140,11 @@ export const { phaserrate, ph, phaser } = registerControl(
 export const { phasersweep, phs } = registerControl('phasersweep', 'phs');
 
 /**
- * The center frequency of the phaser in HZ. Defaults to 1000
+ * Центральная частота phaser в Гц. По умолчанию 1000
  *
  * @name phasercenter
  * @synonyms phc
- * @param {number | Pattern} centerfrequency in HZ
+ * @param {number | Pattern} centerfrequency в Гц
  * @example
  * n(run(8)).scale("D:pentatonic").s("sawtooth").release(0.5)
  * .phaser(2).phasercenter("<800 2000 4000>")
@@ -1154,11 +1154,11 @@ export const { phasersweep, phs } = registerControl('phasersweep', 'phs');
 export const { phasercenter, phc } = registerControl('phasercenter', 'phc');
 
 /**
- * The amount the signal is affected by the phaser effect. Defaults to 0.75
+ * Количество влияния эффекта phaser на сигнал. По умолчанию 0.75
  *
  * @name phaserdepth
  * @synonyms phd, phasdp
- * @param {number | Pattern} depth number between 0 and 1
+ * @param {number | Pattern} depth число от 0 до 1
  * @example
  * n(run(8)).scale("D:pentatonic").s("sawtooth").release(0.5)
  * .phaser(2).phaserdepth("<0 .5 .75 1>")
@@ -1168,30 +1168,30 @@ export const { phasercenter, phc } = registerControl('phasercenter', 'phc');
 export const { phaserdepth, phd, phasdp } = registerControl('phaserdepth', 'phd', 'phasdp');
 
 /**
- * Choose the channel the pattern is sent to in superdirt
+ * Выбирает канал, на который отправляется pattern в superdirt
  *
  * @name channel
- * @param {number | Pattern} channel channel number
+ * @param {number | Pattern} channel номер канала
  *
  */
 export const { channel } = registerControl('channel');
 /**
- * In the style of classic drum-machines, `cut` will stop a playing sample as soon as another samples with in same cutgroup is to be played. An example would be an open hi-hat followed by a closed one, essentially muting the open.
+ * В стиле классических драм-машин, `cut` остановит воспроизводящийся sample, как только будет воспроизведён другой sample в той же группе cut. Примером может быть открытый хэт, за которым следует закрытый, фактически заглушая открытый.
  *
  * @name cut
- * @param {number | Pattern} group cut group number
+ * @param {number | Pattern} group номер группы cut
  * @example
  * s("[oh hh]*4").cut(1)
  *
  */
 export const { cut } = registerControl('cut');
 /**
- * Applies the cutoff frequency of the **l**ow-**p**ass **f**ilter.
+ * Устанавливает частоту среза **l**ow-**p**ass **f**ilter.
  *
- * When using mininotation, you can also optionally add the 'lpq' parameter, separated by ':'.
+ * При использовании mininotation можно также опционально добавить параметр 'lpq', разделённый ':'.
  *
  * @name lpf
- * @param {number | Pattern} frequency audible between 0 and 20000
+ * @param {number | Pattern} frequency слышимая частота от 0 до 20000
  * @synonyms cutoff, ctf, lp
  * @example
  * s("bd sd [~ bd] sd,hh*6").lpf("<4000 2000 1000 500 200 100>")
@@ -1202,9 +1202,9 @@ export const { cut } = registerControl('cut');
 export const { cutoff, ctf, lpf, lp } = registerControl(['cutoff', 'resonance', 'lpenv'], 'ctf', 'lpf', 'lp');
 
 /**
- * Sets the lowpass filter envelope modulation depth.
+ * Устанавливает глубину модуляции envelope lowpass filter.
  * @name lpenv
- * @param {number | Pattern} modulation depth of the lowpass filter envelope between 0 and _n_
+ * @param {number | Pattern} modulation глубина envelope lowpass filter от 0 до _n_
  * @synonyms lpe
  * @example
  * note("c2 e2 f2 g2")
@@ -1215,9 +1215,9 @@ export const { cutoff, ctf, lpf, lp } = registerControl(['cutoff', 'resonance', 
  */
 export const { lpenv, lpe } = registerControl('lpenv', 'lpe');
 /**
- * Sets the highpass filter envelope modulation depth.
+ * Устанавливает глубину модуляции envelope highpass filter.
  * @name hpenv
- * @param {number | Pattern} modulation depth of the highpass filter envelope between 0 and _n_
+ * @param {number | Pattern} modulation глубина envelope highpass filter от 0 до _n_
  * @synonyms hpe
  * @example
  * note("c2 e2 f2 g2")
@@ -1228,9 +1228,9 @@ export const { lpenv, lpe } = registerControl('lpenv', 'lpe');
  */
 export const { hpenv, hpe } = registerControl('hpenv', 'hpe');
 /**
- * Sets the bandpass filter envelope modulation depth.
+ * Устанавливает глубину модуляции envelope bandpass filter.
  * @name bpenv
- * @param {number | Pattern} modulation depth of the bandpass filter envelope between 0 and _n_
+ * @param {number | Pattern} modulation глубина envelope bandpass filter от 0 до _n_
  * @synonyms bpe
  * @example
  * note("c2 e2 f2 g2")
@@ -1241,9 +1241,9 @@ export const { hpenv, hpe } = registerControl('hpenv', 'hpe');
  */
 export const { bpenv, bpe } = registerControl('bpenv', 'bpe');
 /**
- * Sets the attack duration for the lowpass filter envelope.
+ * Устанавливает длительность attack для envelope lowpass filter.
  * @name lpattack
- * @param {number | Pattern} attack time of the filter envelope
+ * @param {number | Pattern} attack время envelope filter
  * @synonyms lpa
  * @example
  * note("c2 e2 f2 g2")
@@ -1254,9 +1254,9 @@ export const { bpenv, bpe } = registerControl('bpenv', 'bpe');
  */
 export const { lpattack, lpa } = registerControl('lpattack', 'lpa');
 /**
- * Sets the attack duration for the highpass filter envelope.
+ * Устанавливает длительность attack для envelope highpass filter.
  * @name hpattack
- * @param {number | Pattern} attack time of the highpass filter envelope
+ * @param {number | Pattern} attack время envelope highpass filter
  * @synonyms hpa
  * @example
  * note("c2 e2 f2 g2")
@@ -1267,9 +1267,9 @@ export const { lpattack, lpa } = registerControl('lpattack', 'lpa');
  */
 export const { hpattack, hpa } = registerControl('hpattack', 'hpa');
 /**
- * Sets the attack duration for the bandpass filter envelope.
+ * Устанавливает длительность attack для envelope bandpass filter.
  * @name bpattack
- * @param {number | Pattern} attack time of the bandpass filter envelope
+ * @param {number | Pattern} attack время envelope bandpass filter
  * @synonyms bpa
  * @example
  * note("c2 e2 f2 g2")
@@ -1280,9 +1280,9 @@ export const { hpattack, hpa } = registerControl('hpattack', 'hpa');
  */
 export const { bpattack, bpa } = registerControl('bpattack', 'bpa');
 /**
- * Sets the decay duration for the lowpass filter envelope.
+ * Устанавливает длительность decay для envelope lowpass filter.
  * @name lpdecay
- * @param {number | Pattern} decay time of the filter envelope
+ * @param {number | Pattern} decay время envelope filter
  * @synonyms lpd
  * @example
  * note("c2 e2 f2 g2")
@@ -1293,9 +1293,9 @@ export const { bpattack, bpa } = registerControl('bpattack', 'bpa');
  */
 export const { lpdecay, lpd } = registerControl('lpdecay', 'lpd');
 /**
- * Sets the decay duration for the highpass filter envelope.
+ * Устанавливает длительность decay для envelope highpass filter.
  * @name hpdecay
- * @param {number | Pattern} decay time of the highpass filter envelope
+ * @param {number | Pattern} decay время envelope highpass filter
  * @synonyms hpd
  * @example
  * note("c2 e2 f2 g2")
@@ -1307,9 +1307,9 @@ export const { lpdecay, lpd } = registerControl('lpdecay', 'lpd');
  */
 export const { hpdecay, hpd } = registerControl('hpdecay', 'hpd');
 /**
- * Sets the decay duration for the bandpass filter envelope.
+ * Устанавливает длительность decay для envelope bandpass filter.
  * @name bpdecay
- * @param {number | Pattern} decay time of the bandpass filter envelope
+ * @param {number | Pattern} decay время envelope bandpass filter
  * @synonyms bpd
  * @example
  * note("c2 e2 f2 g2")
@@ -1321,9 +1321,9 @@ export const { hpdecay, hpd } = registerControl('hpdecay', 'hpd');
  */
 export const { bpdecay, bpd } = registerControl('bpdecay', 'bpd');
 /**
- * Sets the sustain amplitude for the lowpass filter envelope.
+ * Устанавливает амплитуду sustain для envelope lowpass filter.
  * @name lpsustain
- * @param {number | Pattern} sustain amplitude of the lowpass filter envelope
+ * @param {number | Pattern} sustain амплитуда envelope lowpass filter
  * @synonyms lps
  * @example
  * note("c2 e2 f2 g2")
@@ -1335,9 +1335,9 @@ export const { bpdecay, bpd } = registerControl('bpdecay', 'bpd');
  */
 export const { lpsustain, lps } = registerControl('lpsustain', 'lps');
 /**
- * Sets the sustain amplitude for the highpass filter envelope.
+ * Устанавливает амплитуду sustain для envelope highpass filter.
  * @name hpsustain
- * @param {number | Pattern} sustain amplitude of the highpass filter envelope
+ * @param {number | Pattern} sustain амплитуда envelope highpass filter
  * @synonyms hps
  * @example
  * note("c2 e2 f2 g2")
@@ -1349,9 +1349,9 @@ export const { lpsustain, lps } = registerControl('lpsustain', 'lps');
  */
 export const { hpsustain, hps } = registerControl('hpsustain', 'hps');
 /**
- * Sets the sustain amplitude for the bandpass filter envelope.
+ * Устанавливает амплитуду sustain для envelope bandpass filter.
  * @name bpsustain
- * @param {number | Pattern} sustain amplitude of the bandpass filter envelope
+ * @param {number | Pattern} sustain амплитуда envelope bandpass filter
  * @synonyms bps
  * @example
  * note("c2 e2 f2 g2")
@@ -1363,9 +1363,9 @@ export const { hpsustain, hps } = registerControl('hpsustain', 'hps');
  */
 export const { bpsustain, bps } = registerControl('bpsustain', 'bps');
 /**
- * Sets the release time for the lowpass filter envelope.
+ * Устанавливает время release для envelope lowpass filter.
  * @name lprelease
- * @param {number | Pattern} release time of the filter envelope
+ * @param {number | Pattern} release время envelope filter
  * @synonyms lpr
  * @example
  * note("c2 e2 f2 g2")
@@ -1378,9 +1378,9 @@ export const { bpsustain, bps } = registerControl('bpsustain', 'bps');
  */
 export const { lprelease, lpr } = registerControl('lprelease', 'lpr');
 /**
- * Sets the release time for the highpass filter envelope.
+ * Устанавливает время release для envelope highpass filter.
  * @name hprelease
- * @param {number | Pattern} release time of the highpass filter envelope
+ * @param {number | Pattern} release время envelope highpass filter
  * @synonyms hpr
  * @example
  * note("c2 e2 f2 g2")
@@ -1393,9 +1393,9 @@ export const { lprelease, lpr } = registerControl('lprelease', 'lpr');
  */
 export const { hprelease, hpr } = registerControl('hprelease', 'hpr');
 /**
- * Sets the release time for the bandpass filter envelope.
+ * Устанавливает время release для envelope bandpass filter.
  * @name bprelease
- * @param {number | Pattern} release time of the bandpass filter envelope
+ * @param {number | Pattern} release время envelope bandpass filter
  * @synonyms bpr
  * @example
  * note("c2 e2 f2 g2")
@@ -1408,9 +1408,9 @@ export const { hprelease, hpr } = registerControl('hprelease', 'hpr');
  */
 export const { bprelease, bpr } = registerControl('bprelease', 'bpr');
 /**
- * Sets the filter type. The ladder filter is more aggressive. More types might be added in the future.
+ * Устанавливает тип filter. Ladder filter более агрессивный. В будущем могут быть добавлены другие типы.
  * @name ftype
- * @param {number | Pattern} type 12db (0), ladder (1), or 24db (2)
+ * @param {number | Pattern} type 12db (0), ladder (1), или 24db (2)
  * @example
  * note("{f g g c d a a#}%8").s("sawtooth").lpenv(4).lpf(500).ftype("<0 1 2>").lpq(1)
  * @example
@@ -1423,21 +1423,21 @@ export const { bprelease, bpr } = registerControl('bprelease', 'bpr');
 export const { ftype } = registerControl('ftype');
 
 /**
- * controls the center of the filter envelope. 0 is unipolar positive, .5 is bipolar, 1 is unipolar negative
+ * Управляет центром envelope filter. 0 это униполярный положительный, .5 это биполярный, 1 это униполярный отрицательный
  * @name fanchor
- * @param {number | Pattern} center 0 to 1
+ * @param {number | Pattern} center от 0 до 1
  * @example
  * note("{f g g c d a a#}%8").s("sawtooth").lpf("{1000}%2")
  * .lpenv(8).fanchor("<0 .5 1>")
  */
 export const { fanchor } = registerControl('fanchor');
 /**
- * Applies the cutoff frequency of the **h**igh-**p**ass **f**ilter.
+ * Устанавливает частоту среза **h**igh-**p**ass **f**ilter.
  *
- * When using mininotation, you can also optionally add the 'hpq' parameter, separated by ':'.
+ * При использовании mininotation можно также опционально добавить параметр 'hpq', разделённый ':'.
  *
  * @name hpf
- * @param {number | Pattern} frequency audible between 0 and 20000
+ * @param {number | Pattern} frequency слышимая частота от 0 до 20000
  * @synonyms hp, hcutoff
  * @example
  * s("bd sd [~ bd] sd,hh*8").hpf("<4000 2000 1000 500 200 100>")
@@ -1449,42 +1449,42 @@ export const { fanchor } = registerControl('fanchor');
 // ['hpf'],
 
 /**
- * Rate of the LFO for the lowpass filter
+ * Частота LFO для lowpass filter
  *
  * @name lprate
- * @param {number | Pattern} rate rate in hertz
+ * @param {number | Pattern} rate частота в герцах
  * @example
  * note("<c c c# c c c4>*16").s("sawtooth").lpf(600).lprate("<4 8 2 1>")
  */
 export const { lprate } = registerControl('lprate');
 
 /**
- * Cycle-synced rate of the LFO for the lowpass filter
+ * Синхронизированная с циклом частота LFO для lowpass filter
  *
  * @name lpsync
- * @param {number | Pattern} rate rate in cycles
+ * @param {number | Pattern} rate частота в циклах
  * @example
  * note("<c c c# c c c4>*16").s("sawtooth").lpf(600).lpsync("<4 8 2 1>")
  */
 export const { lpsync } = registerControl('lpsync');
 
 /**
- * Depth of the LFO for the lowpass filter
+ * Глубина LFO для lowpass filter
  *
  * @name lpdepth
- * @param {number | Pattern} depth depth of modulation
+ * @param {number | Pattern} depth глубина модуляции
  * @example
  * note("<c c c# c c c4>*16").s("sawtooth").lpf(600).lpdepth("<1 .5 1.8 0>")
  */
 
 export const { lpdepth } = registerControl('lpdepth');
 /**
- * Depth of the LFO for the lowpass filter, in HZ
+ * Глубина LFO для lowpass filter, в Гц
  *
  * @name lpdepthfrequency
  * @synonyms
  * lpdethfreq
- * @param {number | Pattern} depth depth of modulation
+ * @param {number | Pattern} depth глубина модуляции
  * @example
  * note("<c c c# c c c4>*16").s("sawtooth").lpf(600).lpdepthfrequency("<200 500 100 0>")
  */
@@ -1492,60 +1492,60 @@ export const { lpdepth } = registerControl('lpdepth');
 export const { lpdepthfrequency } = registerControl('lpdepthfrequency', 'lpdepthfreq');
 
 /**
- * Shape of the LFO for the lowpass filter
+ * Форма LFO для lowpass filter
  *
  * @name lpshape
- * @param {number | Pattern} shape Shape of the lfo (0, 1, 2, ..)
+ * @param {number | Pattern} shape Форма lfo (0, 1, 2, ..)
  */
 export const { lpshape } = registerControl('lpshape');
 
 /**
- * DC offset of the LFO for the lowpass filter
+ * DC смещение LFO для lowpass filter
  *
  * @name lpdc
- * @param {number | Pattern} dcoffset dc offset. set to 0 for unipolar
+ * @param {number | Pattern} dcoffset dc смещение. установите 0 для unipolar
  */
 export const { lpdc } = registerControl('lpdc');
 
 /**
- * Skew of the LFO for the lowpass filter
+ * Искривление LFO для lowpass filter
  *
  * @name lpskew
- * @param {number | Pattern} skew How much to bend the LFO shape
+ * @param {number | Pattern} skew Насколько изгибать форму LFO
  */
 export const { lpskew } = registerControl('lpskew');
 
 /**
- * Rate of the LFO for the bandpass filter
+ * Частота LFO для bandpass filter
  *
  * @name bprate
- * @param {number | Pattern} rate rate in hertz
+ * @param {number | Pattern} rate частота в герцах
  */
 export const { bprate } = registerControl('bprate');
 
 /**
- * Cycle-synced rate of the LFO for the bandpass filter
+ * Синхронизированная с циклом частота LFO для bandpass filter
  *
  * @name bpsync
- * @param {number | Pattern} rate rate in cycles
+ * @param {number | Pattern} rate частота в циклах
  */
 export const { bpsync } = registerControl('bpsync');
 
 /**
- * Depth of the LFO for the bandpass filter
+ * Глубина LFO для bandpass filter
  *
  * @name bpdepth
- * @param {number | Pattern} depth depth of modulation
+ * @param {number | Pattern} depth глубина модуляции
  */
 export const { bpdepth } = registerControl('bpdepth');
 
 /**
- * Depth of the LFO for the bandpass filter, in HZ
+ * Глубина LFO для bandpass filter, в Гц
  *
  * @name bpdepthfrequency
  * @synonyms
  * bpdethfreq
- * @param {number | Pattern} depth depth of modulation
+ * @param {number | Pattern} depth глубина модуляции
  * @example
  * note("<c c c# c c c4>*16").s("sawtooth").lpf(600).bpdepthfrequency("<200 500 100 0>")
  */
@@ -1553,60 +1553,60 @@ export const { bpdepth } = registerControl('bpdepth');
 export const { bpdepthfrequency } = registerControl('bpdepthfrequency', 'bpdepthfreq');
 
 /**
- * Shape of the LFO for the bandpass filter
+ * Форма LFO для bandpass filter
  *
  * @name bpshape
- * @param {number | Pattern} shape Shape of the lfo (0, 1, 2, ..)
+ * @param {number | Pattern} shape Форма lfo (0, 1, 2, ..)
  */
 export const { bpshape } = registerControl('bpshape');
 
 /**
- * DC offset of the LFO for the bandpass filter
+ * DC смещение LFO для bandpass filter
  *
  * @name bpdc
- * @param {number | Pattern} dcoffset dc offset. set to 0 for unipolar
+ * @param {number | Pattern} dcoffset dc смещение. установите 0 для unipolar
  */
 export const { bpdc } = registerControl('bpdc');
 
 /**
- * Skew of the LFO for the bandpass filter
+ * Искривление LFO для bandpass filter
  *
  * @name bpskew
- * @param {number | Pattern} skew How much to bend the LFO shape
+ * @param {number | Pattern} skew Насколько изгибать форму LFO
  */
 export const { bpskew } = registerControl('bpskew');
 
 /**
- * Rate of the LFO for the highpass filter
+ * Частота LFO для highpass filter
  *
  * @name hprate
- * @param {number | Pattern} rate rate in hertz
+ * @param {number | Pattern} rate частота в герцах
  */
 export const { hprate } = registerControl('hprate');
 
 /**
- * Cycle-synced rate of the LFO for the highpass filter
+ * Синхронизированная с циклом частота LFO для highpass filter
  *
  * @name hpsync
- * @param {number | Pattern} rate rate in cycles
+ * @param {number | Pattern} rate частота в циклах
  */
 export const { hpsync } = registerControl('hpsync');
 
 /**
- * Depth of the LFO for the highpass filter
+ * Глубина LFO для highpass filter
  *
  * @name hpdepth
- * @param {number | Pattern} depth depth of modulation
+ * @param {number | Pattern} depth глубина модуляции
  */
 export const { hpdepth, hpdepthfreq } = registerControl('hpdepth');
 
 /**
- * Depth of the LFO for the hipass filter, in hz
+ * Глубина LFO для highpass filter, в Гц
  *
  * @name hpdepthfrequency
  * @synonyms
  * hpdethfreq
- * @param {number | Pattern} depth depth of modulation
+ * @param {number | Pattern} depth глубина модуляции
  * @example
  * note("<c c c# c c c4>*16").s("sawtooth").lpf(600).hpdepthfrequency("<200 500 100 0>")
  */
@@ -1614,67 +1614,67 @@ export const { hpdepth, hpdepthfreq } = registerControl('hpdepth');
 export const { hpdepthfrequency } = registerControl('hpdepthfrequency', 'hpdepthfreq');
 
 /**
- * Shape of the LFO for the highpass filter
+ * Форма LFO для highpass filter
  *
  * @name hpshape
- * @param {number | Pattern} shape Shape of the lfo (0, 1, 2, ..)
+ * @param {number | Pattern} shape Форма lfo (0, 1, 2, ..)
  */
 export const { hpshape } = registerControl('hpshape');
 
 /**
- * DC offset of the LFO for the highpass filter
+ * DC смещение LFO для highpass filter
  *
  * @name hpdc
- * @param {number | Pattern} dcoffset dc offset. set to 0 for unipolar
+ * @param {number | Pattern} dcoffset dc смещение. установите 0 для unipolar
  */
 export const { hpdc } = registerControl('hpdc');
 
 /**
- * Skew of the LFO for the highpass filter
+ * Искривление LFO для highpass filter
  *
  * @name hpskew
- * @param {number | Pattern} skew How much to bend the LFO shape
+ * @param {number | Pattern} skew Насколько изгибать форму LFO
  */
 export const { hpskew } = registerControl('hpskew');
 
 /**
- * Applies a vibrato to the frequency of the oscillator.
+ * Применяет vibrato к частоте oscillator.
  *
  * @name vib
  * @synonyms vibrato, v
- * @param {number | Pattern} frequency of the vibrato in hertz
+ * @param {number | Pattern} frequency частота vibrato в герцах
  * @example
  * note("a e")
  * .vib("<.5 1 2 4 8 16>")
  * ._scope()
  * @example
- * // change the modulation depth with ":"
+ * // изменить глубину модуляции с помощью ":"
  * note("a e")
  * .vib("<.5 1 2 4 8 16>:12")
  * ._scope()
  */
 export const { vib, vibrato, v } = registerControl(['vib', 'vibmod'], 'vibrato', 'v');
 /**
- * Adds pink noise to the mix
+ * Добавляет розовый шум в микс
  *
  * @name noise
- * @param {number | Pattern} wet wet amount
+ * @param {number | Pattern} wet количество wet
  * @example
  * sound("<white pink brown>/2")
  */
 export const { noise } = registerControl('noise');
 /**
- * Sets the vibrato depth in semitones. Only has an effect if `vibrato` | `vib` | `v` is is also set
+ * Устанавливает глубину vibrato в полутонах. Имеет эффект только если `vibrato` | `vib` | `v` также установлен
  *
  * @name vibmod
  * @synonyms vmod
- * @param {number | Pattern} depth of vibrato (in semitones)
+ * @param {number | Pattern} depth глубина vibrato (в полутонах)
  * @example
  * note("a e").vib(4)
  * .vibmod("<.25 .5 1 2 12>")
  * ._scope()
  * @example
- * // change the vibrato frequency with ":"
+ * // изменить частоту vibrato с помощью ":"
  * note("a e")
  * .vibmod("<.25 .5 1 2 12>:8")
  * ._scope()
@@ -1682,10 +1682,10 @@ export const { noise } = registerControl('noise');
 export const { vibmod, vmod } = registerControl(['vibmod', 'vib'], 'vmod');
 export const { hcutoff, hpf, hp } = registerControl(['hcutoff', 'hresonance', 'hpenv'], 'hpf', 'hp');
 /**
- * Controls the **h**igh-**p**ass **q**-value.
+ * Управляет **h**igh-**p**ass **q**-значением.
  *
  * @name hpq
- * @param {number | Pattern} q resonance factor between 0 and 50
+ * @param {number | Pattern} q фактор резонанса от 0 до 50
  * @synonyms hresonance
  * @example
  * s("bd sd [~ bd] sd,hh*8").hpf(2000).hpq("<0 10 20 30>")
@@ -1693,10 +1693,10 @@ export const { hcutoff, hpf, hp } = registerControl(['hcutoff', 'hresonance', 'h
  */
 export const { hresonance, hpq } = registerControl('hresonance', 'hpq');
 /**
- * Controls the **l**ow-**p**ass **q**-value.
+ * Управляет **l**ow-**p**ass **q**-значением.
  *
  * @name lpq
- * @param {number | Pattern} q resonance factor between 0 and 50
+ * @param {number | Pattern} q фактор резонанса от 0 до 50
  * @synonyms resonance
  * @example
  * s("bd sd [~ bd] sd,hh*8").lpf(2000).lpq("<0 10 20 30>")
@@ -1705,10 +1705,10 @@ export const { hresonance, hpq } = registerControl('hresonance', 'hpq');
 // currently an alias of 'resonance' https://codeberg.org/uzu/strudel/issues/496
 export const { resonance, lpq } = registerControl('resonance', 'lpq');
 /**
- * DJ filter, below 0.5 is low pass filter, above is high pass filter.
+ * DJ filter, ниже 0.5 это low pass filter, выше это high pass filter.
  *
  * @name djf
- * @param {number | Pattern} cutoff below 0.5 is low pass filter, above is high pass filter
+ * @param {number | Pattern} cutoff ниже 0.5 это low pass filter, выше это high pass filter
  * @example
  * n(irand(16).seg(8)).scale("d:phrygian").s("supersaw").djf("<.5 .3 .2 .75>")
  *
@@ -1717,14 +1717,14 @@ export const { djf } = registerControl('djf');
 // ['cutoffegint'],
 // TODO: does not seem to work
 /**
- * Sets the level of the delay signal.
+ * Устанавливает уровень сигнала delay.
  *
- * When using mininotation, you can also optionally add the 'delaytime' and 'delayfeedback' parameter,
- * separated by ':'.
+ * При использовании mininotation можно также опционально добавить параметры 'delaytime' и 'delayfeedback',
+ * разделённые ':'.
  *
  *
  * @name delay
- * @param {number | Pattern} level between 0 and 1
+ * @param {number | Pattern} level от 0 до 1
  * @example
  * s("bd bd").delay("<0 .25 .5 1>")
  * @example
@@ -1733,11 +1733,11 @@ export const { djf } = registerControl('djf');
  */
 export const { delay } = registerControl(['delay', 'delaytime', 'delayfeedback']);
 /**
- * Sets the level of the signal that is fed back into the delay.
- * Caution: Values >= 1 will result in a signal that gets louder and louder! Don't do it
+ * Устанавливает уровень сигнала, который возвращается обратно в delay.
+ * Внимание: Значения >= 1 приведут к тому, что сигнал будет становиться всё громче и громче! Не делайте этого
  *
  * @name delayfeedback
- * @param {number | Pattern} feedback between 0 and 1
+ * @param {number | Pattern} feedback от 0 до 1
  * @synonyms delayfb, dfb
  * @example
  * s("bd").delay(.25).delayfeedback("<.25 .5 .75 1>")
@@ -1746,11 +1746,11 @@ export const { delay } = registerControl(['delay', 'delaytime', 'delayfeedback']
 export const { delayfeedback, delayfb, dfb } = registerControl('delayfeedback', 'delayfb', 'dfb');
 
 /**
- * Sets the level of the signal that is fed back into the delay.
- * Caution: Values >= 1 will result in a signal that gets louder and louder! Don't do it
+ * Устанавливает уровень сигнала, который возвращается обратно в delay.
+ * Осторожно: Значения >= 1 приведут к сигналу, который становится всё громче и громче! Не делайте этого
  *
  * @name delayfeedback
- * @param {number | Pattern} feedback between 0 and 1
+ * @param {number | Pattern} feedback от 0 до 1
  * @synonyms delayfb, dfb
  * @example
  * s("bd").delay(.25).delayfeedback("<.25 .5 .75 1>")
@@ -1758,10 +1758,10 @@ export const { delayfeedback, delayfb, dfb } = registerControl('delayfeedback', 
  */
 export const { delayspeed } = registerControl('delayspeed');
 /**
- * Sets the time of the delay effect.
+ * Устанавливает время эффекта delay.
  *
  * @name delayspeed
- * @param {number | Pattern} delayspeed controls the pitch of the delay feedback
+ * @param {number | Pattern} delayspeed контролирует высоту тона delay feedback
  * @synonyms delayt, dt
  * @example
  * note("d d a# a".fast(2)).s("sawtooth").delay(.8).delaytime(1/2).delayspeed("<2 .5 -1 -2>")
@@ -1770,10 +1770,10 @@ export const { delayspeed } = registerControl('delayspeed');
 export const { delaytime, delayt, dt } = registerControl('delaytime', 'delayt', 'dt');
 
 /**
- * Sets the time of the delay effect in cycles.
+ * Устанавливает время эффекта delay в циклах.
  *
  * @name delaysync
- * @param {number | Pattern} cycles delay length in cycles
+ * @param {number | Pattern} cycles длина delay в циклах
  * @synonyms delayt, dt
  * @example
  * s("bd bd").delay(.25).delaysync("<1 2 3 5>".div(8))
@@ -1782,10 +1782,10 @@ export const { delaytime, delayt, dt } = registerControl('delaytime', 'delayt', 
 export const { delaysync } = registerControl('delaysync');
 
 /**
- * Specifies whether delaytime is calculated relative to cps.
+ * Указывает, рассчитывается ли delaytime относительно cps.
  *
  * @name lock
- * @param {number | Pattern} enable When set to 1, delaytime is a direct multiple of a cycle.
+ * @param {number | Pattern} enable Когда установлено в 1, delaytime является прямым кратным цикла.
  * @superdirtOnly
  * @example
  * s("sd").delay().lock(1).osc()
@@ -1795,7 +1795,7 @@ export const { delaysync } = registerControl('delaysync');
 
 export const { lock } = registerControl('lock');
 /**
- * Set detune for stacked voices of supported oscillators
+ * Устанавливает детюн для наложенных голосов поддерживаемых oscillator
  *
  * @name detune
  * @param {number | Pattern} amount
@@ -1806,7 +1806,7 @@ export const { lock } = registerControl('lock');
  */
 export const { detune, det } = registerControl('detune', 'det');
 /**
- * Set number of stacked voices for supported oscillators
+ * Устанавливает количество наложенных голосов для поддерживаемых oscillator
  *
  * @name unison
  * @param {number | Pattern} numvoices
@@ -1817,17 +1817,17 @@ export const { detune, det } = registerControl('detune', 'det');
 export const { unison } = registerControl('unison');
 
 /**
- * Set the stereo pan spread for supported oscillators
+ * Устанавливает stereo pan spread для поддерживаемых oscillator
  *
  * @name spread
- * @param {number | Pattern} spread between 0 and 1
+ * @param {number | Pattern} spread от 0 до 1
  * @example
  * note("d f a a# a d3").fast(2).s("supersaw").spread("<0 .3 1>")
  *
  */
 export const { spread } = registerControl('spread');
 /**
- * Set dryness of reverb. See `room` and `size` for more information about reverb.
+ * Устанавливает сухость reverb. Смотрите `room` и `size` для дополнительной информации о reverb.
  *
  * @name dry
  * @param {number | Pattern} dry 0 = wet, 1 = dry
@@ -1839,11 +1839,11 @@ export const { spread } = registerControl('spread');
 export const { dry } = registerControl('dry');
 // TODO: does not seem to do anything
 /*
- * Used when using `begin`/`end` or `chop`/`striate` and friends, to change the fade out time of the 'grain' envelope.
+ * Используется при использовании `begin`/`end` или `chop`/`striate` и подобных, для изменения времени затухания 'grain' envelope.
  *
  * @name fadeTime
  * @synonyms fadeOutTime
- * @param {number | Pattern} time between 0 and 1
+ * @param {number | Pattern} time от 0 до 1
  * @example
  * s("oh*4").end(.1).fadeTime("<0 .2 .4 .8>").osc()
  *
@@ -1852,10 +1852,10 @@ export const { fadeTime, fadeOutTime } = registerControl('fadeTime', 'fadeOutTim
 // TODO: see above
 export const { fadeInTime } = registerControl('fadeInTime');
 /**
- * Set frequency of sound.
+ * Устанавливает частоту звука.
  *
  * @name freq
- * @param {number | Pattern} frequency in Hz. the audible range is between 20 and 20000 Hz
+ * @param {number | Pattern} frequency в Гц. Слышимый диапазон от 20 до 20000 Гц
  * @example
  * freq("220 110 440 110").s("superzow").osc()
  * @example
@@ -1865,22 +1865,22 @@ export const { fadeInTime } = registerControl('fadeInTime');
 export const { freq } = registerControl('freq');
 // pitch envelope
 /**
- * Attack time of pitch envelope.
+ * Время attack для pitch envelope.
  *
  * @name pattack
  * @synonyms patt
- * @param {number | Pattern} time time in seconds
+ * @param {number | Pattern} time время в секундах
  * @example
  * note("c eb g bb").pattack("0 .1 .25 .5").slow(2)
  *
  */
 export const { pattack, patt } = registerControl('pattack', 'patt');
 /**
- * Decay time of pitch envelope.
+ * Время decay для pitch envelope.
  *
  * @name pdecay
  * @synonyms pdec
- * @param {number | Pattern} time time in seconds
+ * @param {number | Pattern} time время в секундах
  * @example
  * note("<c eb g bb>").pdecay("<0 .1 .25 .5>")
  *
@@ -1889,24 +1889,24 @@ export const { pdecay, pdec } = registerControl('pdecay', 'pdec');
 // TODO: how to use psustain?!
 export const { psustain, psus } = registerControl('psustain', 'psus');
 /**
- * Release time of pitch envelope
+ * Время release для pitch envelope
  *
  * @name prelease
  * @synonyms prel
- * @param {number | Pattern} time time in seconds
+ * @param {number | Pattern} time время в секундах
  * @example
  * note("<c eb g bb> ~")
- * .release(.5) // to hear the pitch release
+ * .release(.5) // чтобы услышать pitch release
  * .prelease("<0 .1 .25 .5>")
  *
  */
 export const { prelease, prel } = registerControl('prelease', 'prel');
 /**
- * Amount of pitch envelope. Negative values will flip the envelope.
- * If you don't set other pitch envelope controls, `pattack:.2` will be the default.
+ * Величина pitch envelope. Отрицательные значения переворачивают envelope.
+ * Если вы не установите другие параметры pitch envelope, `pattack:.2` будет значением по умолчанию.
  *
  * @name penv
- * @param {number | Pattern} semitones change in semitones
+ * @param {number | Pattern} semitones изменение в полутонах
  * @example
  * note("c")
  * .penv("<12 7 1 .5 0 -1 -7 -12>")
@@ -1914,7 +1914,7 @@ export const { prelease, prel } = registerControl('prelease', 'prel');
  */
 export const { penv } = registerControl('penv');
 /**
- * Curve of envelope. Defaults to linear. exponential is good for kicks
+ * Кривая envelope. По умолчанию линейная. exponential хорошо подходит для kicks
  *
  * @name pcurve
  * @param {number | Pattern} type 0 = linear, 1 = exponential
@@ -1927,13 +1927,13 @@ export const { penv } = registerControl('penv');
  */
 export const { pcurve } = registerControl('pcurve');
 /**
- * Sets the range anchor of the envelope:
+ * Устанавливает опорную точку диапазона envelope:
  * - anchor 0: range = [note, note + penv]
  * - anchor 1: range = [note - penv, note]
- * If you don't set an anchor, the value will default to the psustain value.
+ * Если не установить anchor, значение по умолчанию будет равно значению psustain.
  *
  * @name panchor
- * @param {number | Pattern} anchor anchor offset
+ * @param {number | Pattern} anchor смещение опорной точки
  * @example
  * note("c c4").penv(12).panchor("<0 .5 1 .5>")
  *
@@ -1951,10 +1951,10 @@ export const { gate, gat } = registerControl('gate', 'gat');
 // https://tidalcycles.org/docs/reference/audio_effects/#leslie-1
 // https://tidalcycles.org/docs/reference/audio_effects/#leslie
 /**
- * Emulation of a Leslie speaker: speakers rotating in a wooden amplified cabinet.
+ * Эмуляция Leslie speaker: вращающиеся динамики в деревянном усиленном корпусе.
  *
  * @name leslie
- * @param {number | Pattern} wet between 0 and 1
+ * @param {number | Pattern} wet от 0 до 1
  * @example
  * n("0,4,7").s("supersquare").leslie("<0 .4 .6 1>").osc()
  * @superdirtOnly
@@ -1962,10 +1962,10 @@ export const { gate, gat } = registerControl('gate', 'gat');
  */
 export const { leslie } = registerControl('leslie');
 /**
- * Rate of modulation / rotation for leslie effect
+ * Скорость модуляции / вращения для leslie эффекта
  *
  * @name lrate
- * @param {number | Pattern} rate 6.7 for fast, 0.7 for slow
+ * @param {number | Pattern} rate 6.7 для быстрого, 0.7 для медленного
  * @example
  * n("0,4,7").s("supersquare").leslie(1).lrate("<1 2 4 8>").osc()
  * @superdirtOnly
@@ -1974,10 +1974,10 @@ export const { leslie } = registerControl('leslie');
 // TODO: the rate seems to "lag" (in the example, 1 will be fast)
 export const { lrate } = registerControl('lrate');
 /**
- * Physical size of the cabinet in meters. Be careful, it might be slightly larger than your computer. Affects the Doppler amount (pitch warble)
+ * Физический размер корпуса в метрах. Будьте осторожны, он может быть немного больше вашего компьютера. Влияет на величину эффекта Doppler (колебание высоты тона)
  *
  * @name lsize
- * @param {number | Pattern} meters somewhere between 0 and 1
+ * @param {number | Pattern} meters где-то между 0 и 1
  * @example
  * n("0,4,7").s("supersquare").leslie(1).lrate(2).lsize("<.1 .5 1>").osc()
  * @superdirtOnly
@@ -1985,10 +1985,10 @@ export const { lrate } = registerControl('lrate');
  */
 export const { lsize } = registerControl('lsize');
 /**
- * Sets the displayed text for an event on the pianoroll
+ * Устанавливает отображаемый текст для события на pianoroll
  *
  * @name label
- * @param {string} label text to display
+ * @param {string} label текст для отображения
  */
 export const { activeLabel } = registerControl('activeLabel');
 export const { label } = registerControl(['label', 'activeLabel']);
@@ -2021,11 +2021,11 @@ export const { octaveR } = registerControl('octaveR');
 export const { nudge } = registerControl('nudge');
 // TODO: the following doc is just a guess, it's not documented in tidal doc.
 /**
- * Sets the default octave of a synth.
+ * Устанавливает октаву по умолчанию для synth.
  *
  * @name octave
  * @synonyms oct
- * @param {number | Pattern} octave octave number
+ * @param {number | Pattern} octave номер октавы
  * @example
  * n("0,4,7").scale("F:minor").s('supersaw').octave("<0 1 2 3>")
  */
@@ -2034,7 +2034,7 @@ export const { octave, oct } = registerControl('octave', 'oct');
 // ['ophatdecay'],
 // TODO: example
 /**
- * An `orbit` is a global parameter context for patterns. Patterns with the same orbit will share the same global effects.
+ * `orbit` это глобальный параметрический контекст для pattern. Pattern с одним и тем же orbit будут использовать одни и те же глобальные эффекты.
  *
  * @name orbit
  * @synonyms o
@@ -2051,10 +2051,10 @@ export const { overgain } = registerControl('overgain');
 // TODO: what is this? not found in tidal doc. Similar to above, but limited to 1
 export const { overshape } = registerControl('overshape');
 /**
- * Sets position in stereo.
+ * Устанавливает позицию в stereo.
  *
  * @name pan
- * @param {number | Pattern} pan between 0 and 1, from left to right (assuming stereo), once round a circle (assuming multichannel)
+ * @param {number | Pattern} pan от 0 до 1, слева направо (для stereo), один круг (для многоканальности)
  * @example
  * s("[bd hh]*2").pan("<.5 1 .5 0>")
  * @example
@@ -2064,10 +2064,10 @@ export const { overshape } = registerControl('overshape');
 export const { pan } = registerControl('pan');
 // TODO: this has no effect (see example)
 /*
- * Controls how much multichannel output is fanned out
+ * Контролирует, насколько многоканальный выход распределяется веером
  *
  * @name panspan
- * @param {number | Pattern} span between -inf and inf, negative is backwards ordering
+ * @param {number | Pattern} span от -inf до inf, отрицательные значения меняют порядок
  * @example
  * s("[bd hh]*2").pan("<.5 1 .5 0>").panspan("<0 .5 1>").osc()
  *
@@ -2075,10 +2075,10 @@ export const { pan } = registerControl('pan');
 export const { panspan } = registerControl('panspan');
 // TODO: this has no effect (see example)
 /*
- * Controls how much multichannel output is spread
+ * Контролирует, насколько многоканальный выход распространяется
  *
  * @name pansplay
- * @param {number | Pattern} spread between 0 and 1
+ * @param {number | Pattern} spread от 0 до 1
  * @example
  * s("[bd hh]*2").pan("<.5 1 .5 0>").pansplay("<0 .5 1>").osc()
  *
@@ -2101,18 +2101,18 @@ export const { semitone } = registerControl('semitone');
 export const { voice } = registerControl('voice');
 // voicings // https://codeberg.org/uzu/strudel/issues/506
 /**
- * The chord to voice
+ * Аккорд для озвучивания
  * @name chord
- * @param {string | Pattern} symbols chord symbols to voice e.g., C, Eb, Fm7, G7. The symbols can be defined via addVoicings
+ * @param {string | Pattern} symbols символы аккорда для озвучивания, например, C, Eb, Fm7, G7. Символы можно определить через addVoicings
  * @example
  * chord("<Am C D F Am E Am E>").voicing()
  **/
 export const { chord } = registerControl('chord');
 /**
- * Which dictionary to use for the voicings. This falls back to the default dictionary if not provided
+ * Какой словарь использовать для озвучивания. По умолчанию используется стандартный словарь, если не указан
  *
  * @name dictionary
- * @param {string} dictionaryName which dictionary (having been defined with `addVoicings`) to use
+ * @param {string} dictionaryName какой словарь (определённый через `addVoicings`) использовать
  * @example
  * addVoicings('house', {
 '': ['7 12 16', '0 7 16', '4 7 12'],
@@ -2123,37 +2123,37 @@ chord("<Am C D F Am E Am E>")
 .voicing().room(.5)
  **/
 export const { dictionary, dict } = registerControl('dictionary', 'dict');
-/** The top note to align the voicing to. Defaults to c5
+/** Верхняя нота для выравнивания озвучивания. По умолчанию c5
  *
  * @name anchor
- * @param {string | Pattern} anchorNote the note to align the voicings to
+ * @param {string | Pattern} anchorNote нота для выравнивания озвучивания
  * @example
  * anchor("<c4 g4 c5 g5>").chord("C").voicing()
  **/
 export const { anchor } = registerControl('anchor');
 /**
- * Sets how the voicing is offset from the anchored position
+ * Устанавливает смещение озвучивания от закреплённой позиции
  *
  * @name offset
- * @param {number | Pattern} shift the amount to shift the voicing up or down
+ * @param {number | Pattern} shift величина смещения озвучивания вверх или вниз
  * @example
- * chord("<Am C D F Am E Am E>").offset("<0 1 2 3 4 5>") // alter the voicing each time
+ * chord("<Am C D F Am E Am E>").offset("<0 1 2 3 4 5>") // изменить озвучивание каждый раз
  **/
 export const { offset } = registerControl('offset');
 /**
- *  How many octaves are voicing steps spread apart, defaults to 1
+ *  Сколько октав между шагами озвучивания, по умолчанию 1
  *
  *  @name octaves
- *  @param {number | Pattern} count the number of octaves
+ *  @param {number | Pattern} count количество октав
  *  @example
  *  chord("<Am C D F Am E Am E>").octaves("<2 4>").voicing()
  **/
 export const { octaves } = registerControl('octaves');
 /**
- * Remove anchor note from the voicing. Useful for melody harmonization
+ * Убрать опорную ноту из озвучивания. Полезно для гармонизации мелодии
  *
  * @name mode
- * @param {string | Pattern} modeName one of {below | above | duck | root}
+ * @param {string | Pattern} modeName один из {below | above | duck | root}
  * @example
  * mode("<below above duck root>").chord("C").voicing()
  *
@@ -2161,12 +2161,12 @@ export const { octaves } = registerControl('octaves');
 export const { mode } = registerControl(['mode', 'anchor']);
 
 /**
- * Sets the level of reverb.
+ * Устанавливает уровень reverb.
  *
- * When using mininotation, you can also optionally add the 'size' parameter, separated by ':'.
+ * При использовании mininotation можно также опционально добавить параметр 'size', разделённый ':'.
  *
  * @name room
- * @param {number | Pattern} level between 0 and 1
+ * @param {number | Pattern} level от 0 до 1
  * @example
  * s("bd sd [~ bd] sd").room("<0 .2 .4 .6 .8 1>")
  * @example
@@ -2175,12 +2175,12 @@ export const { mode } = registerControl(['mode', 'anchor']);
  */
 export const { room } = registerControl(['room', 'size']);
 /**
- * Reverb lowpass starting frequency (in hertz).
- * When this property is changed, the reverb will be recaculated, so only change this sparsely..
+ * Начальная частота lowpass reverb (в герцах).
+ * При изменении этого свойства reverb будет пересчитан, поэтому изменяйте его редко..
  *
  * @name roomlp
  * @synonyms rlp
- * @param {number} frequency between 0 and 20000hz
+ * @param {number} frequency от 0 до 20000 Гц
  * @example
  * s("bd sd [~ bd] sd").room(0.5).rlp(10000)
  * @example
@@ -2188,12 +2188,12 @@ export const { room } = registerControl(['room', 'size']);
  */
 export const { roomlp, rlp } = registerControl('roomlp', 'rlp');
 /**
- * Reverb lowpass frequency at -60dB (in hertz).
- * When this property is changed, the reverb will be recaculated, so only change this sparsely..
+ * Частота lowpass reverb на -60dB (в герцах).
+ * При изменении этого свойства reverb будет пересчитан, поэтому изменяйте его редко..
  *
  * @name roomdim
  * @synonyms rdim
- * @param {number} frequency between 0 and 20000hz
+ * @param {number} frequency от 0 до 20000 Гц
  * @example
  * s("bd sd [~ bd] sd").room(0.5).rlp(10000).rdim(8000)
  * @example
@@ -2202,12 +2202,12 @@ export const { roomlp, rlp } = registerControl('roomlp', 'rlp');
  */
 export const { roomdim, rdim } = registerControl('roomdim', 'rdim');
 /**
- * Reverb fade time (in seconds).
- * When this property is changed, the reverb will be recaculated, so only change this sparsely..
+ * Время затухания reverb (в секундах).
+ * При изменении этого свойства reverb будет пересчитан, поэтому изменяйте его редко..
  *
  * @name roomfade
  * @synonyms rfade
- * @param {number} seconds for the reverb to fade
+ * @param {number} seconds секунды затухания reverb
  * @example
  * s("bd sd [~ bd] sd").room(0.5).rlp(10000).rfade(0.5)
  * @example
@@ -2216,9 +2216,9 @@ export const { roomdim, rdim } = registerControl('roomdim', 'rdim');
  */
 export const { roomfade, rfade } = registerControl('roomfade', 'rfade');
 /**
- * Sets the sample to use as an impulse response for the reverb.
+ * Устанавливает sample для использования в качестве импульсной характеристики для reverb.
  * @name iresponse
- * @param {string | Pattern} sample to use as an impulse response
+ * @param {string | Pattern} sample для использования в качестве импульсной характеристики
  * @synonyms ir
  * @example
  * s("bd sd [~ bd] sd").room(.8).ir("<shaker_large:0 shaker_large:2>")
@@ -2227,7 +2227,7 @@ export const { roomfade, rfade } = registerControl('roomfade', 'rfade');
 export const { ir, iresponse } = registerControl(['ir', 'i'], 'iresponse');
 
 /**
- * Sets speed of the sample for the impulse response.
+ * Устанавливает скорость sample для импульсной характеристики.
  * @name irspeed
  * @param {string | Pattern} speed
  * @example
@@ -2238,9 +2238,9 @@ export const { ir, iresponse } = registerControl(['ir', 'i'], 'iresponse');
 export const { irspeed } = registerControl('irspeed');
 
 /**
- * Sets the beginning of the IR response sample
+ * Устанавливает начальную позицию sample импульсной характеристики
  * @name irbegin
- * @param {string | Pattern} begin between 0 and 1
+ * @param {string | Pattern} begin от 0 до 1
  * @synonyms ir
  * @example
  * samples('github:switchangel/pad')
@@ -2249,11 +2249,11 @@ export const { irspeed } = registerControl('irspeed');
  */
 export const { irbegin } = registerControl('irbegin');
 /**
- * Sets the room size of the reverb, see `room`.
- * When this property is changed, the reverb will be recaculated, so only change this sparsely..
+ * Устанавливает размер комнаты для reverb, смотрите `room`.
+ * При изменении этого свойства reverb будет пересчитан, поэтому изменяйте его редко..
  *
  * @name roomsize
- * @param {number | Pattern} size between 0 and 10
+ * @param {number | Pattern} size от 0 до 10
  * @synonyms rsize, sz, size
  * @example
  * s("bd sd [~ bd] sd").room(.8).rsize(1)
@@ -2270,28 +2270,28 @@ export const { roomsize, size, sz, rsize } = registerControl('roomsize', 'size',
 // ['sclaves'],
 // ['scrash'],
 /**
- * (Deprecated) Wave shaping distortion. WARNING: can suddenly get unpredictably loud.
- * Please use distort instead, which has a more predictable response curve
- * second option in optional array syntax (ex: ".9:.5") applies a postgain to the output
+ * (Устаревший) Дисторшн с формированием волны. ВНИМАНИЕ: может внезапно стать непредсказуемо громким.
+ * Пожалуйста, используйте distort вместо этого, который имеет более предсказуемую кривую отклика
+ * второй параметр в опциональном синтаксисе массива (например: ".9:.5") применяет postgain к выходу
  *
  *
  * @name shape
- * @param {number | Pattern} distortion between 0 and 1
+ * @param {number | Pattern} distortion от 0 до 1
  * @example
  * s("bd sd [~ bd] sd,hh*8").shape("<0 .2 .4 .6 .8>")
  *
  */
 export const { shape } = registerControl(['shape', 'shapevol']);
 /**
- * Wave shaping distortion. CAUTION: it can get loud.
- * Second option in optional array syntax (ex: ".9:.5") applies a postgain to the output. Third option sets the waveshaping type.
- * Most useful values are usually between 0 and 10 (depending on source gain). If you are feeling adventurous, you can turn it up to 11 and beyond ;)
+ * Дисторшн с формированием волны. ВНИМАНИЕ: может быть очень громким.
+ * Второй параметр в опциональном синтаксисе массива (например: ".9:.5") применяет postgain к выходу. Третий параметр устанавливает тип формирования волны.
+ * Наиболее полезные значения обычно между 0 и 10 (в зависимости от исходного gain). Если чувствуете себя смелым, можете увеличить до 11 и выше ;)
  *
  * @name distort
  * @synonyms dist
- * @param {number | Pattern} distortion amount of distortion to apply
- * @param {number | Pattern} volume linear postgain of the distortion
- * @param {number | string | Pattern} type type of distortion to apply
+ * @param {number | Pattern} distortion количество дисторшна для применения
+ * @param {number | Pattern} volume линейный postgain дисторшна
+ * @param {number | string | Pattern} type тип дисторшна для применения
  * @example
  * s("bd sd [~ bd] sd,hh*8").distort("<0 2 3 10:.5>")
  * @example
@@ -2303,22 +2303,22 @@ export const { shape } = registerControl(['shape', 'shapevol']);
 export const { distort, dist } = registerControl(['distort', 'distortvol', 'distorttype'], 'dist');
 
 /**
- * Postgain for waveshaping distortion.
+ * Postgain для дисторшна с формированием волны.
  *
  * @name distortvol
  * @synonyms distvol
- * @param {number | Pattern} volume linear postgain of the distortion
+ * @param {number | Pattern} volume линейный postgain дисторшна
  * @example
  * s("bd*4").bank("tr909").distort(2).distortvol(0.8)
  */
 export const { distortvol } = registerControl('distortvol', 'distvol');
 
 /**
- * Type of waveshaping distortion to apply.
+ * Тип дисторшна с формированием волны для применения.
  *
  * @name distorttype
  * @synonyms disttype
- * @param {number | string | Pattern} type type of distortion to apply
+ * @param {number | string | Pattern} type тип дисторшна для применения
  * @example
  * s("bd*4").bank("tr909").distort(2).distorttype("<0 1 2>")
  *
@@ -2331,8 +2331,8 @@ export const { distortvol } = registerControl('distortvol', 'distvol');
 export const { distorttype } = registerControl('distorttype', 'disttype');
 
 /**
- * Dynamics Compressor. The params are `compressor("threshold:ratio:knee:attack:release")`
- * More info [here](https://developer.mozilla.org/en-US/docs/Web/API/DynamicsCompressorNode?retiredLocale=de#instance_properties)
+ * Динамический компрессор. Параметры: `compressor("threshold:ratio:knee:attack:release")`
+ * Больше информации [здесь](https://developer.mozilla.org/en-US/docs/Web/API/DynamicsCompressorNode?retiredLocale=de#instance_properties)
  *
  * @name compressor
  * @example
@@ -2352,10 +2352,10 @@ export const { compressorRatio } = registerControl('compressorRatio');
 export const { compressorAttack } = registerControl('compressorAttack');
 export const { compressorRelease } = registerControl('compressorRelease');
 /**
- * Changes the speed of sample playback, i.e. a cheap way of changing pitch.
+ * Изменяет скорость воспроизведения sample, т.е. дешёвый способ изменить высоту тона.
  *
  * @name speed
- * @param {number | Pattern} speed -inf to inf, negative numbers play the sample backwards.
+ * @param {number | Pattern} speed от -inf до inf, отрицательные числа воспроизводят sample в обратном направлении.
  * @example
  * s("bd*6").speed("1 2 4 1 -2 -4")
  * @example
@@ -2365,20 +2365,20 @@ export const { compressorRelease } = registerControl('compressorRelease');
 export const { speed } = registerControl('speed');
 
 /**
- * Changes the speed of sample playback, i.e. a cheap way of changing pitch.
+ * Изменяет скорость воспроизведения sample, т.е. дешёвый способ изменить высоту тона.
  *
  * @name stretch
- * @param {number | Pattern} factor -inf to inf, negative numbers play the sample backwards.
+ * @param {number | Pattern} factor от -inf до inf, отрицательные числа воспроизводят sample в обратном направлении.
  * @example
  * s("gm_flute").stretch("1 2 .5")
  *
  */
 export const { stretch } = registerControl('stretch');
 /**
- * Used in conjunction with `speed`, accepts values of "r" (rate, default behavior), "c" (cycles), or "s" (seconds). Using `unit "c"` means `speed` will be interpreted in units of cycles, e.g. `speed "1"` means samples will be stretched to fill a cycle. Using `unit "s"` means the playback speed will be adjusted so that the duration is the number of seconds specified by `speed`.
+ * Используется в сочетании с `speed`, принимает значения "r" (rate, поведение по умолчанию), "c" (cycles), или "s" (seconds). Использование `unit "c"` означает, что `speed` будет интерпретироваться в единицах циклов, например, `speed "1"` означает, что sample будет растянут на весь цикл. Использование `unit "s"` означает, что скорость воспроизведения будет настроена так, чтобы длительность была равна количеству секунд, указанному в `speed`.
  *
  * @name unit
- * @param {number | string | Pattern} unit see description above
+ * @param {number | string | Pattern} unit смотрите описание выше
  * @example
  * speed("1 2 .5 3").s("bd").unit("c").osc()
  * @superdirtOnly
@@ -2387,12 +2387,12 @@ export const { stretch } = registerControl('stretch');
 
 export const { unit } = registerControl('unit');
 /**
- * Made by Calum Gunn. Reminiscent of some weird mixture of filter, ring-modulator and pitch-shifter. The SuperCollider manual defines Squiz as:
+ * Создан Calum Gunn. Напоминает странную смесь filter, ring-modulator и pitch-shifter. Руководство SuperCollider определяет Squiz как:
  *
- * "A simplistic pitch-raising algorithm. It's not meant to sound natural; its sound is reminiscent of some weird mixture of filter, ring-modulator and pitch-shifter, depending on the input. The algorithm works by cutting the signal into fragments (delimited by upwards-going zero-crossings) and squeezing those fragments in the time domain (i.e. simply playing them back faster than they came in), leaving silences inbetween. All the parameters apart from memlen can be modulated."
+ * "Упрощённый алгоритм повышения высоты тона. Он не предназначен для естественного звучания; его звук напоминает странную смесь filter, ring-modulator и pitch-shifter, в зависимости от входного сигнала. Алгоритм работает, разрезая сигнал на фрагменты (разделённые восходящими пересечениями нуля) и сжимая эти фрагменты во временной области (т.е. просто воспроизводя их быстрее, чем они поступили), оставляя паузы между ними. Все параметры, кроме memlen, могут модулироваться."
  *
  * @name squiz
- * @param {number | Pattern} squiz Try passing multiples of 2 to it - 2, 4, 8 etc.
+ * @param {number | Pattern} squiz Попробуйте передавать кратные 2 - 2, 4, 8 и т.д.
  * @example
  * squiz("2 4/2 6 [8 16]").s("bd").osc()
  * @superdirtOnly
@@ -2413,10 +2413,10 @@ export const { squiz } = registerControl('squiz');
 // TODO: Use a rest (~) to override the effect <- vowel
 /**
  *
- * Formant filter to make things sound like vowels.
+ * Формантный filter, чтобы звук был похож на гласные.
  *
  * @name vowel
- * @param {string | Pattern} vowel You can use a e i o u ae aa oe ue y uh un en an on, corresponding to [a] [e] [i] [o] [u] [æ] [ɑ] [ø] [y] [ɯ] [ʌ] [œ̃] [ɛ̃] [ɑ̃] [ɔ̃]. Aliases: aa = å = ɑ, oe = ø = ö, y = ı, ae = æ.
+ * @param {string | Pattern} vowel Можно использовать a e i o u ae aa oe ue y uh un en an on, соответствующие [a] [e] [i] [o] [u] [æ] [ɑ] [ø] [y] [ɯ] [ʌ] [œ̃] [ɛ̃] [ɑ̃] [ɔ̃]. Алиасы: aa = å = ɑ, oe = ø = ö, y = ı, ae = æ.
  * @example
  * note("[c2 <eb2 <g2 g1>>]*2").s('sawtooth')
  * .vowel("<a e i <o u>>")
@@ -2426,9 +2426,9 @@ export const { squiz } = registerControl('squiz');
  */
 export const { vowel } = registerControl('vowel');
 /* // TODO: find out how it works
- * Made by Calum Gunn. Divides an audio stream into tiny segments, using the signal's zero-crossings as segment boundaries, and discards a fraction of them. Takes a number between 1 and 100, denoted the percentage of segments to drop. The SuperCollider manual describes the Waveloss effect this way:
+ * Создан Calum Gunn. Делит аудио поток на крошечные сегменты, используя пересечения нуля сигнала в качестве границ сегментов, и отбрасывает часть из них. Принимает число от 1 до 100, обозначающее процент отбрасываемых сегментов. Руководство SuperCollider описывает эффект Waveloss следующим образом:
  *
- * Divide an audio stream into tiny segments, using the signal's zero-crossings as segment boundaries, and discard a fraction of them (i.e. replace them with silence of the same length). The technique was described by Trevor Wishart in a lecture. Parameters: the filter drops drop out of out of chunks. mode can be 1 to drop chunks in a simple deterministic fashion (e.g. always dropping the first 30 out of a set of 40 segments), or 2 to drop chunks randomly but in an appropriate proportion.)
+ * Разделяет аудио поток на крошечные сегменты, используя пересечения нуля сигнала в качестве границ сегментов, и отбрасывает часть из них (т.е. заменяет их тишиной той же длины). Эта техника была описана Trevor Wishart в лекции. Параметры: filter отбрасывает drop из out сегментов. mode может быть 1 для отбрасывания сегментов простым детерминированным способом (например, всегда отбрасывая первые 30 из набора из 40 сегментов), или 2 для случайного отбрасывания сегментов, но в соответствующей пропорции.)
  *
  * mode: ?
  * waveloss: ?
@@ -2437,10 +2437,10 @@ export const { vowel } = registerControl('vowel');
  */
 export const { waveloss } = registerControl('waveloss');
 /**
- * Noise crackle density
+ * Плотность шума crackle
  *
  * @name density
- * @param {number | Pattern} density between 0 and x
+ * @param {number | Pattern} density от 0 до x
  * @example
  * s("crackle*4").density("<0.01 0.04 0.2 0.5>".slow(4))
  *
@@ -2486,7 +2486,7 @@ export const { uid } = registerControl('uid');
 export const { val } = registerControl('val');
 export const { cps } = registerControl('cps');
 /**
- * Multiplies the duration with the given number. Also cuts samples off at the end if they exceed the duration.
+ * Умножает длительность на заданное число. Также обрезает sample в конце, если они превышают длительность.
  *
  * @name clip
  * @synonyms legato
@@ -2498,7 +2498,7 @@ export const { cps } = registerControl('cps');
 export const { clip, legato } = registerControl('clip', 'legato');
 
 /**
- * Sets the duration of the event in cycles. Similar to clip / legato, it also cuts samples off at the end if they exceed the duration.
+ * Устанавливает длительность события в циклах. Аналогично clip / legato, также обрезает sample в конце, если они превышают длительность.
  *
  * @name duration
  * @synonyms dur
@@ -2527,10 +2527,10 @@ export const { zdelay } = registerControl('zdelay');
 export const { zzfx } = registerControl('zzfx');
 
 /**
- * Sets the color of the hap in visualizations like pianoroll or highlighting.
+ * Устанавливает цвет hap в визуализациях, таких как pianoroll или подсветка.
  * @name color
  * @synonyms colour
- * @param {string} color Hexadecimal or CSS color name
+ * @param {string} color Шестнадцатеричное значение или название цвета CSS
  */
 export const { color, colour } = registerControl(['color', 'colour']);
 
@@ -2540,13 +2540,13 @@ export let createParams = (...names) =>
   names.reduce((acc, name) => Object.assign(acc, { [name]: createParam(name) }), {});
 
 /**
- * ADSR envelope: Combination of Attack, Decay, Sustain, and Release.
+ * ADSR envelope: Комбинация Attack, Decay, Sustain и Release.
  *
  * @name adsr
- * @param {number | Pattern} time attack time in seconds
- * @param {number | Pattern} time decay time in seconds
- * @param {number | Pattern} gain sustain level (0 to 1)
- * @param {number | Pattern} time release time in seconds
+ * @param {number | Pattern} time время attack в секундах
+ * @param {number | Pattern} time время decay в секундах
+ * @param {number | Pattern} gain уровень sustain (от 0 до 1)
+ * @param {number | Pattern} time время release в секундах
  * @example
  * note("[c3 bb2 f3 eb3]*2").sound("sawtooth").lpf(600).adsr(".1:.1:.5:.2")
  */
@@ -2574,10 +2574,10 @@ export const ar = register('ar', (t, pat) => {
 //MIDI
 
 /**
- * MIDI channel: Sets the MIDI channel for the event.
+ * MIDI канал: Устанавливает MIDI канал для события.
  *
  * @name midichan
- * @param {number | Pattern} channel MIDI channel number (0-15)
+ * @param {number | Pattern} channel номер MIDI канала (0-15)
  * @example
  * note("c4").midichan(1).midi()
  */
@@ -2586,31 +2586,31 @@ export const { midichan } = registerControl('midichan');
 export const { midimap } = registerControl('midimap');
 
 /**
- * MIDI port: Sets the MIDI port for the event.
+ * MIDI порт: Устанавливает MIDI порт для события.
  *
  * @name midiport
- * @param {number | Pattern} port MIDI port
+ * @param {number | Pattern} port MIDI порт
  * @example
  * note("c a f e").midiport("<0 1 2 3>").midi()
  */
 export const { midiport } = registerControl('midiport');
 
 /**
- * MIDI command: Sends a MIDI command message.
+ * MIDI команда: Отправляет сообщение MIDI команды.
  *
  * @name midicmd
- * @param {number | Pattern} command MIDI command
+ * @param {number | Pattern} command MIDI команда
  * @example
  * midicmd("clock*48,<start stop>/2").midi()
  */
 export const { midicmd } = registerControl('midicmd');
 
 /**
- * MIDI control: Sends a MIDI control change message.
+ * MIDI контроллер: Отправляет сообщение изменения MIDI контроллера.
  *
  * @name control
- * @param {number | Pattern}  MIDI control number (0-127)
- * @param {number | Pattern}  MIDI controller value (0-127)
+ * @param {number | Pattern}  номер MIDI контроллера (0-127)
+ * @param {number | Pattern}  значение MIDI контроллера (0-127)
  */
 export const control = register('control', (args, pat) => {
   if (!Array.isArray(args)) {
@@ -2621,54 +2621,54 @@ export const control = register('control', (args, pat) => {
 });
 
 /**
- * MIDI control number: Sends a MIDI control change message.
+ * MIDI номер контроллера: Отправляет сообщение изменения MIDI контроллера.
  *
  * @name ccn
- * @param {number | Pattern}  MIDI control number (0-127)
+ * @param {number | Pattern}  номер MIDI контроллера (0-127)
  */
 export const { ccn } = registerControl('ccn');
 /**
- * MIDI control value: Sends a MIDI control change message.
+ * MIDI значение контроллера: Отправляет сообщение изменения MIDI контроллера.
  *
  * @name ccv
- * @param {number | Pattern}  MIDI control value (0-127)
+ * @param {number | Pattern}  значение MIDI контроллера (0-127)
  */
 export const { ccv } = registerControl('ccv');
 export const { ctlNum } = registerControl('ctlNum');
 // TODO: ctlVal?
 
 /**
- * MIDI NRPN non-registered parameter number: Sends a MIDI NRPN non-registered parameter number message.
+ * MIDI NRPN номер нерегистрированного параметра: Отправляет сообщение MIDI NRPN номера нерегистрированного параметра.
  * @name nrpnn
- * @param {number | Pattern} nrpnn MIDI NRPN non-registered parameter number (0-127)
+ * @param {number | Pattern} nrpnn MIDI NRPN номер нерегистрированного параметра (0-127)
  * @example
  * note("c4").nrpnn("1:8").nrpv("123").midichan(1).midi()
  */
 export const { nrpnn } = registerControl('nrpnn');
 /**
- * MIDI NRPN non-registered parameter value: Sends a MIDI NRPN non-registered parameter value message.
+ * MIDI NRPN значение нерегистрированного параметра: Отправляет сообщение MIDI NRPN значения нерегистрированного параметра.
  * @name nrpv
- * @param {number | Pattern} nrpv MIDI NRPN non-registered parameter value (0-127)
+ * @param {number | Pattern} nrpv MIDI NRPN значение нерегистрированного параметра (0-127)
  * @example
  * note("c4").nrpnn("1:8").nrpv("123").midichan(1).midi()
  */
 export const { nrpv } = registerControl('nrpv');
 
 /**
- * MIDI program number: Sends a MIDI program change message.
+ * MIDI номер программы: Отправляет сообщение изменения MIDI программы.
  *
  * @name progNum
- * @param {number | Pattern} program MIDI program number (0-127)
+ * @param {number | Pattern} program номер MIDI программы (0-127)
  * @example
  * note("c4").progNum(10).midichan(1).midi()
  */
 export const { progNum } = registerControl('progNum');
 
 /**
- * MIDI sysex: Sends a MIDI sysex message.
+ * MIDI sysex: Отправляет сообщение MIDI sysex.
  * @name sysex
  * @param {number | Pattern} id Sysex ID
- * @param {number | Pattern} data Sysex data
+ * @param {number | Pattern} data Sysex данные
  * @example
  * note("c4").sysex(["0x77", "0x01:0x02:0x03:0x04"]).midichan(1).midi()
  */
@@ -2680,7 +2680,7 @@ export const sysex = register('sysex', (args, pat) => {
   return pat.sysexid(id).sysexdata(data);
 });
 /**
- * MIDI sysex ID: Sends a MIDI sysex identifier message.
+ * MIDI sysex ID: Отправляет сообщение идентификатора MIDI sysex.
  * @name sysexid
  * @param {number | Pattern} id Sysex ID
  * @example
@@ -2688,16 +2688,16 @@ export const sysex = register('sysex', (args, pat) => {
  */
 export const { sysexid } = registerControl('sysexid');
 /**
- * MIDI sysex data: Sends a MIDI sysex message.
+ * MIDI sysex данные: Отправляет сообщение MIDI sysex.
  * @name sysexdata
- * @param {number | Pattern} data Sysex data
+ * @param {number | Pattern} data Sysex данные
  * @example
  * note("c4").sysexid("0x77").sysexdata("0x01:0x02:0x03:0x04").midichan(1).midi()
  */
 export const { sysexdata } = registerControl('sysexdata');
 
 /**
- * MIDI pitch bend: Sends a MIDI pitch bend message.
+ * MIDI pitch bend: Отправляет сообщение MIDI pitch bend.
  * @name midibend
  * @param {number | Pattern} midibend MIDI pitch bend (-1 - 1)
  * @example
@@ -2705,7 +2705,7 @@ export const { sysexdata } = registerControl('sysexdata');
  */
 export const { midibend } = registerControl('midibend');
 /**
- * MIDI key after touch: Sends a MIDI key after touch message.
+ * MIDI key after touch: Отправляет сообщение MIDI key after touch.
  * @name miditouch
  * @param {number | Pattern} miditouch MIDI key after touch (0-1)
  * @example
@@ -2717,18 +2717,18 @@ export const { miditouch } = registerControl('miditouch');
 export const { polyTouch } = registerControl('polyTouch');
 
 /**
- * The host to send open sound control messages to. Requires running the OSC bridge.
+ * Хост для отправки сообщений open sound control. Требует запущенный OSC bridge.
  * @name oschost
- * @param {string | Pattern} oschost e.g. 'localhost'
+ * @param {string | Pattern} oschost например, 'localhost'
  * @example
  * note("c4").oschost('127.0.0.1').oscport(57120).osc();
  */
 export const { oschost } = registerControl('oschost');
 
 /**
- * The port to send open sound control messages to. Requires running the OSC bridge.
+ * Порт для отправки сообщений open sound control. Требует запущенный OSC bridge.
  * @name oscport
- * @param {number | Pattern} oscport e.g. 57120
+ * @param {number | Pattern} oscport например, 57120
  * @example
  * note("c4").oschost('127.0.0.1').oscport(57120).osc();
  */
@@ -2742,10 +2742,10 @@ export const getControlName = (alias) => {
 };
 
 /**
- * Sets properties in a batch.
+ * Устанавливает свойства в пакетном режиме.
  *
  * @name as
- * @param {String | Array} mapping the control names that are set
+ * @param {String | Array} mapping названия контроллеров, которые устанавливаются
  * @example
  * "c:.5 a:1 f:.25 e:.8".as("note:clip")
  * @example
@@ -2761,8 +2761,8 @@ export const as = register('as', (mapping, pat) => {
 });
 
 /**
- * Allows you to scrub an audio file like a tape loop by passing values that represents the position in the audio file
- * in the optional array syntax ex: "0.5:2", the second value controls the speed of playback
+ * Позволяет "скрабить" аудио файл, как ленточную петлю, передавая значения, представляющие позицию в аудио файле
+ * в опциональном синтаксисе массива, например: "0.5:2", второе значение контролирует скорость воспроизведения
  * @name scrub
  * @memberof Pattern
  * @returns Pattern

@@ -14,13 +14,13 @@
 
 var reverbGen = {};
 
-/** Generates a reverb impulse response.
+/** Генерирует импульсный отклик reverb.
 
- @param {!Object} params TODO: Document the properties.
- @param {!function(!AudioBuffer)} callback Function to call when
-  the impulse response has been generated. The impulse response
-  is passed to this function as its parameter. May be called
-  immediately within the current execution context, or later. */
+ @param {!Object} params TODO: Документировать свойства.
+ @param {!function(!AudioBuffer)} callback Функция для вызова, когда
+  импульсный отклик был сгенерирован. Импульсный отклик
+  передается этой функции в качестве параметра. Может быть вызвана
+  немедленно в текущем контексте выполнения или позже. */
 reverbGen.generateReverb = function (params, callback) {
   var audioContext = params.audioContext || new AudioContext();
   var sampleRate = audioContext.sampleRate;
@@ -46,15 +46,15 @@ reverbGen.generateReverb = function (params, callback) {
   applyGradualLowpass(reverbIR, params.lpFreqStart || 0, params.lpFreqEnd || 0, params.decayTime, callback);
 };
 
-/** Creates a canvas element showing a graph of the given data.
+/** Создает элемент canvas с графиком предоставленных данных.
 
 
- @param {!Float32Array} data An array of numbers, or a Float32Array.
- @param {number} width Width in pixels of the canvas.
- @param {number} height Height in pixels of the canvas.
- @param {number} min Minimum value of data for the graph (lower edge).
- @param {number} max Maximum value of data in the graph (upper edge).
- @return {!CanvasElement} The generated canvas element. */
+ @param {!Float32Array} data Массив чисел или Float32Array.
+ @param {number} width Ширина canvas в пикселях.
+ @param {number} height Высота canvas в пикселях.
+ @param {number} min Минимальное значение данных для графика (нижний край).
+ @param {number} max Максимальное значение данных на графике (верхний край).
+ @return {!CanvasElement} Сгенерированный элемент canvas. */
 reverbGen.generateGraph = function (data, width, height, min, max) {
   var canvas = document.createElement('canvas');
   canvas.width = width;
@@ -71,15 +71,15 @@ reverbGen.generateGraph = function (data, width, height, min, max) {
   return canvas;
 };
 
-/** Applies a constantly changing lowpass filter to the given sound.
+/** Применяет постоянно изменяющийся lowpass filter к данному звуку.
 
  @private
  @param {!AudioBuffer} input
  @param {number} lpFreqStart
  @param {number} lpFreqEnd
  @param {number} lpFreqEndAt
- @param {!function(!AudioBuffer)} callback May be called
-  immediately within the current execution context, or later.*/
+ @param {!function(!AudioBuffer)} callback Может быть вызвана
+  немедленно в текущем контексте выполнения или позже.*/
 var applyGradualLowpass = function (input, lpFreqStart, lpFreqEnd, lpFreqEndAt, callback) {
   if (lpFreqStart == 0) {
     callback(input);
@@ -114,7 +114,7 @@ var applyGradualLowpass = function (input, lpFreqStart, lpFreqEnd, lpFreqEndAt, 
 
 /** @private
  @param {!AudioBuffer} buffer
- @return {!Array.<!Float32Array>} An array containing the Float32Array of each channel's samples. */
+ @return {!Array.<!Float32Array>} Массив, содержащий Float32Array с sample каждого канала. */
 var getAllChannelData = function (buffer) {
   var channels = [];
   for (var i = 0; i < buffer.numberOfChannels; i++) {
@@ -124,7 +124,7 @@ var getAllChannelData = function (buffer) {
 };
 
 /** @private
- @return {number} A random number from -1 to 1. */
+ @return {number} Случайное число от -1 до 1. */
 var randomSample = function () {
   return Math.random() * 2 - 1;
 };

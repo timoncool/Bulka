@@ -87,11 +87,11 @@ async function aliasBankPath(path) {
 }
 
 /**
- * Register an alias for a bank of sounds.
- * Optionally accepts a single argument map of bank aliases.
- * Optionally accepts a single argument string of a path to a JSON file containing bank aliases.
- * @param {string} bank - The bank to alias
- * @param {string} alias - The alias to use for the bank
+ * Регистрирует alias для банка звуков.
+ * Опционально принимает один аргумент - объект с alias банков.
+ * Опционально принимает один аргумент - строку с путем к JSON файлу, содержащему alias банков.
+ * @param {string} bank - Банк для создания alias
+ * @param {string} alias - Alias, который будет использоваться для банка
  */
 export async function aliasBank(...args) {
   switch (args.length) {
@@ -109,9 +109,9 @@ export async function aliasBank(...args) {
 }
 
 /**
- * Register an alias for a sound.
- * @param {string} original - The original sound name
- * @param {string} alias - The alias to use for the sound
+ * Регистрирует alias для звука.
+ * @param {string} original - Оригинальное имя звука
+ * @param {string} alias - Alias, который будет использоваться для звука
  */
 export function soundAlias(original, alias) {
   if (getSound(original) == null) {
