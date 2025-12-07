@@ -247,7 +247,7 @@ stack(
       }
       editor.setCode(code);
       setDocumentTitle(code);
-      logger(`Welcome to Strudel! ${msg} Press play or hit ctrl+enter to run it!`, 'highlight');
+      logger(`Добро пожаловать в Bulka! ${msg} Нажми играть или ctrl+enter чтобы запустить!`, 'highlight');
     });
 
     editorRef.current = editor;
@@ -277,7 +277,7 @@ stack(
 
   const setDocumentTitle = (code) => {
     const meta = getMetadata(code);
-    document.title = (meta.title ? `${meta.title} - ` : '') + 'Strudel REPL';
+    document.title = (meta.title ? `${meta.title} - ` : '') + 'Bulka редактор';
   };
 
   const handleTogglePlay = async () => {

@@ -52,6 +52,10 @@ pnpm dev
 
 Пакеты Bulka доступны на npm под неймспейсом `@strudel`. Подробнее в [документации](https://strudel.cc/technical-manual/project-start).
 
+## Автор
+
+Проект развивается [Nerual Dreming](https://t.me/nerual_dreming) — основателем [ArtGeneration.me](https://artgeneration.me/), техноблогером и нейро-евангелистом.
+
 ## Благодарности
 
 Bulka основана на проекте [Strudel](https://strudel.cc/) от Alex McLean и сообщества, который в свою очередь является JavaScript-реализацией [TidalCycles](https://tidalcycles.org/). Спасибо всем контрибьюторам оригинального проекта.
