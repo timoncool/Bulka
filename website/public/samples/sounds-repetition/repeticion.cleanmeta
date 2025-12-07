@@ -1,0 +1,23 @@
+{
+  "copyright": "(c) 2021 Alexandra Cardenas + Alex McLean",
+  "description": "Generaci\u00f3n Algorave, amamos la repetici\u00f3n",
+  "email": "alex@slab.org",
+  "license": "CC0",
+  "maintainer": "alex",
+  "metadata-format": "clean-0.1",
+  "provenance": "Various speech synths",
+  "sounds": [
+    {
+      "description": "'Female' 1",
+      "filename": "repeticion/001-algorave-sp.wav",
+      "shortname": "001-algorave-sp",
+      "type": "sample"
+    },
+    {
+      "description": "'Female' 2",
+      "filename": "repeticion/002-algorave-sp.wav",
+      "shortname": "002-algorave-sp",
+      "type": "sample"
+    }
+  ]
+}

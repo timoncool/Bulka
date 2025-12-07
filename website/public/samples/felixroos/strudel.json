@@ -1,0 +1,73 @@
+{
+  "president_bd": "president/president_bd.mp3",
+  "president_sd": ["president/president_sd.mp3", "president/president_sd2.mp3"],
+  "president_hh": ["president/president_hh.mp3"],
+  "president_snap": ["president/president_snap.mp3"],
+  "president_oh": ["president/president_oh.mp3"],
+  "beautybeast": ["beautybeast/beautybeast.wav"],
+  "rhodes": { "c4": "rhodes/rhodes_c4_sainttropez.ogg" },
+  "rhodes2x": { "c5": "rhodes/rhodes_c5_sainttropez.ogg" },
+  "ebass": { "f2": "ebass/ebass_f2_puthli.ogg" },
+  "xylo": {
+    "bb2": "xylo/xylo_bb2_mancini.ogg",
+    "bb3": "xylo/xylo_bb3_mancini.ogg"
+  },
+  "kalimba": { "c5": "kalimba/kalimba-c5.mp3" },
+  "pluck": { "e4": "pluck/pluck_e4_ashikawa.ogg" },
+  "rene": [
+    "rene/01rene.wav",
+    "rene/02rene.wav",
+    "rene/03rene.wav",
+    "rene/04rene.wav",
+    "rene/05rene.wav",
+    "rene/06rene.wav",
+    "rene/07rene.wav",
+    "rene/08rene.wav",
+    "rene/09rene.wav",
+    "rene/10rene.wav",
+    "rene/11rene.wav",
+    "rene/12rene.wav",
+    "rene/13rene.wav",
+    "rene/14rene.wav",
+    "rene/15rene.wav"
+  ],
+  "jazzbass": {
+    "_base": "https://raw.githubusercontent.com/felixroos/samples/main/jazzbass/moog_",
+    "c1": "c2.mp3",
+    "e1": "e2.mp3",
+    "a1": "a2.mp3",
+    "c2": "c3.mp3",
+    "e2": "e3.mp3",
+    "a2": "a3.mp3",
+    "c3": "c4.mp3"
+  },
+  "stage73": {
+    "_base": "https://raw.githubusercontent.com/felixroos/samples/main/stage73/",
+    "c2": ["quiet/c2.mp3", "loud/c2.mp3"],
+    "e2": ["quiet/e2.mp3", "loud/e2.mp3"],
+    "a2": ["quiet/a2.mp3", "loud/a2.mp3"],
+    "c3": ["quiet/c3.mp3", "loud/c3.mp3"],
+    "e3": ["quiet/e3.mp3", "loud/e3.mp3"],
+    "a3": ["quiet/a3.mp3", "loud/a3.mp3"],
+    "c4": ["quiet/c4.mp3", "loud/c4.mp3"],
+    "e4": ["quiet/e4.mp3", "loud/e4.mp3"],
+    "a4": ["quiet/a4.mp3", "loud/a4.mp3"],
+    "c5": ["quiet/c5.mp3", "loud/c5.mp3"],
+    "e5": ["quiet/e5.mp3", "loud/e5.mp3"],
+    "a5": ["quiet/a5.mp3", "loud/a5.mp3"],
+    "c6": ["quiet/c6.mp3", "loud/c6.mp3"]
+  },
+  "flute": {
+    "_base": "https://raw.githubusercontent.com/felixroos/samples/main/flute/",
+    "g2": "g2.mp3",
+    "c3": "c3.mp3",
+    "f3": "f3.mp3",
+    "c4": "c4.mp3",
+    "f4": "f4.mp3",
+    "c5": "c5.mp3"
+  },
+  "vibtail": {
+    "_base": "https://raw.githubusercontent.com/felixroos/samples/main/vocals/",
+    "db3": "vibtail.mp3"
+  }
+}

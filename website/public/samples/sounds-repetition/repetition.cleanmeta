@@ -1,0 +1,53 @@
+{
+  "copyright": "(c) 2021 Alex McLean",
+  "description": "",
+  "email": "alex@slab.org",
+  "license": "CC0",
+  "maintainer": "alex",
+  "metadata-format": "clean-0.1",
+  "provenance": "Various dodgy speech synths",
+  "sounds": [
+    {
+      "description": "English 'male' voice",
+      "filename": "repetition/a.wav",
+      "shortname": "a",
+      "type": "sample"
+    },
+    {
+      "description": "English 'female' voice",
+      "filename": "repetition/b.wav",
+      "shortname": "b",
+      "type": "sample"
+    },
+    {
+      "description": "Irish accent child voice",
+      "filename": "repetition/c.wav",
+      "shortname": "c",
+      "type": "sample"
+    },
+    {
+      "description": "Post English 'female' voice' 2",
+      "filename": "repetition/d.wav",
+      "shortname": "d",
+      "type": "sample"
+    },
+    {
+      "description": "Posh English 'male' voice 2",
+      "filename": "repetition/e.wav",
+      "shortname": "e",
+      "type": "sample"
+    },
+    {
+      "description": "Older posh English 'male' voice",
+      "filename": "repetition/f.wav",
+      "shortname": "f",
+      "type": "sample"
+    },
+    {
+      "description": "Northern computer voice",
+      "filename": "repetition/g.wav",
+      "shortname": "g",
+      "type": "sample"
+    }
+  ]
+}
