@@ -14,11 +14,11 @@ const currentPage = Astro.url.pathname;
 const posts = (await getCollection('blog')).sort((a, b) => compareDesc(a.data.date, b.data.date));
 ---
 
-<html dir={'ltr'} lang={'en'} class="initial dark">
+<html dir={'ltr'} lang={'ru'} class="initial dark">
   <head>
     <HeadCommon />
     <!-- <HeadSEO frontmatter={frontmatter} canonicalUrl={canonicalURL} /> -->
-    <title>🌀 Strudel Blog</title>
+    <title>🍞 Блог Bulka</title>
   </head>
 
   <body class="h-app-height text-gray-50 bg-background">
@@ -33,11 +33,11 @@ const posts = (await getCollection('blog')).sort((a, b) => compareDesc(a.data.da
           </aside>
           <PageContent>
             <div class="border-b-4 border-lineHighlight py-4">
-              <h1>Strudel Blog</h1>
+              <h1>Блог Bulka</h1>
               <p>
-                Welcome to the Strudel Blog, where we will keep you updated with the latest changes and things happening
-                in the strudelsphere. You can subscribe to this blog using <a target="_blank" href="/rss.xml"
-                  >this rss link</a
+                Добро пожаловать в блог Bulka, где мы будем держать вас в курсе последних изменений и событий.
+                Подписаться на блог можно по <a target="_blank" href="/rss.xml"
+                  >этой RSS-ссылке</a
                 >
               </p>
             </div>

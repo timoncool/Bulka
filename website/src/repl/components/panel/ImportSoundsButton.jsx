@@ -54,7 +54,7 @@ export default function ImportSoundsButton({ onComplete }) {
             onChange();
           }}
         />
-        {isUploading ? 'importing...' : 'import sounds folder'}
+        {isUploading ? 'загрузка...' : 'импортировать папку звуков'}
       </label>
     </div>
   );

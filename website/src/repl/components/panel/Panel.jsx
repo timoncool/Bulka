@@ -63,7 +63,7 @@ export function VerticalPanel({ context }) {
           onClick={(e) => {
             setIsPanelOpened(true);
           }}
-          aria-label="open menu panel"
+          aria-label="открыть панель меню"
           className={cx(
             'flex flex-col hover:bg-lineBackground items-center cursor-pointer justify-center w-full  h-full',
           )}
@@ -76,15 +76,15 @@ export function VerticalPanel({ context }) {
 }
 
 const tabNames = {
-  welcome: 'intro',
-  patterns: 'patterns',
-  sounds: 'sounds',
-  reference: 'reference',
-  console: 'console',
-  settings: 'settings',
+  привет: 'intro',
+  паттерны: 'patterns',
+  звуки: 'sounds',
+  справка: 'reference',
+  консоль: 'console',
+  настройки: 'settings',
 };
 if (TAURI) {
-  tabNames.files = 'files';
+  tabNames['файлы'] = 'files';
 }
 
 function PanelNav({ children, className, settings, ...props }) {
@@ -182,7 +182,7 @@ function PinButton({ pinned }) {
         'text-foreground max-h-8 min-h-8 max-w-8 min-w-8 items-center justify-center p-1.5 group-hover:flex',
         pinned ? 'flex' : 'hidden',
       )}
-      aria-label="Pin Menu Panel"
+      aria-label="Закрепить панель"
     >
       <svg
         stroke="currentColor"
@@ -206,7 +206,7 @@ function CloseButton({ onClick }) {
       className={cx(
         'text-foreground max-h-8 min-h-8 max-w-8 min-w-8 items-center justify-center p-1.5 group-hover:flex',
       )}
-      aria-label="Close Menu"
+      aria-label="Закрыть меню"
     >
       <XMarkIcon />
     </button>

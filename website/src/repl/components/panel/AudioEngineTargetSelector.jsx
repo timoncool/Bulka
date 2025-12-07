@@ -17,9 +17,9 @@ export function AudioEngineTargetSelector({ target, onChange, isDisabled }) {
       {target === audioEngineTargets.osc && (
         <div>
           <p className="text-sm italic">
-            ⚠ All events routed to OSC, audio is silenced! See{' '}
+            ⚠ Все события направляются в OSC, звук отключён! См.{' '}
             <a className="text-blue-500" href="https://strudel.cc/learn/input-output/">
-              Docs
+              документацию
             </a>
           </p>
         </div>

@@ -78,19 +78,19 @@ export function SoundsTab() {
   });
   return (
     <div id="sounds-tab" className="px-4 flex gap-2 flex-col w-full h-full text-foreground">
-      <Textbox placeholder="Search" value={search} onChange={(v) => setSearch(v)} />
+      <Textbox placeholder="Поиск" value={search} onChange={(v) => setSearch(v)} />
 
       <div className=" flex shrink-0 flex-wrap">
         <ButtonGroup
           value={soundsFilter}
           onChange={(value) => settingsMap.setKey('soundsFilter', value)}
           items={{
-            samples: 'samples',
-            drums: 'drum-machines',
-            synths: 'Synths',
-            wavetables: 'Wavetables',
-            user: 'User',
-            importSounds: 'import-sounds',
+            samples: 'сэмплы',
+            drums: 'драм-машины',
+            synths: 'синтезаторы',
+            wavetables: 'волновые таблицы',
+            user: 'свои',
+            importSounds: 'импорт звуков',
           }}
         ></ButtonGroup>
       </div>
@@ -98,10 +98,10 @@ export function SoundsTab() {
       {soundsFilter === soundFilterType.USER && soundEntries.length > 0 && (
         <ActionButton
           className="pl-2"
-          label="delete-all"
+          label="удалить все"
           onClick={async () => {
             try {
-              const confirmed = await confirmDialog('Delete all imported user samples?');
+              const confirmed = await confirmDialog('Удалить все импортированные сэмплы?');
               if (confirmed) {
                 clearIDB(userSamplesDBConfig.dbName);
                 soundMap.set({});
@@ -168,15 +168,15 @@ export function SoundsTab() {
           <div className="prose dark:prose-invert min-w-full pt-2 pb-8 px-4">
             <ImportSoundsButton onComplete={() => settingsMap.setKey('soundsFilter', 'user')} />
             <p>
-              To import sounds into strudel, they must be contained{' '}
+              Чтобы импортировать звуки, они должны находиться{' '}
               <a href={`${baseNoTrailing}/learn/samples/#from-disk-via-import-sounds-folder`} target="_blank">
-                within a folder or subfolder
+                в папке или подпапке
               </a>
-              . The best way to do this is to upload a “samples” folder containing subfolders of individual sounds or
-              soundbanks (see diagram below).{' '}
+              . Лучший способ — загрузить папку "samples", содержащую подпапки с отдельными звуками или
+              звуковыми банками (см. диаграмму ниже).{' '}
             </p>
             <pre className="bg-background" key={'sample-diagram'}>
-              {`└─ samples <-- import this folder
+              {`└─ samples <-- импортируй эту папку
    ├─ swoop
    │  ├─ swoopshort.wav
    │  ├─ swooplong.wav
@@ -187,30 +187,30 @@ export function SoundsTab() {
       └─ smashmiddle.wav`}
             </pre>
             <p>
-              The name of a subfolder corresponds to the sound name under the “user” tab. Multiple samples within a
-              subfolder are all labelled with the same name, but can be accessed using “.n( )” - remember sounds are
-              zero-indexed and in alphabetical order!
+              Имя подпапки соответствует имени звука во вкладке "свои". Несколько сэмплов в одной
+              подпапке имеют одинаковое имя, но доступны через ".n( )" — помни, что нумерация
+              начинается с нуля и идёт в алфавитном порядке!
             </p>
             <p>
-              For more information, and other ways to use your own sounds in strudel,{' '}
+              Больше информации и другие способы использования своих звуков —{' '}
               <a href={`${baseNoTrailing}/learn/samples/#from-disk-via-import-sounds-folder`} target="_blank">
-                check out the docs
+                в документации
               </a>
               !
             </p>
-            <h3>Preview Sounds</h3>
+            <h3>Предпрослушка звуков</h3>
             <pre className="bg-background" key={'sample-preview'}>
               n("0 1 2 3 4 5").s("sample-name")
             </pre>
             <p>
-              Paste the line above into the main editor to hear the uploaded folder. Remember to use the name of your
-              sample as it appears under the "user" tab.
+              Вставь строку выше в редактор, чтобы услышать загруженную папку. Используй имя сэмпла
+              как оно отображается во вкладке "свои".
             </p>
           </div>
         ) : (
           ''
         )}
-        {!soundEntries.length && soundsFilter !== 'importSounds' ? 'No sounds loaded' : ''}
+        {!soundEntries.length && soundsFilter !== 'importSounds' ? 'Звуки не загружены' : ''}
       </div>
     </div>
   );

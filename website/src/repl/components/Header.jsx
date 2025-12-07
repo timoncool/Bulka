@@ -55,7 +55,7 @@ export function Header({ context, embedded = false }) {
               <span className="text-sm font-medium">REPL</span>
               {!isEmbedded && isButtonRowHidden && (
                 <a href={`${baseNoTrailing}/learn`} className="text-sm opacity-25 font-medium">
-                  DOCS
+                  ДОКИ
                 </a>
               )}
             </div>
@@ -66,7 +66,7 @@ export function Header({ context, embedded = false }) {
         <div className="flex max-w-full overflow-auto text-foreground px-1 md:px-2">
           <button
             onClick={handleTogglePlay}
-            title={started ? 'stop' : 'play'}
+            title={started ? 'стоп' : 'плей'}
             className={cx(
               !isEmbedded ? 'p-2' : 'px-2',
               'hover:opacity-50',
@@ -76,22 +76,22 @@ export function Header({ context, embedded = false }) {
             {!pending ? (
               <span className={cx('flex items-center space-x-2')}>
                 {started ? <StopCircleIcon className="w-6 h-6" /> : <PlayCircleIcon className="w-6 h-6" />}
-                {!isEmbedded && <span>{started ? 'stop' : 'play'}</span>}
+                {!isEmbedded && <span>{started ? 'стоп' : 'плей'}</span>}
               </span>
             ) : (
-              <>loading...</>
+              <>загрузка...</>
             )}
           </button>
           <button
             onClick={handleEvaluate}
-            title="update"
+            title="обновить"
             className={cx(
               'flex items-center space-x-1',
               !isEmbedded ? 'p-2' : 'px-2',
               !isDirty || !activeCode ? 'opacity-50' : 'hover:opacity-50',
             )}
           >
-            {!isEmbedded && <span>update</span>}
+            {!isEmbedded && <span>обновить</span>}
           </button>
           {/* !isEmbedded && (
             <button
@@ -104,23 +104,23 @@ export function Header({ context, embedded = false }) {
           ) */}
           {!isEmbedded && (
             <button
-              title="share"
+              title="поделиться"
               className={cx(
                 'cursor-pointer hover:opacity-50 flex items-center space-x-1',
                 !isEmbedded ? 'p-2' : 'px-2',
               )}
               onClick={handleShare}
             >
-              <span>share</span>
+              <span>поделиться</span>
             </button>
           )}
           {!isEmbedded && (
             <a
-              title="learn"
+              title="уроки"
               href={`${baseNoTrailing}/workshop/getting-started/`}
               className={cx('hover:opacity-50 flex items-center space-x-1', !isEmbedded ? 'p-2' : 'px-2')}
             >
-              <span>learn</span>
+              <span>уроки</span>
             </a>
           )}
           {/* {isEmbedded && (

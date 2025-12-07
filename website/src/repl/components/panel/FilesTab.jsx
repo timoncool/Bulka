@@ -54,7 +54,7 @@ export function FilesTab() {
         </div>
       </div>
       <div className="overflow-auto">
-        {!folders?.length && !files?.length && <span className="text-gray-500">Nothing here</span>}
+        {!folders?.length && !files?.length && <span className="text-gray-500">Здесь пусто</span>}
         {folders?.map((e, i) => (
           <div className="cursor-pointer" key={i} onClick={() => select(e)}>
             {e.name}

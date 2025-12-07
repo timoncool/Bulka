@@ -28,11 +28,11 @@ export function PatternLabel({ pattern } /* : { pattern: Tables<'code'> } */) {
     if (!isNaN(date)) {
       title = date.toLocaleDateString();
     } else {
-      title = 'unnamed';
+      title = 'без названия';
     }
   }
 
-  const author = Array.isArray(meta.by) ? meta.by.join(',') : 'Anonymous';
+  const author = Array.isArray(meta.by) ? meta.by.join(',') : 'Аноним';
   return <>{`${pattern.id}: ${title} by ${author.slice(0, 100)}`.slice(0, 60)}</>;
 }
 
@@ -89,21 +89,21 @@ function UserPatterns({ context }) {
     <div className="flex flex-col gap-2 flex-grow overflow-hidden h-full pb-2 ">
       <div className="pr-4 space-x-4  flex max-w-full overflow-x-auto">
         <ActionButton
-          label="new"
+          label="новый"
           onClick={() => {
             const { data } = userPattern.createAndAddToDB();
             updateCodeWindow(context, data);
           }}
         />
         <ActionButton
-          label="duplicate"
+          label="копировать"
           onClick={() => {
             const { data } = userPattern.duplicate(viewingPatternData);
             updateCodeWindow(context, data);
           }}
         />
         <ActionButton
-          label="delete"
+          label="удалить"
           onClick={() => {
             const { data } = userPattern.delete(viewingPatternID);
             updateCodeWindow(context, { ...data, collection: userPattern.collection });
@@ -117,12 +117,12 @@ function UserPatterns({ context }) {
             accept="text/plain,text/x-markdown,application/json"
             onChange={(e) => importPatterns(e.target.files)}
           />
-          import
+          импорт
         </label>
-        <ActionButton label="export" onClick={exportPatterns} />
+        <ActionButton label="экспорт" onClick={exportPatterns} />
 
         <ActionButton
-          label="delete-all"
+          label="удалить все"
           onClick={() => {
             const { data } = userPattern.clearAll();
             updateCodeWindow(context, data);
@@ -174,7 +174,7 @@ function PatternPageWithPagination({ patterns, patternOnClick, context, paginati
         />
       </div>
       <div className="flex items-center gap-2 py-2">
-        <label htmlFor="pattern pagination">Page</label>
+        <label htmlFor="pattern pagination">Страница</label>
         <Pagination id="pattern pagination" currPage={page} onPageChange={onPageChange} />
       </div>
     </div>

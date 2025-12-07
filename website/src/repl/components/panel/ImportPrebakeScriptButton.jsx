@@ -12,7 +12,7 @@ async function importScript(script) {
   };
 
   reader.onerror = () => {
-    errorLogger(new Error('failed to import prebake script'), 'importScript');
+    errorLogger(new Error('не удалось импортировать prebake-скрипт'), 'importScript');
   };
 }
 export function ImportPrebakeScriptButton() {
@@ -21,7 +21,7 @@ export function ImportPrebakeScriptButton() {
   return (
     <SpecialActionInput
       type="file"
-      label="import prebake script"
+      label="импортировать prebake-скрипт"
       accept=".strudel"
       onChange={(e) => importScript(e.target.files[0])}
     />
