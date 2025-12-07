@@ -1,0 +1,274 @@
+---
+title: Сообщество и ресурсы
+layout: ../../layouts/MainLayout.astro
+---
+
+import { MiniRepl } from '../../docs/MiniRepl';
+
+# Сообщество и ресурсы
+
+Эта страница собирает полезные советы, примеры треков и ресурсы от сообщества Strudel/TidalCycles.
+
+## Где найти сообщество
+
+- **Discord**: [Tidal, Strudel and friends](https://discord.com/invite/HGEdXmRkzT) — 7000+ участников, активное сообщество
+- **Форум**: [club.tidalcycles.org](https://club.tidalcycles.org/) — обсуждения, вопросы, идеи
+- **Community Bakery**: [strudel.cc/bakery](https://strudel.cc/bakery/) — паттерны от других пользователей
+- **GitHub**: [awesome-strudel](https://github.com/terryds/awesome-strudel) — курируемая коллекция ресурсов
+
+## Советы и хитрости
+
+### Частые ошибки
+
+**`n` vs `note` — в чём разница?**
+
+- `note` изменяет высоту звука (pitch)
+- `n` выбирает номер sample из банка
+
+<MiniRepl
+  client:visible
+  tune={`// n выбирает sample из банка
+s("bd").n("<0 1 2 3>")  // разные бочки`}
+/>
+
+<MiniRepl
+  client:visible
+  tune={`// note меняет высоту звука
+s("piano").note("c4 e4 g4 c5")`}
+/>
+
+При работе с синтезаторами оба меняют высоту, но с samples `n` выбирает файл!
+
+**Панель Reference замедляет работу**
+
+Если заметили тормоза — закройте панель Reference. Она рендерит много элементов и может влиять на производительность звука.
+
+**Звуки не загружаются с первого раза**
+
+Samples нужно загрузить — при первом запуске может быть тишина. Просто запустите код ещё раз.
+
+### Workflow советы
+
+**Используйте Community Bakery для вдохновения**
+
+Открывайте [strudel.cc/bakery](https://strudel.cc/bakery/), изучайте паттерны других — это лучший способ учиться новым техникам.
+
+**Делитесь своим кодом**
+
+Нажмите кнопку "Share" в REPL — получите ссылку на ваш паттерн, которой можно поделиться.
+
+**Не бойтесь удалять код**
+
+Если результат не нравится — удаляйте и начинайте заново. Это нормальная часть процесса live coding.
+
+## Примеры треков
+
+### Минимал техно
+
+<MiniRepl
+  client:visible
+  tune={`// Минималистичный техно грув
+stack(
+  s("bd*4").gain(1.2),
+  s("~ cp").room(0.3),
+  s("hh*8").gain(0.6).pan(sine.range(0.3, 0.7)),
+  note("g1*2 [~ g1] g1 [g1 a1]")
+    .s("sawtooth")
+    .lpf(sine.slow(8).range(200, 1200))
+    .lpq(8)
+    .gain(0.7)
+)`}
+/>
+
+### Эмбиент дрон
+
+<MiniRepl
+  client:visible
+  tune={`// Атмосферный эмбиент
+stack(
+  note("[c3,e3,g3,b3]")
+    .s("sawtooth")
+    .lpf(400)
+    .attack(2)
+    .release(4)
+    .room(0.8)
+    .size(0.9)
+    .slow(4),
+  note("c2").s("sine")
+    .gain(0.3)
+    .slow(8)
+)`}
+/>
+
+### Драм-н-бейс паттерн
+
+<MiniRepl
+  client:visible
+  tune={`// DnB ритм-секция
+stack(
+  s("[bd ~] ~ [~ bd] ~"),
+  s("~ [~ sd] ~ sd").room(0.2),
+  s("[hh hh]*4").gain(0.5).speed(1.2)
+).fast(2)`}
+/>
+
+### Полиритмический грув
+
+<MiniRepl
+  client:visible
+  tune={`// Полиритмия 3 против 4
+stack(
+  s("bd*4"),
+  s("cp*3").gain(0.8),
+  s("hh*5").gain(0.5)
+)`}
+/>
+
+### Евклидовы ритмы
+
+<MiniRepl
+  client:visible
+  tune={`// Евклидовы ритмы создают интересные паттерны
+stack(
+  s("bd(3,8)"),
+  s("sd(5,8)").gain(0.7),
+  s("hh(7,8)").gain(0.5),
+  s("cp(2,8)").room(0.3)
+)`}
+/>
+
+### Acid bassline
+
+<MiniRepl
+  client:visible
+  tune={`// Acid 303 стиль
+note("c2 c2 [c2 c3] c2 c2 [~ c2] eb2 [c2 g1]")
+  .s("sawtooth")
+  .lpf(sine.slow(4).range(200, 2000))
+  .lpq(15)
+  .lpenv(4)
+  .lpa(0.01)
+  .lpd(0.1)
+  .gain(0.8)
+  .distort(0.3)`}
+/>
+
+### Lo-fi хип-хоп
+
+<MiniRepl
+  client:visible
+  tune={`// Lo-fi vibes
+stack(
+  s("bd [~ bd] ~ bd").slow(2),
+  s("~ sd").slow(2).room(0.4),
+  s("hh*4").gain(0.3).speed(0.9),
+  note("<[c4,e4,g4] [a3,c4,e4] [f3,a3,c4] [g3,b3,d4]>")
+    .s("piano")
+    .slow(2)
+    .room(0.5)
+    .lpf(2000)
+)`}
+/>
+
+## Продвинутые техники
+
+### Нарезка брейков (Breakbeat chopping)
+
+<MiniRepl
+  client:visible
+  tune={`// Классическая нарезка amen break
+samples('github:yaxu/clean-breaks')
+s("amen/4").fit()
+  .chop(16)
+  .cut(1)
+  .sometimesBy(0.3, ply(2))
+  .sometimesBy(0.2, rev)`}
+/>
+
+### Генеративные паттерны с rand
+
+<MiniRepl
+  client:visible
+  tune={`// Случайные вариации
+note("c3 e3 g3 b3")
+  .add(note(rand.range(-2, 2)))
+  .s("piano")
+  .sometimesBy(0.3, add(note(12)))`}
+/>
+
+### Layer для сложных текстур
+
+<MiniRepl
+  client:visible
+  tune={`// Наложение разных обработок
+note("c3 e3 g3 b3").layer(
+  x => x.s("sawtooth").lpf(800),
+  x => x.s("square").add(note(12)).gain(0.3),
+  x => x.s("sine").sub(note(12)).gain(0.5)
+).room(0.5)`}
+/>
+
+### Phasing (фазирование)
+
+<MiniRepl
+  client:visible
+  tune={`// Фазирование в стиле Стива Райха
+note("c4 d4 e4 g4 a4 g4 e4 d4")
+  .s("piano")
+  .fast("[1, 1.01]")  // чуть разные скорости
+  .room(0.4)`}
+/>
+
+### Conditional modifiers
+
+<MiniRepl
+  client:visible
+  tune={`// Применяем эффект каждые N циклов
+s("bd sd cp sd")
+  .every(4, fast(2))
+  .every(3, rev)
+  .sometimesBy(0.2, speed(1.5))`}
+/>
+
+## YouTube туториалы
+
+Рекомендуемые видео для изучения:
+
+- **"Live Coding For Music With Strudel.cc (Beginners)"** — Groovin in G, отличный старт для новичков
+- **"Creative Code Art - WORKSHOP // Coding Music With Strudel"** — Dan Gorelick & Viola He, полноценный воркшоп
+- **"Intro To Algorave (Strudel Workshop)"** — введение в культуру algorave
+- **Switch Angel** — канал с демонстрациями live coding техно
+
+## Полезные ресурсы
+
+### Документация
+- [strudel.cc](https://strudel.cc/) — официальный сайт
+- [TidalCycles Docs](https://tidalcycles.org/docs/) — документация оригинального Tidal (многое применимо)
+
+### Инструменты
+- **Flok** ([flok.cc](https://flok.cc/)) — совместный live coding в браузере
+- **strudel.nvim** — интеграция с Neovim для продвинутых пользователей
+
+### Семплы
+- [Dirt Samples](https://github.com/tidalcycles/dirt-samples) — стандартная библиотека
+- [Clean Breaks](https://github.com/yaxu/clean-breaks) — коллекция брейков
+
+## Оптимизация производительности
+
+- **Закрывайте панель Reference** при активном live coding
+- **Используйте `.cut(1)`** для samples, чтобы избежать наложения
+- **Desktop приложение** — экспериментальная версия через Tauri для лучшей производительности
+- **Ограничивайте reverb** — `.room()` и `.size()` с высокими значениями нагружают процессор
+
+## Философия live coding
+
+> «Не бойтесь ошибок — это часть процесса. Практикуйтесь как на музыкальном инструменте. Со временем станет лучше.»
+
+Live coding — это:
+- **Эксперимент** — пробуйте разное, слушайте что получается
+- **Процесс** — важен не только результат, но и путь к нему
+- **Сообщество** — делитесь, учитесь у других, задавайте вопросы
+
+---
+
+*Хотите добавить свой пример или совет? Создайте PR в репозитории проекта!*

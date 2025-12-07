@@ -87,6 +87,8 @@ export const SIDEBAR: Sidebar = {
       { text: 'Hydra', link: 'learn/hydra' },
       { text: 'Устройства ввода', link: 'learn/input-devices' },
       { text: 'Движение устройства', link: 'learn/devicemotion' },
+      { text: 'Продвинутые интеграции', link: 'learn/advanced-integrations' },
+      { text: 'Сообщество и ресурсы', link: 'learn/community' },
     ],
     'Функции паттернов': [
       { text: 'Введение', link: 'functions/intro' },
