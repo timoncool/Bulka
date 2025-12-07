@@ -8,8 +8,11 @@ note("c3 eb3 g3 bb3").s("gm_epiano1").slow(2)
 
 // Drum machines tune - fully local samples
 export const drumDemo = \`// Drum machines demo (RolandTR808)
-// All samples are local - no external dependencies!
+// All samples are 100% local - zero external dependencies!
 samples('./tidal-drum-machines.json', './samples/tidal-drum-machines/machines/')
+samples('./samples/Dirt-Samples/strudel.json')
+samples('./samples/felixroos/strudel.json')
+samples('./samples/clean-breaks/strudel.json')
 
 s("bd sd bd [sd sd*2]").bank('RolandTR808').gain(0.8)
 .stack(
@@ -18,9 +21,11 @@ s("bd sd bd [sd sd*2]").bank('RolandTR808').gain(0.8)
 )\`;
 
 export const bumpStreet = \`// froos - "22 bump street", licensed with CC BY-NC-SA 4.0
-// Uses local JSON for drum machines
-samples('github:felixroos/samples')
+// All samples 100% local
 samples('./tidal-drum-machines.json', './samples/tidal-drum-machines/machines/')
+samples('./samples/Dirt-Samples/strudel.json')
+samples('./samples/felixroos/strudel.json')
+samples('./samples/clean-breaks/strudel.json')
 
 "<[0,<6 7 9>,13,<17 20 22 26>]!2>/2"
   // make it 22 edo
@@ -52,9 +57,11 @@ samples('./tidal-drum-machines.json', './samples/tidal-drum-machines/machines/')
   //.crush(6) // remove "//" if you dare`;
 
 export const trafficFlam = `// froos - "traffic flam", licensed with CC BY-NC-SA 4.0
-
-samples('github:felixroos/samples')
+// All samples 100% local
 samples('./tidal-drum-machines.json', './samples/tidal-drum-machines/machines/')
+samples('./samples/Dirt-Samples/strudel.json')
+samples('./samples/felixroos/strudel.json')
+samples('./samples/clean-breaks/strudel.json')
 
 addVoicings('hip', {
   m11: ['2M 3m 4P 7m'],
@@ -86,11 +93,12 @@ stack(
 `;
 
 export const funk42 = `// froos - how to funk in 42 lines of code
-// adapted from "how to funk in two minutes" by marc rebillet https://www.youtube.com/watch?v=3vBwRfQbXkg
-// thanks to peach for the transcription: https://www.youtube.com/watch?v=8eiPXvIgda4
-
-samples('github:felixroos/samples')
+// adapted from "how to funk in two minutes" by marc rebillet
+// All samples 100% local
 samples('./tidal-drum-machines.json', './samples/tidal-drum-machines/machines/')
+samples('./samples/Dirt-Samples/strudel.json')
+samples('./samples/felixroos/strudel.json')
+samples('./samples/clean-breaks/strudel.json')
 
 setcps(.5)
 

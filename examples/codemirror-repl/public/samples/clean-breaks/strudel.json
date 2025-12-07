@@ -1,4 +1,4 @@
-{"_base":"https://raw.githubusercontent.com/yaxu/clean-breaks/main/",
+{"_base":"./samples/clean-breaks/",
  "useme":["sounds/Bill_Withers_-_Use_Me_(101_LoopFix) [2019-03-04 124553].wav"],
  "sesame":["sounds/Blowfly_-_Sesame_Street_(2) [2019-03-04 124553].wav"],
  "do":["sounds/Bobby_Byrd_Feat._The_J.B's_-_Doin'_The_Do [2019-03-04 124553].wav"],

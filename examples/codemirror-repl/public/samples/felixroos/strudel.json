@@ -1,5 +1,5 @@
 {
-  "_base": "https://raw.githubusercontent.com/felixroos/samples/main/",
+  "_base": "./samples/felixroos/",
   "president_bd": "president/president_bd.mp3",
   "president_sd": ["president/president_sd.mp3", "president/president_sd2.mp3"],
   "president_hh": ["president/president_hh.mp3"],
