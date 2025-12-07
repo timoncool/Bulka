@@ -118,17 +118,17 @@ function PanelNav({ children, className, settings, ...props }) {
 function PanelContent({ context, tab }) {
   useLogger();
   switch (tab) {
-    case tabNames.patterns:
+    case 'patterns':
       return <PatternsTab context={context} />;
-    case tabNames.console:
+    case 'console':
       return <ConsoleTab />;
-    case tabNames.sounds:
+    case 'sounds':
       return <SoundsTab />;
-    case tabNames.reference:
+    case 'reference':
       return <Reference />;
-    case tabNames.settings:
+    case 'settings':
       return <SettingsTab started={context.started} />;
-    case tabNames.files:
+    case 'files':
       return <FilesTab />;
     default:
       return <WelcomeTab context={context} />;
