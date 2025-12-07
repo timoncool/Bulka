@@ -1,5 +1,5 @@
 import { StrudelMirror } from '@strudel/codemirror';
-import { funk42 } from './tunes';
+import { simpleTune } from './tunes';
 import { evalScope } from '@strudel/core';
 import { drawPianoroll } from '@strudel/draw';
 import './style.css';
@@ -20,7 +20,7 @@ const editor = new StrudelMirror({
   getTime: () => getAudioContext().currentTime,
   transpiler,
   root: document.getElementById('editor'),
-  initialCode: funk42,
+  initialCode: simpleTune,
   drawTime,
   onDraw: (haps, time) => drawPianoroll({ haps, time, ctx: drawContext, drawTime, fold: 0 }),
   prebake: async () => {

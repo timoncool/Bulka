@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/proxy/strudel/:path*",
+      "destination": "https://strudel.cc/:path*"
+    }
+  ]
+}
