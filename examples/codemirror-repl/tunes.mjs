@@ -1,9 +1,6 @@
-// Default tune - Pixel Sunrise by Nerual Dreaming
+// Default tune - Pixel Sunrise
 export const simpleTune = `// @title Pixel Sunrise
-// @by Nerual Dreaming
-
-// Load local drum samples
-samples('./tidal-drum-machines.json', './samples/tidal-drum-machines/machines/')
+// @by Strudel композитор
 
 cpm(180/2);
 
