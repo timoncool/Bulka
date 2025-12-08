@@ -31,7 +31,7 @@ export const defaultSettings = {
   anthropicApiKey: '',
   geminiApiKey: '',
   aiProvider: aiProviders.openai,
-  aiModel: 'gpt-5.1',
+  aiModel: 'gpt-5',
   isBracketMatchingEnabled: true,
   isBracketClosingEnabled: true,
   isLineNumbersDisplayed: true,
