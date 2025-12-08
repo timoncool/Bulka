@@ -16,9 +16,10 @@ function generateId() {
 }
 
 /**
- * Parse SSE stream from OpenAI
+ * Parse SSE stream from agent API
+ * Handles both text and tool_call messages
  */
-async function* parseOpenAIStream(reader) {
+async function* parseAgentStream(reader) {
   const decoder = new TextDecoder();
   let buffer = '';
 
@@ -36,8 +37,8 @@ async function* parseOpenAIStream(reader) {
         if (data === '[DONE]') return;
         try {
           const parsed = JSON.parse(data);
-          const content = parsed.choices?.[0]?.delta?.content;
-          if (content) yield content;
+          // Yield the parsed message (could be text or tool_call)
+          yield parsed;
         } catch (e) {
           // Skip invalid JSON
         }
@@ -47,35 +48,16 @@ async function* parseOpenAIStream(reader) {
 }
 
 /**
- * Parse SSE stream from Anthropic
+ * Extract code blocks from AI response
  */
-async function* parseAnthropicStream(reader) {
-  const decoder = new TextDecoder();
-  let buffer = '';
-
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-
-    buffer += decoder.decode(value, { stream: true });
-    const lines = buffer.split('\n');
-    buffer = lines.pop() || '';
-
-    for (const line of lines) {
-      if (line.startsWith('data: ')) {
-        const data = line.slice(6);
-        try {
-          const parsed = JSON.parse(data);
-          if (parsed.type === 'content_block_delta') {
-            const content = parsed.delta?.text;
-            if (content) yield content;
-          }
-        } catch (e) {
-          // Skip invalid JSON
-        }
-      }
-    }
+function extractCodeBlocks(text) {
+  const codeBlockRegex = /```(?:javascript|js|strudel)?\n?([\s\S]*?)```/g;
+  const blocks = [];
+  let match;
+  while ((match = codeBlockRegex.exec(text)) !== null) {
+    blocks.push(match[1].trim());
   }
+  return blocks;
 }
 
 /**
@@ -87,7 +69,75 @@ export function useChatContext(replContext) {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [pendingCode, setPendingCode] = useState(null);
   const abortControllerRef = useRef(null);
+
+  /**
+   * Apply code to editor
+   */
+  const applyCode = useCallback((code) => {
+    if (replContext?.editorRef?.current) {
+      replContext.editorRef.current.setCode(code);
+      setPendingCode(null);
+    }
+  }, [replContext]);
+
+  /**
+   * Apply code and run it
+   */
+  const applyAndRun = useCallback((code) => {
+    if (replContext?.editorRef?.current) {
+      replContext.editorRef.current.setCode(code);
+      replContext.editorRef.current.evaluate();
+      setPendingCode(null);
+    }
+  }, [replContext]);
+
+  /**
+   * Dismiss pending code without applying
+   */
+  const dismissPendingCode = useCallback(() => {
+    setPendingCode(null);
+  }, []);
+
+  /**
+   * Get current code from editor
+   */
+  const getCurrentCode = useCallback(() => {
+    return replContext?.editorRef?.current?.code || '';
+  }, [replContext]);
+
+  /**
+   * Play/evaluate the code
+   */
+  const play = useCallback(() => {
+    if (replContext?.editorRef?.current) {
+      replContext.editorRef.current.evaluate();
+    }
+  }, [replContext]);
+
+  /**
+   * Stop playback
+   */
+  const stopPlayback = useCallback(() => {
+    if (replContext?.editorRef?.current) {
+      replContext.editorRef.current.stop();
+    }
+  }, [replContext]);
+
+  /**
+   * Toggle play/stop
+   */
+  const togglePlayback = useCallback(() => {
+    if (replContext?.editorRef?.current) {
+      replContext.editorRef.current.toggle();
+    }
+  }, [replContext]);
+
+  /**
+   * Check if currently playing
+   */
+  const isPlaying = replContext?.started || false;
 
   /**
    * Send message to AI
@@ -151,16 +201,57 @@ export function useChatContext(replContext) {
         throw new Error(errData.error || `HTTP ${response.status}`);
       }
 
-      // Parse streaming response
+      // Parse streaming response from agent
       const reader = response.body.getReader();
-      const parser = aiProvider === 'anthropic'
-        ? parseAnthropicStream(reader)
-        : parseOpenAIStream(reader);
-
       let fullContent = '';
+      let actionsExecuted = [];
 
-      for await (const chunk of parser) {
-        fullContent += chunk;
+      for await (const message of parseAgentStream(reader)) {
+        // Handle tool calls from agent
+        if (message.type === 'tool_call') {
+          const { name, args } = message;
+
+          // Execute tool on client
+          if (name === 'setEditorCode' && args?.code) {
+            if (replContext?.editorRef?.current) {
+              replContext.editorRef.current.setCode(args.code);
+              setPendingCode(args.code);
+              actionsExecuted.push('Код установлен');
+            }
+          } else if (name === 'playMusic') {
+            if (replContext?.editorRef?.current) {
+              replContext.editorRef.current.evaluate();
+              actionsExecuted.push('Воспроизведение запущено');
+            }
+          } else if (name === 'stopMusic') {
+            if (replContext?.editorRef?.current) {
+              replContext.editorRef.current.stop();
+              actionsExecuted.push('Воспроизведение остановлено');
+            }
+          }
+        }
+        // Handle text content
+        else if (message.type === 'text' && message.content) {
+          fullContent += message.content;
+          setMessages(prev => {
+            const updated = [...prev];
+            const lastIdx = updated.length - 1;
+            if (updated[lastIdx]?.role === 'assistant') {
+              updated[lastIdx] = { ...updated[lastIdx], content: fullContent };
+            }
+            return updated;
+          });
+        }
+        // Handle errors
+        else if (message.error) {
+          throw new Error(message.error);
+        }
+      }
+
+      // Add action summary to message if tools were executed
+      if (actionsExecuted.length > 0 && fullContent) {
+        const actionSummary = `\n\n✓ ${actionsExecuted.join(', ')}`;
+        fullContent += actionSummary;
         setMessages(prev => {
           const updated = [...prev];
           const lastIdx = updated.length - 1;
@@ -227,6 +318,17 @@ export function useChatContext(replContext) {
     hasApiKey: !!settings.aiApiKey,
     provider: settings.aiProvider,
     model: settings.aiModel,
+    // Agent capabilities - code editing
+    pendingCode,
+    applyCode,
+    applyAndRun,
+    dismissPendingCode,
+    getCurrentCode,
+    // Agent capabilities - playback control
+    play,
+    stopPlayback,
+    togglePlayback,
+    isPlaying,
   };
 }
 

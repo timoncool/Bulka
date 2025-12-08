@@ -1,8 +1,8 @@
 /**
  * Bulka Music AI Agent - Chat API Endpoint
  *
- * Full RAG implementation using MD documentation files.
- * API key is provided by client (stored in localStorage).
+ * FULL AGENT with tool calling support.
+ * Tools: setEditorCode, playMusic, stopMusic, searchDocs, etc.
  */
 
 import type { APIRoute } from 'astro';
@@ -12,19 +12,73 @@ import { fileURLToPath } from 'url';
 
 export const prerender = false;
 
-// Path to documentation - resolved from this file's location
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DOCS_PATH = path.resolve(__dirname, '../../../docs_md');
 
 /**
- * Load and search MD files for relevant content
+ * Tool definitions for the agent
+ */
+const TOOLS_OPENAI = [
+  {
+    type: 'function' as const,
+    function: {
+      name: 'setEditorCode',
+      description: 'Установить код в редактор (заменяет весь код). Используй для создания нового трека или полного переписывания.',
+      parameters: {
+        type: 'object',
+        properties: {
+          code: { type: 'string', description: 'Полный код Strudel для установки в редактор' },
+        },
+        required: ['code'],
+      },
+    },
+  },
+  {
+    type: 'function' as const,
+    function: {
+      name: 'playMusic',
+      description: 'Запустить воспроизведение музыки. Используй после установки кода чтобы пользователь услышал результат.',
+      parameters: { type: 'object', properties: {} },
+    },
+  },
+  {
+    type: 'function' as const,
+    function: {
+      name: 'stopMusic',
+      description: 'Остановить воспроизведение музыки.',
+      parameters: { type: 'object', properties: {} },
+    },
+  },
+  {
+    type: 'function' as const,
+    function: {
+      name: 'searchDocs',
+      description: 'Поиск по документации Strudel. Используй чтобы найти информацию о функциях, синтаксисе, звуках.',
+      parameters: {
+        type: 'object',
+        properties: {
+          query: { type: 'string', description: 'Поисковый запрос' },
+        },
+        required: ['query'],
+      },
+    },
+  },
+];
+
+const TOOLS_ANTHROPIC = TOOLS_OPENAI.map(t => ({
+  name: t.function.name,
+  description: t.function.description,
+  input_schema: t.function.parameters,
+}));
+
+/**
+ * Search documentation
  */
 async function searchDocumentation(query: string, maxResults: number = 5): Promise<string[]> {
   const results: { file: string; content: string; score: number }[] = [];
   const queryLower = query.toLowerCase();
   const queryWords = queryLower.split(/\s+/).filter(w => w.length > 2);
 
-  // Search in Russian docs first, then English
   const searchPaths = [
     path.join(DOCS_PATH, 'ru'),
     path.join(DOCS_PATH, 'en'),
@@ -34,11 +88,10 @@ async function searchDocumentation(query: string, maxResults: number = 5): Promi
     try {
       await searchDirectory(searchPath, queryWords, queryLower, results);
     } catch (e) {
-      console.error(`Error searching ${searchPath}:`, e);
+      // Skip if not found
     }
   }
 
-  // Sort by score and return top results
   results.sort((a, b) => b.score - a.score);
   return results.slice(0, maxResults).map(r => r.content);
 }
@@ -62,30 +115,21 @@ async function searchDirectory(
           const content = await fs.readFile(fullPath, 'utf-8');
           const contentLower = content.toLowerCase();
 
-          // Calculate relevance score
           let score = 0;
-
-          // Exact query match
-          if (contentLower.includes(queryLower)) {
-            score += 10;
-          }
-
-          // Word matches
+          if (contentLower.includes(queryLower)) score += 10;
           for (const word of queryWords) {
             const matches = (contentLower.match(new RegExp(word, 'g')) || []).length;
             score += Math.min(matches, 10);
           }
 
-          // Boost for key documentation files
           if (entry.name.includes('mini-notation')) score += 15;
           if (entry.name.includes('effects')) score += 10;
-          if (entry.name.includes('sounds') || entry.name.includes('zvuki')) score += 10;
+          if (entry.name.includes('sounds')) score += 10;
           if (entry.name.includes('samples')) score += 10;
           if (entry.name.includes('synth')) score += 8;
           if (entry.name.includes('drum')) score += 8;
 
           if (score > 0) {
-            // Extract relevant section (limit to ~2000 chars)
             const relevantContent = extractRelevantSection(content, queryWords, 2000);
             results.push({
               file: fullPath,
@@ -93,46 +137,30 @@ async function searchDirectory(
               score,
             });
           }
-        } catch (e) {
-          // Skip unreadable files
-        }
+        } catch (e) { }
       }
     }
-  } catch (e) {
-    // Directory not found or not readable
-  }
+  } catch (e) { }
 }
 
 function extractRelevantSection(content: string, queryWords: string[], maxLength: number): string {
   const lines = content.split('\n');
-  const contentLower = content.toLowerCase();
-
-  // Find the most relevant section
   let bestStart = 0;
   let bestScore = 0;
 
   for (let i = 0; i < lines.length; i++) {
     const lineLower = lines[i].toLowerCase();
     let score = 0;
-
     for (const word of queryWords) {
-      if (lineLower.includes(word)) {
-        score += 5;
-      }
+      if (lineLower.includes(word)) score += 5;
     }
-
-    // Boost headers
-    if (lines[i].startsWith('#')) {
-      score += 3;
-    }
-
+    if (lines[i].startsWith('#')) score += 3;
     if (score > bestScore) {
       bestScore = score;
       bestStart = i;
     }
   }
 
-  // Extract section around best match
   const startLine = Math.max(0, bestStart - 5);
   const section = lines.slice(startLine);
 
@@ -141,85 +169,283 @@ function extractRelevantSection(content: string, queryWords: string[], maxLength
     if (result.length + line.length > maxLength) break;
     result += line + '\n';
   }
-
   return result.trim();
 }
 
 /**
- * System prompt for the agent
+ * System prompt
  */
-const SYSTEM_PROMPT = `Ты - Bulka AI, музыкальный ассистент для live coding музыки на платформе Bulka/Strudel.
+const SYSTEM_PROMPT = `Ты - Bulka AI, музыкальный агент для live coding музыки.
 
-## Возможности:
-- Помогать писать код на Strudel (мини-нотация + JavaScript)
-- Объяснять синтаксис и функции
-- Рекомендовать звуки и эффекты
-- Исправлять ошибки в коде
+## Твои возможности (ИСПОЛЬЗУЙ ИХ):
+- setEditorCode - установить код в редактор
+- playMusic - запустить воспроизведение
+- stopMusic - остановить музыку
+- searchDocs - поиск по документации
 
-## Правила:
-1. Отвечай на русском
-2. Давай конкретные примеры кода
-3. Используй только документированные функции
-4. Объясняй что делает код
+## ВАЖНЫЕ ПРАВИЛА:
+1. ВСЕГДА используй инструмент setEditorCode для установки кода, не просто пиши код в ответе
+2. После установки кода СРАЗУ вызывай playMusic чтобы пользователь услышал результат
+3. Если не знаешь какой-то функции - используй searchDocs
+4. Отвечай кратко, действуй через инструменты
 
-## Контекст из документации:
+## Примеры паттернов Strudel:
+- Простой бит: sound("bd sd hh sd")
+- С переменной скоростью: sound("bd*2 sd [hh hh hh] sd")
+- Эффекты: sound("bd sd").room(0.5).delay(0.25)
+
 `;
 
 /**
- * Call OpenAI API
+ * Execute tool call server-side (for searchDocs)
  */
-async function callOpenAI(
-  apiKey: string,
-  model: string,
-  messages: any[],
-  systemPrompt: string
-): Promise<Response> {
-  const response = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({
-      model,
-      messages: [
-        { role: 'system', content: systemPrompt },
-        ...messages,
-      ],
-      stream: true,
-      temperature: 0.7,
-    }),
-  });
-
-  return response;
+async function executeServerTool(name: string, args: any): Promise<string> {
+  if (name === 'searchDocs') {
+    const docs = await searchDocumentation(args.query || '', 3);
+    return docs.join('\n\n---\n\n') || 'Ничего не найдено';
+  }
+  return '';
 }
 
 /**
- * Call Anthropic API
+ * OpenAI agent loop with tool calling
  */
-async function callAnthropic(
+async function runOpenAIAgent(
   apiKey: string,
   model: string,
   messages: any[],
-  systemPrompt: string
-): Promise<Response> {
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-    },
-    body: JSON.stringify({
-      model,
-      max_tokens: 4096,
-      system: systemPrompt,
-      messages,
-      stream: true,
-    }),
-  });
+  currentCode: string
+): Promise<ReadableStream> {
+  const systemPrompt = SYSTEM_PROMPT + (currentCode ? `\n## Текущий код:\n\`\`\`\n${currentCode}\n\`\`\`` : '');
 
-  return response;
+  const encoder = new TextEncoder();
+
+  return new ReadableStream({
+    async start(controller) {
+      let conversationMessages = [
+        { role: 'system', content: systemPrompt },
+        ...messages,
+      ];
+
+      let maxIterations = 5;
+
+      while (maxIterations > 0) {
+        maxIterations--;
+
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`,
+          },
+          body: JSON.stringify({
+            model,
+            messages: conversationMessages,
+            tools: TOOLS_OPENAI,
+            tool_choice: 'auto',
+            stream: false, // Non-streaming for tool handling
+            temperature: 0.7,
+          }),
+        });
+
+        if (!response.ok) {
+          const err = await response.text();
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: err })}\n\n`));
+          controller.close();
+          return;
+        }
+
+        const data = await response.json();
+        const choice = data.choices?.[0];
+        const message = choice?.message;
+
+        if (!message) {
+          controller.close();
+          return;
+        }
+
+        // Check for tool calls
+        if (message.tool_calls && message.tool_calls.length > 0) {
+          conversationMessages.push(message);
+
+          for (const toolCall of message.tool_calls) {
+            const toolName = toolCall.function.name;
+            let toolArgs: any = {};
+
+            try {
+              toolArgs = JSON.parse(toolCall.function.arguments || '{}');
+            } catch (e) { }
+
+            // Server-side tools
+            if (toolName === 'searchDocs') {
+              const result = await executeServerTool(toolName, toolArgs);
+              conversationMessages.push({
+                role: 'tool',
+                tool_call_id: toolCall.id,
+                content: result,
+              });
+            }
+            // Client-side tools - send to client
+            else {
+              // Send tool call to client
+              const toolCallData = {
+                type: 'tool_call',
+                name: toolName,
+                args: toolArgs,
+              };
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify(toolCallData)}\n\n`));
+
+              // Add tool result to conversation (assume success)
+              conversationMessages.push({
+                role: 'tool',
+                tool_call_id: toolCall.id,
+                content: `Выполнено: ${toolName}`,
+              });
+            }
+          }
+
+          // Continue the loop to get AI's next response
+          continue;
+        }
+
+        // No tool calls - send the text response
+        if (message.content) {
+          const textData = {
+            type: 'text',
+            content: message.content,
+          };
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify(textData)}\n\n`));
+        }
+
+        // Done
+        controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+        controller.close();
+        return;
+      }
+
+      // Max iterations reached
+      controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+      controller.close();
+    },
+  });
+}
+
+/**
+ * Anthropic agent loop with tool calling
+ */
+async function runAnthropicAgent(
+  apiKey: string,
+  model: string,
+  messages: any[],
+  currentCode: string
+): Promise<ReadableStream> {
+  const systemPrompt = SYSTEM_PROMPT + (currentCode ? `\n## Текущий код:\n\`\`\`\n${currentCode}\n\`\`\`` : '');
+
+  const encoder = new TextEncoder();
+
+  return new ReadableStream({
+    async start(controller) {
+      let conversationMessages = [...messages];
+      let maxIterations = 5;
+
+      while (maxIterations > 0) {
+        maxIterations--;
+
+        const response = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': apiKey,
+            'anthropic-version': '2023-06-01',
+          },
+          body: JSON.stringify({
+            model,
+            max_tokens: 4096,
+            system: systemPrompt,
+            messages: conversationMessages,
+            tools: TOOLS_ANTHROPIC,
+            stream: false,
+          }),
+        });
+
+        if (!response.ok) {
+          const err = await response.text();
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: err })}\n\n`));
+          controller.close();
+          return;
+        }
+
+        const data = await response.json();
+        const content = data.content || [];
+
+        let hasToolUse = false;
+        let toolResults: any[] = [];
+
+        for (const block of content) {
+          if (block.type === 'text' && block.text) {
+            const textData = {
+              type: 'text',
+              content: block.text,
+            };
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify(textData)}\n\n`));
+          }
+          else if (block.type === 'tool_use') {
+            hasToolUse = true;
+            const toolName = block.name;
+            const toolArgs = block.input || {};
+
+            // Server-side tools
+            if (toolName === 'searchDocs') {
+              const result = await executeServerTool(toolName, toolArgs);
+              toolResults.push({
+                type: 'tool_result',
+                tool_use_id: block.id,
+                content: result,
+              });
+            }
+            // Client-side tools
+            else {
+              const toolCallData = {
+                type: 'tool_call',
+                name: toolName,
+                args: toolArgs,
+              };
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify(toolCallData)}\n\n`));
+
+              toolResults.push({
+                type: 'tool_result',
+                tool_use_id: block.id,
+                content: `Выполнено: ${toolName}`,
+              });
+            }
+          }
+        }
+
+        if (hasToolUse && toolResults.length > 0) {
+          // Add assistant response and tool results
+          conversationMessages.push({
+            role: 'assistant',
+            content: content,
+          });
+          conversationMessages.push({
+            role: 'user',
+            content: toolResults,
+          });
+          continue;
+        }
+
+        // Done
+        if (data.stop_reason === 'end_turn' || !hasToolUse) {
+          controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+          controller.close();
+          return;
+        }
+      }
+
+      controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+      controller.close();
+    },
+  });
 }
 
 export const POST: APIRoute = async ({ request }) => {
@@ -229,46 +455,20 @@ export const POST: APIRoute = async ({ request }) => {
 
     if (!apiKey) {
       return new Response(
-        JSON.stringify({ error: 'API ключ не указан. Добавьте его в настройках чата.' }),
+        JSON.stringify({ error: 'API ключ не указан' }),
         { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
-    // Get last user message for RAG search
-    const lastUserMessage = messages.filter((m: any) => m.role === 'user').pop();
-    const query = lastUserMessage?.content || '';
-
-    // Search documentation
-    const docs = await searchDocumentation(query, 5);
-    const docsContext = docs.join('\n\n---\n\n');
-
-    // Build system prompt with context
-    let fullSystemPrompt = SYSTEM_PROMPT + docsContext;
-
-    if (currentCode) {
-      fullSystemPrompt += `\n\n## Текущий код в редакторе:\n\`\`\`\n${currentCode}\n\`\`\``;
-    }
-
-    // Call appropriate API
-    let response: Response;
+    let stream: ReadableStream;
 
     if (provider === 'anthropic') {
-      response = await callAnthropic(apiKey, model || 'claude-3-5-sonnet-20241022', messages, fullSystemPrompt);
+      stream = await runAnthropicAgent(apiKey, model || 'claude-3-5-sonnet-20241022', messages, currentCode || '');
     } else {
-      response = await callOpenAI(apiKey, model || 'gpt-4o-mini', messages, fullSystemPrompt);
+      stream = await runOpenAIAgent(apiKey, model || 'gpt-4o-mini', messages, currentCode || '');
     }
 
-    if (!response.ok) {
-      const error = await response.text();
-      console.error('API error:', error);
-      return new Response(
-        JSON.stringify({ error: `Ошибка API: ${response.status}` }),
-        { status: response.status, headers: { 'Content-Type': 'application/json' } }
-      );
-    }
-
-    // Stream the response
-    return new Response(response.body, {
+    return new Response(stream, {
       headers: {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
