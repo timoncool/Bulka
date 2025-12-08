@@ -1,0 +1,400 @@
+# Samples
+
+# Samples
+
+Samples — это наиболее распространенный способ создания звука в tidal и strudel.
+Sample — это (обычно короткий) фрагмент аудио, который используется в качестве основы для генерации звука и подвергается различным преобразованиям.
+Музыку, основанную на samples, можно представить как коллаж из звуков. [Подробнее о Sampling](<https://en.wikipedia.org/wiki/Sampling_(music)>)
+
+Strudel позволяет загружать samples в виде аудиофайлов различных форматов (wav, mp3, ogg) из любого общедоступного URL.
+
+# Default Samples
+
+По умолчанию strudel поставляется со встроенной "sample map", обеспечивающей надежную основу для экспериментов.
+
+```javascript
+// Пример:
+s("bd sd [~ bd] sd,hh*16, misc")
+```
+
+Здесь мы используем функцию `s` для воспроизведения различных стандартных samples (`bd`, `sd`, `hh` и `misc`), чтобы получить барабанный бит.
+
+Для барабанных звуков strudel использует обширную библиотеку [tidal-drum-machines](https://github.com/ritchse/tidal-drum-machines) со следующими обозначениями:
+
+| Drum                 | Abbreviation |
+| -------------------- | ------------ |
+| Bass drum, Kick drum | bd           |
+| Snare drum           | sd           |
+| Rimshot              | rim          |
+| Clap                 | cp           |
+| Closed hi-hat        | hh           |
+| Open hi-hat          | oh           |
+| Crash                | cr           |
+| Ride                 | rd           |
+| High tom             | ht           |
+| Medium tom           | mt           |
+| Low tom              | lt           |
+
+<img src="/img/drumset.png" />
+
+<a class="text-right text-xs" href="https://de.wikipedia.org/wiki/Schlagzeug#/media/Datei:Drum_set.svg" target="_blank">
+  original von Pbroks13
+</a>
+
+Дополнительные перкуссионные звуки:
+
+| Source                              | Abbreviation |
+| ----------------------------------- | ------------ |
+| Shakers (and maracas, cabasas, etc) | sh           |
+| Cowbell                             | cb           |
+| Tambourine                          | tb           |
+| Other percussions                   | perc         |
+| Miscellaneous samples               | misc         |
+| Effects                             | fx           |
+
+Кроме того, strudel также загружает samples инструментов из [VCSL](https://github.com/sgossner/VCSL) по умолчанию.
+
+Чтобы увидеть, какие имена samples доступны, откройте вкладку `sounds` в [REPL](https://strudel.cc/).
+
+Вы также можете создавать пользовательские псевдонимы для существующих звуков, используя функцию `soundAlias`:
+
+```javascript
+// Пример:
+soundAlias('RolandTR808_bd', 'kick')
+s("kick")
+```
+
+Обратите внимание, что изначально загружаются только sample maps (отображение имен на URL), а сами аудио samples не загружаются до тех пор, пока они не будут воспроизведены.
+Такое поведение загрузки вещей только тогда, когда они нужны, также называется `lazy loading`.
+Хотя это экономит ресурсы, это также может привести к тому, что звуки не будут слышны при первом воспроизведении, потому что звук все еще загружается.
+[Это может быть исправлено в будущем](https://codeberg.org/uzu/strudel/issues/187)
+
+# Sound Banks
+
+Если мы откроем вкладку `sounds`, а затем `drum-machines`, мы увидим, что все drum samples имеют префиксы с названиями драм-машин: `RolandTR808_bd`, `RolandTR808_sd`, `RolandTR808_hh` и т.д.
+
+Мы _могли бы_ использовать их так:
+
+```javascript
+// Пример:
+s("RolandTR808_bd RolandTR808_sd,RolandTR808_hh*16")
+```
+
+... но это, очевидно, слишком много для написания. Используя функцию `bank`, мы можем сократить это до:
+
+```javascript
+// Пример:
+s("bd sd,hh*16").bank("RolandTR808")
+```
+
+Вы даже можете паттернизировать bank для переключения между различными драм-машинами:
+
+<MiniRepl client:idle tune={`s("bd sd,hh*16").bank("<RolandTR808 RolandTR909>")`} />
+
+За кулисами `bank` просто добавляет имя драм-машины к имени sample с `_` для получения полного имени.
+Это, конечно, работает только потому, что имя после `_` (`bd`, `sd` и т.д.) стандартизировано.
+Также обратите внимание, что у некоторых banks может не быть samples для всех звуков!
+
+# Selecting Sounds
+
+Если мы снова откроем вкладку `sounds`, затем вкладку `drum machines`, там также есть число за каждым именем, указывающее, сколько отдельных samples доступно.
+Например, `RolandTR909_hh(4)` означает, что доступно 4 samples хэта TR909.
+По умолчанию `s` будет воспроизводить первый sample, но мы можем выбрать другие, используя `n`, начиная с 0:
+
+```javascript
+// Пример:
+s("hh*8").bank("RolandTR909").n("0 1 2 3")
+```
+
+Слишком большие числа просто обернутся к началу
+
+```javascript
+// Пример:
+s("hh*8").bank("RolandTR909").n("0 1 2 3 4 5 6 7")
+```
+
+Здесь 0-3 будут воспроизводить те же звуки, что и 4-7, потому что `RolandTR909_hh` имеет только 4 звука.
+
+Выбор звуков также работает внутри mini notation, используя "`:`" вот так:
+
+```javascript
+// Пример:
+s("bd*4,hh:0 hh:1 hh:2 hh:3 hh:4 hh:5 hh:6 hh:7")
+.bank("RolandTR909")
+```
+
+# Loading Custom Samples
+
+Вы можете загрузить нестандартную sample map, используя функцию `samples`.
+
+## Loading samples from file URLs
+
+В этом примере мы назначаем имена `bassdrum`, `hihat` и `snaredrum` конкретным аудиофайлам на сервере:
+
+```javascript
+// Пример:
+samples({
+  bassdrum: 'bd/BT0AADA.wav',
+  hihat: 'hh27/000_hh27closedhh.wav',
+  snaredrum: ['sd/rytm-01-classic.wav', 'sd/rytm-00-hard.wav'],
+}, 'https://raw.githubusercontent.com/tidalcycles/Dirt-Samples/master/');
+
+s("bassdrum snaredrum:0 bassdrum snaredrum:1, hihat*16")
+```
+
+Вы можете свободно выбирать любую комбинацию букв для каждого имени sample. Даже можно переопределить стандартные звуки.
+Выбранные вами имена будут доступны в функции `s`.
+Убедитесь, что URL и каждый путь к sample образуют правильный URL!
+
+В приведенном выше примере `bassdrum` загрузит:
+
+```
+https://raw.githubusercontent.com/tidalcycles/Dirt-Samples/master/bd/BT0AADA.wav
+|----------------------base path --------------------------------|--sample path-|
+```
+
+Обратите внимание, что мы можем загрузить либо один файл, как для `bassdrum` и `hihat`, либо список файлов, как для `snaredrum`!
+Как только вы запустите код, выбранные вами имена samples будут перечислены в `sounds` -> `user`.
+
+## Loading Samples from a strudel.json file
+
+Приведенный выше способ загрузки samples может быть утомительным для записи / копирования-вставки каждый раз, когда вы пишете новый pattern.
+Чтобы избежать этого, вы можете просто передать URL к файлу `strudel.json` где-то в интернете:
+
+```javascript
+// Пример:
+samples('https://raw.githubusercontent.com/tidalcycles/Dirt-Samples/master/strudel.json')
+s("bd sd bd sd,hh*16")
+```
+
+Ожидается, что файл определит sample map с использованием JSON в том же формате, что описан выше.
+Кроме того, базовый путь может быть определен с помощью ключа `_base`.
+Последний раздел можно записать как:
+
+```json
+{
+  "_base": "https://raw.githubusercontent.com/tidalcycles/Dirt-Samples/master/",
+  "bassdrum": "bd/BT0AADA.wav",
+  "snaredrum": "sd/rytm-01-classic.wav",
+  "hihat": "hh27/000_hh27closedhh.wav"
+}
+```
+
+Обратите внимание, что браузеры часто кэшируют `strudel.json` при первой загрузке и продолжают использовать кэшированную
+версию, даже если оригинал был обновлен. Если это вас беспокоит (например, при разработке нового
+sample pack), вы можете заставить браузер загрузить новую копию, например, изменив регистр одного
+символа в URL или добавив атрибут URL, например:
+
+```javascript
+samples('https://raw.githubusercontent.com/tidalcycles/Dirt-Samples/master/strudel.json?version=2');
+```
+
+который игнорируется GitHub (но изменяет URL, заставляя браузер перезагружать при каждом увеличении
+номера версии).
+
+Также возможно, конечно, просто удалить его из кэша (удаление кэша в настройках конфиденциальности браузера,
+или из консоли разработчика, если вы технически подкованы, или с помощью расширения для удаления кэша).
+
+## Generating strudel.json
+
+Вы можете использовать [@strudel/sampler](https://www.npmjs.com/package/@strudel/sampler) для генерации файла strudel.json, выполнив:
+
+```sh
+npx --yes @strudel/sampler --json > strudel.json
+```
+
+Смотрите другие способы использования strudel/sampler ниже, в разделе "From Disk via @strudel/sampler".
+
+## Github Shortcut
+
+Поскольку загрузка samples из github является распространенной, есть сокращение:
+
+```javascript
+// Пример:
+samples('github:tidalcycles/dirt-samples')
+s("bd sd bd sd,hh*16")
+```
+
+Формат: `samples('github:<user>/<repo>/<branch>')`. Если вы опустите `branch` (как выше), будет использована ветка `main`.
+Предполагается наличие файла `strudel.json` в корне репозитория:
+
+```
+https://raw.githubusercontent.com/<user>/<repo>/<branch>/strudel.json
+```
+
+## From Disk via "Import Sounds Folder"
+
+Если вы не хотите загружать свои samples в интернет, вы также можете загрузить их с локального диска.
+Перейдите на вкладку `sounds` в REPL и откройте вкладку `import-sounds` под строкой поиска.
+Нажмите кнопку "import sounds folder" и выберите папку, содержащую аудиофайлы.
+Выбранная вами папка также может содержать подпапки с аудиофайлами.
+Пример:
+
+```
+└─ samples
+   ├─ swoop
+   │  ├─ swoopshort.wav
+   │  ├─ swooplong.wav
+   │  └─ swooptight.wav
+   └─ smash
+      ├─ smashhigh.wav
+      ├─ smashlow.wav
+      └─ smashmiddle.wav
+```
+
+В приведенном выше примере папка `samples` содержит 2 подпапки `swoop` и `smash`, которые содержат аудиофайлы.
+Если вы выберете эту папку `samples`, вкладка `user` (рядом с вкладкой `import-sounds`) будет содержать 2 новых звука: `swoop(3) smash(3)`
+Отдельные samples затем могут быть воспроизведены обычным способом, например `s("swoop:0 swoop:1 smash:2")`.
+Samples внутри каждого звука используют индексацию с нуля в алфавитном порядке.
+
+## From Disk via @strudel/sampler
+
+Вместо загрузки samples в браузер с помощью кнопки "import sounds folder", вы также можете обслуживать samples с локального файлового сервера.
+Самый простой способ сделать это — использовать [@strudel/sampler](https://www.npmjs.com/package/@strudel/sampler):
+
+```sh
+cd samples
+npx @strudel/sampler
+```
+
+Затем вы можете загрузить его через:
+
+<MiniRepl
+  client:idle
+  tune={`samples('http://localhost:5432/');
+
+n("<0 1 2>").s("swoop smash")`}
+/>
+
+Удобство `@strudel/sampler` в том, что он автоматически генерирует файл `strudel.json` на основе структуры ваших папок.
+Вы можете увидеть, что было сгенерировано, перейдя по адресу `http://localhost:5432` в браузере.
+
+Примечание: Для работы этого вам нужен установленный [NodeJS](https://nodejs.org/).
+
+## Specifying Pitch
+
+Чтобы убедиться, что ваши samples настроены правильно при воспроизведении с `note`, вы можете указать базовую высоту звука следующим образом:
+
+<MiniRepl
+  client:idle
+  tune={`samples({
+  'gtr': 'gtr/0001_cleanC.wav',
+  'moog': { 'g3': 'moog/005_Mighty%20Moog%20G3.wav' },
+}, 'github:tidalcycles/dirt-samples');
+note("g3 [bb3 c4] <g4 f4 eb4 f3>@2").s("gtr,moog").clip(1)
+  .gain(.5)`}
+/>
+
+Мы также можем объявить разные samples для разных регионов клавиатуры:
+
+<MiniRepl
+  client:idle
+  tune={`setcpm(60)
+samples({
+  'moog': {
+    'g2': 'moog/004_Mighty%20Moog%20G2.wav',
+    'g3': 'moog/005_Mighty%20Moog%20G3.wav',
+    'g4': 'moog/006_Mighty%20Moog%20G4.wav',
+  }}, 'github:tidalcycles/dirt-samples')
+
+note("g2!2 <bb2 c3>!2, <c4@3 [<eb4 bb3> g4 f4]>")
+.s('moog').clip(1)
+.gain(.5)`}
+/>
+
+Sampler всегда выберет ближайший подходящий sample для текущей ноты!
+
+Обратите внимание, что эта нотация для звуков с высотой тона также работает внутри файла `strudel.json`.
+
+## Shabda
+
+Если вы не хотите выбирать samples вручную, есть также замечательный инструмент под названием [shabda](https://shabda.ndre.gr/).
+С его помощью вы можете ввести любое имя (имена) sample для запроса из [freesound.org](https://freesound.org/). Пример:
+
+```javascript
+// Пример:
+samples('shabda:bass:4,hihat:4,rimshot:2')
+
+$: n("0 1 2 3 0 1 2 3").s('bass')
+$: n("0 1*2 2 3*2").s('hihat').clip(1)
+$: n("~ 0 ~ 1 ~ 0 0 1").s('rimshot')
+```
+
+Вы также можете генерировать искусственные голосовые samples с любым текстом на нескольких языках.
+Обратите внимание, что код языка и параметры пола являются необязательными и по умолчанию имеют значения `en-GB` и `f`
+
+```javascript
+// Пример:
+samples('shabda/speech:the_drum,forever')
+samples('shabda/speech/fr-FR/m:magnifique')
+
+$: s("the_drum*2").chop(16).speed(rand.range(0.85,1.1))
+$: s("forever magnifique").slow(4).late(0.125)
+```
+
+# Sampler Effects
+
+Sampler effects — это функции, которые можно использовать для изменения поведения воспроизведения sample.
+
+### begin
+
+## Pattern.begin
+
+### end
+
+## Pattern.end
+
+### loop
+
+## loop
+
+### loopBegin
+
+## loopBegin
+
+### loopEnd
+
+## loopEnd
+
+### cut
+
+## cut
+
+### clip
+
+## clip
+
+### loopAt
+
+## Pattern.loopAt
+
+### fit
+
+## fit
+
+### chop
+
+## Pattern.chop
+
+### striate
+
+## Pattern.striate
+
+### slice
+
+## Pattern.slice
+
+### splice
+
+## splice
+
+### scrub
+
+## Pattern.scrub
+
+### speed
+
+## speed
+
+После samples давайте посмотрим, что нам предоставляют [Synths](/learn/synths).
+

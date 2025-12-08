@@ -1,0 +1,294 @@
+# MIDI, OSC и MQTT
+
+# MIDI, OSC и MQTT
+
+Обычно Strudel используется для создания patterns звука, используя свой собственный синтезатор на основе '[web audio](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API)', называемый [SuperDough](https://codeberg.org/uzu/strudel/src/branch/main/packages/superdough).
+
+Также возможно создавать patterns других вещей с помощью Strudel, таких как программные и аппаратные синтезаторы с MIDI, другое программное обеспечение с использованием Open Sound Control/OSC (включая синтезатор [SuperDirt](https://github.com/musikinformatik/SuperDirt/), обычно используемый с родственным Strudel проектом [TidalCycles](https://tidalcycles.org/)), или протокол MQTT для 'интернета вещей'.
+
+# MIDI
+
+Strudel поддерживает MIDI без какого-либо дополнительного программного обеспечения (благодаря [webmidi](https://npmjs.com/package/webmidi)), просто добавляя методы к вашему pattern:
+
+## midiin(inputName?)
+
+## midin
+
+## midi(outputName?,options?)
+
+Либо подключите midi устройство, либо используйте IAC Driver (Mac) или Midi Through Port (Linux) для внутренних midi сообщений.
+Если outputName не указан, используется первый найденный midi выход.
+
+<MiniRepl
+  client:idle
+  tune={`
+$: chord("<C^7 A7 Dm7 G7>").voicing().midi('IAC Driver')
+`}
+/>
+
+В консоли вы увидите лог доступных MIDI устройств, как только запустите код,
+например
+
+```
+ `Midi connected! Using "Midi Through Port-0".`
+```
+
+Функция `.midi()` принимает объект опций со следующими свойствами:
+
+```javascript
+// Пример:
+$: note("d e c a f").midi('IAC Driver', { isController: true, midimap: 'default'})
+
+```
+
+<details>
+<summary>Доступные опции</summary>
+
+| Опция       | Тип          | По умолчанию   | Описание                                                            |
+| ------------ | ------------- | --------- | ---------------------------------------------------------------------- |
+| isController | boolean       | false     | Когда true, отключает отправку note сообщений. Полезно для MIDI контроллеров |
+| latencyMs    | number        | 34        | Задержка в миллисекундах для выравнивания MIDI с аудио движком                |
+| noteOffsetMs | number        | 10        | Смещение в миллисекундах для note-off сообщений для предотвращения глитчей      |
+| midichannel  | number        | 1         | MIDI канал по умолчанию (1-16)                                            |
+| velocity     | number        | 0.9       | Velocity ноты по умолчанию (0-1)                                            |
+| gain         | number        | 1         | Множитель gain по умолчанию для velocity (0-1)                             |
+| midimap      | string        | 'default' | Имя MIDI mapping для использования control changes                        |
+| midiport     | string/number | -         | Имя MIDI устройства или индекс                                              |
+
+</details>
+
+### midiport(outputName)
+
+Выбирает MIDI устройство вывода для использования, pattern может использоваться для переключения между устройствами.
+
+```javascript
+$: midiport('IAC Driver');
+$: note('c a f e').midiport('<0 1 2 3>').midi();
+```
+
+## midiport
+
+## midichan(number)
+
+Выбирает MIDI канал для использования. Если не используется, `.midi` будет использовать канал 1 по умолчанию.
+
+## midicmd(command)
+
+`midicmd` отправляет MIDI system real-time сообщения для управления таймингом и транспортом на MIDI устройствах.
+
+Поддерживает следующие команды:
+
+- `clock`/`midiClock` - Отправляет MIDI тактовые сообщения
+- `start` - Отправляет MIDI start сообщение
+- `stop` - Отправляет MIDI stop сообщение
+- `continue` - Отправляет MIDI continue сообщение
+
+// Вы можете управлять тактами с помощью pattern и убедиться, что он запускается синхронно при запуске repl.
+// Примечание: Это может вести себя неожиданно, если MIDI изначально не настроен.
+
+<MiniRepl
+  client:idle
+  tune={`$:stack(
+  midicmd("clock*48,<start stop>/2").midi('IAC Driver')
+)`}
+/>
+
+## control, ccn && ccv
+
+- `control` отправляет MIDI control change сообщения на ваше MIDI устройство.
+- `ccn` устанавливает cc номер. Зависит от midi mapping вашего синтезатора
+- `ccv` устанавливает cc значение. нормализовано от 0 до 1.
+
+```javascript
+// Пример:
+note("c a f e").control([74, sine.slow(4)]).midi()
+```
+
+```javascript
+// Пример:
+note("c a f e").ccn(74).ccv(sine.slow(4)).midi()
+```
+
+В приведенном выше фрагменте `ccn` установлен в 74, что является фильтром cutoff для многих синтезаторов. `ccv` управляется saw pattern.
+Имея все в одном pattern, pattern `ccv` будет выровнен с note pattern, потому что структура идет слева по умолчанию.
+Но вы также можете управлять cc сообщениями отдельно следующим образом:
+
+```javascript
+// Пример:
+$: note("c a f e").midi()
+$: ccv(sine.segment(16).slow(4)).ccn(74).midi()
+```
+
+Вместо прямой установки `ccn` и `ccv`, вы также можете создавать mappings с помощью `midimaps`:
+
+## midimaps
+
+## midimaps
+
+## defaultmidimap
+
+## defaultmidimap
+
+## progNum (Program Change)
+
+`progNum` отправляет MIDI program change сообщения для переключения между различными пресетами/патчами на вашем MIDI устройстве.
+Значения program change должны быть числами от 0 до 127.
+
+<MiniRepl client:idle tune={`// Переключение между программами 0 и 1 каждый cycle
+progNum("<0 1>").midi()
+
+// Воспроизведение нот при изменении программ
+note("c3 e3 g3").progNum("<0 1 2>").midi()`} />
+
+Сообщения program change полезны для переключения между различными звуками инструментов или пресетами во время выступления.
+Точный звук, на который отображается каждый номер программы, зависит от конфигурации вашего MIDI устройства.
+
+## sysex, sysexid && sysexdata (System Exclusive Message)
+
+`sysex` отправляет MIDI System Exclusive (SysEx) сообщения на ваше MIDI устройство.
+SysEx сообщения - это специфичные для устройства команды, которые позволяют более глубокое управление параметрами синтезатора.
+Значение должно быть массивом чисел от 0-255, представляющих SysEx байты данных.
+
+```javascript
+// Пример:
+// Отправка простого SysEx сообщения
+let id = 0x43; //Yamaha
+//let id = "0x00:0x20:0x32"; //Behringer ID может быть массивом чисел
+let data = "0x79:0x09:0x11:0x0A:0x00:0x00"; // Установить голос NSX-39 на "Aa"
+$: note("c a f e").sysex(id, data).midi();
+$: note("c a f e").sysexid(id).sysexdata(data).midi();
+```
+
+Точный формат SysEx сообщений зависит от спецификации вашего MIDI устройства.
+Обратитесь к руководству по реализации MIDI вашего устройства для получения подробной информации о поддерживаемых SysEx сообщениях.
+
+## midibend && miditouch
+
+`midibend` устанавливает MIDI pitch bend (-1 - 1)
+`miditouch` устанавливает MIDI key after touch (0-1)
+
+```javascript
+// Пример:
+note("c a f e").midibend(sine.slow(4).range(-0.4,0.4)).midi()
+```
+
+```javascript
+// Пример:
+note("c a f e").miditouch(sine.slow(4).range(0,1)).midi()
+```
+
+# OSC/SuperDirt/StrudelDirt
+
+В TidalCycles звук обычно генерируется с использованием [SuperDirt](https://github.com/musikinformatik/SuperDirt/), который работает внутри SuperCollider. Strudel также поддерживает использование SuperDirt, хотя это требует установки дополнительного программного обеспечения.
+
+Также существует [StrudelDirt](https://github.com/daslyfe/StrudelDirt), который является SuperDirt с некоторыми оптимизациями для работы со Strudel. (Долгосрочная цель - объединить эти оптимизации обратно в основной SuperDirt)
+
+## Предварительные требования
+
+Чтобы заставить SuperDirt работать со Strudel, вам нужно
+
+1. установить SuperCollider + sc3 плагины, см. [Tidal Docs](https://tidalcycles.org/docs/) (Install Tidal) для получения дополнительной информации.
+2. установить SuperDirt, или форк [StrudelDirt](https://github.com/daslyfe/StrudelDirt), который оптимизирован для использования со Strudel
+3. установить [node.js](https://nodejs.org/en/)
+4. скачать [Strudel Repo](https://codeberg.org/uzu/strudel/) (или git clone, если у вас установлен git)
+5. запустить `pnpm i` в директории strudel
+6. запустить `pnpm run osc` для запуска osc сервера, который пересылает OSC сообщения из Strudel REPL в SuperCollider
+
+Теперь вы готовы!
+
+## Использование
+
+1. Запустите SuperCollider, используя SuperCollider IDE или запустив `sclang` в терминале
+2. Откройте [Strudel REPL](https://strudel.cc/#cygiYmQgc2QiKS5vc2MoKQ%3D%3D)
+
+...или протестируйте это здесь:
+
+```javascript
+// Пример:
+s("bd sd").osc()
+```
+
+Если вы теперь слышите звук, поздравляем! Если нет, вы можете получить помощь в [#strudel канале в TidalCycles discord](https://discord.com/invite/HGEdXmRkzT).
+
+Примечание: если у вас в настройках 'Audio Engine Target' установлен в 'OSC', вам не нужно добавлять .osc() в конец вашего pattern.
+
+### Pattern.osc
+
+## Pattern.osc
+
+## SuperDirt параметры
+
+Пожалуйста, обратитесь к [Tidal Docs](https://tidalcycles.org/) для получения дополнительной информации.
+
+<br />
+
+Но можем ли мы использовать Strudel [в оффлайн](/learn/pwa)?
+
+# MQTT
+
+MQTT - это легковесный сетевой протокол, разработанный для устройств 'интернета вещей'. Для использования со strudel вам понадобится доступ к MQTT серверу, известному как 'broker', настроенному для приема безопасных 'websocket' соединений. Вы можете запустить его самостоятельно (например, запустив [mosquitto](https://mosquitto.org/)), хотя получение SSL сертификата, которому будет доверять ваш веб-браузер, может быть немного сложным для тех, кто не имеет опыта системного администрирования.
+В качестве альтернативы вы можете использовать [публичный broker](https://www.hivemq.com/mqtt/public-mqtt-broker/).
+
+Strudel пока не поддерживает получение сообщений через MQTT, только отправку.
+
+## Использование
+
+Следующий пример показывает, как отправить pattern на MQTT broker:
+
+```javascript
+// Пример:
+"hello world"
+    .mqtt(undefined, // имя пользователя (undefined для открытых/публичных серверов)
+          undefined, // пароль
+          '/strudel-pattern', // mqtt 'topic'
+          'wss://mqtt.eclipseprojects.io:443/mqtt', // адрес MQTT сервера
+          'mystrudel', // MQTT client id - генерируется случайно, если не указан
+          0 // задержка перед отправкой сообщений (0 = без задержки)
+         )
+```
+
+Другое программное обеспечение может затем получать сообщения. Например, используя командную строку клиента [mosquitto](https://mosquitto.org/):
+
+```
+
+> mosquitto_sub -h mqtt.eclipseprojects.io -p 1883 -t "/strudel-pattern"
+> hello
+> world
+> hello
+> world
+> ...
+
+```
+
+Control patterns будут закодированы как JSON, например:
+
+```javascript
+// Пример:
+sound("sax(3,8)").speed("2 3")
+  .mqtt(undefined, // имя пользователя (undefined для открытых/публичных серверов)
+        undefined, // пароль
+        '/strudel-pattern', // mqtt 'topic'
+        'wss://mqtt.eclipseprojects.io:443/mqtt', // адрес MQTT сервера
+        'mystrudel', // MQTT client id - генерируется случайно, если не указан
+        0 // задержка перед отправкой сообщений (0 = без задержки)
+       )
+```
+
+Будут отправлены сообщения вроде следующего:
+
+```
+
+{"s":"sax","speed":2}
+{"s":"sax","speed":2}
+{"s":"sax","speed":3}
+{"s":"sax","speed":2}
+...
+
+```
+
+Библиотеки для получения MQTT доступны для многих языков программирования.
+
+```
+
+```
+
