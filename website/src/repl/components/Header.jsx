@@ -6,7 +6,7 @@ import ArrowUturnLeftIcon from '@heroicons/react/20/solid/ArrowUturnLeftIcon';
 import ArrowUturnRightIcon from '@heroicons/react/20/solid/ArrowUturnRightIcon';
 import cx from '@src/cx.mjs';
 import { useSettings, setIsZen, setMasterVolumeSettings } from '../../settings.mjs';
-import { setMasterVolume } from '@strudel/superdough';
+import { setMasterVolume } from '@strudel/webaudio';
 import { useState, useEffect, useCallback } from 'react';
 import '../Repl.css';
 
