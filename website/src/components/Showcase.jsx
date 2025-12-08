@@ -36,7 +36,10 @@ export function Showcase() {
 }
 
 let _videos = [
-  // TOPLAP Solstice December 2024 (новые)
+  // 2025
+  { title: 'Switch Angel - 2 Minute Deep Acid in Strudel (Aug 2025)', id: 'HkgV_-nJOuE' },
+  { title: 'Switch Angel - Trance from scratch (2025)', id: 'iu5rnQkfO6M' },
+  // TOPLAP Solstice December 2024
   { title: 'Djenerative Music by Bogdan Vera @ TOPLAP solstice Dec 2024', id: 'LtMX4Lr1nzY' },
   { title: 'La musique by BuboBubo @ TOPLAP solstice Dec 2024', id: 'Oz00Y_f80wU' },
   { title: 'Livecode and vocal breaks by Switch Angel @ TOPLAP solstice Dec 2024', id: '2kzjOIsL6CM' },
