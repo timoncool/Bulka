@@ -7,6 +7,11 @@ import cx from '@src/cx.mjs';
 import { useChatContext } from '../../useChatContext';
 import { useSettings, setAiApiKey, setAiProvider, setAiModel, aiProviders } from '../../../settings.mjs';
 
+// Common input styles matching SettingsTab
+const inputClass = 'w-full p-2 bg-background rounded-md text-foreground border border-foreground/30 focus:border-foreground focus:outline-none';
+const selectClass = 'w-full p-2 bg-background rounded-md text-foreground border border-foreground/30';
+const buttonClass = 'px-4 py-2 rounded-md bg-background text-foreground border border-foreground/30 hover:bg-lineBackground disabled:opacity-50';
+
 const SUGGESTIONS = [
   { label: 'Простой бит', prompt: 'Создай простой бит с бочкой, снейром и хэтом' },
   { label: 'Добавь бас', prompt: 'Добавь басовую линию к текущему треку' },
@@ -44,19 +49,19 @@ function SettingsPanel({ onClose }) {
   };
 
   return (
-    <div className="p-4 space-y-4">
+    <div className="p-4 space-y-4 text-foreground">
       <h3 className="text-lg font-medium">Настройки AI</h3>
 
       {/* Provider */}
-      <div>
-        <label className="block text-sm mb-1 opacity-70">Провайдер</label>
+      <div className="grid gap-2">
+        <label className="text-sm">Провайдер</label>
         <select
           value={provider}
           onChange={(e) => {
             setProvider(e.target.value);
             setModel(MODELS[e.target.value][0].value);
           }}
-          className="w-full px-3 py-2 rounded bg-background border border-lineHighlight"
+          className={selectClass}
         >
           <option value="openai">OpenAI</option>
           <option value="anthropic">Anthropic (Claude)</option>
@@ -64,12 +69,12 @@ function SettingsPanel({ onClose }) {
       </div>
 
       {/* Model */}
-      <div>
-        <label className="block text-sm mb-1 opacity-70">Модель</label>
+      <div className="grid gap-2">
+        <label className="text-sm">Модель</label>
         <select
           value={model}
           onChange={(e) => setModel(e.target.value)}
-          className="w-full px-3 py-2 rounded bg-background border border-lineHighlight"
+          className={selectClass}
         >
           {MODELS[provider]?.map((m) => (
             <option key={m.value} value={m.value}>{m.label}</option>
@@ -78,8 +83,8 @@ function SettingsPanel({ onClose }) {
       </div>
 
       {/* API Key */}
-      <div>
-        <label className="block text-sm mb-1 opacity-70">
+      <div className="grid gap-2">
+        <label className="text-sm">
           API Ключ {provider === 'openai' ? '(OpenAI)' : '(Anthropic)'}
         </label>
         <input
@@ -87,9 +92,9 @@ function SettingsPanel({ onClose }) {
           value={apiKey}
           onChange={(e) => setApiKey(e.target.value)}
           placeholder={provider === 'openai' ? 'sk-...' : 'sk-ant-...'}
-          className="w-full px-3 py-2 rounded bg-background border border-lineHighlight"
+          className={inputClass}
         />
-        <p className="text-xs mt-1 opacity-50">
+        <p className="text-xs opacity-50">
           Ключ хранится только в вашем браузере
         </p>
       </div>
@@ -101,7 +106,7 @@ function SettingsPanel({ onClose }) {
           href="https://platform.openai.com/api-keys"
           target="_blank"
           rel="noopener"
-          className="ml-2 underline hover:no-underline"
+          className="ml-2 underline hover:opacity-50"
         >
           OpenAI
         </a>
@@ -110,7 +115,7 @@ function SettingsPanel({ onClose }) {
           href="https://console.anthropic.com/"
           target="_blank"
           rel="noopener"
-          className="underline hover:no-underline"
+          className="underline hover:opacity-50"
         >
           Anthropic
         </a>
@@ -120,11 +125,7 @@ function SettingsPanel({ onClose }) {
       <button
         onClick={handleSave}
         disabled={!apiKey.trim()}
-        className={cx(
-          'w-full py-2 rounded font-medium',
-          'bg-foreground text-background',
-          'hover:opacity-90 disabled:opacity-50'
-        )}
+        className={cx(buttonClass, 'w-full')}
       >
         Сохранить
       </button>
@@ -143,7 +144,9 @@ function Message({ message }) {
       <div
         className={cx(
           'max-w-[85%] rounded-lg px-3 py-2 text-sm',
-          isUser ? 'bg-foreground text-background' : 'bg-lineHighlight text-foreground'
+          isUser
+            ? 'bg-selection text-foreground'
+            : 'bg-background text-foreground border border-foreground/20'
         )}
       >
         <div className="whitespace-pre-wrap break-words">
@@ -169,8 +172,8 @@ export function ChatTab({ context }) {
   // Show settings if no API key
   if (!chat.hasApiKey || showSettings) {
     return (
-      <div className="h-full flex flex-col">
-        <div className="flex items-center justify-between p-2 border-b border-lineHighlight">
+      <div className="h-full flex flex-col text-foreground">
+        <div className="flex items-center justify-between p-2 border-b border-foreground/20">
           <div className="flex items-center gap-2">
             <span>🤖</span>
             <span className="text-sm font-medium">Bulka AI</span>
@@ -178,7 +181,7 @@ export function ChatTab({ context }) {
           {chat.hasApiKey && (
             <button
               onClick={() => setShowSettings(false)}
-              className="text-xs opacity-70 hover:opacity-100"
+              className="text-xs hover:opacity-50"
             >
               ← Назад
             </button>
@@ -190,9 +193,9 @@ export function ChatTab({ context }) {
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full text-foreground">
       {/* Header */}
-      <div className="flex items-center justify-between p-2 border-b border-lineHighlight">
+      <div className="flex items-center justify-between p-2 border-b border-foreground/20">
         <div className="flex items-center gap-2">
           <span>🤖</span>
           <span className="text-sm font-medium">Bulka AI</span>
@@ -202,14 +205,14 @@ export function ChatTab({ context }) {
           {chat.messages.length > 0 && (
             <button
               onClick={chat.clearMessages}
-              className="text-xs opacity-50 hover:opacity-100"
+              className="text-xs hover:opacity-50"
             >
               Очистить
             </button>
           )}
           <button
             onClick={() => setShowSettings(true)}
-            className="text-xs opacity-50 hover:opacity-100"
+            className="text-xs hover:opacity-50"
           >
             ⚙️
           </button>
@@ -217,13 +220,13 @@ export function ChatTab({ context }) {
       </div>
 
       {/* Suggestions */}
-      <div className="flex flex-wrap gap-1 p-2 border-b border-lineHighlight">
+      <div className="flex flex-wrap gap-1 p-2 border-b border-foreground/20">
         {SUGGESTIONS.map((s, i) => (
           <button
             key={i}
             onClick={() => chat.sendMessage(s.prompt)}
             disabled={chat.isLoading}
-            className="px-2 py-1 text-xs rounded border border-lineHighlight hover:bg-lineHighlight disabled:opacity-50"
+            className="px-2 py-1 text-xs rounded-md bg-background border border-foreground/30 hover:opacity-50 disabled:opacity-30"
           >
             {s.label}
           </button>
@@ -247,7 +250,7 @@ export function ChatTab({ context }) {
             ))}
             {chat.isLoading && !chat.messages[chat.messages.length - 1]?.content && (
               <div className="flex justify-start mb-3">
-                <div className="bg-lineHighlight rounded-lg px-3 py-2 text-sm opacity-70">
+                <div className="bg-background border border-foreground/20 rounded-lg px-3 py-2 text-sm opacity-70">
                   Думаю...
                 </div>
               </div>
@@ -259,13 +262,13 @@ export function ChatTab({ context }) {
 
       {/* Error */}
       {chat.error && (
-        <div className="mx-3 mb-2 p-2 text-xs text-red-400 bg-red-500/10 rounded">
+        <div className="mx-3 mb-2 p-2 text-xs text-red-400 bg-red-500/10 rounded-md border border-red-500/30">
           {chat.error}
         </div>
       )}
 
       {/* Input */}
-      <form onSubmit={chat.handleSubmit} className="flex gap-2 p-2 border-t border-lineHighlight">
+      <form onSubmit={chat.handleSubmit} className="flex gap-2 p-2 border-t border-foreground/20">
         <input
           type="text"
           value={chat.input}
@@ -273,13 +276,13 @@ export function ChatTab({ context }) {
           onKeyDown={chat.handleKeyDown}
           placeholder="Опиши что хочешь..."
           disabled={chat.isLoading}
-          className="flex-1 px-3 py-2 rounded bg-background border border-lineHighlight focus:outline-none focus:border-foreground/50 disabled:opacity-50"
+          className={cx(inputClass, 'flex-1')}
         />
         {chat.isLoading ? (
           <button
             type="button"
             onClick={chat.stop}
-            className="px-4 py-2 rounded bg-red-500/20 text-red-400 border border-red-500/50"
+            className="px-4 py-2 rounded-md bg-background text-red-400 border border-red-500/50 hover:opacity-50"
           >
             Стоп
           </button>
@@ -287,7 +290,7 @@ export function ChatTab({ context }) {
           <button
             type="submit"
             disabled={!chat.input.trim()}
-            className="px-4 py-2 rounded bg-foreground text-background disabled:opacity-50"
+            className={buttonClass}
           >
             ↵
           </button>
