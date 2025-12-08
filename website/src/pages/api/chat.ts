@@ -536,7 +536,7 @@ export const POST: APIRoute = async ({ request }) => {
     let stream: ReadableStream;
 
     if (provider === 'anthropic') {
-      stream = await runAnthropicAgent(apiKey, model || 'claude-3-5-sonnet-20241022', messages, currentCode || '');
+      stream = await runAnthropicAgent(apiKey, model || 'claude-sonnet-4-5-20250929', messages, currentCode || '');
     } else {
       stream = await runOpenAIAgent(apiKey, model || 'gpt-5.1', messages, currentCode || '');
     }
