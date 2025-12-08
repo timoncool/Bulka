@@ -13,21 +13,59 @@ import { fileURLToPath } from 'url';
 export const prerender = false;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const DOCS_PATH = path.resolve(__dirname, '../../../docs_md');
+const DOCS_PATH = path.resolve(__dirname, '../../../../docs_md');
 
 /**
  * Tool definitions for the agent
+ * Artifact-style editing: read, edit specific parts, append
  */
 const TOOLS_OPENAI = [
   {
     type: 'function' as const,
     function: {
-      name: 'setEditorCode',
-      description: 'Установить код в редактор (заменяет весь код). Используй для создания нового трека или полного переписывания.',
+      name: 'readCode',
+      description: 'Прочитать текущий код из редактора. ВСЕГДА вызывай это первым чтобы увидеть что уже написано.',
+      parameters: { type: 'object', properties: {} },
+    },
+  },
+  {
+    type: 'function' as const,
+    function: {
+      name: 'editCode',
+      description: 'Редактировать код: найти и заменить конкретный фрагмент. Используй для изменения существующего кода без полной перезаписи.',
       parameters: {
         type: 'object',
         properties: {
-          code: { type: 'string', description: 'Полный код Strudel для установки в редактор' },
+          search: { type: 'string', description: 'Текст для поиска в текущем коде (точное совпадение)' },
+          replace: { type: 'string', description: 'Текст для замены' },
+        },
+        required: ['search', 'replace'],
+      },
+    },
+  },
+  {
+    type: 'function' as const,
+    function: {
+      name: 'appendCode',
+      description: 'Добавить код в конец редактора. Используй для добавления новых элементов к существующему треку.',
+      parameters: {
+        type: 'object',
+        properties: {
+          code: { type: 'string', description: 'Код для добавления в конец' },
+        },
+        required: ['code'],
+      },
+    },
+  },
+  {
+    type: 'function' as const,
+    function: {
+      name: 'setFullCode',
+      description: 'Полностью заменить весь код в редакторе. Используй ТОЛЬКО для создания нового трека с нуля.',
+      parameters: {
+        type: 'object',
+        properties: {
+          code: { type: 'string', description: 'Полный код Strudel' },
         },
         required: ['code'],
       },
@@ -37,7 +75,7 @@ const TOOLS_OPENAI = [
     type: 'function' as const,
     function: {
       name: 'playMusic',
-      description: 'Запустить воспроизведение музыки. Используй после установки кода чтобы пользователь услышал результат.',
+      description: 'Запустить воспроизведение музыки. Используй после изменения кода.',
       parameters: { type: 'object', properties: {} },
     },
   },
@@ -173,38 +211,59 @@ function extractRelevantSection(content: string, queryWords: string[], maxLength
 }
 
 /**
- * System prompt
+ * System prompt - artifact-style editing
  */
 const SYSTEM_PROMPT = `Ты - Bulka AI, музыкальный агент для live coding музыки.
 
-## Твои возможности (ИСПОЛЬЗУЙ ИХ):
-- setEditorCode - установить код в редактор
-- playMusic - запустить воспроизведение
-- stopMusic - остановить музыку
-- searchDocs - поиск по документации
+## ИНСТРУМЕНТЫ (используй их, не пиши код в тексте!):
 
-## ВАЖНЫЕ ПРАВИЛА:
-1. ВСЕГДА используй инструмент setEditorCode для установки кода, не просто пиши код в ответе
-2. После установки кода СРАЗУ вызывай playMusic чтобы пользователь услышал результат
-3. Если не знаешь какой-то функции - используй searchDocs
-4. Отвечай кратко, действуй через инструменты
+### Работа с кодом (КАК АРТЕФАКТ):
+- readCode - ВСЕГДА вызывай первым чтобы прочитать текущий код
+- editCode(search, replace) - изменить конкретный фрагмент кода (найти и заменить)
+- appendCode(code) - добавить код в конец
+- setFullCode(code) - ТОЛЬКО для нового трека с нуля
+
+### Воспроизведение:
+- playMusic - запустить
+- stopMusic - остановить
+
+### Документация:
+- searchDocs(query) - поиск по документации
+
+## КРИТИЧЕСКИЕ ПРАВИЛА:
+1. СНАЧАЛА вызови readCode чтобы увидеть что уже есть
+2. НЕ ПЕРЕЗАПИСЫВАЙ весь код через setFullCode если можно отредактировать через editCode
+3. Для добавления нового элемента используй appendCode или editCode
+4. После изменений вызови playMusic
 
 ## Примеры паттернов Strudel:
-- Простой бит: sound("bd sd hh sd")
-- С переменной скоростью: sound("bd*2 sd [hh hh hh] sd")
+- Бит: sound("bd sd hh sd")
+- Множители: sound("bd*2 sd [hh hh hh] sd")
 - Эффекты: sound("bd sd").room(0.5).delay(0.25)
+- Мелодия: note("c3 e3 g3 c4").s("sawtooth")
 
 `;
 
 /**
- * Execute tool call server-side (for searchDocs)
+ * Execute tool call server-side
+ * Returns { result, isClientTool }
  */
-async function executeServerTool(name: string, args: any): Promise<string> {
+function executeServerTool(name: string, args: any, currentCode: string): { result: string; isClientTool: boolean } {
+  // Server-side tools
   if (name === 'searchDocs') {
-    const docs = await searchDocumentation(args.query || '', 3);
-    return docs.join('\n\n---\n\n') || 'Ничего не найдено';
+    // Will be handled async separately
+    return { result: '', isClientTool: false };
   }
-  return '';
+
+  if (name === 'readCode') {
+    return {
+      result: currentCode || '// Редактор пуст',
+      isClientTool: false
+    };
+  }
+
+  // Client-side tools
+  return { result: '', isClientTool: true };
 }
 
 /**
@@ -277,17 +336,24 @@ async function runOpenAIAgent(
             } catch (e) { }
 
             // Server-side tools
-            if (toolName === 'searchDocs') {
-              const result = await executeServerTool(toolName, toolArgs);
+            if (toolName === 'readCode') {
+              // Return current code to AI
               conversationMessages.push({
                 role: 'tool',
                 tool_call_id: toolCall.id,
-                content: result,
+                content: currentCode || '// Редактор пуст',
               });
             }
-            // Client-side tools - send to client
+            else if (toolName === 'searchDocs') {
+              const docs = await searchDocumentation(toolArgs.query || '', 3);
+              conversationMessages.push({
+                role: 'tool',
+                tool_call_id: toolCall.id,
+                content: docs.join('\n\n---\n\n') || 'Ничего не найдено',
+              });
+            }
+            // Client-side tools - send to client for execution
             else {
-              // Send tool call to client
               const toolCallData = {
                 type: 'tool_call',
                 name: toolName,
@@ -295,11 +361,11 @@ async function runOpenAIAgent(
               };
               controller.enqueue(encoder.encode(`data: ${JSON.stringify(toolCallData)}\n\n`));
 
-              // Add tool result to conversation (assume success)
+              // Tell AI the tool was executed
               conversationMessages.push({
                 role: 'tool',
                 tool_call_id: toolCall.id,
-                content: `Выполнено: ${toolName}`,
+                content: `OK: ${toolName} выполнено`,
               });
             }
           }
@@ -395,12 +461,19 @@ async function runAnthropicAgent(
             const toolArgs = block.input || {};
 
             // Server-side tools
-            if (toolName === 'searchDocs') {
-              const result = await executeServerTool(toolName, toolArgs);
+            if (toolName === 'readCode') {
               toolResults.push({
                 type: 'tool_result',
                 tool_use_id: block.id,
-                content: result,
+                content: currentCode || '// Редактор пуст',
+              });
+            }
+            else if (toolName === 'searchDocs') {
+              const docs = await searchDocumentation(toolArgs.query || '', 3);
+              toolResults.push({
+                type: 'tool_result',
+                tool_use_id: block.id,
+                content: docs.join('\n\n---\n\n') || 'Ничего не найдено',
               });
             }
             // Client-side tools
@@ -415,7 +488,7 @@ async function runAnthropicAgent(
               toolResults.push({
                 type: 'tool_result',
                 tool_use_id: block.id,
-                content: `Выполнено: ${toolName}`,
+                content: `OK: ${toolName} выполнено`,
               });
             }
           }
@@ -463,9 +536,9 @@ export const POST: APIRoute = async ({ request }) => {
     let stream: ReadableStream;
 
     if (provider === 'anthropic') {
-      stream = await runAnthropicAgent(apiKey, model || 'claude-3-5-sonnet-20241022', messages, currentCode || '');
+      stream = await runAnthropicAgent(apiKey, model || 'claude-sonnet-4-5-20250929', messages, currentCode || '');
     } else {
-      stream = await runOpenAIAgent(apiKey, model || 'gpt-4o-mini', messages, currentCode || '');
+      stream = await runOpenAIAgent(apiKey, model || 'gpt-5.1', messages, currentCode || '');
     }
 
     return new Response(stream, {

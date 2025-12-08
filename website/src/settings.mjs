@@ -28,7 +28,7 @@ export const defaultSettings = {
   // AI Agent settings
   aiApiKey: '',
   aiProvider: aiProviders.openai,
-  aiModel: 'gpt-4o-mini',
+  aiModel: 'gpt-5.1',
   isBracketMatchingEnabled: true,
   isBracketClosingEnabled: true,
   isLineNumbersDisplayed: true,

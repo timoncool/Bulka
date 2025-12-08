@@ -4,6 +4,7 @@
 
 import { useRef, useEffect, useState } from 'react';
 import cx from '@src/cx.mjs';
+import ReactMarkdown from 'react-markdown';
 import { useChatContext } from '../../useChatContext';
 import { useSettings, setAiApiKey, setAiProvider, setAiModel, aiProviders } from '../../../settings.mjs';
 
@@ -41,7 +42,7 @@ function SettingsPanel({ onClose }) {
   const settings = useSettings();
   const [apiKey, setApiKey] = useState(settings.aiApiKey || '');
   const [provider, setProvider] = useState(settings.aiProvider || 'openai');
-  const [model, setModel] = useState(settings.aiModel || 'gpt-4o-mini');
+  const [model, setModel] = useState(settings.aiModel || 'gpt-5.1');
 
   const handleSave = () => {
     setAiApiKey(apiKey);
@@ -136,7 +137,7 @@ function SettingsPanel({ onClose }) {
 }
 
 /**
- * Message component
+ * Message component with markdown support
  */
 function Message({ message }) {
   const isUser = message.role === 'user';
@@ -151,9 +152,61 @@ function Message({ message }) {
             : 'bg-background text-foreground border border-foreground/20'
         )}
       >
-        <div className="whitespace-pre-wrap break-words">
-          {message.content || '...'}
-        </div>
+        {isUser ? (
+          <div className="whitespace-pre-wrap break-words">
+            {message.content || '...'}
+          </div>
+        ) : (
+          <div className="markdown-content prose prose-sm prose-invert max-w-none">
+            <ReactMarkdown
+              components={{
+                // Code blocks
+                code({ node, inline, className, children, ...props }) {
+                  return inline ? (
+                    <code className="bg-lineHighlight px-1 py-0.5 rounded text-xs" {...props}>
+                      {children}
+                    </code>
+                  ) : (
+                    <pre className="bg-lineHighlight p-2 rounded overflow-x-auto my-2">
+                      <code className="text-xs" {...props}>{children}</code>
+                    </pre>
+                  );
+                },
+                // Links
+                a({ href, children }) {
+                  return (
+                    <a href={href} target="_blank" rel="noopener" className="text-selection underline">
+                      {children}
+                    </a>
+                  );
+                },
+                // Lists
+                ul({ children }) {
+                  return <ul className="list-disc list-inside my-1">{children}</ul>;
+                },
+                ol({ children }) {
+                  return <ol className="list-decimal list-inside my-1">{children}</ol>;
+                },
+                // Paragraphs
+                p({ children }) {
+                  return <p className="my-1">{children}</p>;
+                },
+                // Headers
+                h1({ children }) {
+                  return <h1 className="text-base font-bold my-2">{children}</h1>;
+                },
+                h2({ children }) {
+                  return <h2 className="text-sm font-bold my-2">{children}</h2>;
+                },
+                h3({ children }) {
+                  return <h3 className="text-sm font-semibold my-1">{children}</h3>;
+                },
+              }}
+            >
+              {message.content || '...'}
+            </ReactMarkdown>
+          </div>
+        )}
       </div>
     </div>
   );

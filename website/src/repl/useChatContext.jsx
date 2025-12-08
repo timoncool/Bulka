@@ -210,24 +210,45 @@ export function useChatContext(replContext) {
         // Handle tool calls from agent
         if (message.type === 'tool_call') {
           const { name, args } = message;
+          const editor = replContext?.editorRef?.current;
 
-          // Execute tool on client
-          if (name === 'setEditorCode' && args?.code) {
-            if (replContext?.editorRef?.current) {
-              replContext.editorRef.current.setCode(args.code);
-              setPendingCode(args.code);
-              actionsExecuted.push('Код установлен');
+          if (!editor) continue;
+
+          // setFullCode - полная замена кода
+          if (name === 'setFullCode' && args?.code) {
+            editor.setCode(args.code);
+            setPendingCode(args.code);
+            actionsExecuted.push('Код установлен');
+          }
+          // editCode - найти и заменить фрагмент
+          else if (name === 'editCode' && args?.search && args?.replace !== undefined) {
+            const currentCode = editor.code || '';
+            if (currentCode.includes(args.search)) {
+              const newCode = currentCode.replace(args.search, args.replace);
+              editor.setCode(newCode);
+              setPendingCode(newCode);
+              actionsExecuted.push('Код отредактирован');
+            } else {
+              actionsExecuted.push('Фрагмент не найден');
             }
-          } else if (name === 'playMusic') {
-            if (replContext?.editorRef?.current) {
-              replContext.editorRef.current.evaluate();
-              actionsExecuted.push('Воспроизведение запущено');
-            }
-          } else if (name === 'stopMusic') {
-            if (replContext?.editorRef?.current) {
-              replContext.editorRef.current.stop();
-              actionsExecuted.push('Воспроизведение остановлено');
-            }
+          }
+          // appendCode - добавить в конец
+          else if (name === 'appendCode' && args?.code) {
+            const currentCode = editor.code || '';
+            const newCode = currentCode + '\n' + args.code;
+            editor.setCode(newCode);
+            setPendingCode(newCode);
+            actionsExecuted.push('Код добавлен');
+          }
+          // playMusic - запустить
+          else if (name === 'playMusic') {
+            editor.evaluate();
+            actionsExecuted.push('Воспроизведение запущено');
+          }
+          // stopMusic - остановить
+          else if (name === 'stopMusic') {
+            editor.stop();
+            actionsExecuted.push('Воспроизведение остановлено');
           }
         }
         // Handle text content
