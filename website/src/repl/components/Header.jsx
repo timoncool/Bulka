@@ -26,10 +26,12 @@ export function Header({ context, embedded = false }) {
   const [showVolumeSlider, setShowVolumeSlider] = useState(false);
   const [sliderPosition, setSliderPosition] = useState({ top: 0, left: 0 });
   const volumeButtonRef = useRef(null);
+  const hideSliderTimeoutRef = useRef(null);
 
-  // Undo/redo availability
-  const [canUndo, setCanUndo] = useState(false);
+  // Undo/redo availability - track history depth
+  const [canUndo, setCanUndo] = useState(true); // Default true, editor usually has content
   const [canRedo, setCanRedo] = useState(false);
+  const historyStateRef = useRef({ undoDepth: 0, redoDepth: 0 });
 
   // Sync volume with settings on mount and when settings change
   useEffect(() => {
@@ -37,20 +39,31 @@ export function Header({ context, embedded = false }) {
     setMasterVolume(masterVolume);
   }, [masterVolume]);
 
-  // Check undo/redo availability periodically
+  // Check undo/redo availability - listen to editor changes
   useEffect(() => {
     const checkUndoRedo = () => {
       const editor = editorRef?.current?.editor;
       if (editor) {
-        // Check if there's undo history
-        const undoDepth = editor.state.field?.(editor.state.field, false)?.done?.length;
-        const redoDepth = editor.state.field?.(editor.state.field, false)?.undone?.length;
-        // Simple check: if we can read history state
-        setCanUndo(editor.state.doc.length > 0);
-        setCanRedo(false); // Will be updated after actual undo
+        try {
+          // Import historyField to check undo/redo state
+          const { historyField } = require('@codemirror/commands');
+          const historyState = editor.state.field(historyField, false);
+          if (historyState) {
+            const hasUndo = historyState.done.length > 0;
+            const hasRedo = historyState.undone.length > 0;
+            setCanUndo(hasUndo);
+            setCanRedo(hasRedo);
+            historyStateRef.current = { undoDepth: historyState.done.length, redoDepth: historyState.undone.length };
+          }
+        } catch (e) {
+          // Fallback: always allow undo if there's content
+          setCanUndo(editor.state.doc.length > 0);
+        }
       }
     };
-    const interval = setInterval(checkUndoRedo, 500);
+    // Check immediately and on interval
+    checkUndoRedo();
+    const interval = setInterval(checkUndoRedo, 300);
     return () => clearInterval(interval);
   }, [editorRef]);
 
@@ -68,8 +81,13 @@ export function Header({ context, embedded = false }) {
     }
   }, []);
 
-  // Update slider position when showing
+  // Update slider position when showing (with delay on hide)
   const handleShowSlider = useCallback(() => {
+    // Clear any pending hide
+    if (hideSliderTimeoutRef.current) {
+      clearTimeout(hideSliderTimeoutRef.current);
+      hideSliderTimeoutRef.current = null;
+    }
     if (volumeButtonRef.current) {
       const rect = volumeButtonRef.current.getBoundingClientRect();
       setSliderPosition({
@@ -78,6 +96,41 @@ export function Header({ context, embedded = false }) {
       });
     }
     setShowVolumeSlider(true);
+  }, []);
+
+  // Hide slider with delay
+  const handleHideSlider = useCallback(() => {
+    if (hideSliderTimeoutRef.current) {
+      clearTimeout(hideSliderTimeoutRef.current);
+    }
+    hideSliderTimeoutRef.current = setTimeout(() => {
+      setShowVolumeSlider(false);
+    }, 300); // 300ms delay before hiding
+  }, []);
+
+  // Handle scroll wheel on volume slider
+  const handleVolumeWheel = useCallback((e) => {
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -0.05 : 0.05; // Scroll down = decrease, up = increase
+    const newVolume = Math.max(0, Math.min(1, volume + delta));
+    setVolume(newVolume);
+    setMasterVolume(newVolume);
+    setMasterVolumeSettings(newVolume);
+    if (newVolume > 0) {
+      setIsMuted(false);
+      setPrevVolume(newVolume);
+    } else {
+      setIsMuted(true);
+    }
+  }, [volume]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (hideSliderTimeoutRef.current) {
+        clearTimeout(hideSliderTimeoutRef.current);
+      }
+    };
   }, []);
 
   // Handle mute toggle
@@ -161,35 +214,12 @@ export function Header({ context, embedded = false }) {
             </div>
           )}
         </h1>
-        {/* Undo/Redo buttons - RIGHT after logo */}
+        {/* Volume button - after "редактор" text */}
         {!isZen && !isButtonRowHidden && (
-          <div className={cx('flex items-center ml-2', !isEmbedded ? 'px-1' : 'px-0')}>
-            <button
-              onClick={handleUndo}
-              title="отменить (Ctrl+Z)"
-              className={cx('p-1', canUndo ? 'hover:opacity-50' : 'opacity-30 cursor-not-allowed')}
-              disabled={!canUndo}
-            >
-              <ArrowUturnLeftIcon className="w-5 h-5 text-foreground" />
-            </button>
-            <button
-              onClick={handleRedo}
-              title="повторить (Ctrl+Shift+Z)"
-              className={cx('p-1', canRedo ? 'hover:opacity-50' : 'opacity-30 cursor-not-allowed')}
-              disabled={!canRedo}
-            >
-              <ArrowUturnRightIcon className="w-5 h-5 text-foreground" />
-            </button>
-          </div>
-        )}
-      </div>
-      {!isZen && !isButtonRowHidden && (
-        <div className="flex max-w-full overflow-auto text-foreground px-1 md:px-2 items-center">
-          {/* Volume control - LEFT of play, vertical slider on hover */}
           <div
-            className="relative flex items-center mr-3"
+            className="relative flex items-center ml-3"
             onMouseEnter={handleShowSlider}
-            onMouseLeave={() => setShowVolumeSlider(false)}
+            onMouseLeave={handleHideSlider}
           >
             <button
               ref={volumeButtonRef}
@@ -198,38 +228,62 @@ export function Header({ context, embedded = false }) {
               className="hover:opacity-50 p-1"
             >
               {isMuted || volume === 0 ? (
-                <SpeakerXMarkIcon className="w-5 h-5" />
+                <SpeakerXMarkIcon className="w-5 h-5 text-foreground" />
               ) : (
-                <SpeakerWaveIcon className="w-5 h-5" />
+                <SpeakerWaveIcon className="w-5 h-5 text-foreground" />
               )}
             </button>
           </div>
-          {/* Fixed volume slider - renders outside overflow container */}
-          {showVolumeSlider && (
-            <div
-              className="fixed flex flex-col items-center bg-lineHighlight border border-foreground/20 rounded-lg px-3 py-3 z-[9999] shadow-lg"
-              style={{
-                top: sliderPosition.top,
-                left: sliderPosition.left,
-                transform: 'translateX(-50%)',
-              }}
-              onMouseEnter={handleShowSlider}
-              onMouseLeave={() => setShowVolumeSlider(false)}
+        )}
+        {/* Undo/Redo buttons - after volume */}
+        {!isZen && !isButtonRowHidden && (
+          <div className={cx('flex items-center ml-1', !isEmbedded ? 'px-1' : 'px-0')}>
+            <button
+              onClick={handleUndo}
+              title="отменить (Ctrl+Z)"
+              className={cx('p-1', canUndo ? 'hover:opacity-50' : 'opacity-30 cursor-not-allowed')}
             >
-              <input
-                type="range"
-                min="0"
-                max="1"
-                step="0.01"
-                value={volume}
-                onChange={handleVolumeChange}
-                title={`Громкость: ${Math.round(volume * 100)}%`}
-                className="h-24 w-2 bg-foreground/30 rounded-lg appearance-none cursor-pointer accent-foreground"
-                style={{ writingMode: 'vertical-lr', direction: 'rtl' }}
-              />
-              <span className="text-xs mt-2 opacity-70">{Math.round(volume * 100)}%</span>
-            </div>
-          )}
+              <ArrowUturnLeftIcon className="w-5 h-5 text-foreground" />
+            </button>
+            <button
+              onClick={handleRedo}
+              title="повторить (Ctrl+Shift+Z)"
+              className={cx('p-1', canRedo ? 'hover:opacity-50' : 'opacity-30 cursor-not-allowed')}
+            >
+              <ArrowUturnRightIcon className="w-5 h-5 text-foreground" />
+            </button>
+          </div>
+        )}
+      </div>
+      {/* Fixed volume slider - renders outside overflow container */}
+      {showVolumeSlider && (
+        <div
+          className="fixed flex flex-col items-center bg-lineHighlight rounded-lg px-3 py-3 z-[9999] shadow-lg"
+          style={{
+            top: sliderPosition.top,
+            left: sliderPosition.left,
+            transform: 'translateX(-50%)',
+          }}
+          onMouseEnter={handleShowSlider}
+          onMouseLeave={handleHideSlider}
+          onWheel={handleVolumeWheel}
+        >
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.01"
+            value={volume}
+            onChange={handleVolumeChange}
+            title={`Громкость: ${Math.round(volume * 100)}%`}
+            className="h-24 w-2 bg-foreground/30 rounded-lg appearance-none cursor-pointer accent-foreground"
+            style={{ writingMode: 'vertical-lr', direction: 'rtl' }}
+          />
+          <span className="text-xs mt-2 text-foreground opacity-70">{Math.round(volume * 100)}%</span>
+        </div>
+      )}
+      {!isZen && !isButtonRowHidden && (
+        <div className="flex max-w-full overflow-auto text-foreground px-1 md:px-2 items-center">
           {/* Play/Stop button */}
           <button
             onClick={handleTogglePlay}
