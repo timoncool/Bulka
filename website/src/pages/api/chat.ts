@@ -8,11 +8,13 @@
 import type { APIRoute } from 'astro';
 import fs from 'fs/promises';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
 export const prerender = false;
 
-// Path to documentation
-const DOCS_PATH = path.join(process.cwd(), '..', 'docs_md');
+// Path to documentation - resolved from this file's location
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const DOCS_PATH = path.resolve(__dirname, '../../../docs_md');
 
 /**
  * Load and search MD files for relevant content
