@@ -619,8 +619,9 @@ async function runOpenAIAgent(
       while (maxIterations > 0) {
         maxIterations--;
 
-        // Check if model is a reasoning model (o1, o1-mini) - they don't support temperature/tools
-        const isReasoningModel = model.startsWith('o1');
+        // Check if model is a reasoning model - they don't support temperature/tools
+        // o1, o3, o4 series are all reasoning models
+        const isReasoningModel = /^o[134](-|$)/.test(model);
 
         // Build request body conditionally
         const checkBody: any = {

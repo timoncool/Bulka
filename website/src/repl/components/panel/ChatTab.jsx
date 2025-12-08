@@ -320,9 +320,11 @@ function SettingsPanel({ onClose }) {
 
 /**
  * Message component with markdown support
+ * Shows thinking content if available
  */
 function Message({ message }) {
   const isUser = message.role === 'user';
+  const [showThinking, setShowThinking] = useState(false);
 
   return (
     <div className={cx('flex w-full mb-3', isUser ? 'justify-end' : 'justify-start')}>
@@ -331,9 +333,28 @@ function Message({ message }) {
           'max-w-[85%] rounded-lg px-3 py-2 text-sm',
           isUser
             ? 'bg-selection text-foreground'
-            : 'bg-background text-foreground border border-foreground/20'
+            : 'bg-background text-foreground border border-foreground/20',
+          message.isThinking && 'opacity-70 italic'
         )}
       >
+        {/* Thinking toggle button */}
+        {message.thinking && !message.isThinking && (
+          <button
+            onClick={() => setShowThinking(!showThinking)}
+            className="text-xs opacity-50 hover:opacity-100 mb-2 flex items-center gap-1"
+          >
+            <span>{showThinking ? '▼' : '▶'}</span>
+            <span>💭 Мысли модели</span>
+          </button>
+        )}
+
+        {/* Thinking content (collapsible) */}
+        {showThinking && message.thinking && (
+          <div className="mb-2 p-2 bg-foreground/5 rounded text-xs opacity-70 whitespace-pre-wrap max-h-[200px] overflow-y-auto">
+            {message.thinking}
+          </div>
+        )}
+
         {isUser ? (
           <div className="whitespace-pre-wrap break-words">
             {message.content || '...'}
