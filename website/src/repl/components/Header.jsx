@@ -7,7 +7,7 @@ import ArrowUturnRightIcon from '@heroicons/react/20/solid/ArrowUturnRightIcon';
 import cx from '@src/cx.mjs';
 import { useSettings, setIsZen, setMasterVolumeSettings } from '../../settings.mjs';
 import { setMasterVolume } from '@strudel/webaudio';
-import { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import '../Repl.css';
 
 const { BASE_URL } = import.meta.env;
@@ -19,11 +19,13 @@ export function Header({ context, embedded = false }) {
   const isEmbedded = typeof window !== 'undefined' && (embedded || window.location !== window.parent.location);
   const { isZen, isButtonRowHidden, isCSSAnimationDisabled, fontFamily, masterVolume } = useSettings();
 
-  // Volume state
+  // Volume state - sync muted with actual volume
   const [volume, setVolume] = useState(masterVolume);
-  const [isMuted, setIsMuted] = useState(false);
-  const [prevVolume, setPrevVolume] = useState(masterVolume);
+  const [isMuted, setIsMuted] = useState(masterVolume === 0);
+  const [prevVolume, setPrevVolume] = useState(masterVolume > 0 ? masterVolume : 0.8);
   const [showVolumeSlider, setShowVolumeSlider] = useState(false);
+  const [sliderPosition, setSliderPosition] = useState({ top: 0, left: 0 });
+  const volumeButtonRef = useRef(null);
 
   // Undo/redo availability
   const [canUndo, setCanUndo] = useState(false);
@@ -61,20 +63,38 @@ export function Header({ context, embedded = false }) {
     if (newVolume > 0) {
       setIsMuted(false);
       setPrevVolume(newVolume);
+    } else {
+      setIsMuted(true);
     }
+  }, []);
+
+  // Update slider position when showing
+  const handleShowSlider = useCallback(() => {
+    if (volumeButtonRef.current) {
+      const rect = volumeButtonRef.current.getBoundingClientRect();
+      setSliderPosition({
+        top: rect.bottom + 4,
+        left: rect.left + rect.width / 2,
+      });
+    }
+    setShowVolumeSlider(true);
   }, []);
 
   // Handle mute toggle
   const handleMuteToggle = useCallback(() => {
-    if (isMuted) {
-      // Unmute
-      setVolume(prevVolume);
-      setMasterVolume(prevVolume);
-      setMasterVolumeSettings(prevVolume);
+    const currentlyMuted = isMuted || volume === 0;
+    if (currentlyMuted) {
+      // Unmute - restore previous volume (or default to 0.8)
+      const restoreVolume = prevVolume > 0 ? prevVolume : 0.8;
+      setVolume(restoreVolume);
+      setMasterVolume(restoreVolume);
+      setMasterVolumeSettings(restoreVolume);
       setIsMuted(false);
     } else {
-      // Mute
-      setPrevVolume(volume);
+      // Mute - save current volume and set to 0
+      if (volume > 0) {
+        setPrevVolume(volume);
+      }
       setVolume(0);
       setMasterVolume(0);
       setMasterVolumeSettings(0);
@@ -167,40 +187,49 @@ export function Header({ context, embedded = false }) {
         <div className="flex max-w-full overflow-auto text-foreground px-1 md:px-2 items-center">
           {/* Volume control - LEFT of play, vertical slider on hover */}
           <div
-            className={cx('relative flex items-center mr-3')}
-            onMouseEnter={() => setShowVolumeSlider(true)}
+            className="relative flex items-center mr-3"
+            onMouseEnter={handleShowSlider}
             onMouseLeave={() => setShowVolumeSlider(false)}
           >
             <button
+              ref={volumeButtonRef}
               onClick={handleMuteToggle}
-              title={isMuted ? 'включить звук' : 'выключить звук'}
+              title={isMuted || volume === 0 ? 'включить звук' : 'выключить звук'}
               className="hover:opacity-50 p-1"
             >
-              {isMuted ? (
+              {isMuted || volume === 0 ? (
                 <SpeakerXMarkIcon className="w-5 h-5" />
               ) : (
                 <SpeakerWaveIcon className="w-5 h-5" />
               )}
             </button>
-            {/* Vertical slider appears on hover, opens downward */}
-            <div className={cx(
-              'absolute top-full left-1/2 -translate-x-1/2 mt-1 flex flex-col items-center bg-lineHighlight rounded px-2 py-3 z-50 transition-opacity duration-150',
-              showVolumeSlider ? 'opacity-100' : 'opacity-0 pointer-events-none'
-            )}>
+          </div>
+          {/* Fixed volume slider - renders outside overflow container */}
+          {showVolumeSlider && (
+            <div
+              className="fixed flex flex-col items-center bg-lineHighlight border border-foreground/20 rounded-lg px-3 py-3 z-[9999] shadow-lg"
+              style={{
+                top: sliderPosition.top,
+                left: sliderPosition.left,
+                transform: 'translateX(-50%)',
+              }}
+              onMouseEnter={handleShowSlider}
+              onMouseLeave={() => setShowVolumeSlider(false)}
+            >
               <input
                 type="range"
                 min="0"
                 max="1"
                 step="0.01"
-                value={isMuted ? 0 : volume}
+                value={volume}
                 onChange={handleVolumeChange}
                 title={`Громкость: ${Math.round(volume * 100)}%`}
-                className="h-20 w-1 bg-foreground/30 rounded-lg appearance-none cursor-pointer accent-foreground"
+                className="h-24 w-2 bg-foreground/30 rounded-lg appearance-none cursor-pointer accent-foreground"
                 style={{ writingMode: 'vertical-lr', direction: 'rtl' }}
               />
-              <span className="text-xs mt-2 opacity-70">{isMuted ? 0 : Math.round(volume * 100)}%</span>
+              <span className="text-xs mt-2 opacity-70">{Math.round(volume * 100)}%</span>
             </div>
-          </div>
+          )}
           {/* Play/Stop button */}
           <button
             onClick={handleTogglePlay}
