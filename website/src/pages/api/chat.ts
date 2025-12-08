@@ -619,6 +619,23 @@ async function runOpenAIAgent(
       while (maxIterations > 0) {
         maxIterations--;
 
+        // Check if model is a reasoning model (o1, o3, o4) - they don't support temperature/tools
+        const isReasoningModel = model.startsWith('o1') || model.startsWith('o3') || model.startsWith('o4');
+
+        // Build request body conditionally
+        const checkBody: any = {
+          model,
+          messages: conversationMessages,
+          stream: false,
+        };
+
+        // Add tools only for non-reasoning models
+        if (!isReasoningModel) {
+          checkBody.tools = TOOLS_OPENAI;
+          checkBody.tool_choice = 'auto';
+          checkBody.temperature = 0.7;
+        }
+
         // First, check if we need to use tools (non-streaming for tool handling)
         const checkResponse = await fetch('https://api.openai.com/v1/chat/completions', {
           method: 'POST',
@@ -626,14 +643,7 @@ async function runOpenAIAgent(
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${apiKey}`,
           },
-          body: JSON.stringify({
-            model,
-            messages: conversationMessages,
-            tools: TOOLS_OPENAI,
-            tool_choice: 'auto',
-            stream: false,
-            temperature: 0.7,
-          }),
+          body: JSON.stringify(checkBody),
         });
 
         if (!checkResponse.ok) {
@@ -718,185 +728,62 @@ async function runOpenAIAgent(
         }
 
         // No tool calls - stream the final text response
-        // Check if model supports Responses API with reasoning (GPT-5.1, GPT-5)
-        const supportsResponses = model.includes('gpt-5') || model.includes('o1') || model.includes('o3') || model.includes('o4');
+        // Build streaming request body (no temperature for reasoning models)
+        const streamBody: any = {
+          model,
+          messages: conversationMessages,
+          stream: true,
+        };
 
-        if (supportsResponses) {
-          // Use Responses API for GPT-5.1 with reasoning
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: '🧠 Думаю...' })}\n\n`));
+        if (!isReasoningModel) {
+          streamBody.temperature = 0.7;
+        }
 
-          const responsesBody: any = {
-            model,
-            input: conversationMessages.map(m => ({
-              role: m.role === 'system' ? 'developer' : m.role,
-              content: m.content,
-            })),
-            stream: true,
-            reasoning: {
-              effort: 'medium',
-              summary: 'auto',
-            },
-          };
+        const streamResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`,
+          },
+          body: JSON.stringify(streamBody),
+        });
 
-          const streamResponse = await fetch('https://api.openai.com/v1/responses', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${apiKey}`,
-            },
-            body: JSON.stringify(responsesBody),
-          });
+        if (!streamResponse.ok || !streamResponse.body) {
+          // Fallback to non-streamed content
+          if (checkMessage.content) {
+            const textData = { type: 'text', content: checkMessage.content };
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify(textData)}\n\n`));
+          }
+          controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+          controller.close();
+          return;
+        }
 
-          if (!streamResponse.ok || !streamResponse.body) {
-            // Fallback to Chat Completions
-            const fallbackResponse = await fetch('https://api.openai.com/v1/chat/completions', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${apiKey}`,
-              },
-              body: JSON.stringify({
-                model,
-                messages: conversationMessages,
-                stream: true,
-              }),
-            });
+        // Stream the response
+        const reader = streamResponse.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
 
-            if (fallbackResponse.ok && fallbackResponse.body) {
-              const reader = fallbackResponse.body.getReader();
-              const decoder = new TextDecoder();
-              let buffer = '';
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
 
-              while (true) {
-                const { done, value } = await reader.read();
-                if (done) break;
-                buffer += decoder.decode(value, { stream: true });
-                const lines = buffer.split('\n');
-                buffer = lines.pop() || '';
-                for (const line of lines) {
-                  if (line.startsWith('data: ')) {
-                    const data = line.slice(6);
-                    if (data === '[DONE]') continue;
-                    try {
-                      const parsed = JSON.parse(data);
-                      const delta = parsed.choices?.[0]?.delta?.content;
-                      if (delta) {
-                        controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'text', content: delta })}\n\n`));
-                      }
-                    } catch (e) { }
-                  }
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || '';
+
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              const data = line.slice(6);
+              if (data === '[DONE]') continue;
+              try {
+                const parsed = JSON.parse(data);
+                const delta = parsed.choices?.[0]?.delta?.content;
+                if (delta) {
+                  const textData = { type: 'text', content: delta };
+                  controller.enqueue(encoder.encode(`data: ${JSON.stringify(textData)}\n\n`));
                 }
-              }
-            }
-            controller.enqueue(encoder.encode('data: [DONE]\n\n'));
-            controller.close();
-            return;
-          }
-
-          // Stream Responses API (handles reasoning summaries)
-          const reader = streamResponse.body.getReader();
-          const decoder = new TextDecoder();
-          let buffer = '';
-          let isThinking = false;
-
-          while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-
-            buffer += decoder.decode(value, { stream: true });
-            const lines = buffer.split('\n');
-            buffer = lines.pop() || '';
-
-            for (const line of lines) {
-              if (line.startsWith('data: ')) {
-                const data = line.slice(6);
-                if (data === '[DONE]') continue;
-                try {
-                  const parsed = JSON.parse(data);
-
-                  // Handle reasoning summary events
-                  if (parsed.type === 'response.reasoning_summary_text.added') {
-                    isThinking = true;
-                    controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'thinking_start' })}\n\n`));
-                  }
-                  else if (parsed.type === 'response.reasoning_summary_text.delta') {
-                    const delta = parsed.delta;
-                    if (delta) {
-                      controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'thinking', content: delta })}\n\n`));
-                    }
-                  }
-                  else if (parsed.type === 'response.reasoning_summary_text.done') {
-                    isThinking = false;
-                    controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'thinking_end' })}\n\n`));
-                  }
-                  // Handle text output
-                  else if (parsed.type === 'response.output_text.delta') {
-                    const delta = parsed.delta;
-                    if (delta) {
-                      controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'text', content: delta })}\n\n`));
-                    }
-                  }
-                  // Legacy format
-                  else if (parsed.choices?.[0]?.delta?.content) {
-                    controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'text', content: parsed.choices[0].delta.content })}\n\n`));
-                  }
-                } catch (e) { }
-              }
-            }
-          }
-        } else {
-          // Use Chat Completions API for older models
-          const streamResponse = await fetch('https://api.openai.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${apiKey}`,
-            },
-            body: JSON.stringify({
-              model,
-              messages: conversationMessages,
-              stream: true,
-              temperature: 0.7,
-            }),
-          });
-
-          if (!streamResponse.ok || !streamResponse.body) {
-            // Fallback to non-streamed content
-            if (checkMessage.content) {
-              const textData = { type: 'text', content: checkMessage.content };
-              controller.enqueue(encoder.encode(`data: ${JSON.stringify(textData)}\n\n`));
-            }
-            controller.enqueue(encoder.encode('data: [DONE]\n\n'));
-            controller.close();
-            return;
-          }
-
-          // Stream the response
-          const reader = streamResponse.body.getReader();
-          const decoder = new TextDecoder();
-          let buffer = '';
-
-          while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-
-            buffer += decoder.decode(value, { stream: true });
-            const lines = buffer.split('\n');
-            buffer = lines.pop() || '';
-
-            for (const line of lines) {
-              if (line.startsWith('data: ')) {
-                const data = line.slice(6);
-                if (data === '[DONE]') continue;
-                try {
-                  const parsed = JSON.parse(data);
-                  const delta = parsed.choices?.[0]?.delta?.content;
-                  if (delta) {
-                    const textData = { type: 'text', content: delta };
-                    controller.enqueue(encoder.encode(`data: ${JSON.stringify(textData)}\n\n`));
-                  }
-                } catch (e) { }
-              }
+              } catch (e) { }
             }
           }
         }
@@ -1164,6 +1051,173 @@ async function runAnthropicAgent(
 }
 
 /**
+ * Gemini agent loop with tool calling
+ */
+async function runGeminiAgent(
+  apiKey: string,
+  model: string,
+  messages: any[],
+  currentCode: string,
+  selectedCode: string | null
+): Promise<ReadableStream> {
+  let codeContext = '';
+  if (selectedCode) {
+    codeContext = `\n## Выделенный код (пользователь выделил этот фрагмент):\n\`\`\`\n${selectedCode}\n\`\`\`\n## Полный код:\n\`\`\`\n${currentCode}\n\`\`\``;
+  } else if (currentCode) {
+    codeContext = `\n## Текущий код:\n\`\`\`\n${currentCode}\n\`\`\``;
+  }
+  const systemPrompt = SYSTEM_PROMPT + codeContext;
+
+  const encoder = new TextEncoder();
+
+  // Convert messages to Gemini format
+  const geminiContents = messages.map(m => ({
+    role: m.role === 'assistant' ? 'model' : 'user',
+    parts: [{ text: m.content }],
+  }));
+
+  // Gemini tools format
+  const geminiTools = [{
+    function_declarations: TOOLS_OPENAI.map(t => ({
+      name: t.function.name,
+      description: t.function.description,
+      parameters: t.function.parameters,
+    })),
+  }];
+
+  return new ReadableStream({
+    async start(controller) {
+      let conversationContents = [...geminiContents];
+      let maxIterations = 5;
+
+      while (maxIterations > 0) {
+        maxIterations--;
+
+        // Call Gemini API
+        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+        const response = await fetch(geminiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: conversationContents,
+            systemInstruction: { parts: [{ text: systemPrompt }] },
+            tools: geminiTools,
+            generationConfig: {
+              temperature: 0.7,
+              maxOutputTokens: 8192,
+            },
+          }),
+        });
+
+        if (!response.ok) {
+          const err = await response.text();
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: err })}\n\n`));
+          controller.close();
+          return;
+        }
+
+        const data = await response.json();
+        const candidate = data.candidates?.[0];
+        const content = candidate?.content;
+
+        if (!content) {
+          controller.close();
+          return;
+        }
+
+        // Check for function calls
+        const functionCalls = content.parts?.filter((p: any) => p.functionCall);
+
+        if (functionCalls && functionCalls.length > 0) {
+          conversationContents.push(content);
+
+          const functionResponses: any[] = [];
+
+          for (const part of functionCalls) {
+            const fc = part.functionCall;
+            const toolName = fc.name;
+            const toolArgs = fc.args || {};
+
+            // Server-side tools
+            if (toolName === 'readCode') {
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: '📖 Читаю код...' })}\n\n`));
+              functionResponses.push({
+                functionResponse: {
+                  name: toolName,
+                  response: { content: currentCode || '// Редактор пуст' },
+                },
+              });
+            }
+            else if (toolName === 'searchDocs') {
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: `🔍 Ищу в документации: "${toolArgs.query}"...` })}\n\n`));
+              const docs = await searchDocumentation(toolArgs.query || '', 3);
+              functionResponses.push({
+                functionResponse: {
+                  name: toolName,
+                  response: { content: docs.join('\n\n---\n\n') || 'Ничего не найдено' },
+                },
+              });
+            }
+            // Client-side tools
+            else {
+              let statusMessage = '';
+              if (toolName === 'setFullCode') statusMessage = '✏️ Устанавливаю код...';
+              else if (toolName === 'editCode') statusMessage = '✏️ Редактирую код...';
+              else if (toolName === 'appendCode') statusMessage = '➕ Добавляю код...';
+              else if (toolName === 'playMusic') statusMessage = '▶️ Запускаю воспроизведение...';
+              else if (toolName === 'stopMusic') statusMessage = '⏹️ Останавливаю...';
+
+              if (statusMessage) {
+                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: statusMessage })}\n\n`));
+              }
+
+              const toolCallData = {
+                type: 'tool_call',
+                name: toolName,
+                args: toolArgs,
+              };
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify(toolCallData)}\n\n`));
+
+              functionResponses.push({
+                functionResponse: {
+                  name: toolName,
+                  response: { content: `OK: ${toolName} выполнено` },
+                },
+              });
+            }
+          }
+
+          // Add function responses
+          conversationContents.push({
+            role: 'user',
+            parts: functionResponses,
+          });
+
+          continue;
+        }
+
+        // No function calls - stream text response
+        const textParts = content.parts?.filter((p: any) => p.text);
+        for (const part of textParts || []) {
+          if (part.text) {
+            const textData = { type: 'text', content: part.text };
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify(textData)}\n\n`));
+          }
+        }
+
+        controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+        controller.close();
+        return;
+      }
+
+      controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+      controller.close();
+    },
+  });
+}
+
+/**
  * Truncate messages to avoid rate limits
  * Keep last N messages, prioritizing recent context
  */
@@ -1203,9 +1257,11 @@ export const POST: APIRoute = async ({ request }) => {
     let stream: ReadableStream;
 
     if (provider === 'anthropic') {
-      stream = await runAnthropicAgent(apiKey, model || 'claude-sonnet-4-5-20250929', messages, currentCode || '', selectedCode || null);
+      stream = await runAnthropicAgent(apiKey, model || 'claude-sonnet-4-5-20250514', messages, currentCode || '', selectedCode || null);
+    } else if (provider === 'gemini') {
+      stream = await runGeminiAgent(apiKey, model || 'gemini-2.5-pro-preview-06-05', messages, currentCode || '', selectedCode || null);
     } else {
-      stream = await runOpenAIAgent(apiKey, model || 'gpt-5.1', messages, currentCode || '', selectedCode || null);
+      stream = await runOpenAIAgent(apiKey, model || 'gpt-4.1', messages, currentCode || '', selectedCode || null);
     }
 
     return new Response(stream, {

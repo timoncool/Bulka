@@ -6,7 +6,7 @@ import { useRef, useEffect, useState } from 'react';
 import cx from '@src/cx.mjs';
 import ReactMarkdown from 'react-markdown';
 import { useChatContext } from '../../useChatContext';
-import { useSettings, setAiApiKey, setAiProvider, setAiModel, aiProviders } from '../../../settings.mjs';
+import { useSettings, setOpenaiApiKey, setAnthropicApiKey, setGeminiApiKey, setAiProvider, setAiModel, getApiKeyForProvider } from '../../../settings.mjs';
 
 // Common input styles matching SettingsTab
 const inputClass = 'w-full p-2 bg-background rounded-md text-foreground border border-foreground/30 focus:border-foreground focus:outline-none';
@@ -22,42 +22,62 @@ const SUGGESTIONS = [
 
 const MODELS = {
   openai: [
-    { value: 'gpt-5.1', label: 'GPT-5.1 (топ)' },
-    { value: 'gpt-5.1-instant', label: 'GPT-5.1 Instant (быстрый)' },
-    { value: 'gpt-5', label: 'GPT-5' },
+    { value: 'gpt-4.1', label: 'GPT-4.1 (топ)' },
+    { value: 'gpt-4.1-mini', label: 'GPT-4.1 Mini (быстрый)' },
+    { value: 'gpt-4.1-nano', label: 'GPT-4.1 Nano (дешёвый)' },
     { value: 'gpt-4o', label: 'GPT-4o' },
-    { value: 'o1', label: 'o1 (рассуждения)' },
+    { value: 'o3', label: 'o3 (рассуждения)' },
+    { value: 'o4-mini', label: 'o4-mini (рассуждения быстрый)' },
   ],
   anthropic: [
-    { value: 'claude-opus-4-5-20251101', label: 'Claude Opus 4.5 (топ)' },
-    { value: 'claude-sonnet-4-5-20250929', label: 'Claude Sonnet 4.5' },
-    { value: 'claude-haiku-4-5-20250929', label: 'Claude 4.5 Haiku (быстрый)' },
+    { value: 'claude-sonnet-4-5-20250514', label: 'Claude Sonnet 4.5 (топ)' },
+    { value: 'claude-sonnet-4-20250514', label: 'Claude Sonnet 4' },
+    { value: 'claude-haiku-3-5-20241022', label: 'Claude 3.5 Haiku (быстрый)' },
+  ],
+  gemini: [
+    { value: 'gemini-2.5-pro-preview-06-05', label: 'Gemini 2.5 Pro (топ)' },
+    { value: 'gemini-2.5-flash-preview-05-20', label: 'Gemini 2.5 Flash (быстрый)' },
+    { value: 'gemini-2.0-flash', label: 'Gemini 2.0 Flash' },
   ],
 };
 
 /**
- * Settings panel for API configuration
+ * Settings panel for API configuration - all keys stored separately
  */
 function SettingsPanel({ onClose }) {
   const settings = useSettings();
-  const [apiKey, setApiKey] = useState(settings.aiApiKey || '');
+  const [openaiKey, setOpenaiKey] = useState(settings.openaiApiKey || '');
+  const [anthropicKey, setAnthropicKey] = useState(settings.anthropicApiKey || '');
+  const [geminiKey, setGeminiKey] = useState(settings.geminiApiKey || '');
   const [provider, setProvider] = useState(settings.aiProvider || 'openai');
-  const [model, setModel] = useState(settings.aiModel || 'gpt-5.1');
+  const [model, setModel] = useState(settings.aiModel || 'gpt-4.1');
 
   const handleSave = () => {
-    setAiApiKey(apiKey);
+    setOpenaiApiKey(openaiKey);
+    setAnthropicApiKey(anthropicKey);
+    setGeminiApiKey(geminiKey);
     setAiProvider(provider);
     setAiModel(model);
     onClose?.();
   };
 
+  // Check if current provider has API key
+  const currentProviderHasKey = () => {
+    switch (provider) {
+      case 'openai': return openaiKey.trim().length > 0;
+      case 'anthropic': return anthropicKey.trim().length > 0;
+      case 'gemini': return geminiKey.trim().length > 0;
+      default: return false;
+    }
+  };
+
   return (
-    <div className="p-4 space-y-4 text-foreground">
+    <div className="p-4 space-y-4 text-foreground overflow-y-auto max-h-[70vh]">
       <h3 className="text-lg font-medium">Настройки AI</h3>
 
       {/* Provider */}
       <div className="grid gap-2">
-        <label className="text-sm">Провайдер</label>
+        <label className="text-sm font-medium">Активный провайдер</label>
         <select
           value={provider}
           onChange={(e) => {
@@ -66,8 +86,9 @@ function SettingsPanel({ onClose }) {
           }}
           className={selectClass}
         >
-          <option value="openai">OpenAI</option>
-          <option value="anthropic">Anthropic (Claude)</option>
+          <option value="openai">OpenAI {openaiKey ? '✓' : ''}</option>
+          <option value="anthropic">Anthropic (Claude) {anthropicKey ? '✓' : ''}</option>
+          <option value="gemini">Google Gemini {geminiKey ? '✓' : ''}</option>
         </select>
       </div>
 
@@ -85,52 +106,74 @@ function SettingsPanel({ onClose }) {
         </select>
       </div>
 
-      {/* API Key */}
-      <div className="grid gap-2">
-        <label className="text-sm">
-          API Ключ {provider === 'openai' ? '(OpenAI)' : '(Anthropic)'}
-        </label>
-        <input
-          type="password"
-          value={apiKey}
-          onChange={(e) => setApiKey(e.target.value)}
-          placeholder={provider === 'openai' ? 'sk-...' : 'sk-ant-...'}
-          className={inputClass}
-        />
+      <hr className="border-foreground/20" />
+
+      {/* All API Keys */}
+      <div className="space-y-3">
+        <h4 className="text-sm font-medium">API Ключи (сохраняются все)</h4>
+
+        {/* OpenAI Key */}
+        <div className="grid gap-1">
+          <label className="text-xs flex items-center gap-2">
+            OpenAI {openaiKey && <span className="text-green-400">✓</span>}
+          </label>
+          <input
+            type="password"
+            value={openaiKey}
+            onChange={(e) => setOpenaiKey(e.target.value)}
+            placeholder="sk-..."
+            className={cx(inputClass, 'text-sm py-1.5')}
+          />
+        </div>
+
+        {/* Anthropic Key */}
+        <div className="grid gap-1">
+          <label className="text-xs flex items-center gap-2">
+            Anthropic {anthropicKey && <span className="text-green-400">✓</span>}
+          </label>
+          <input
+            type="password"
+            value={anthropicKey}
+            onChange={(e) => setAnthropicKey(e.target.value)}
+            placeholder="sk-ant-..."
+            className={cx(inputClass, 'text-sm py-1.5')}
+          />
+        </div>
+
+        {/* Gemini Key */}
+        <div className="grid gap-1">
+          <label className="text-xs flex items-center gap-2">
+            Gemini {geminiKey && <span className="text-green-400">✓</span>}
+          </label>
+          <input
+            type="password"
+            value={geminiKey}
+            onChange={(e) => setGeminiKey(e.target.value)}
+            placeholder="AIza..."
+            className={cx(inputClass, 'text-sm py-1.5')}
+          />
+        </div>
+
         <p className="text-xs opacity-50">
-          Ключ хранится только в вашем браузере
+          Все ключи хранятся локально в браузере
         </p>
       </div>
 
       {/* Links */}
-      <div className="text-xs opacity-70">
-        Получить ключ:
-        <a
-          href="https://platform.openai.com/api-keys"
-          target="_blank"
-          rel="noopener"
-          className="ml-2 underline hover:opacity-50"
-        >
-          OpenAI
-        </a>
-        <span className="mx-1">|</span>
-        <a
-          href="https://console.anthropic.com/"
-          target="_blank"
-          rel="noopener"
-          className="underline hover:opacity-50"
-        >
-          Anthropic
-        </a>
+      <div className="text-xs opacity-70 flex flex-wrap gap-2">
+        <span>Получить:</span>
+        <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener" className="underline hover:opacity-50">OpenAI</a>
+        <a href="https://console.anthropic.com/" target="_blank" rel="noopener" className="underline hover:opacity-50">Anthropic</a>
+        <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" className="underline hover:opacity-50">Gemini</a>
       </div>
 
       {/* Save button */}
       <button
         onClick={handleSave}
-        disabled={!apiKey.trim()}
+        disabled={!currentProviderHasKey()}
         className={cx(buttonClass, 'w-full')}
       >
-        Сохранить
+        {currentProviderHasKey() ? 'Сохранить' : `Введите ключ для ${provider}`}
       </button>
     </div>
   );

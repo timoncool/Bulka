@@ -20,13 +20,16 @@ export const soundFilterType = {
 export const aiProviders = {
   openai: 'openai',
   anthropic: 'anthropic',
+  gemini: 'gemini',
 };
 
 export const defaultSettings = {
   activeFooter: 'intro',
   keybindings: 'codemirror',
-  // AI Agent settings
-  aiApiKey: '',
+  // AI Agent settings - separate keys for each provider
+  openaiApiKey: '',
+  anthropicApiKey: '',
+  geminiApiKey: '',
   aiProvider: aiProviders.openai,
   aiModel: 'gpt-5.1',
   isBracketMatchingEnabled: true,
@@ -156,10 +159,22 @@ export const fontSize = patternSetting('fontSize');
 
 export const settingPatterns = { theme, fontFamily, fontSize };
 
-// AI Agent settings
-export const setAiApiKey = (key) => settingsMap.setKey('aiApiKey', key);
+// AI Agent settings - separate keys for each provider
+export const setOpenaiApiKey = (key) => settingsMap.setKey('openaiApiKey', key);
+export const setAnthropicApiKey = (key) => settingsMap.setKey('anthropicApiKey', key);
+export const setGeminiApiKey = (key) => settingsMap.setKey('geminiApiKey', key);
 export const setAiProvider = (provider) => settingsMap.setKey('aiProvider', provider);
 export const setAiModel = (model) => settingsMap.setKey('aiModel', model);
+
+// Helper to get API key for current provider
+export const getApiKeyForProvider = (provider, settings) => {
+  switch (provider) {
+    case 'openai': return settings.openaiApiKey;
+    case 'anthropic': return settings.anthropicApiKey;
+    case 'gemini': return settings.geminiApiKey;
+    default: return '';
+  }
+};
 
 // Volume settings
 export const setMasterVolumeSettings = (volume) => settingsMap.setKey('masterVolume', volume);

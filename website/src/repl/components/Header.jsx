@@ -19,14 +19,16 @@ export function Header({ context, embedded = false }) {
   const isEmbedded = typeof window !== 'undefined' && (embedded || window.location !== window.parent.location);
   const { isZen, isButtonRowHidden, isCSSAnimationDisabled, fontFamily, masterVolume } = useSettings();
 
-  // Volume state - sync muted with actual volume
+  // Volume state - simplified: volume === 0 means muted
   const [volume, setVolume] = useState(masterVolume);
-  const [isMuted, setIsMuted] = useState(masterVolume === 0);
   const [prevVolume, setPrevVolume] = useState(masterVolume > 0 ? masterVolume : 0.8);
   const [showVolumeSlider, setShowVolumeSlider] = useState(false);
   const [sliderPosition, setSliderPosition] = useState({ top: 0, left: 0 });
   const volumeButtonRef = useRef(null);
   const hideSliderTimeoutRef = useRef(null);
+
+  // Derived state: muted = volume is 0
+  const isMuted = volume === 0;
 
   // Undo/redo availability - track history depth
   const [canUndo, setCanUndo] = useState(true); // Default true, editor usually has content
@@ -73,11 +75,9 @@ export function Header({ context, embedded = false }) {
     setVolume(newVolume);
     setMasterVolume(newVolume);
     setMasterVolumeSettings(newVolume);
+    // Save as prevVolume if non-zero (for unmute restore)
     if (newVolume > 0) {
-      setIsMuted(false);
       setPrevVolume(newVolume);
-    } else {
-      setIsMuted(true);
     }
   }, []);
 
@@ -117,10 +117,7 @@ export function Header({ context, embedded = false }) {
     setMasterVolume(newVolume);
     setMasterVolumeSettings(newVolume);
     if (newVolume > 0) {
-      setIsMuted(false);
       setPrevVolume(newVolume);
-    } else {
-      setIsMuted(true);
     }
   }, [volume]);
 
@@ -133,25 +130,20 @@ export function Header({ context, embedded = false }) {
     };
   }, []);
 
-  // Handle mute toggle
+  // Handle mute toggle - simple: if muted, restore; if not, mute
   const handleMuteToggle = useCallback(() => {
-    const currentlyMuted = isMuted || volume === 0;
-    if (currentlyMuted) {
+    if (isMuted) {
       // Unmute - restore previous volume (or default to 0.8)
       const restoreVolume = prevVolume > 0 ? prevVolume : 0.8;
       setVolume(restoreVolume);
       setMasterVolume(restoreVolume);
       setMasterVolumeSettings(restoreVolume);
-      setIsMuted(false);
     } else {
       // Mute - save current volume and set to 0
-      if (volume > 0) {
-        setPrevVolume(volume);
-      }
+      setPrevVolume(volume > 0 ? volume : 0.8);
       setVolume(0);
       setMasterVolume(0);
       setMasterVolumeSettings(0);
-      setIsMuted(true);
     }
   }, [isMuted, volume, prevVolume]);
 
@@ -224,10 +216,10 @@ export function Header({ context, embedded = false }) {
             <button
               ref={volumeButtonRef}
               onClick={handleMuteToggle}
-              title={isMuted || volume === 0 ? 'включить звук' : 'выключить звук'}
+              title={isMuted ? 'включить звук' : 'выключить звук'}
               className="hover:opacity-50 p-1"
             >
-              {isMuted || volume === 0 ? (
+              {isMuted ? (
                 <SpeakerXMarkIcon className="w-5 h-5 text-foreground" />
               ) : (
                 <SpeakerWaveIcon className="w-5 h-5 text-foreground" />

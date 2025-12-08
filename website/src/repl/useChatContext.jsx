@@ -201,10 +201,15 @@ export function useChatContext(replContext) {
   const sendMessage = useCallback(async (content) => {
     if (!content.trim() || isLoading) return;
 
-    const { aiApiKey, aiProvider, aiModel } = settings;
+    const { aiProvider, aiModel, openaiApiKey, anthropicApiKey, geminiApiKey } = settings;
+
+    // Get API key for current provider
+    const aiApiKey = aiProvider === 'openai' ? openaiApiKey :
+                     aiProvider === 'anthropic' ? anthropicApiKey :
+                     aiProvider === 'gemini' ? geminiApiKey : '';
 
     if (!aiApiKey) {
-      setError('API ключ не установлен. Откройте настройки и добавьте ключ.');
+      setError(`API ключ для ${aiProvider} не установлен. Откройте настройки и добавьте ключ.`);
       return;
     }
 
@@ -522,8 +527,10 @@ export function useChatContext(replContext) {
     handleInputChange,
     handleSubmit,
     handleKeyDown,
-    // Settings for UI
-    hasApiKey: !!settings.aiApiKey,
+    // Settings for UI - check current provider's key
+    hasApiKey: !!(settings.aiProvider === 'openai' ? settings.openaiApiKey :
+                  settings.aiProvider === 'anthropic' ? settings.anthropicApiKey :
+                  settings.aiProvider === 'gemini' ? settings.geminiApiKey : ''),
     provider: settings.aiProvider,
     model: settings.aiModel,
     // Action hints (автоскрытие через 3 сек)
