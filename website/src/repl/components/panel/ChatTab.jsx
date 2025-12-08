@@ -22,22 +22,22 @@ const SUGGESTIONS = [
 
 const MODELS = {
   openai: [
-    { value: 'gpt-4.1', label: 'GPT-4.1 (топ)' },
-    { value: 'gpt-4.1-mini', label: 'GPT-4.1 Mini (быстрый)' },
-    { value: 'gpt-4.1-nano', label: 'GPT-4.1 Nano (дешёвый)' },
-    { value: 'gpt-4o', label: 'GPT-4o' },
+    { value: 'gpt-5.1', label: 'GPT-5.1 (топ, рассуждения)' },
+    { value: 'gpt-5', label: 'GPT-5 (flagship)' },
+    { value: 'gpt-5-mini', label: 'GPT-5 Mini (быстрый)' },
+    { value: 'o3-pro', label: 'o3-pro (глубокие рассуждения)' },
     { value: 'o3', label: 'o3 (рассуждения)' },
     { value: 'o4-mini', label: 'o4-mini (рассуждения быстрый)' },
   ],
   anthropic: [
-    { value: 'claude-sonnet-4-5-20250514', label: 'Claude Sonnet 4.5 (топ)' },
-    { value: 'claude-sonnet-4-20250514', label: 'Claude Sonnet 4' },
-    { value: 'claude-haiku-3-5-20241022', label: 'Claude 3.5 Haiku (быстрый)' },
+    { value: 'claude-opus-4-5-20251101', label: 'Claude Opus 4.5 (топ)' },
+    { value: 'claude-sonnet-4-5-20250929', label: 'Claude Sonnet 4.5' },
+    { value: 'claude-haiku-4-5-20251015', label: 'Claude Haiku 4.5 (быстрый)' },
   ],
   gemini: [
-    { value: 'gemini-2.5-pro-preview-06-05', label: 'Gemini 2.5 Pro (топ)' },
-    { value: 'gemini-2.5-flash-preview-05-20', label: 'Gemini 2.5 Flash (быстрый)' },
-    { value: 'gemini-2.0-flash', label: 'Gemini 2.0 Flash' },
+    { value: 'gemini-3.0-pro', label: 'Gemini 3.0 Pro (топ)' },
+    { value: 'gemini-3.0-deep-think', label: 'Gemini 3.0 Deep Think (рассуждения)' },
+    { value: 'gemini-2.5-pro', label: 'Gemini 2.5 Pro' },
   ],
 };
 
@@ -50,7 +50,7 @@ function SettingsPanel({ onClose }) {
   const [anthropicKey, setAnthropicKey] = useState(settings.anthropicApiKey || '');
   const [geminiKey, setGeminiKey] = useState(settings.geminiApiKey || '');
   const [provider, setProvider] = useState(settings.aiProvider || 'openai');
-  const [model, setModel] = useState(settings.aiModel || 'gpt-4.1');
+  const [model, setModel] = useState(settings.aiModel || 'gpt-5');
 
   const handleSave = () => {
     setOpenaiApiKey(openaiKey);
