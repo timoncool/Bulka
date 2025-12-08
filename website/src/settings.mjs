@@ -62,6 +62,7 @@ export const defaultSettings = {
   multiChannelOrbits: false,
   includePrebakeScriptInShare: true,
   enabledPacks: 'all', // 'all' или JSON строка с массивом названий паков
+  masterVolume: 0.8, // Master volume (0-1)
 };
 
 let search = null;
@@ -126,6 +127,7 @@ export function useSettings() {
       : state.patternAutoStart === undefined
         ? true
         : parseBoolean(state.patternAutoStart),
+    masterVolume: Number(state.masterVolume) || 0.8,
   };
 }
 
@@ -158,3 +160,6 @@ export const settingPatterns = { theme, fontFamily, fontSize };
 export const setAiApiKey = (key) => settingsMap.setKey('aiApiKey', key);
 export const setAiProvider = (provider) => settingsMap.setKey('aiProvider', provider);
 export const setAiModel = (model) => settingsMap.setKey('aiModel', model);
+
+// Volume settings
+export const setMasterVolumeSettings = (volume) => settingsMap.setKey('masterVolume', volume);

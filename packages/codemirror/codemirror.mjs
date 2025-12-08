@@ -1,5 +1,5 @@
 import { closeBrackets } from '@codemirror/autocomplete';
-import { indentWithTab, toggleLineComment } from '@codemirror/commands';
+import { indentWithTab, toggleLineComment, undo as cmUndo, redo as cmRedo } from '@codemirror/commands';
 import { javascript, javascriptLanguage } from '@codemirror/lang-javascript';
 import { bracketMatching, defaultHighlightStyle, syntaxHighlighting } from '@codemirror/language';
 import { Compartment, EditorState, Prec } from '@codemirror/state';
@@ -391,6 +391,31 @@ export class StrudelMirror {
       insert: code,
     };
     this.editor.dispatch({ changes });
+  }
+  undo() {
+    cmUndo(this.editor);
+  }
+  redo() {
+    cmRedo(this.editor);
+  }
+  getSelection() {
+    const { from, to } = this.editor.state.selection.main;
+    if (from === to) return null; // No selection
+    return this.editor.state.sliceDoc(from, to);
+  }
+  hasSelection() {
+    const { from, to } = this.editor.state.selection.main;
+    return from !== to;
+  }
+  selectText(search) {
+    const code = this.code || '';
+    const index = code.indexOf(search);
+    if (index === -1) return false;
+    this.editor.dispatch({
+      selection: { anchor: index, head: index + search.length },
+      scrollIntoView: true,
+    });
+    return true;
   }
   clear() {
     this.onStartRepl && document.removeEventListener('start-repl', this.onStartRepl);

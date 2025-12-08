@@ -280,6 +280,28 @@ export function getSuperdoughAudioController() {
   }
   return controller;
 }
+
+/**
+ * Set the master volume (0-1)
+ * @param {number} volume - Volume level from 0 to 1
+ */
+export function setMasterVolume(volume) {
+  const ctrl = getSuperdoughAudioController();
+  if (ctrl?.output?.destinationGain) {
+    const clampedVolume = Math.max(0, Math.min(1, volume));
+    ctrl.output.destinationGain.gain.value = clampedVolume;
+  }
+}
+
+/**
+ * Get the current master volume
+ * @returns {number} Current volume level (0-1)
+ */
+export function getMasterVolume() {
+  const ctrl = getSuperdoughAudioController();
+  return ctrl?.output?.destinationGain?.gain?.value ?? 1;
+}
+
 export function connectToDestination(input, channels) {
   const controller = getSuperdoughAudioController();
   controller.output.connectToDestination(input, channels);
