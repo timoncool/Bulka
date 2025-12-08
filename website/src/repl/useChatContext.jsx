@@ -8,6 +8,41 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { useSettings } from '../settings.mjs';
 
+const CHAT_STORAGE_KEY = 'bulka-chat-messages';
+
+/**
+ * Load messages from localStorage
+ */
+function loadMessagesFromStorage() {
+  if (typeof window === 'undefined') return [];
+  try {
+    const stored = localStorage.getItem(CHAT_STORAGE_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (Array.isArray(parsed)) {
+        return parsed;
+      }
+    }
+  } catch (e) {
+    console.warn('[Chat] Failed to load messages from storage:', e);
+  }
+  return [];
+}
+
+/**
+ * Save messages to localStorage
+ */
+function saveMessagesToStorage(messages) {
+  if (typeof window === 'undefined') return;
+  try {
+    // Limit to last 50 messages to avoid storage overflow
+    const toSave = messages.slice(-50);
+    localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(toSave));
+  } catch (e) {
+    console.warn('[Chat] Failed to save messages to storage:', e);
+  }
+}
+
 /**
  * Generate unique message ID
  */
@@ -65,7 +100,7 @@ function extractCodeBlocks(text) {
  */
 export function useChatContext(replContext) {
   const settings = useSettings();
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState(() => loadMessagesFromStorage());
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -73,6 +108,15 @@ export function useChatContext(replContext) {
   const [editorError, setEditorError] = useState(null); // Ошибки из редактора
   const abortControllerRef = useRef(null);
   const lastActionTimeoutRef = useRef(null);
+
+  // Save messages to localStorage when they change
+  useEffect(() => {
+    // Only save if there are messages with content
+    const messagesWithContent = messages.filter(m => m.content);
+    if (messagesWithContent.length > 0) {
+      saveMessagesToStorage(messagesWithContent);
+    }
+  }, [messages]);
 
   // Автоскрытие lastAction hint через 3 секунды
   useEffect(() => {
@@ -340,6 +384,10 @@ export function useChatContext(replContext) {
   const clearMessages = useCallback(() => {
     setMessages([]);
     setError(null);
+    // Also clear from localStorage
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem(CHAT_STORAGE_KEY);
+    }
   }, []);
 
   const handleInputChange = useCallback((e) => {
