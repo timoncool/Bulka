@@ -77,6 +77,7 @@ export const SIDEBAR: Sidebar = {
       { text: 'MIDI и OSC', link: 'learn/input-output' },
     ],
     'Ещё': [
+      { text: 'Bulka AI Agent', link: 'learn/ai-agent' },
       { text: 'Рецепты', link: 'recipes/recipes' },
       { text: 'Mini-Notation', link: 'learn/mini-notation' },
       { text: 'Визуальная обратная связь', link: 'learn/visual-feedback' },
