@@ -7,6 +7,7 @@ import './Repl.css';
 import { createClient } from '@supabase/supabase-js';
 import { writeText } from '@tauri-apps/plugin-clipboard-manager';
 import { $featuredPatterns /* , loadDBPatterns */ } from '@src/user_pattern_utils.mjs';
+import { nanoid } from 'nanoid';
 
 // Create a single supabase client for interacting with your database
 export const supabase = createClient(
@@ -144,20 +145,56 @@ export function confirmDialog(msg) {
 //   });
 // }
 
+let lastShared;
 export async function shareCode(codeToShare) {
   try {
-    const hash = '#' + code2hash(codeToShare);
-    const shareUrl = window.location.origin + window.location.pathname + hash;
+    // Check if already shared this exact code
+    if (lastShared === codeToShare) {
+      logger('Ссылка уже скопирована!', 'highlight');
+      return;
+    }
+
+    // Try to create short URL via Supabase
+    try {
+      const hash = nanoid(12);
+      const { error } = await supabase.from('code_v1').insert([{
+        code: codeToShare,
+        hash,
+        public: false, // Private by default
+      }]);
+
+      if (!error) {
+        const shareUrl = window.location.origin + window.location.pathname + '?' + hash;
+        lastShared = codeToShare;
+        if (isTauri()) {
+          await writeText(shareUrl);
+        } else {
+          await navigator.clipboard.writeText(shareUrl);
+        }
+        const message = `Короткая ссылка скопирована!`;
+        alert(message);
+        logger(message, 'highlight');
+        return;
+      }
+      console.warn('Supabase error, falling back to long URL:', error);
+    } catch (e) {
+      console.warn('Short URL failed, using long URL:', e);
+    }
+
+    // Fallback to long URL (base64 encoded code in hash)
+    const longHash = '#' + code2hash(codeToShare);
+    const shareUrl = window.location.origin + window.location.pathname + longHash;
     if (isTauri()) {
       await writeText(shareUrl);
     } else {
       await navigator.clipboard.writeText(shareUrl);
     }
-    const message = `Link copied to clipboard!`;
+    const message = `Ссылка скопирована!`;
     alert(message);
     logger(message, 'highlight');
   } catch (e) {
     console.error(e);
+    logger('Ошибка при создании ссылки', 'error');
   }
 }
 

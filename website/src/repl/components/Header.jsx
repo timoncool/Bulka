@@ -104,7 +104,7 @@ export function Header({ context, embedded = false }) {
       )}
       style={{ fontFamily }}
     >
-      <div className="px-4 flex space-x-2 md:pt-0 select-none">
+      <div className="px-4 flex space-x-2 md:pt-0 select-none items-center">
         <h1
           onClick={() => {
             if (isEmbedded) window.open(window.location.href.replace('embed', ''));
@@ -141,29 +141,50 @@ export function Header({ context, embedded = false }) {
             </div>
           )}
         </h1>
+        {/* Undo/Redo buttons - RIGHT after logo */}
+        {!isZen && !isButtonRowHidden && (
+          <div className={cx('flex items-center ml-2', !isEmbedded ? 'px-1' : 'px-0')}>
+            <button
+              onClick={handleUndo}
+              title="отменить (Ctrl+Z)"
+              className={cx('p-1', canUndo ? 'hover:opacity-50' : 'opacity-30 cursor-not-allowed')}
+              disabled={!canUndo}
+            >
+              <ArrowUturnLeftIcon className="w-5 h-5 text-foreground" />
+            </button>
+            <button
+              onClick={handleRedo}
+              title="повторить (Ctrl+Shift+Z)"
+              className={cx('p-1', canRedo ? 'hover:opacity-50' : 'opacity-30 cursor-not-allowed')}
+              disabled={!canRedo}
+            >
+              <ArrowUturnRightIcon className="w-5 h-5 text-foreground" />
+            </button>
+          </div>
+        )}
       </div>
       {!isZen && !isButtonRowHidden && (
         <div className="flex max-w-full overflow-auto text-foreground px-1 md:px-2 items-center">
-          {/* Volume control - LEFT of play, hidden slider on hover */}
+          {/* Volume control - LEFT of play, vertical slider on hover */}
           <div
-            className={cx('relative flex items-center', !isEmbedded ? 'pr-1' : 'pr-0')}
+            className={cx('relative flex items-center mr-3')}
             onMouseEnter={() => setShowVolumeSlider(true)}
             onMouseLeave={() => setShowVolumeSlider(false)}
           >
             <button
               onClick={handleMuteToggle}
-              title={isMuted || volume === 0 ? 'включить звук' : 'выключить звук'}
+              title={isMuted ? 'включить звук' : 'выключить звук'}
               className="hover:opacity-50 p-1"
             >
-              {isMuted || volume === 0 ? (
+              {isMuted ? (
                 <SpeakerXMarkIcon className="w-5 h-5" />
               ) : (
                 <SpeakerWaveIcon className="w-5 h-5" />
               )}
             </button>
-            {/* Slider appears on hover */}
+            {/* Vertical slider appears on hover, opens downward */}
             <div className={cx(
-              'absolute left-full ml-1 flex items-center bg-lineHighlight rounded px-2 py-1 z-50 transition-opacity duration-150',
+              'absolute top-full left-1/2 -translate-x-1/2 mt-1 flex flex-col items-center bg-lineHighlight rounded px-2 py-3 z-50 transition-opacity duration-150',
               showVolumeSlider ? 'opacity-100' : 'opacity-0 pointer-events-none'
             )}>
               <input
@@ -171,12 +192,13 @@ export function Header({ context, embedded = false }) {
                 min="0"
                 max="1"
                 step="0.01"
-                value={volume}
+                value={isMuted ? 0 : volume}
                 onChange={handleVolumeChange}
                 title={`Громкость: ${Math.round(volume * 100)}%`}
-                className="w-20 h-1 bg-foreground/30 rounded-lg appearance-none cursor-pointer accent-foreground"
+                className="h-20 w-1 bg-foreground/30 rounded-lg appearance-none cursor-pointer accent-foreground"
+                style={{ writingMode: 'vertical-lr', direction: 'rtl' }}
               />
-              <span className="text-xs ml-2 opacity-70 w-8">{Math.round(volume * 100)}%</span>
+              <span className="text-xs mt-2 opacity-70">{isMuted ? 0 : Math.round(volume * 100)}%</span>
             </div>
           </div>
           {/* Play/Stop button */}
@@ -230,27 +252,6 @@ export function Header({ context, embedded = false }) {
               <span>уроки</span>
             </a>
           )}
-          {/* Spacer to push undo/redo to the right */}
-          <div className="flex-1" />
-          {/* Undo/Redo buttons - RIGHT side, closer to editor */}
-          <div className={cx('flex items-center', !isEmbedded ? 'px-1' : 'px-0')}>
-            <button
-              onClick={handleUndo}
-              title="отменить (Ctrl+Z)"
-              className={cx('p-1', canUndo ? 'hover:opacity-50' : 'opacity-30 cursor-not-allowed')}
-              disabled={!canUndo}
-            >
-              <ArrowUturnLeftIcon className="w-5 h-5" />
-            </button>
-            <button
-              onClick={handleRedo}
-              title="повторить (Ctrl+Shift+Z)"
-              className={cx('p-1', canRedo ? 'hover:opacity-50' : 'opacity-30 cursor-not-allowed')}
-              disabled={!canRedo}
-            >
-              <ArrowUturnRightIcon className="w-5 h-5" />
-            </button>
-          </div>
         </div>
       )}
     </header>

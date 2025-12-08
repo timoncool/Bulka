@@ -256,6 +256,15 @@ const SYSTEM_PROMPT = `<system>
 - Показывать код в тексте вместо tools
 - Оставлять без playMusic()
 - Перезаписывать весь код без нужды
+- ВЫДУМЫВАТЬ НАЗВАНИЯ СЭМПЛ-ПАКОВ! Это критическая ошибка!
+
+## СЭМПЛЫ И БАНКИ — КРИТИЧЕСКИ ВАЖНО!
+- НИКОГДА не придумывай названия сэмпл-паков из головы!
+- Перед использованием samples() или bank() — ВСЕГДА searchDocs("samples") или searchDocs("bank")
+- Используй ТОЛЬКО реальные банки из документации: RolandTR808, RolandTR909, LinnDrum, и т.д.
+- Если нужен кастомный пак — сначала searchDocs() чтобы найти доступные
+- Названия вроде "oneheart_ambient_sample_pack" НЕ СУЩЕСТВУЮТ — не выдумывай!
+- При сомнениях — используй встроенные звуки: s("bd"), s("sd"), s("hh"), note().s("piano")
 
 ## ДОВЕРЯЙ ПОЛЬЗОВАТЕЛЮ
 - Если пользователь говорит что звук пропал или что-то сломалось — ВЕРЬ ЕМУ
@@ -1050,17 +1059,28 @@ async function runAnthropicAgent(
           };
         }
 
+        const streamHeaders: Record<string, string> = {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+        };
+
+        // Add interleaved thinking beta header for Claude 4 models
+        if (supportsThinking) {
+          streamHeaders['anthropic-beta'] = 'interleaved-thinking-2025-05-14';
+        }
+
         const streamResponse = await fetch('https://api.anthropic.com/v1/messages', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': apiKey,
-            'anthropic-version': '2023-06-01',
-          },
+          headers: streamHeaders,
           body: JSON.stringify(streamBody),
         });
 
         if (!streamResponse.ok || !streamResponse.body) {
+          // Log the error for debugging
+          const errorText = await streamResponse.text().catch(() => 'Unknown error');
+          console.error('[Chat] Stream response error:', streamResponse.status, errorText);
+
           // Fallback to non-streamed content
           for (const block of checkContent) {
             if (block.type === 'text' && block.text) {
