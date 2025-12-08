@@ -25,7 +25,7 @@ export default function MobileNav({ sidebar }) {
                 href=".."
                 className="py-2 flex cursor-pointer items-center space-x-1 hover:bg-background hover:px-2 rounded-md"
               >
-                <span>перейти в REPL</span>
+                <span>перейти в редактор</span>
               </a>
               {Object.entries(sidebar).map(([group, items], i) => (
                 <div key={i} className="space-y-2">

@@ -41,7 +41,7 @@ const baseNoTrailing = BASE_URL.endsWith('/') ? BASE_URL.slice(0, -1) : BASE_URL
     <Search client:idle />
   </div>
   <a href={`${baseNoTrailing}/`} class="hidden md:flex cursor-pointer items-center space-x-1"
-    ><CommandLineIcon className="w-5 h-5" /><span>перейти в REPL</span>
+    ><CommandLineIcon className="w-5 h-5" /><span>перейти в редактор</span>
   </a>
   <div class="md:hidden">
     <MobileNav sidebar={sidebar} client:idle />
