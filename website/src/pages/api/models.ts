@@ -26,28 +26,43 @@ async function fetchOpenAIModels(apiKey: string): Promise<ModelInfo[]> {
     const data = await response.json();
     const models: ModelInfo[] = [];
 
-    // Filter and sort relevant models
+    // Filter ONLY chat-capable models
     const validModels = (data.data || [])
       .filter((m: any) => {
         const id = m.id.toLowerCase();
-        // Include GPT-5.x, GPT-5, o3, o4 models
-        return (
-          id.startsWith('gpt-5') ||
-          id.startsWith('o3') ||
-          id.startsWith('o4') ||
-          id.startsWith('gpt-4o') ||
-          id.startsWith('o1')
-        );
+
+        // Exclude non-chat models
+        if (id.includes('embed') || id.includes('whisper') || id.includes('tts') ||
+            id.includes('dall-e') || id.includes('audio') || id.includes('moderation') ||
+            id.includes('realtime') || id.includes('transcribe') || id.includes('search')) {
+          return false;
+        }
+
+        // Include only chat-compatible models
+        // GPT-5.x chat models
+        if (id.includes('gpt-5') && id.includes('chat')) return true;
+        // GPT-5 mini/nano (usually chat)
+        if (id.match(/gpt-5[.-]?(mini|nano)$/)) return true;
+        // o-series reasoning (o1, o3, o4)
+        if (id.match(/^o[134](-|$)/)) return true;
+        // GPT-4o and variants
+        if (id.startsWith('gpt-4o')) return true;
+        // GPT-4 turbo
+        if (id.includes('gpt-4-turbo')) return true;
+
+        return false;
       })
       .sort((a: any, b: any) => {
         // Prioritize newer models
         const priority = (id: string) => {
-          if (id.includes('5.1')) return 1;
-          if (id.includes('gpt-5') && !id.includes('5.1')) return 2;
+          if (id.includes('gpt-5') && id.includes('chat')) return 1;
+          if (id.includes('gpt-5-mini') || id.includes('gpt-5.1-mini')) return 2;
           if (id.startsWith('o3')) return 3;
           if (id.startsWith('o4')) return 4;
-          if (id.startsWith('gpt-4o')) return 5;
-          if (id.startsWith('o1')) return 6;
+          if (id.startsWith('o1') && !id.includes('mini')) return 5;
+          if (id.startsWith('o1-mini')) return 6;
+          if (id.startsWith('gpt-4o') && !id.includes('mini')) return 7;
+          if (id.includes('gpt-4o-mini')) return 8;
           return 10;
         };
         return priority(a.id) - priority(b.id);
@@ -56,13 +71,10 @@ async function fetchOpenAIModels(apiKey: string): Promise<ModelInfo[]> {
     for (const m of validModels.slice(0, 10)) {
       let label = m.id;
       // Add descriptions
-      if (m.id.includes('5.1-codex')) label = `${m.id} (кодинг)`;
-      else if (m.id.includes('5.1-chat')) label = `${m.id} (чат)`;
-      else if (m.id.includes('5.1-mini')) label = `${m.id} (быстрый)`;
-      else if (m.id.includes('5.1-nano')) label = `${m.id} (легкий)`;
-      else if (m.id.startsWith('o3')) label = `${m.id} (рассуждения)`;
-      else if (m.id.startsWith('o4')) label = `${m.id} (рассуждения)`;
-      else if (m.id.startsWith('o1')) label = `${m.id} (рассуждения)`;
+      if (m.id.includes('chat')) label = `${m.id} (чат)`;
+      else if (m.id.includes('mini')) label = `${m.id} (быстрый)`;
+      else if (m.id.includes('nano')) label = `${m.id} (легкий)`;
+      else if (m.id.match(/^o[134]/)) label = `${m.id} (рассуждения)`;
 
       models.push({ value: m.id, label });
     }
