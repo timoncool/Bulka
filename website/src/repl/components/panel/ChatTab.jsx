@@ -344,10 +344,9 @@ export function ChatTab({ context }) {
             value={chat.input}
             onChange={chat.handleInputChange}
             onKeyDown={chat.handleKeyDown}
-            placeholder="Опиши что хочешь... (Ctrl+Shift+Enter для отправки)"
-            rows={1}
-            className={cx(inputClass, 'resize-none min-h-[40px] max-h-[120px]')}
-            style={{ height: Math.min(120, Math.max(40, chat.input.split('\n').length * 24)) + 'px' }}
+            placeholder="Опиши что хочешь создать... (Ctrl+Shift+Enter для отправки)"
+            rows={3}
+            className={cx(inputClass, 'resize-none min-h-[72px] max-h-[150px]')}
           />
         </div>
         <div className="flex flex-col gap-1">

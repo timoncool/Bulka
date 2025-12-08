@@ -215,7 +215,14 @@ function extractRelevantSection(content: string, queryWords: string[], maxLength
  * Best practices from: Claude, Cursor, v0.dev, Windsurf, Bolt.new
  */
 const SYSTEM_PROMPT = `<system>
-Ты Bulka AI — креативный музыкальный агент для live coding на платформе Strudel (TidalCycles в браузере).
+Ты Bulka AI — креативный музыкальный агент для live coding на платформе Bulka (форк Strudel/TidalCycles).
+
+ВАЖНО О ТВОЕЙ ИДЕНТИЧНОСТИ:
+- Ты — БУЛКА, а НЕ Strudel. Никогда не называй себя Strudel!
+- Bulka — это русскоязычный форк Strudel с AI-агентом и улучшенным интерфейсом
+- Strudel — это "старший брат", первоисточник, но ты — Bulka!
+- Сервис называется Bulka, редактор называется Bulka, ты — Bulka AI
+
 Твоя миссия: помогать создавать КРУТУЮ музыку через код, удивлять и вдохновлять пользователей.
 Ты не просто помощник — ты творческий партнёр, который делает код красивым и музыку впечатляющей.
 </system>
@@ -235,6 +242,12 @@ const SYSTEM_PROMPT = `<system>
 - Показывать код в тексте вместо tools
 - Оставлять без playMusic()
 - Перезаписывать весь код без нужды
+
+## ДОВЕРЯЙ ПОЛЬЗОВАТЕЛЮ
+- Если пользователь говорит что звук пропал или что-то сломалось — ВЕРЬ ЕМУ
+- НЕ СПОРЬ с пользователем, не доказывай что "всё работает"
+- Пользователь слышит и видит результат, а ты — нет
+- Если пользователь жалуется — сразу ищи проблему и исправляй
 </critical_rules>
 
 <creativity>
@@ -455,6 +468,37 @@ let bass = n("<0 -1 1 -2>/2").scale("D1:major")
 
 // Финальный микс
 stack(melody, drums, chords, bass);
+
+### Пример 4: Coastline - компактный но богатый трек
+// "coastline" @by eddyflux
+samples('github:eddyflux/crate')
+setcps(.75)
+let chords = chord("<Bbm9 Fm9>/4").dict('ireal')
+stack(
+  stack( // === УДАРНЫЕ ===
+    s("bd").struct("<[x*<1 2> [~@3 x]] x>"),
+    s("~ [rim, sd:<2 3>]").room("<0 .2>"),
+    n("[0 <1 3>]*<2!3 4>").s("hh"),
+    s("rd:<1!3 2>*2").mask("<0 0 1 1>/16").gain(.5)
+  ).bank('crate')
+  .mask("<[0 1] 1 1 1>/16".early(.5))
+  , // === АККОРДЫ ===
+  chords.offset(-1).voicing().s("gm_epiano1:1")
+  .phaser(4).room(.5)
+  , // === МЕЛОДИЯ ===
+  n("<0!3 1*2>").set(chords).mode("root:g2")
+  .voicing().s("gm_acoustic_bass"),
+  chords.n("[0 <4 3 <2 5>>*2](<3 5>,8)")
+  .anchor("D5").voicing()
+  .segment(4).clip(rand.range(.4,.8))
+  .room(.75).shape(.3).delay(.25)
+  .fm(sine.range(3,8).slow(8))
+  .lpf(sine.range(500,1000).slow(8)).lpq(5)
+  .rarely(ply("2")).chunk(4, fast(2))
+  .gain(perlin.range(.6, .9))
+  .mask("<0 1 1 0>/16")
+)
+.late("[0 .01]*4").late("[0 .01]*2").size(4)
 </advanced_examples>
 
 <response_format>
@@ -582,6 +626,8 @@ async function runOpenAIAgent(
 
             // Server-side tools
             if (toolName === 'readCode') {
+              // Send status to client
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: '📖 Читаю код...' })}\n\n`));
               conversationMessages.push({
                 role: 'tool',
                 tool_call_id: toolCall.id,
@@ -589,6 +635,8 @@ async function runOpenAIAgent(
               });
             }
             else if (toolName === 'searchDocs') {
+              // Send status to client
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: `🔍 Ищу в документации: "${toolArgs.query}"...` })}\n\n`));
               const docs = await searchDocumentation(toolArgs.query || '', 3);
               conversationMessages.push({
                 role: 'tool',
@@ -598,6 +646,18 @@ async function runOpenAIAgent(
             }
             // Client-side tools - send to client for execution
             else {
+              // Send status based on tool type
+              let statusMessage = '';
+              if (toolName === 'setFullCode') statusMessage = '✏️ Устанавливаю код...';
+              else if (toolName === 'editCode') statusMessage = '✏️ Редактирую код...';
+              else if (toolName === 'appendCode') statusMessage = '➕ Добавляю код...';
+              else if (toolName === 'playMusic') statusMessage = '▶️ Запускаю воспроизведение...';
+              else if (toolName === 'stopMusic') statusMessage = '⏹️ Останавливаю...';
+
+              if (statusMessage) {
+                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: statusMessage })}\n\n`));
+              }
+
               const toolCallData = {
                 type: 'tool_call',
                 name: toolName,
@@ -744,6 +804,7 @@ async function runAnthropicAgent(
 
             // Server-side tools
             if (toolName === 'readCode') {
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: '📖 Читаю код...' })}\n\n`));
               toolResults.push({
                 type: 'tool_result',
                 tool_use_id: block.id,
@@ -751,6 +812,7 @@ async function runAnthropicAgent(
               });
             }
             else if (toolName === 'searchDocs') {
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: `🔍 Ищу в документации: "${toolArgs.query}"...` })}\n\n`));
               const docs = await searchDocumentation(toolArgs.query || '', 3);
               toolResults.push({
                 type: 'tool_result',
@@ -760,6 +822,18 @@ async function runAnthropicAgent(
             }
             // Client-side tools
             else {
+              // Send status based on tool type
+              let statusMessage = '';
+              if (toolName === 'setFullCode') statusMessage = '✏️ Устанавливаю код...';
+              else if (toolName === 'editCode') statusMessage = '✏️ Редактирую код...';
+              else if (toolName === 'appendCode') statusMessage = '➕ Добавляю код...';
+              else if (toolName === 'playMusic') statusMessage = '▶️ Запускаю воспроизведение...';
+              else if (toolName === 'stopMusic') statusMessage = '⏹️ Останавливаю...';
+
+              if (statusMessage) {
+                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: statusMessage })}\n\n`));
+              }
+
               const toolCallData = {
                 type: 'tool_call',
                 name: toolName,

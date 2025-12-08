@@ -219,6 +219,12 @@ export function useChatContext(replContext) {
       let actionsExecuted = [];
 
       for await (const message of parseAgentStream(reader)) {
+        // Handle status messages (show what agent is doing)
+        if (message.type === 'status') {
+          setLastAction(message.message);
+          continue;
+        }
+
         // Handle tool calls from agent
         if (message.type === 'tool_call') {
           const { name, args } = message;
