@@ -101,6 +101,20 @@ const TOOLS_OPENAI = [
       },
     },
   },
+  {
+    type: 'function' as const,
+    function: {
+      name: 'highlightCode',
+      description: 'Выделить (подсветить) фрагмент кода в редакторе чтобы показать пользователю. Используй когда пользователь спрашивает "где", "покажи", "найди".',
+      parameters: {
+        type: 'object',
+        properties: {
+          search: { type: 'string', description: 'Текст для поиска и выделения в коде (точное совпадение)' },
+        },
+        required: ['search'],
+      },
+    },
+  },
 ];
 
 const TOOLS_ANTHROPIC = TOOLS_OPENAI.map(t => ({
@@ -248,6 +262,12 @@ const SYSTEM_PROMPT = `<system>
 - НЕ СПОРЬ с пользователем, не доказывай что "всё работает"
 - Пользователь слышит и видит результат, а ты — нет
 - Если пользователь жалуется — сразу ищи проблему и исправляй
+
+## РАБОТА С ВЫДЕЛЕНИЕМ
+- Если пользователь выделил код — он хочет работать ТОЛЬКО с этим фрагментом
+- Сфокусируйся на выделенном коде, отвечай про него
+- При редактировании выделенного кода — редактируй именно его через editCode()
+- Если выделение есть — это приоритет, не трогай остальной код без необходимости
 </critical_rules>
 
 <creativity>
@@ -314,6 +334,10 @@ let bass = note("c2 e2 g2 e2")
 
 ### searchDocs(query)
 Поиск по документации (рус/англ).
+
+### highlightCode(search)
+Найти и выделить фрагмент кода в редакторе чтобы показать пользователю.
+Используй когда спрашивают "где", "покажи", "найди в коде".
 </tools>
 
 <strudel_reference>
@@ -561,9 +585,16 @@ async function runOpenAIAgent(
   apiKey: string,
   model: string,
   messages: any[],
-  currentCode: string
+  currentCode: string,
+  selectedCode: string | null
 ): Promise<ReadableStream> {
-  const systemPrompt = SYSTEM_PROMPT + (currentCode ? `\n## Текущий код:\n\`\`\`\n${currentCode}\n\`\`\`` : '');
+  let codeContext = '';
+  if (selectedCode) {
+    codeContext = `\n## Выделенный код (пользователь выделил этот фрагмент):\n\`\`\`\n${selectedCode}\n\`\`\`\n## Полный код:\n\`\`\`\n${currentCode}\n\`\`\``;
+  } else if (currentCode) {
+    codeContext = `\n## Текущий код:\n\`\`\`\n${currentCode}\n\`\`\``;
+  }
+  const systemPrompt = SYSTEM_PROMPT + codeContext;
 
   const encoder = new TextEncoder();
 
@@ -751,9 +782,16 @@ async function runAnthropicAgent(
   apiKey: string,
   model: string,
   messages: any[],
-  currentCode: string
+  currentCode: string,
+  selectedCode: string | null
 ): Promise<ReadableStream> {
-  const systemPrompt = SYSTEM_PROMPT + (currentCode ? `\n## Текущий код:\n\`\`\`\n${currentCode}\n\`\`\`` : '');
+  let codeContext = '';
+  if (selectedCode) {
+    codeContext = `\n## Выделенный код (пользователь выделил этот фрагмент):\n\`\`\`\n${selectedCode}\n\`\`\`\n## Полный код:\n\`\`\`\n${currentCode}\n\`\`\``;
+  } else if (currentCode) {
+    codeContext = `\n## Текущий код:\n\`\`\`\n${currentCode}\n\`\`\``;
+  }
+  const systemPrompt = SYSTEM_PROMPT + codeContext;
 
   const encoder = new TextEncoder();
 
@@ -936,7 +974,7 @@ async function runAnthropicAgent(
 export const POST: APIRoute = async ({ request }) => {
   try {
     const body = await request.json();
-    const { messages, apiKey, provider, model, currentCode } = body;
+    const { messages, apiKey, provider, model, currentCode, selectedCode } = body;
 
     if (!apiKey) {
       return new Response(
@@ -948,9 +986,9 @@ export const POST: APIRoute = async ({ request }) => {
     let stream: ReadableStream;
 
     if (provider === 'anthropic') {
-      stream = await runAnthropicAgent(apiKey, model || 'claude-sonnet-4-5-20250929', messages, currentCode || '');
+      stream = await runAnthropicAgent(apiKey, model || 'claude-sonnet-4-5-20250929', messages, currentCode || '', selectedCode || null);
     } else {
-      stream = await runOpenAIAgent(apiKey, model || 'gpt-5.1', messages, currentCode || '');
+      stream = await runOpenAIAgent(apiKey, model || 'gpt-5.1', messages, currentCode || '', selectedCode || null);
     }
 
     return new Response(stream, {

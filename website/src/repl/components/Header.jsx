@@ -1,17 +1,74 @@
 import PlayCircleIcon from '@heroicons/react/20/solid/PlayCircleIcon';
 import StopCircleIcon from '@heroicons/react/20/solid/StopCircleIcon';
+import SpeakerWaveIcon from '@heroicons/react/20/solid/SpeakerWaveIcon';
+import SpeakerXMarkIcon from '@heroicons/react/20/solid/SpeakerXMarkIcon';
+import ArrowUturnLeftIcon from '@heroicons/react/20/solid/ArrowUturnLeftIcon';
+import ArrowUturnRightIcon from '@heroicons/react/20/solid/ArrowUturnRightIcon';
 import cx from '@src/cx.mjs';
-import { useSettings, setIsZen } from '../../settings.mjs';
+import { useSettings, setIsZen, setMasterVolumeSettings } from '../../settings.mjs';
+import { setMasterVolume } from '@strudel/superdough';
+import { useState, useEffect, useCallback } from 'react';
 import '../Repl.css';
 
 const { BASE_URL } = import.meta.env;
 const baseNoTrailing = BASE_URL.endsWith('/') ? BASE_URL.slice(0, -1) : BASE_URL;
 
 export function Header({ context, embedded = false }) {
-  const { started, pending, isDirty, activeCode, handleTogglePlay, handleEvaluate, handleShuffle, handleShare } =
+  const { started, pending, isDirty, activeCode, handleTogglePlay, handleEvaluate, handleShuffle, handleShare, editorRef } =
     context;
   const isEmbedded = typeof window !== 'undefined' && (embedded || window.location !== window.parent.location);
-  const { isZen, isButtonRowHidden, isCSSAnimationDisabled, fontFamily } = useSettings();
+  const { isZen, isButtonRowHidden, isCSSAnimationDisabled, fontFamily, masterVolume } = useSettings();
+
+  // Volume state
+  const [volume, setVolume] = useState(masterVolume);
+  const [isMuted, setIsMuted] = useState(false);
+  const [prevVolume, setPrevVolume] = useState(masterVolume);
+
+  // Sync volume with settings on mount and when settings change
+  useEffect(() => {
+    setVolume(masterVolume);
+    setMasterVolume(masterVolume);
+  }, [masterVolume]);
+
+  // Handle volume change
+  const handleVolumeChange = useCallback((e) => {
+    const newVolume = parseFloat(e.target.value);
+    setVolume(newVolume);
+    setMasterVolume(newVolume);
+    setMasterVolumeSettings(newVolume);
+    if (newVolume > 0) {
+      setIsMuted(false);
+      setPrevVolume(newVolume);
+    }
+  }, []);
+
+  // Handle mute toggle
+  const handleMuteToggle = useCallback(() => {
+    if (isMuted) {
+      // Unmute
+      setVolume(prevVolume);
+      setMasterVolume(prevVolume);
+      setMasterVolumeSettings(prevVolume);
+      setIsMuted(false);
+    } else {
+      // Mute
+      setPrevVolume(volume);
+      setVolume(0);
+      setMasterVolume(0);
+      setMasterVolumeSettings(0);
+      setIsMuted(true);
+    }
+  }, [isMuted, volume, prevVolume]);
+
+  // Handle undo
+  const handleUndo = useCallback(() => {
+    editorRef?.current?.undo?.();
+  }, [editorRef]);
+
+  // Handle redo
+  const handleRedo = useCallback(() => {
+    editorRef?.current?.redo?.();
+  }, [editorRef]);
 
   return (
     <header
@@ -82,6 +139,47 @@ export function Header({ context, embedded = false }) {
               <>загрузка...</>
             )}
           </button>
+          {/* Volume control */}
+          <div className={cx('flex items-center', !isEmbedded ? 'px-2' : 'px-1')}>
+            <button
+              onClick={handleMuteToggle}
+              title={isMuted || volume === 0 ? 'включить звук' : 'выключить звук'}
+              className="hover:opacity-50 p-1"
+            >
+              {isMuted || volume === 0 ? (
+                <SpeakerXMarkIcon className="w-5 h-5" />
+              ) : (
+                <SpeakerWaveIcon className="w-5 h-5" />
+              )}
+            </button>
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              value={volume}
+              onChange={handleVolumeChange}
+              title={`Громкость: ${Math.round(volume * 100)}%`}
+              className="w-16 md:w-20 h-1 bg-foreground/30 rounded-lg appearance-none cursor-pointer accent-foreground"
+            />
+          </div>
+          {/* Undo/Redo buttons */}
+          <div className={cx('flex items-center', !isEmbedded ? 'px-1' : 'px-0')}>
+            <button
+              onClick={handleUndo}
+              title="отменить (Ctrl+Z)"
+              className="hover:opacity-50 p-1"
+            >
+              <ArrowUturnLeftIcon className="w-5 h-5" />
+            </button>
+            <button
+              onClick={handleRedo}
+              title="повторить (Ctrl+Shift+Z)"
+              className="hover:opacity-50 p-1"
+            >
+              <ArrowUturnRightIcon className="w-5 h-5" />
+            </button>
+          </div>
           <button
             onClick={handleEvaluate}
             title="обновить"

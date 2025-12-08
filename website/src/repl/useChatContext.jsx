@@ -185,7 +185,9 @@ export function useChatContext(replContext) {
 
     try {
       // Get current code from editor
-      const currentCode = replContext?.editorRef?.current?.code || '';
+      const editor = replContext?.editorRef?.current;
+      const currentCode = editor?.code || '';
+      const selectedCode = editor?.getSelection?.() || null;
 
       // Prepare messages for API
       const apiMessages = [...messages, userMessage].map(m => ({
@@ -204,6 +206,7 @@ export function useChatContext(replContext) {
           provider: aiProvider,
           model: aiModel,
           currentCode,
+          selectedCode, // Send selected code if any
         }),
         signal: abortControllerRef.current.signal,
       });
@@ -270,6 +273,17 @@ export function useChatContext(replContext) {
             editor.stop();
             setLastAction('⏹ Воспроизведение остановлено');
             actionsExecuted.push('Воспроизведение остановлено');
+          }
+          // highlightCode - выделить фрагмент кода
+          else if (name === 'highlightCode' && args?.search) {
+            const found = editor.selectText?.(args.search);
+            if (found) {
+              setLastAction('🔍 Код выделен');
+              actionsExecuted.push('Код выделен');
+            } else {
+              setLastAction('⚠ Фрагмент не найден');
+              actionsExecuted.push('Фрагмент не найден');
+            }
           }
         }
         // Handle text content
