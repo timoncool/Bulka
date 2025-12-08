@@ -21,14 +21,16 @@ const SUGGESTIONS = [
 
 const MODELS = {
   openai: [
-    { value: 'gpt-4o-mini', label: 'GPT-4o Mini (быстрый)' },
-    { value: 'gpt-4o', label: 'GPT-4o (умный)' },
-    { value: 'gpt-4-turbo', label: 'GPT-4 Turbo' },
+    { value: 'gpt-4.1-mini', label: 'GPT-4.1 Mini (быстрый)' },
+    { value: 'gpt-4.1', label: 'GPT-4.1' },
+    { value: 'gpt-4o', label: 'GPT-4o' },
+    { value: 'o3-mini', label: 'o3 Mini (рассуждения)' },
+    { value: 'o1', label: 'o1 (рассуждения)' },
   ],
   anthropic: [
+    { value: 'claude-sonnet-4-5-20250929', label: 'Claude Sonnet 4.5 (новейший)' },
     { value: 'claude-3-5-sonnet-20241022', label: 'Claude 3.5 Sonnet' },
-    { value: 'claude-3-opus-20240229', label: 'Claude 3 Opus' },
-    { value: 'claude-3-haiku-20240307', label: 'Claude 3 Haiku (быстрый)' },
+    { value: 'claude-3-5-haiku-20241022', label: 'Claude 3.5 Haiku (быстрый)' },
   ],
 };
 
