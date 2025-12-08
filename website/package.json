@@ -11,6 +11,11 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^1.0.0",
+    "@ai-sdk/openai": "^1.0.0",
+    "@astrojs/node": "^9.0.0",
+    "ai": "^4.0.0",
+    "zod": "^3.24.1",
     "@algolia/client-search": "^5.20.0",
     "@astro-community/astro-embed-youtube": "^0.5.6",
     "@astrojs/mdx": "^4.0.7",

@@ -8,6 +8,7 @@ import { SoundsTab } from './SoundsTab';
 import { useLogger } from '../useLogger';
 import { WelcomeTab } from './WelcomeTab';
 import { PatternsTab } from './PatternsTab';
+import { ChatTab } from './ChatTab';
 import { ChevronLeftIcon, XMarkIcon } from '@heroicons/react/16/solid';
 
 const TAURI = typeof window !== 'undefined' && window.__TAURI__;
@@ -77,6 +78,7 @@ export function VerticalPanel({ context }) {
 
 const tabNames = {
   привет: 'intro',
+  'AI чат': 'chat',
   паттерны: 'patterns',
   звуки: 'sounds',
   справка: 'reference',
@@ -118,6 +120,8 @@ function PanelNav({ children, className, settings, ...props }) {
 function PanelContent({ context, tab }) {
   useLogger();
   switch (tab) {
+    case 'chat':
+      return <ChatTab context={context} />;
     case 'patterns':
       return <PatternsTab context={context} />;
     case 'console':
