@@ -322,14 +322,13 @@ export function ChatTab({ context }) {
         </div>
       )}
 
-      {/* Code Applied Indicator */}
-      {chat.pendingCode && (
-        <div className="mx-3 mb-2 p-2 bg-selection/30 rounded-md border border-selection/50">
+      {/* Action Indicator (автоскрытие через 3 сек) */}
+      {chat.lastAction && (
+        <div className="mx-3 mb-2 p-2 bg-selection/30 rounded-md border border-selection/50 animate-fade-in">
           <div className="flex items-center gap-2 text-xs text-foreground">
-            <span className="text-green-400">✓</span>
-            <span>Код применён в редактор</span>
+            <span>{chat.lastAction}</span>
             <button
-              onClick={chat.dismissPendingCode}
+              onClick={() => chat.setLastAction(null)}
               className="ml-auto text-foreground/50 hover:text-foreground"
             >
               ✕
@@ -338,35 +337,47 @@ export function ChatTab({ context }) {
         </div>
       )}
 
-      {/* Input */}
+      {/* Input - textarea для многострочного ввода */}
       <form onSubmit={chat.handleSubmit} className="flex gap-2 p-2 border-t border-foreground/20">
-        <input
-          type="text"
-          value={chat.input}
-          onChange={chat.handleInputChange}
-          onKeyDown={chat.handleKeyDown}
-          placeholder="Опиши что хочешь..."
-          disabled={chat.isLoading}
-          className={cx(inputClass, 'flex-1')}
-        />
-        {chat.isLoading ? (
-          <button
-            type="button"
-            onClick={chat.stop}
-            className="px-4 py-2 rounded-md bg-background text-red-400 border border-red-500/50 hover:opacity-50"
-          >
-            Стоп
-          </button>
-        ) : (
-          <button
-            type="submit"
-            disabled={!chat.input.trim()}
-            className={buttonClass}
-          >
-            ↵
-          </button>
-        )}
+        <div className="flex-1 relative">
+          <textarea
+            value={chat.input}
+            onChange={chat.handleInputChange}
+            onKeyDown={chat.handleKeyDown}
+            placeholder="Опиши что хочешь... (Ctrl+Shift+Enter для отправки)"
+            rows={1}
+            className={cx(inputClass, 'resize-none min-h-[40px] max-h-[120px]')}
+            style={{ height: Math.min(120, Math.max(40, chat.input.split('\n').length * 24)) + 'px' }}
+          />
+        </div>
+        <div className="flex flex-col gap-1">
+          {chat.isLoading ? (
+            <button
+              type="button"
+              onClick={chat.stop}
+              className="px-3 py-2 rounded-md bg-background text-red-400 border border-red-500/50 hover:opacity-50 text-sm"
+            >
+              ⏹
+            </button>
+          ) : (
+            <button
+              type="submit"
+              disabled={!chat.input.trim()}
+              className={cx(buttonClass, 'px-3')}
+            >
+              ↵
+            </button>
+          )}
+        </div>
       </form>
+
+      {/* Playback status indicator */}
+      {chat.isPlaying && (
+        <div className="px-3 py-1 text-xs text-green-400 border-t border-foreground/10 flex items-center gap-2">
+          <span className="animate-pulse">●</span>
+          <span>Музыка играет</span>
+        </div>
+      )}
     </div>
   );
 }

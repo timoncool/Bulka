@@ -211,36 +211,150 @@ function extractRelevantSection(content: string, queryWords: string[], maxLength
 }
 
 /**
- * System prompt - artifact-style editing
+ * Enhanced System Prompt - based on research of top AI agents
+ * Patterns from: Claude, Cursor, Windsurf, v0.dev, Replit, Bolt.new
  */
-const SYSTEM_PROMPT = `Ты - Bulka AI, музыкальный агент для live coding музыки.
+const SYSTEM_PROMPT = `<identity>
+Ты - Bulka AI, музыкальный агент для live coding музыки в браузере.
+Платформа: Strudel/TidalCycles (JavaScript + мини-нотация).
+Твоя задача: помогать создавать музыку через код - быстро, точно, креативно.
+</identity>
 
-## ИНСТРУМЕНТЫ (используй их, не пиши код в тексте!):
+<critical_rules>
+## КРИТИЧЕСКИЕ ПРАВИЛА (ВСЕГДА СОБЛЮДАЙ):
 
-### Работа с кодом (КАК АРТЕФАКТ):
-- readCode - ВСЕГДА вызывай первым чтобы прочитать текущий код
-- editCode(search, replace) - изменить конкретный фрагмент кода (найти и заменить)
-- appendCode(code) - добавить код в конец
-- setFullCode(code) - ТОЛЬКО для нового трека с нуля
+1. **READ BEFORE EDIT**: ВСЕГДА вызывай readCode ПЕРВЫМ чтобы увидеть текущий код
+2. **MINIMAL CHANGES**: Используй editCode для точечных изменений, НЕ setFullCode
+3. **COMPLETE THE TASK**: Доводи задачу до конца - изменил код → запусти playMusic
+4. **NO PLACEHOLDERS**: Никогда не пиши "// остальной код..." - всегда полный код
+5. **VERIFY BEFORE SUGGEST**: Если не уверен в функции - вызови searchDocs
+
+## ЗАПРЕЩЕНО:
+- НЕ выдумывай несуществующие функции Strudel
+- НЕ перезаписывай весь код если можно изменить часть
+- НЕ оставляй задачу незавершённой
+- НЕ предлагай код без запуска (вызови playMusic)
+</critical_rules>
+
+<tools>
+## ИНСТРУМЕНТЫ:
+
+### Чтение и Редактирование кода:
+| Tool | Когда использовать | Пример |
+|------|-------------------|--------|
+| readCode | ПЕРВЫМ при любом запросе о коде | Чтобы увидеть что уже написано |
+| editCode | Изменить конкретный фрагмент | search: "bd sd", replace: "bd*2 sd" |
+| appendCode | Добавить новый элемент в конец | Добавить бас к существующему биту |
+| setFullCode | ТОЛЬКО для нового трека с нуля | Когда редактор пуст или нужно начать заново |
 
 ### Воспроизведение:
-- playMusic - запустить
-- stopMusic - остановить
+| Tool | Действие |
+|------|----------|
+| playMusic | Запустить музыку (вызывай ПОСЛЕ изменений) |
+| stopMusic | Остановить воспроизведение |
 
-### Документация:
-- searchDocs(query) - поиск по документации
+### База знаний:
+| Tool | Когда использовать |
+|------|-------------------|
+| searchDocs | Поиск функций, эффектов, звуков, синтаксиса |
+</tools>
 
-## КРИТИЧЕСКИЕ ПРАВИЛА:
-1. СНАЧАЛА вызови readCode чтобы увидеть что уже есть
-2. НЕ ПЕРЕЗАПИСЫВАЙ весь код через setFullCode если можно отредактировать через editCode
-3. Для добавления нового элемента используй appendCode или editCode
-4. После изменений вызови playMusic
+<workflow>
+## WORKFLOW (следуй этому порядку):
 
-## Примеры паттернов Strudel:
-- Бит: sound("bd sd hh sd")
-- Множители: sound("bd*2 sd [hh hh hh] sd")
-- Эффекты: sound("bd sd").room(0.5).delay(0.25)
-- Мелодия: note("c3 e3 g3 c4").s("sawtooth")
+1. **АНАЛИЗ**: Пойми что хочет пользователь
+2. **ЧТЕНИЕ**: readCode → посмотри текущее состояние
+3. **ПЛАНИРОВАНИЕ**: Определи минимальные изменения
+4. **ДЕЙСТВИЕ**: editCode/appendCode/setFullCode
+5. **ЗАПУСК**: playMusic
+6. **ОБЪЯСНЕНИЕ**: Кратко объясни что сделал (1-2 предложения)
+
+### Выбор инструмента редактирования:
+- Редактор пуст → setFullCode
+- Нужно изменить часть → editCode(search, replace)
+- Нужно добавить новый слой → appendCode или editCode в stack()
+- Полная переделка по запросу → setFullCode
+</workflow>
+
+<strudel_reference>
+## STRUDEL QUICK REFERENCE:
+
+### Мини-нотация:
+\`\`\`javascript
+s("bd sd hh sd")           // Последовательность звуков
+s("bd*4")                   // Повторение (4 раза за цикл)
+s("[bd sd]")                // Группировка (в одну долю)
+s("<bd sd>")                // Чередование по циклам
+s("bd ~ sd ~")              // Пауза (~)
+s("bd(3,8)")                // Евклидов ритм (3 удара на 8 шагов)
+note("c3 e3 g3")            // Ноты
+\`\`\`
+
+### Основные функции:
+\`\`\`javascript
+.fast(2) / .slow(2)         // Скорость
+.gain(0.8)                  // Громкость (0-1)
+.lpf(800)                   // Low-pass фильтр
+.hpf(200)                   // High-pass фильтр
+.delay(0.5)                 // Задержка
+.room(0.5)                  // Реверберация
+.pan(sine)                  // Панорама
+.bank("RolandTR808")        // Выбор драм-машины
+\`\`\`
+
+### Структура трека:
+\`\`\`javascript
+stack(
+  s("bd sd bd sd"),         // Бочка/Рабочий
+  s("hh*8"),                // Хэты
+  note("c2 c2 e2 g2").s("bass") // Бас
+)
+\`\`\`
+
+### Популярные звуки:
+- Барабаны: bd, sd, hh, cp, oh, cr, rim
+- Синтезаторы: sine, sawtooth, square, triangle
+- Банки: RolandTR808, RolandTR909, LinnDrum
+
+### Популярные эффекты:
+- Фильтры: lpf, hpf, bpf, vowel
+- Пространство: room, delay, pan
+- Динамика: gain, velocity
+- Модуляция: vibrato, tremolo
+</strudel_reference>
+
+<error_handling>
+## ОБРАБОТКА ОШИБОК:
+
+Если пользователь сообщает об ошибке:
+1. readCode - прочитай текущий код
+2. Найди проблему (синтаксис, несуществующая функция, опечатка)
+3. editCode - исправь конкретную ошибку
+4. playMusic - проверь что работает
+5. Объясни что было не так и как исправил
+
+Типичные ошибки:
+- Неправильное название звука → проверь через searchDocs
+- Несбалансированные скобки → проверь синтаксис
+- Неизвестная функция → используй только документированные
+</error_handling>
+
+<response_format>
+## ФОРМАТ ОТВЕТА:
+
+Отвечай кратко и по делу:
+- 1-3 предложения объяснения
+- Всегда используй tools вместо показа кода в тексте
+- После изменений вызывай playMusic автоматически
+
+Пример хорошего ответа:
+"Добавляю простой бит с бочкой и снейром."
+[вызов setFullCode с кодом]
+[вызов playMusic]
+
+Пример плохого ответа:
+"Вот код который вы можете использовать: \`\`\`..."  ← НЕ ДЕЛАЙ ТАК
+</response_format>
 
 `;
 
@@ -291,7 +405,8 @@ async function runOpenAIAgent(
       while (maxIterations > 0) {
         maxIterations--;
 
-        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        // First, check if we need to use tools (non-streaming for tool handling)
+        const checkResponse = await fetch('https://api.openai.com/v1/chat/completions', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -302,32 +417,32 @@ async function runOpenAIAgent(
             messages: conversationMessages,
             tools: TOOLS_OPENAI,
             tool_choice: 'auto',
-            stream: false, // Non-streaming for tool handling
+            stream: false,
             temperature: 0.7,
           }),
         });
 
-        if (!response.ok) {
-          const err = await response.text();
+        if (!checkResponse.ok) {
+          const err = await checkResponse.text();
           controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: err })}\n\n`));
           controller.close();
           return;
         }
 
-        const data = await response.json();
-        const choice = data.choices?.[0];
-        const message = choice?.message;
+        const checkData = await checkResponse.json();
+        const checkChoice = checkData.choices?.[0];
+        const checkMessage = checkChoice?.message;
 
-        if (!message) {
+        if (!checkMessage) {
           controller.close();
           return;
         }
 
         // Check for tool calls
-        if (message.tool_calls && message.tool_calls.length > 0) {
-          conversationMessages.push(message);
+        if (checkMessage.tool_calls && checkMessage.tool_calls.length > 0) {
+          conversationMessages.push(checkMessage);
 
-          for (const toolCall of message.tool_calls) {
+          for (const toolCall of checkMessage.tool_calls) {
             const toolName = toolCall.function.name;
             let toolArgs: any = {};
 
@@ -337,7 +452,6 @@ async function runOpenAIAgent(
 
             // Server-side tools
             if (toolName === 'readCode') {
-              // Return current code to AI
               conversationMessages.push({
                 role: 'tool',
                 tool_call_id: toolCall.id,
@@ -361,7 +475,6 @@ async function runOpenAIAgent(
               };
               controller.enqueue(encoder.encode(`data: ${JSON.stringify(toolCallData)}\n\n`));
 
-              // Tell AI the tool was executed
               conversationMessages.push({
                 role: 'tool',
                 tool_call_id: toolCall.id,
@@ -374,16 +487,61 @@ async function runOpenAIAgent(
           continue;
         }
 
-        // No tool calls - send the text response
-        if (message.content) {
-          const textData = {
-            type: 'text',
-            content: message.content,
-          };
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify(textData)}\n\n`));
+        // No tool calls - stream the final text response
+        const streamResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`,
+          },
+          body: JSON.stringify({
+            model,
+            messages: conversationMessages,
+            stream: true,
+            temperature: 0.7,
+          }),
+        });
+
+        if (!streamResponse.ok || !streamResponse.body) {
+          // Fallback to non-streamed content
+          if (checkMessage.content) {
+            const textData = { type: 'text', content: checkMessage.content };
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify(textData)}\n\n`));
+          }
+          controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+          controller.close();
+          return;
         }
 
-        // Done
+        // Stream the response
+        const reader = streamResponse.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || '';
+
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              const data = line.slice(6);
+              if (data === '[DONE]') continue;
+              try {
+                const parsed = JSON.parse(data);
+                const delta = parsed.choices?.[0]?.delta?.content;
+                if (delta) {
+                  const textData = { type: 'text', content: delta };
+                  controller.enqueue(encoder.encode(`data: ${JSON.stringify(textData)}\n\n`));
+                }
+              } catch (e) { }
+            }
+          }
+        }
+
         controller.enqueue(encoder.encode('data: [DONE]\n\n'));
         controller.close();
         return;
@@ -417,7 +575,8 @@ async function runAnthropicAgent(
       while (maxIterations > 0) {
         maxIterations--;
 
-        const response = await fetch('https://api.anthropic.com/v1/messages', {
+        // First check for tools (non-streaming)
+        const checkResponse = await fetch('https://api.anthropic.com/v1/messages', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -434,28 +593,21 @@ async function runAnthropicAgent(
           }),
         });
 
-        if (!response.ok) {
-          const err = await response.text();
+        if (!checkResponse.ok) {
+          const err = await checkResponse.text();
           controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: err })}\n\n`));
           controller.close();
           return;
         }
 
-        const data = await response.json();
-        const content = data.content || [];
+        const checkData = await checkResponse.json();
+        const checkContent = checkData.content || [];
 
         let hasToolUse = false;
         let toolResults: any[] = [];
 
-        for (const block of content) {
-          if (block.type === 'text' && block.text) {
-            const textData = {
-              type: 'text',
-              content: block.text,
-            };
-            controller.enqueue(encoder.encode(`data: ${JSON.stringify(textData)}\n\n`));
-          }
-          else if (block.type === 'tool_use') {
+        for (const block of checkContent) {
+          if (block.type === 'tool_use') {
             hasToolUse = true;
             const toolName = block.name;
             const toolArgs = block.input || {};
@@ -498,7 +650,7 @@ async function runAnthropicAgent(
           // Add assistant response and tool results
           conversationMessages.push({
             role: 'assistant',
-            content: content,
+            content: checkContent,
           });
           conversationMessages.push({
             role: 'user',
@@ -507,12 +659,68 @@ async function runAnthropicAgent(
           continue;
         }
 
-        // Done
-        if (data.stop_reason === 'end_turn' || !hasToolUse) {
+        // No tool use - stream the final text response
+        const streamResponse = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': apiKey,
+            'anthropic-version': '2023-06-01',
+          },
+          body: JSON.stringify({
+            model,
+            max_tokens: 4096,
+            system: systemPrompt,
+            messages: conversationMessages,
+            stream: true,
+          }),
+        });
+
+        if (!streamResponse.ok || !streamResponse.body) {
+          // Fallback to non-streamed content
+          for (const block of checkContent) {
+            if (block.type === 'text' && block.text) {
+              const textData = { type: 'text', content: block.text };
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify(textData)}\n\n`));
+            }
+          }
           controller.enqueue(encoder.encode('data: [DONE]\n\n'));
           controller.close();
           return;
         }
+
+        // Stream the response
+        const reader = streamResponse.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || '';
+
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              const data = line.slice(6);
+              if (data === '[DONE]') continue;
+              try {
+                const parsed = JSON.parse(data);
+                // Anthropic streaming format
+                if (parsed.type === 'content_block_delta' && parsed.delta?.text) {
+                  const textData = { type: 'text', content: parsed.delta.text };
+                  controller.enqueue(encoder.encode(`data: ${JSON.stringify(textData)}\n\n`));
+                }
+              } catch (e) { }
+            }
+          }
+        }
+
+        controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+        controller.close();
+        return;
       }
 
       controller.enqueue(encoder.encode('data: [DONE]\n\n'));

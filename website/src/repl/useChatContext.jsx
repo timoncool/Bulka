@@ -5,7 +5,7 @@
  * API key stored in localStorage and sent with each request.
  */
 
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { useSettings } from '../settings.mjs';
 
 /**
@@ -69,8 +69,27 @@ export function useChatContext(replContext) {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [pendingCode, setPendingCode] = useState(null);
+  const [lastAction, setLastAction] = useState(null); // Для показа hint'ов с автоскрытием
+  const [editorError, setEditorError] = useState(null); // Ошибки из редактора
   const abortControllerRef = useRef(null);
+  const lastActionTimeoutRef = useRef(null);
+
+  // Автоскрытие lastAction hint через 3 секунды
+  useEffect(() => {
+    if (lastAction) {
+      if (lastActionTimeoutRef.current) {
+        clearTimeout(lastActionTimeoutRef.current);
+      }
+      lastActionTimeoutRef.current = setTimeout(() => {
+        setLastAction(null);
+      }, 3000);
+    }
+    return () => {
+      if (lastActionTimeoutRef.current) {
+        clearTimeout(lastActionTimeoutRef.current);
+      }
+    };
+  }, [lastAction]);
 
   /**
    * Apply code to editor
@@ -78,7 +97,7 @@ export function useChatContext(replContext) {
   const applyCode = useCallback((code) => {
     if (replContext?.editorRef?.current) {
       replContext.editorRef.current.setCode(code);
-      setPendingCode(null);
+      setLastAction('✓ Код применён');
     }
   }, [replContext]);
 
@@ -89,16 +108,9 @@ export function useChatContext(replContext) {
     if (replContext?.editorRef?.current) {
       replContext.editorRef.current.setCode(code);
       replContext.editorRef.current.evaluate();
-      setPendingCode(null);
+      setLastAction('▶ Код применён и запущен');
     }
   }, [replContext]);
-
-  /**
-   * Dismiss pending code without applying
-   */
-  const dismissPendingCode = useCallback(() => {
-    setPendingCode(null);
-  }, []);
 
   /**
    * Get current code from editor
@@ -217,7 +229,7 @@ export function useChatContext(replContext) {
           // setFullCode - полная замена кода
           if (name === 'setFullCode' && args?.code) {
             editor.setCode(args.code);
-            setPendingCode(args.code);
+            setLastAction('✓ Код установлен в редактор');
             actionsExecuted.push('Код установлен');
           }
           // editCode - найти и заменить фрагмент
@@ -226,9 +238,10 @@ export function useChatContext(replContext) {
             if (currentCode.includes(args.search)) {
               const newCode = currentCode.replace(args.search, args.replace);
               editor.setCode(newCode);
-              setPendingCode(newCode);
+              setLastAction('✓ Код отредактирован');
               actionsExecuted.push('Код отредактирован');
             } else {
+              setLastAction('⚠ Фрагмент не найден для замены');
               actionsExecuted.push('Фрагмент не найден');
             }
           }
@@ -237,17 +250,19 @@ export function useChatContext(replContext) {
             const currentCode = editor.code || '';
             const newCode = currentCode + '\n' + args.code;
             editor.setCode(newCode);
-            setPendingCode(newCode);
+            setLastAction('✓ Код добавлен');
             actionsExecuted.push('Код добавлен');
           }
           // playMusic - запустить
           else if (name === 'playMusic') {
             editor.evaluate();
+            setLastAction('▶ Воспроизведение запущено');
             actionsExecuted.push('Воспроизведение запущено');
           }
           // stopMusic - остановить
           else if (name === 'stopMusic') {
             editor.stop();
+            setLastAction('⏹ Воспроизведение остановлено');
             actionsExecuted.push('Воспроизведение остановлено');
           }
         }
@@ -317,11 +332,39 @@ export function useChatContext(replContext) {
   }, [input, sendMessage]);
 
   const handleKeyDown = useCallback((e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    // Ctrl+Shift+Enter - отправить (для многострочного ввода)
+    if (e.key === 'Enter' && e.ctrlKey && e.shiftKey) {
+      e.preventDefault();
+      sendMessage(input);
+      return;
+    }
+    // Enter без модификаторов - отправить (если не в textarea или shift не нажат)
+    if (e.key === 'Enter' && !e.shiftKey && e.target.tagName !== 'TEXTAREA') {
       e.preventDefault();
       sendMessage(input);
     }
   }, [input, sendMessage]);
+
+  /**
+   * Отправить ошибку редактора в чат для исправления
+   */
+  const sendEditorError = useCallback((errorMessage) => {
+    if (!errorMessage || isLoading) return;
+    setEditorError(errorMessage);
+    const prompt = `Произошла ошибка при выполнении кода:\n\`\`\`\n${errorMessage}\n\`\`\`\n\nПожалуйста, исправь код.`;
+    sendMessage(prompt);
+  }, [sendMessage, isLoading]);
+
+  /**
+   * Получить текущее состояние воспроизведения
+   */
+  const getPlaybackState = useCallback(() => {
+    return {
+      isPlaying: replContext?.started || false,
+      hasError: !!editorError,
+      lastError: editorError,
+    };
+  }, [replContext?.started, editorError]);
 
   return {
     messages,
@@ -339,17 +382,23 @@ export function useChatContext(replContext) {
     hasApiKey: !!settings.aiApiKey,
     provider: settings.aiProvider,
     model: settings.aiModel,
-    // Agent capabilities - code editing
-    pendingCode,
+    // Action hints (автоскрытие через 3 сек)
+    lastAction,
+    setLastAction,
+    // Code editing
     applyCode,
     applyAndRun,
-    dismissPendingCode,
     getCurrentCode,
-    // Agent capabilities - playback control
+    // Playback control
     play,
     stopPlayback,
     togglePlayback,
-    isPlaying,
+    isPlaying: replContext?.started || false,
+    // Editor error handling
+    editorError,
+    setEditorError,
+    sendEditorError,
+    getPlaybackState,
   };
 }
 
