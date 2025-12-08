@@ -47,16 +47,16 @@ export async function prebake() {
       prebake: true,
       pack: 'Dirt-Samples',
     }),
-    // Локальные паки семплов
-    samples(`${baseNoTrailing}/samples/dough-amen/strudel.json`, `${baseNoTrailing}/samples/dough-amen/`, {
+    // GitHub паки (НЕ передаём baseUrl - используется _base из JSON для загрузки с GitHub)
+    samples(`${baseNoTrailing}/samples/dough-amen/strudel.json`, '', {
       prebake: true,
       pack: 'dough-amen',
     }),
-    samples(`${baseNoTrailing}/samples/dough-waveforms/strudel.json`, `${baseNoTrailing}/samples/dough-waveforms/`, {
+    samples(`${baseNoTrailing}/samples/dough-waveforms/strudel.json`, '', {
       prebake: true,
       pack: 'dough-waveforms',
     }),
-    samples(`${baseNoTrailing}/samples/samples-flbass/strudel.json`, `${baseNoTrailing}/samples/samples-flbass/`, {
+    samples(`${baseNoTrailing}/samples/samples-flbass/strudel.json`, '', {
       prebake: true,
       pack: 'samples-flbass',
     }),
