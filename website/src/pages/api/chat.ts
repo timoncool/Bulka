@@ -1050,17 +1050,28 @@ async function runAnthropicAgent(
           };
         }
 
+        const streamHeaders: Record<string, string> = {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+        };
+
+        // Add interleaved thinking beta header for Claude 4 models
+        if (supportsThinking) {
+          streamHeaders['anthropic-beta'] = 'interleaved-thinking-2025-05-14';
+        }
+
         const streamResponse = await fetch('https://api.anthropic.com/v1/messages', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': apiKey,
-            'anthropic-version': '2023-06-01',
-          },
+          headers: streamHeaders,
           body: JSON.stringify(streamBody),
         });
 
         if (!streamResponse.ok || !streamResponse.body) {
+          // Log the error for debugging
+          const errorText = await streamResponse.text().catch(() => 'Unknown error');
+          console.error('[Chat] Stream response error:', streamResponse.status, errorText);
+
           // Fallback to non-streamed content
           for (const block of checkContent) {
             if (block.type === 'text' && block.text) {
