@@ -36,11 +36,27 @@ export function Showcase() {
 }
 
 let _videos = [
+  // TOPLAP Solstice December 2024 (новые)
+  { title: 'Djenerative Music by Bogdan Vera @ TOPLAP solstice Dec 2024', id: 'LtMX4Lr1nzY' },
+  { title: 'La musique by BuboBubo @ TOPLAP solstice Dec 2024', id: 'Oz00Y_f80wU' },
+  { title: 'Livecode and vocal breaks by Switch Angel @ TOPLAP solstice Dec 2024', id: '2kzjOIsL6CM' },
+  { title: 'TOPLAP Solstice Stream Dec 2024 - Full Playlist', id: '2kECLkYhrp8', params: 'list=PLbyPZ-v56IPnG1-_sGboU7U8qIra_GxEn' },
+  // 2024
+  { title: 'Eddyflux algorave set @ rudolf5 2024', id: 'MXz8131Ut0A' },
   { title: 'DJ_Dave - Array [Lil Data Edit]', id: 'KUujFuTcuKc' },
   { title: 'DJ_Dave - Bitrot [v10101a Edit]', id: 'z_cJMdBp67Q' },
-  { title: 'you will not steve reich your way out of it', id: 'xpILnXcWyuo' },
-  { title: 'dough dream #1 - strudel jam 12/03/23', id: 'p0J7XrT9JEs' },
-  { title: 'eddyflux & superdirtspatz at the dough cathedral', id: 'GrkwKMQ7_Ys' },
+  { title: 'Switch Angel - Morrow', id: 'qiatPuJpxLs' },
+  {
+    title: 'Jade Rose - Into your spell',
+    id: 'lxQgBeLQBgk',
+    description:
+      'Jade Rose performing with various synths via MIDI, superdirt via OSC and the native strudel superdough engine + vocal parts!',
+  },
+  {
+    title: 'boggo - Live Coding Metal Djents',
+    id: 'n0rhn9-PRwE',
+    description: 'A rare sight: live coded Metal Djents, where strudel is sending MIDI to bespoke synth!',
+  },
   // solstice 2023
   { title: 'Jade Rose @ solstice stream 2023', id: 'wg0vW5Ac7L0' },
   {
@@ -56,66 +72,21 @@ let _videos = [
   },
   { title: 'letSeaTstrudeL @ solstice stream 2023', id: 'fTiX6dVtdWQ' },
   { title: 'totalgee (Glen F) @ solstice stream 2023', id: 'IvI6uaE3nLU' },
-  //
-  /* { // not sure if this is copyrighted ...
-    title: 'Creative Coding @ Chalmers University of Technology, video by svt.se',
-    id: '4zgHeNpG4wU',
-  }, */
-  { title: 'Switch Angel - Morrow', id: 'qiatPuJpxLs' },
-  {
-    title: 'Jade Rose - Into your spell',
-    id: 'lxQgBeLQBgk',
-    description:
-      'Jade Rose performing with various synths via MIDI, superdirt via OSC and the native strudel superdough engine + vocal parts!',
-  },
-  // algo afro futures
+  // algo afro futures 2023
   {
     title: 'Emma Osman @ (Algo|Afro) Futures 2023',
     id: 'zUoZvkZ3J7Q',
     params: 'start=1278',
   },
   {
-    title: 'Zach B-B @ (Algo|Afro) Futures 2023',
-    id: 'zUoZvkZ3J7Q',
-    params: 'start=2547',
-  },
-  {
-    title: 'Jamal Lloyd Davis @ (Algo|Afro) Futures 2023',
-    id: 'zUoZvkZ3J7Q',
-    params: 'start=3883',
-  },
-  {
-    title: 'Jim Osman @ (Algo|Afro) Futures 2023',
-    id: 'zUoZvkZ3J7Q',
-    params: 'start=5155',
-  },
-  {
-    title: 'φ @ (Algo|Afro) Futures 2023',
-    id: 'zUoZvkZ3J7Q',
-    params: 'start=7809',
-  },
-  {
-    title: 'Tomilola Olumide @ (Algo|Afro) Futures 2023',
-    id: 'zUoZvkZ3J7Q',
-    params: 'start=9224',
-  },
-  {
     title: 'Tyga Blue @ (Algo|Afro) Futures 2023',
     id: 'zUoZvkZ3J7Q',
     params: 'start=10909',
   },
-  //
-  {
-    title: 'boggo - Live Coding Metal Djents',
-    id: 'n0rhn9-PRwE',
-    description: 'A rare sight: live coded Metal Djents, where strudel is sending MIDI to bespoke synth!',
-  },
-  {
-    title: 'froos @ Solstice Night Stream December 2022',
-    id: 'P1DDsOvcyco',
-    params: 'start=19',
-  },
-  { title: 'froos @ WAC 2022 Day', id: 'KWIotFWVOi4' },
+  // другие
+  { title: 'you will not steve reich your way out of it', id: 'xpILnXcWyuo' },
+  { title: 'dough dream #1 - strudel jam', id: 'p0J7XrT9JEs' },
+  { title: 'eddyflux & superdirtspatz at the dough cathedral', id: 'GrkwKMQ7_Ys' },
   {
     title: 'yaxu & olivia - Algorithmic Pattern Live Stream',
     id: 'Jvs7Q4cdLy4',
@@ -124,10 +95,6 @@ let _videos = [
   },
   { title: 'froos @ Algorave 10th Birthday stream', id: 'IcMSocdKwvw' },
   { title: 'todepasta 1.5', id: 'gCwaVu1Mijg' },
-  { title: 'Djenerative Music by Bogdan Vera @ TOPLAP solstice Dec 2024', id: 'LtMX4Lr1nzY' },
-  { title: 'La musique by BuboBubo @ TOPLAP solstice Dec 2024', id: 'Oz00Y_f80wU' },
-  { title: 'Livecode and vocal breaks by Switch Angel @ TOPLAP solstice Dec 2024', id: '2kzjOIsL6CM' },
-  { title: 'Eddyflux algorave set @ rudolf5', id: 'MXz8131Ut0A' },
 ];
 
 _shuffled = shuffleArray(_videos);
