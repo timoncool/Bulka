@@ -22,7 +22,7 @@ export function Header({ context, embedded = false }) {
 
   // Volume state - simplified: volume === 0 means muted
   const [volume, setVolume] = useState(masterVolume);
-  const [prevVolume, setPrevVolume] = useState(masterVolume > 0 ? masterVolume : 0.8);
+  const [prevVolume, setPrevVolume] = useState(masterVolume > 0 ? masterVolume : 1);
   const [showVolumeSlider, setShowVolumeSlider] = useState(false);
   const [sliderPosition, setSliderPosition] = useState({ top: 0, left: 0 });
   const volumeButtonRef = useRef(null);
@@ -134,8 +134,8 @@ export function Header({ context, embedded = false }) {
   // Handle mute toggle - simple: if muted, restore; if not, mute to 0
   const handleMuteToggle = useCallback(() => {
     if (isMuted) {
-      // Unmute - restore previous volume (default 0.8 if no previous)
-      const restoreVolume = prevVolume > 0 ? prevVolume : 0.8;
+      // Unmute - restore previous volume (default 100% if no previous)
+      const restoreVolume = prevVolume > 0 ? prevVolume : 1;
       setVolume(restoreVolume);
       setMasterVolume(restoreVolume);
       setMasterVolumeSettings(restoreVolume);
