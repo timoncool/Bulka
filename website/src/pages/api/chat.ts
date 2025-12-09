@@ -610,10 +610,10 @@ async function runOpenAIAgent(
 
   // Check model capabilities
   // o-series (o1, o3, o4) - no temperature, no tools
-  // gpt-5 series - supports temperature, has reasoning_effort parameter
+  // gpt-5 series - NO temperature (only default 1), but supports tools
   const isOSeriesReasoning = /^o[134](-|$)/.test(model);
-  const isGPT5Reasoning = model.startsWith('gpt-5');
-  const noTemperatureSupport = isOSeriesReasoning; // Only o-series has no temperature
+  const isGPT5Model = model.startsWith('gpt-5');
+  const noTemperatureSupport = isOSeriesReasoning || isGPT5Model; // Both don't support temperature!
   const isReasoningModel = isOSeriesReasoning; // Only o-series can't use tools
 
   return new ReadableStream({
@@ -641,14 +641,9 @@ async function runOpenAIAgent(
           requestBody.tool_choice = 'auto';
         }
 
-        // Add temperature only for models that support it
+        // Add temperature only for models that support it (NOT for o-series and gpt-5)
         if (!noTemperatureSupport) {
           requestBody.temperature = 0.7;
-        }
-
-        // GPT-5 series: use reasoning_effort parameter for thinking
-        if (isGPT5Reasoning) {
-          requestBody.reasoning_effort = 'medium'; // low, medium, high, or none
         }
 
         const response = await fetch('https://api.openai.com/v1/chat/completions', {

@@ -8,6 +8,7 @@ import cx from '@src/cx.mjs';
 import { useSettings, setIsZen, setMasterVolumeSettings } from '../../settings.mjs';
 import { setMasterVolume } from '@strudel/webaudio';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { VERSION_FULL, GIT_COMMIT } from '../../version';
 import '../Repl.css';
 
 const { BASE_URL } = import.meta.env;
@@ -195,9 +196,10 @@ export function Header({ context, embedded = false }) {
             <span className="block text-2xl">🍞</span>
           </div>
           {!isZen && (
-            <div className="space-x-2">
+            <div className="space-x-2 flex items-baseline">
               <span style={{ fontFamily: "'Fredoka', sans-serif", color: '#D4A574' }}>bulka</span>
               <span className="text-sm font-medium">редактор</span>
+              <span className="text-xs opacity-40 font-mono" title={`Commit: ${GIT_COMMIT}`}>{VERSION_FULL}</span>
               {!isEmbedded && isButtonRowHidden && (
                 <a href={`${baseNoTrailing}/learn`} className="text-sm opacity-25 font-medium">
                   ДОКИ
