@@ -423,7 +423,11 @@ export function useChatContext(replContext) {
             return updated;
           });
         }
-        // Handle errors
+        // Handle errors from SSE stream
+        else if (message.type === 'error' && message.error) {
+          throw new Error(message.error);
+        }
+        // Handle legacy error format
         else if (message.error) {
           throw new Error(message.error);
         }

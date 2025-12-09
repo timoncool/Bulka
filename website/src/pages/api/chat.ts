@@ -588,7 +588,8 @@ function executeServerTool(name: string, args: any, currentCode: string): { resu
 }
 
 /**
- * OpenAI agent loop with tool calling
+ * OpenAI agent loop with FULL STREAMING (including tool calls)
+ * Streams text and tool calls in real-time
  */
 async function runOpenAIAgent(
   apiKey: string,
@@ -607,6 +608,10 @@ async function runOpenAIAgent(
 
   const encoder = new TextEncoder();
 
+  // Check model capabilities
+  const noTemperatureSupport = /^o[134](-|$)/.test(model) || model.startsWith('gpt-5');
+  const isReasoningModel = /^o[134](-|$)/.test(model);
+
   return new ReadableStream({
     async start(controller) {
       let conversationMessages = [
@@ -619,159 +624,62 @@ async function runOpenAIAgent(
       while (maxIterations > 0) {
         maxIterations--;
 
-        // Check if model doesn't support temperature parameter
-        // ALL o-series (o1, o3, o4) and ALL gpt-5 series don't support temperature
-        // Only default value (1) is allowed for these models
-        const noTemperatureSupport = /^o[134](-|$)/.test(model) || model.startsWith('gpt-5');
-
-        // Build request body conditionally
-        const checkBody: any = {
+        // Build streaming request body
+        const requestBody: any = {
           model,
           messages: conversationMessages,
-          stream: false,
+          stream: true, // Always stream!
         };
-
-        // o-series reasoning models don't support tools either
-        const isReasoningModel = /^o[134](-|$)/.test(model);
 
         // Add tools only for non-reasoning models
         if (!isReasoningModel) {
-          checkBody.tools = TOOLS_OPENAI;
-          checkBody.tool_choice = 'auto';
+          requestBody.tools = TOOLS_OPENAI;
+          requestBody.tool_choice = 'auto';
         }
 
         // Add temperature only for models that support it
         if (!noTemperatureSupport) {
-          checkBody.temperature = 0.7;
+          requestBody.temperature = 0.7;
         }
 
-        // First, check if we need to use tools (non-streaming for tool handling)
-        const checkResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${apiKey}`,
           },
-          body: JSON.stringify(checkBody),
+          body: JSON.stringify(requestBody),
         });
 
-        if (!checkResponse.ok) {
-          const err = await checkResponse.text();
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: err })}\n\n`));
-          controller.close();
-          return;
-        }
-
-        const checkData = await checkResponse.json();
-        const checkChoice = checkData.choices?.[0];
-        const checkMessage = checkChoice?.message;
-
-        if (!checkMessage) {
-          controller.close();
-          return;
-        }
-
-        // Check for tool calls
-        if (checkMessage.tool_calls && checkMessage.tool_calls.length > 0) {
-          conversationMessages.push(checkMessage);
-
-          for (const toolCall of checkMessage.tool_calls) {
-            const toolName = toolCall.function.name;
-            let toolArgs: any = {};
-
-            try {
-              toolArgs = JSON.parse(toolCall.function.arguments || '{}');
-            } catch (e) { }
-
-            // Server-side tools
-            if (toolName === 'readCode') {
-              // Send status to client
-              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: '📖 Читаю код...' })}\n\n`));
-              conversationMessages.push({
-                role: 'tool',
-                tool_call_id: toolCall.id,
-                content: currentCode || '// Редактор пуст',
-              });
-            }
-            else if (toolName === 'searchDocs') {
-              // Send status to client
-              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: `🔍 Ищу в документации: "${toolArgs.query}"...` })}\n\n`));
-              const docs = await searchDocumentation(toolArgs.query || '', 3);
-              conversationMessages.push({
-                role: 'tool',
-                tool_call_id: toolCall.id,
-                content: docs.join('\n\n---\n\n') || 'Ничего не найдено',
-              });
-            }
-            // Client-side tools - send to client for execution
-            else {
-              // Send status based on tool type
-              let statusMessage = '';
-              if (toolName === 'setFullCode') statusMessage = '✏️ Устанавливаю код...';
-              else if (toolName === 'editCode') statusMessage = '✏️ Редактирую код...';
-              else if (toolName === 'appendCode') statusMessage = '➕ Добавляю код...';
-              else if (toolName === 'playMusic') statusMessage = '▶️ Запускаю воспроизведение...';
-              else if (toolName === 'stopMusic') statusMessage = '⏹️ Останавливаю...';
-
-              if (statusMessage) {
-                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: statusMessage })}\n\n`));
-              }
-
-              const toolCallData = {
-                type: 'tool_call',
-                name: toolName,
-                args: toolArgs,
-              };
-              controller.enqueue(encoder.encode(`data: ${JSON.stringify(toolCallData)}\n\n`));
-
-              conversationMessages.push({
-                role: 'tool',
-                tool_call_id: toolCall.id,
-                content: `OK: ${toolName} выполнено`,
-              });
-            }
-          }
-
-          // Continue the loop to get AI's next response
-          continue;
-        }
-
-        // No tool calls - stream the final text response
-        // Build streaming request body (no temperature for gpt-5/o-series)
-        const streamBody: any = {
-          model,
-          messages: conversationMessages,
-          stream: true,
-        };
-
-        if (!noTemperatureSupport) {
-          streamBody.temperature = 0.7;
-        }
-
-        const streamResponse = await fetch('https://api.openai.com/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${apiKey}`,
-          },
-          body: JSON.stringify(streamBody),
-        });
-
-        if (!streamResponse.ok || !streamResponse.body) {
-          // Fallback to non-streamed content
-          if (checkMessage.content) {
-            const textData = { type: 'text', content: checkMessage.content };
-            controller.enqueue(encoder.encode(`data: ${JSON.stringify(textData)}\n\n`));
-          }
+        if (!response.ok) {
+          const errText = await response.text();
+          let errMsg = errText;
+          try {
+            const errJson = JSON.parse(errText);
+            errMsg = errJson.error?.message || errJson.error || errText;
+          } catch (e) { }
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'error', error: `OpenAI: ${errMsg}` })}\n\n`));
           controller.enqueue(encoder.encode('data: [DONE]\n\n'));
           controller.close();
           return;
         }
 
-        // Stream the response
-        const reader = streamResponse.body.getReader();
+        if (!response.body) {
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'error', error: 'No response body from OpenAI' })}\n\n`));
+          controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+          controller.close();
+          return;
+        }
+
+        // Stream and parse the response
+        const reader = response.body.getReader();
         const decoder = new TextDecoder();
         let buffer = '';
+
+        // Accumulate tool calls from streaming
+        const toolCallsMap: Map<number, { id: string; name: string; arguments: string }> = new Map();
+        let textContent = '';
+        let finishReason = '';
 
         while (true) {
           const { done, value } = await reader.read();
@@ -782,21 +690,113 @@ async function runOpenAIAgent(
           buffer = lines.pop() || '';
 
           for (const line of lines) {
-            if (line.startsWith('data: ')) {
-              const data = line.slice(6);
-              if (data === '[DONE]') continue;
-              try {
-                const parsed = JSON.parse(data);
-                const delta = parsed.choices?.[0]?.delta?.content;
-                if (delta) {
-                  const textData = { type: 'text', content: delta };
-                  controller.enqueue(encoder.encode(`data: ${JSON.stringify(textData)}\n\n`));
+            if (!line.startsWith('data: ')) continue;
+            const data = line.slice(6);
+            if (data === '[DONE]') continue;
+
+            try {
+              const parsed = JSON.parse(data);
+              const choice = parsed.choices?.[0];
+              if (!choice) continue;
+
+              finishReason = choice.finish_reason || finishReason;
+              const delta = choice.delta;
+              if (!delta) continue;
+
+              // Stream text content
+              if (delta.content) {
+                textContent += delta.content;
+                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'text', content: delta.content })}\n\n`));
+              }
+
+              // Accumulate tool calls
+              if (delta.tool_calls) {
+                for (const tc of delta.tool_calls) {
+                  const idx = tc.index;
+                  if (!toolCallsMap.has(idx)) {
+                    toolCallsMap.set(idx, { id: tc.id || '', name: '', arguments: '' });
+                  }
+                  const existing = toolCallsMap.get(idx)!;
+                  if (tc.id) existing.id = tc.id;
+                  if (tc.function?.name) existing.name = tc.function.name;
+                  if (tc.function?.arguments) existing.arguments += tc.function.arguments;
                 }
-              } catch (e) { }
-            }
+              }
+            } catch (e) { }
           }
         }
 
+        // Process accumulated tool calls if any
+        if (toolCallsMap.size > 0 && finishReason === 'tool_calls') {
+          const toolCalls = Array.from(toolCallsMap.values());
+
+          // Build assistant message with tool calls
+          const assistantMessage: any = {
+            role: 'assistant',
+            content: textContent || null,
+            tool_calls: toolCalls.map((tc, idx) => ({
+              id: tc.id,
+              type: 'function',
+              function: { name: tc.name, arguments: tc.arguments },
+            })),
+          };
+          conversationMessages.push(assistantMessage);
+
+          // Execute each tool call
+          for (const tc of toolCalls) {
+            const toolName = tc.name;
+            let toolArgs: any = {};
+            try {
+              toolArgs = JSON.parse(tc.arguments || '{}');
+            } catch (e) { }
+
+            // Server-side tools
+            if (toolName === 'readCode') {
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: '📖 Читаю код...' })}\n\n`));
+              conversationMessages.push({
+                role: 'tool',
+                tool_call_id: tc.id,
+                content: currentCode || '// Редактор пуст',
+              });
+            }
+            else if (toolName === 'searchDocs') {
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: `🔍 Ищу в документации: "${toolArgs.query}"...` })}\n\n`));
+              const docs = await searchDocumentation(toolArgs.query || '', 3);
+              conversationMessages.push({
+                role: 'tool',
+                tool_call_id: tc.id,
+                content: docs.join('\n\n---\n\n') || 'Ничего не найдено',
+              });
+            }
+            // Client-side tools
+            else {
+              let statusMessage = '';
+              if (toolName === 'setFullCode') statusMessage = '✏️ Устанавливаю код...';
+              else if (toolName === 'editCode') statusMessage = '✏️ Редактирую код...';
+              else if (toolName === 'appendCode') statusMessage = '➕ Добавляю код...';
+              else if (toolName === 'playMusic') statusMessage = '▶️ Запускаю воспроизведение...';
+              else if (toolName === 'stopMusic') statusMessage = '⏹️ Останавливаю...';
+              else if (toolName === 'highlightCode') statusMessage = '🔍 Выделяю код...';
+
+              if (statusMessage) {
+                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: statusMessage })}\n\n`));
+              }
+
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'tool_call', name: toolName, args: toolArgs })}\n\n`));
+
+              conversationMessages.push({
+                role: 'tool',
+                tool_call_id: tc.id,
+                content: `OK: ${toolName} выполнено`,
+              });
+            }
+          }
+
+          // Continue loop for next response
+          continue;
+        }
+
+        // No tool calls - we're done
         controller.enqueue(encoder.encode('data: [DONE]\n\n'));
         controller.close();
         return;
@@ -810,7 +810,8 @@ async function runOpenAIAgent(
 }
 
 /**
- * Anthropic agent loop with tool calling
+ * Anthropic agent loop with FULL STREAMING (including tool calls and thinking)
+ * Streams text, thinking, and tool calls in real-time
  */
 async function runAnthropicAgent(
   apiKey: string,
@@ -829,6 +830,12 @@ async function runAnthropicAgent(
 
   const encoder = new TextEncoder();
 
+  // Check if model supports thinking (Claude 4+ models)
+  const supportsThinking = /claude-(opus|sonnet|haiku)-4/.test(model) ||
+                           model.includes('claude-4') ||
+                           model.includes('claude-sonnet-4') ||
+                           model.includes('claude-opus-4');
+
   return new ReadableStream({
     async start(controller) {
       let conversationMessages = [...messages];
@@ -837,40 +844,179 @@ async function runAnthropicAgent(
       while (maxIterations > 0) {
         maxIterations--;
 
-        // First check for tools (non-streaming)
-        const checkResponse = await fetch('https://api.anthropic.com/v1/messages', {
+        // Build streaming request - ALWAYS stream
+        const requestBody: any = {
+          model,
+          max_tokens: supportsThinking ? 16000 : 4096,
+          system: systemPrompt,
+          messages: conversationMessages,
+          tools: TOOLS_ANTHROPIC,
+          stream: true, // Always stream!
+        };
+
+        // Enable extended thinking for supported models
+        if (supportsThinking) {
+          requestBody.thinking = {
+            type: 'enabled',
+            budget_tokens: 8000,
+          };
+        }
+
+        const response = await fetch('https://api.anthropic.com/v1/messages', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'x-api-key': apiKey,
             'anthropic-version': '2023-06-01',
           },
-          body: JSON.stringify({
-            model,
-            max_tokens: 4096,
-            system: systemPrompt,
-            messages: conversationMessages,
-            tools: TOOLS_ANTHROPIC,
-            stream: false,
-          }),
+          body: JSON.stringify(requestBody),
         });
 
-        if (!checkResponse.ok) {
-          const err = await checkResponse.text();
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: err })}\n\n`));
+        if (!response.ok) {
+          const errText = await response.text();
+          let errMsg = errText;
+          try {
+            const errJson = JSON.parse(errText);
+            errMsg = errJson.error?.message || errJson.error || errText;
+          } catch (e) { }
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'error', error: `Anthropic: ${errMsg}` })}\n\n`));
+          controller.enqueue(encoder.encode('data: [DONE]\n\n'));
           controller.close();
           return;
         }
 
-        const checkData = await checkResponse.json();
-        const checkContent = checkData.content || [];
+        if (!response.body) {
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'error', error: 'No response body from Anthropic' })}\n\n`));
+          controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+          controller.close();
+          return;
+        }
 
-        let hasToolUse = false;
-        let toolResults: any[] = [];
+        // Stream and parse the response
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
 
-        for (const block of checkContent) {
-          if (block.type === 'tool_use') {
-            hasToolUse = true;
+        // Accumulate content blocks
+        const contentBlocks: any[] = [];
+        let currentBlockIndex = -1;
+        let currentBlockType = '';
+        let isInThinkingBlock = false;
+        let stopReason = '';
+
+        // For tool_use blocks, accumulate input JSON
+        const toolInputBuffers: Map<number, string> = new Map();
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || '';
+
+          for (const line of lines) {
+            if (!line.startsWith('data: ')) continue;
+            const data = line.slice(6);
+            if (!data || data === '[DONE]') continue;
+
+            try {
+              const parsed = JSON.parse(data);
+
+              // Track message stop reason
+              if (parsed.type === 'message_delta' && parsed.delta?.stop_reason) {
+                stopReason = parsed.delta.stop_reason;
+              }
+
+              // Handle content block start
+              if (parsed.type === 'content_block_start') {
+                currentBlockIndex = parsed.index;
+                const block = parsed.content_block;
+                currentBlockType = block?.type || '';
+
+                if (block?.type === 'thinking') {
+                  isInThinkingBlock = true;
+                  controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'thinking_start' })}\n\n`));
+                  contentBlocks[currentBlockIndex] = { type: 'thinking', thinking: '' };
+                }
+                else if (block?.type === 'text') {
+                  isInThinkingBlock = false;
+                  contentBlocks[currentBlockIndex] = { type: 'text', text: '' };
+                }
+                else if (block?.type === 'tool_use') {
+                  contentBlocks[currentBlockIndex] = {
+                    type: 'tool_use',
+                    id: block.id,
+                    name: block.name,
+                    input: {},
+                  };
+                  toolInputBuffers.set(currentBlockIndex, '');
+                }
+              }
+
+              // Handle content block delta
+              if (parsed.type === 'content_block_delta') {
+                const delta = parsed.delta;
+                const idx = parsed.index;
+
+                // Thinking delta
+                if (delta?.type === 'thinking_delta' && delta?.thinking) {
+                  if (contentBlocks[idx]) {
+                    contentBlocks[idx].thinking += delta.thinking;
+                  }
+                  controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'thinking', content: delta.thinking })}\n\n`));
+                }
+                // Text delta
+                else if (delta?.type === 'text_delta' && delta?.text) {
+                  if (contentBlocks[idx]) {
+                    contentBlocks[idx].text += delta.text;
+                  }
+                  controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'text', content: delta.text })}\n\n`));
+                }
+                // Tool input delta (JSON chunks)
+                else if (delta?.type === 'input_json_delta' && delta?.partial_json) {
+                  const current = toolInputBuffers.get(idx) || '';
+                  toolInputBuffers.set(idx, current + delta.partial_json);
+                }
+              }
+
+              // Handle content block stop
+              if (parsed.type === 'content_block_stop') {
+                const idx = parsed.index;
+
+                // End thinking block
+                if (contentBlocks[idx]?.type === 'thinking') {
+                  controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'thinking_end' })}\n\n`));
+                  isInThinkingBlock = false;
+                }
+
+                // Parse accumulated tool input JSON
+                if (contentBlocks[idx]?.type === 'tool_use' && toolInputBuffers.has(idx)) {
+                  try {
+                    contentBlocks[idx].input = JSON.parse(toolInputBuffers.get(idx) || '{}');
+                  } catch (e) {
+                    contentBlocks[idx].input = {};
+                  }
+                }
+              }
+            } catch (e) { }
+          }
+        }
+
+        // Check if there are tool_use blocks to execute
+        const toolUseBlocks = contentBlocks.filter(b => b?.type === 'tool_use');
+
+        if (toolUseBlocks.length > 0 && stopReason === 'tool_use') {
+          // Add assistant response with all content blocks
+          conversationMessages.push({
+            role: 'assistant',
+            content: contentBlocks.filter(b => b != null),
+          });
+
+          // Execute tools and collect results
+          const toolResults: any[] = [];
+
+          for (const block of toolUseBlocks) {
             const toolName = block.name;
             const toolArgs = block.input || {};
 
@@ -894,24 +1040,19 @@ async function runAnthropicAgent(
             }
             // Client-side tools
             else {
-              // Send status based on tool type
               let statusMessage = '';
               if (toolName === 'setFullCode') statusMessage = '✏️ Устанавливаю код...';
               else if (toolName === 'editCode') statusMessage = '✏️ Редактирую код...';
               else if (toolName === 'appendCode') statusMessage = '➕ Добавляю код...';
               else if (toolName === 'playMusic') statusMessage = '▶️ Запускаю воспроизведение...';
               else if (toolName === 'stopMusic') statusMessage = '⏹️ Останавливаю...';
+              else if (toolName === 'highlightCode') statusMessage = '🔍 Выделяю код...';
 
               if (statusMessage) {
                 controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: statusMessage })}\n\n`));
               }
 
-              const toolCallData = {
-                type: 'tool_call',
-                name: toolName,
-                args: toolArgs,
-              };
-              controller.enqueue(encoder.encode(`data: ${JSON.stringify(toolCallData)}\n\n`));
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'tool_call', name: toolName, args: toolArgs })}\n\n`));
 
               toolResults.push({
                 type: 'tool_result',
@@ -920,132 +1061,18 @@ async function runAnthropicAgent(
               });
             }
           }
-        }
 
-        if (hasToolUse && toolResults.length > 0) {
-          // Add assistant response and tool results
-          conversationMessages.push({
-            role: 'assistant',
-            content: checkContent,
-          });
+          // Add tool results
           conversationMessages.push({
             role: 'user',
             content: toolResults,
           });
+
+          // Continue loop for next response
           continue;
         }
 
-        // No tool use - stream the final text response with extended thinking
-        // Check if model supports thinking (Claude 4+ models: opus-4, sonnet-4, haiku-4)
-        const supportsThinking = /claude-(opus|sonnet|haiku)-4/.test(model);
-
-        const streamBody: any = {
-          model,
-          max_tokens: 16000,
-          system: systemPrompt,
-          messages: conversationMessages,
-          stream: true,
-        };
-
-        // Enable extended thinking for supported models
-        if (supportsThinking) {
-          streamBody.thinking = {
-            type: 'enabled',
-            budget_tokens: 8000,
-          };
-        }
-
-        const streamHeaders: Record<string, string> = {
-          'Content-Type': 'application/json',
-          'x-api-key': apiKey,
-          'anthropic-version': '2023-06-01',
-        };
-
-        // Note: interleaved-thinking header is only for tool calling with thinking
-        // For basic extended thinking streaming, no special header needed
-
-        const streamResponse = await fetch('https://api.anthropic.com/v1/messages', {
-          method: 'POST',
-          headers: streamHeaders,
-          body: JSON.stringify(streamBody),
-        });
-
-        if (!streamResponse.ok || !streamResponse.body) {
-          // Log the error for debugging
-          const errorText = await streamResponse.text().catch(() => 'Unknown error');
-          console.error('[Chat] Stream response error:', streamResponse.status, errorText);
-
-          // Fallback to non-streamed content
-          for (const block of checkContent) {
-            if (block.type === 'text' && block.text) {
-              const textData = { type: 'text', content: block.text };
-              controller.enqueue(encoder.encode(`data: ${JSON.stringify(textData)}\n\n`));
-            }
-          }
-          controller.enqueue(encoder.encode('data: [DONE]\n\n'));
-          controller.close();
-          return;
-        }
-
-        // Stream the response
-        const reader = streamResponse.body.getReader();
-        const decoder = new TextDecoder();
-        let buffer = '';
-        let isInThinkingBlock = false;
-
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-
-          buffer += decoder.decode(value, { stream: true });
-          const lines = buffer.split('\n');
-          buffer = lines.pop() || '';
-
-          for (const line of lines) {
-            if (line.startsWith('data: ')) {
-              const data = line.slice(6);
-              if (data === '[DONE]') continue;
-              try {
-                const parsed = JSON.parse(data);
-
-                // Track thinking block state
-                if (parsed.type === 'content_block_start') {
-                  if (parsed.content_block?.type === 'thinking') {
-                    isInThinkingBlock = true;
-                    controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'thinking_start' })}\n\n`));
-                  } else if (parsed.content_block?.type === 'text') {
-                    isInThinkingBlock = false;
-                  }
-                }
-
-                // Handle thinking delta (extended thinking content)
-                if (parsed.type === 'content_block_delta') {
-                  if (parsed.delta?.type === 'thinking_delta' && parsed.delta?.thinking) {
-                    const thinkingData = { type: 'thinking', content: parsed.delta.thinking };
-                    controller.enqueue(encoder.encode(`data: ${JSON.stringify(thinkingData)}\n\n`));
-                  }
-                  // Handle text delta (final response)
-                  else if (parsed.delta?.type === 'text_delta' && parsed.delta?.text) {
-                    const textData = { type: 'text', content: parsed.delta.text };
-                    controller.enqueue(encoder.encode(`data: ${JSON.stringify(textData)}\n\n`));
-                  }
-                  // Legacy format support
-                  else if (parsed.delta?.text) {
-                    const textData = { type: 'text', content: parsed.delta.text };
-                    controller.enqueue(encoder.encode(`data: ${JSON.stringify(textData)}\n\n`));
-                  }
-                }
-
-                // Mark end of thinking block
-                if (parsed.type === 'content_block_stop' && isInThinkingBlock) {
-                  controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'thinking_end' })}\n\n`));
-                  isInThinkingBlock = false;
-                }
-              } catch (e) { }
-            }
-          }
-        }
-
+        // No tool use - we're done
         controller.enqueue(encoder.encode('data: [DONE]\n\n'));
         controller.close();
         return;
@@ -1058,8 +1085,8 @@ async function runAnthropicAgent(
 }
 
 /**
- * Gemini agent loop with tool calling and thinking support
- * Uses streamGenerateContent for SSE streaming
+ * Gemini agent loop with FULL STREAMING (including tool calls and thinking)
+ * Uses streamGenerateContent?alt=sse for real-time streaming
  */
 async function runGeminiAgent(
   apiKey: string,
@@ -1093,8 +1120,10 @@ async function runGeminiAgent(
     })),
   }];
 
-  // Check if model supports thinking (gemini-2.5, gemini-3)
-  const supportsThinking = model.includes('2.5') || model.includes('3.0') || model.includes('deep-think');
+  // Check if model supports thinking
+  // Gemini 2.5+ and Gemini 3+ support thinking mode
+  // Match patterns: gemini-2.5-xxx, gemini-3-xxx, gemini-3.0-xxx, etc.
+  const supportsThinking = /gemini-(2\.5|3(\.[0-9])?|exp|deep)/i.test(model);
 
   return new ReadableStream({
     async start(controller) {
@@ -1103,9 +1132,6 @@ async function runGeminiAgent(
 
       while (maxIterations > 0) {
         maxIterations--;
-
-        // First check for tool calls (non-streaming)
-        const checkUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
         // Build generation config
         const generationConfig: any = {
@@ -1122,7 +1148,10 @@ async function runGeminiAgent(
           generationConfig.temperature = 0.7;
         }
 
-        const checkResponse = await fetch(checkUrl, {
+        // ALWAYS use streaming SSE endpoint
+        const streamUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?alt=sse&key=${apiKey}`;
+
+        const response = await fetch(streamUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -1133,27 +1162,111 @@ async function runGeminiAgent(
           }),
         });
 
-        if (!checkResponse.ok) {
-          const err = await checkResponse.text();
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: err })}\n\n`));
+        if (!response.ok) {
+          const errText = await response.text();
+          let errMsg = errText;
+          try {
+            const errJson = JSON.parse(errText);
+            errMsg = errJson.error?.message || errJson.error?.status || errText;
+          } catch (e) { }
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'error', error: `Gemini: ${errMsg}` })}\n\n`));
+          controller.enqueue(encoder.encode('data: [DONE]\n\n'));
           controller.close();
           return;
         }
 
-        const data = await checkResponse.json();
-        const candidate = data.candidates?.[0];
-        const content = candidate?.content;
-
-        if (!content) {
+        if (!response.body) {
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'error', error: 'No response body from Gemini' })}\n\n`));
+          controller.enqueue(encoder.encode('data: [DONE]\n\n'));
           controller.close();
           return;
         }
 
-        // Check for function calls
-        const functionCalls = content.parts?.filter((p: any) => p.functionCall);
+        // Stream and parse the response
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
 
-        if (functionCalls && functionCalls.length > 0) {
-          conversationContents.push(content);
+        // Accumulate content parts
+        const allParts: any[] = [];
+        let thinkingStarted = false;
+        let hasFunctionCalls = false;
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || '';
+
+          for (const line of lines) {
+            if (!line.startsWith('data: ')) continue;
+            const jsonData = line.slice(6);
+            if (!jsonData || jsonData === '[DONE]') continue;
+
+            try {
+              const parsed = JSON.parse(jsonData);
+
+              // Check for errors in response
+              if (parsed.error) {
+                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'error', error: `Gemini: ${parsed.error.message || parsed.error}` })}\n\n`));
+                continue;
+              }
+
+              const parts = parsed.candidates?.[0]?.content?.parts || [];
+
+              for (const part of parts) {
+                // Accumulate for potential function calls
+                allParts.push(part);
+
+                // Check for function calls
+                if (part.functionCall) {
+                  hasFunctionCalls = true;
+                  continue; // Don't stream function calls yet, accumulate first
+                }
+
+                // Stream text or thinking
+                if (part.text) {
+                  // Check if this is a thought (Gemini thinking mode)
+                  if (part.thought) {
+                    if (!thinkingStarted) {
+                      controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'thinking_start' })}\n\n`));
+                      thinkingStarted = true;
+                    }
+                    controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'thinking', content: part.text })}\n\n`));
+                  } else {
+                    // End thinking if we were in it
+                    if (thinkingStarted) {
+                      controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'thinking_end' })}\n\n`));
+                      thinkingStarted = false;
+                    }
+                    controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'text', content: part.text })}\n\n`));
+                  }
+                }
+              }
+            } catch (e) {
+              // Skip invalid JSON
+            }
+          }
+        }
+
+        // End thinking if still active
+        if (thinkingStarted) {
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'thinking_end' })}\n\n`));
+          thinkingStarted = false;
+        }
+
+        // Process function calls if any
+        const functionCalls = allParts.filter(p => p.functionCall);
+
+        if (hasFunctionCalls && functionCalls.length > 0) {
+          // Build the model's response content
+          const modelContent = {
+            role: 'model',
+            parts: allParts,
+          };
+          conversationContents.push(modelContent);
 
           const functionResponses: any[] = [];
 
@@ -1190,17 +1303,13 @@ async function runGeminiAgent(
               else if (toolName === 'appendCode') statusMessage = '➕ Добавляю код...';
               else if (toolName === 'playMusic') statusMessage = '▶️ Запускаю воспроизведение...';
               else if (toolName === 'stopMusic') statusMessage = '⏹️ Останавливаю...';
+              else if (toolName === 'highlightCode') statusMessage = '🔍 Выделяю код...';
 
               if (statusMessage) {
                 controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: statusMessage })}\n\n`));
               }
 
-              const toolCallData = {
-                type: 'tool_call',
-                name: toolName,
-                args: toolArgs,
-              };
-              controller.enqueue(encoder.encode(`data: ${JSON.stringify(toolCallData)}\n\n`));
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'tool_call', name: toolName, args: toolArgs })}\n\n`));
 
               functionResponses.push({
                 functionResponse: {
@@ -1217,93 +1326,11 @@ async function runGeminiAgent(
             parts: functionResponses,
           });
 
+          // Continue loop for next response
           continue;
         }
 
-        // No function calls - stream text response with SSE
-        const streamUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?alt=sse&key=${apiKey}`;
-
-        const streamResponse = await fetch(streamUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: conversationContents,
-            systemInstruction: { parts: [{ text: systemPrompt }] },
-            generationConfig,
-          }),
-        });
-
-        if (!streamResponse.ok || !streamResponse.body) {
-          // Fallback to non-streamed content
-          for (const part of content.parts || []) {
-            if (part.text) {
-              // Check if this is a thought or regular text
-              if (part.thought) {
-                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'thinking', content: part.text })}\n\n`));
-              } else {
-                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'text', content: part.text })}\n\n`));
-              }
-            }
-          }
-          controller.enqueue(encoder.encode('data: [DONE]\n\n'));
-          controller.close();
-          return;
-        }
-
-        // Stream the SSE response
-        const reader = streamResponse.body.getReader();
-        const decoder = new TextDecoder();
-        let buffer = '';
-        let thinkingStarted = false;
-
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-
-          buffer += decoder.decode(value, { stream: true });
-          const lines = buffer.split('\n');
-          buffer = lines.pop() || '';
-
-          for (const line of lines) {
-            if (line.startsWith('data: ')) {
-              const jsonData = line.slice(6);
-              if (!jsonData || jsonData === '[DONE]') continue;
-
-              try {
-                const parsed = JSON.parse(jsonData);
-                const parts = parsed.candidates?.[0]?.content?.parts || [];
-
-                for (const part of parts) {
-                  if (!part.text) continue;
-
-                  // Check if this is a thought (Gemini 2.5/3.0 thinking)
-                  if (part.thought) {
-                    if (!thinkingStarted) {
-                      controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'thinking_start' })}\n\n`));
-                      thinkingStarted = true;
-                    }
-                    controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'thinking', content: part.text })}\n\n`));
-                  } else {
-                    // End thinking if we were in it
-                    if (thinkingStarted) {
-                      controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'thinking_end' })}\n\n`));
-                      thinkingStarted = false;
-                    }
-                    controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'text', content: part.text })}\n\n`));
-                  }
-                }
-              } catch (e) {
-                // Skip invalid JSON
-              }
-            }
-          }
-        }
-
-        // End thinking if still active
-        if (thinkingStarted) {
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'thinking_end' })}\n\n`));
-        }
-
+        // No function calls - we're done
         controller.enqueue(encoder.encode('data: [DONE]\n\n'));
         controller.close();
         return;
