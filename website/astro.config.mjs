@@ -13,11 +13,7 @@ import fs from 'fs';
 import tailwind from '@astrojs/tailwind';
 import AstroPWA from '@vite-pwa/astro';
 
-// Get version info at build time
-const packageJson = JSON.parse(fs.readFileSync('./package.json', 'utf-8'));
-const APP_VERSION = packageJson.version || '0.0.0';
-
-// Get git commit hash
+// Get git commit hash at build time
 let GIT_COMMIT = 'dev';
 try {
   GIT_COMMIT = execSync('git rev-parse --short HEAD').toString().trim();
@@ -25,10 +21,7 @@ try {
   console.warn('Could not get git commit hash');
 }
 
-// Build timestamp
-const BUILD_TIME = new Date().toISOString();
-
-console.log(`📦 Building Bulka v${APP_VERSION} (${GIT_COMMIT})`);
+console.log(`📦 Building Bulka (${GIT_COMMIT})`);
 
 const site = `https://strudel.cc/`; // root url without a path
 const base = '/'; // base path of the strudel site
@@ -159,9 +152,7 @@ export default defineConfig({
   vite: {
     plugins: [bundleAudioWorkletPlugin()],
     define: {
-      __APP_VERSION__: JSON.stringify(APP_VERSION),
       __GIT_COMMIT__: JSON.stringify(GIT_COMMIT),
-      __BUILD_TIME__: JSON.stringify(BUILD_TIME),
     },
     ssr: {
       // Example: Force a broken package to skip SSR processing, if needed
