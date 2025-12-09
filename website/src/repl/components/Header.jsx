@@ -253,7 +253,7 @@ export function Header({ context, embedded = false }) {
         )}
         {/* Version - after undo/redo arrows */}
         {!isZen && !isButtonRowHidden && (
-          <span className="text-xs opacity-40 font-mono ml-2" title={`Commit: ${GIT_COMMIT}`}>{VERSION_FULL}</span>
+          <span className="text-xs text-foreground opacity-40 font-mono ml-2" title={`Commit: ${GIT_COMMIT}`}>{VERSION_FULL}</span>
         )}
       </div>
       {/* Fixed volume slider - renders outside overflow container */}
