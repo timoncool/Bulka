@@ -65,7 +65,7 @@ export const defaultSettings = {
   multiChannelOrbits: false,
   includePrebakeScriptInShare: true,
   enabledPacks: 'all', // 'all' или JSON строка с массивом названий паков
-  masterVolume: 0.8, // Master volume (0-1)
+  masterVolume: 1, // Master volume (0-1), default 100%
 };
 
 let search = null;
@@ -130,7 +130,7 @@ export function useSettings() {
       : state.patternAutoStart === undefined
         ? true
         : parseBoolean(state.patternAutoStart),
-    masterVolume: Number(state.masterVolume) || 0.8,
+    masterVolume: Number(state.masterVolume) ?? 1,
   };
 }
 
