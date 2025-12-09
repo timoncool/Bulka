@@ -118,6 +118,14 @@ export class Orbit {
 export class SuperdoughOutput {
   channelMerger;
   destinationGain;
+  // Recording
+  mediaStreamDestination;
+  mediaRecorder;
+  recordedChunks = [];
+  isRecording = false;
+  recordingStartTime = 0;
+  onRecordingTimeUpdate = null;
+  recordingTimerInterval = null;
 
   constructor(audioContext) {
     this.audioContext = audioContext;
@@ -132,6 +140,95 @@ export class SuperdoughOutput {
     this.destinationGain = new GainNode(audioContext);
     this.channelMerger.connect(this.destinationGain);
     this.destinationGain.connect(audioContext.destination);
+
+    // Create MediaStreamDestination for recording
+    this.mediaStreamDestination = audioContext.createMediaStreamDestination();
+    this.destinationGain.connect(this.mediaStreamDestination);
+  }
+
+  startRecording(onTimeUpdate) {
+    if (this.isRecording) return;
+
+    this.recordedChunks = [];
+    this.onRecordingTimeUpdate = onTimeUpdate;
+
+    // Determine best supported format
+    const mimeTypes = [
+      'audio/webm;codecs=opus',
+      'audio/webm',
+      'audio/ogg;codecs=opus',
+      'audio/mp4',
+    ];
+
+    let mimeType = '';
+    for (const type of mimeTypes) {
+      if (MediaRecorder.isTypeSupported(type)) {
+        mimeType = type;
+        break;
+      }
+    }
+
+    const options = mimeType ? { mimeType } : {};
+    this.mediaRecorder = new MediaRecorder(this.mediaStreamDestination.stream, options);
+
+    this.mediaRecorder.ondataavailable = (e) => {
+      if (e.data.size > 0) {
+        this.recordedChunks.push(e.data);
+      }
+    };
+
+    this.mediaRecorder.onstop = () => {
+      this._exportRecording();
+    };
+
+    this.mediaRecorder.start(100); // Collect data every 100ms
+    this.isRecording = true;
+    this.recordingStartTime = Date.now();
+
+    // Start timer for UI updates
+    if (onTimeUpdate) {
+      this.recordingTimerInterval = setInterval(() => {
+        const elapsed = Date.now() - this.recordingStartTime;
+        onTimeUpdate(elapsed);
+      }, 100);
+    }
+  }
+
+  stopRecording() {
+    if (!this.isRecording || !this.mediaRecorder) return;
+
+    if (this.recordingTimerInterval) {
+      clearInterval(this.recordingTimerInterval);
+      this.recordingTimerInterval = null;
+    }
+
+    this.mediaRecorder.stop();
+    this.isRecording = false;
+  }
+
+  _exportRecording() {
+    if (this.recordedChunks.length === 0) return;
+
+    const mimeType = this.mediaRecorder?.mimeType || 'audio/webm';
+    const blob = new Blob(this.recordedChunks, { type: mimeType });
+
+    // Determine file extension
+    let extension = 'webm';
+    if (mimeType.includes('ogg')) extension = 'ogg';
+    else if (mimeType.includes('mp4')) extension = 'm4a';
+
+    // Create download
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+    a.download = `bulka_${timestamp}.${extension}`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    this.recordedChunks = [];
   }
 
   reset() {

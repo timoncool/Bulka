@@ -302,6 +302,32 @@ export function getMasterVolume() {
   return ctrl?.output?.destinationGain?.gain?.value ?? 1;
 }
 
+/**
+ * Start recording audio output
+ * @param {function} onTimeUpdate - Callback called with elapsed time in ms
+ */
+export function startRecording(onTimeUpdate) {
+  const ctrl = getSuperdoughAudioController();
+  ctrl?.output?.startRecording(onTimeUpdate);
+}
+
+/**
+ * Stop recording and trigger download
+ */
+export function stopRecording() {
+  const ctrl = getSuperdoughAudioController();
+  ctrl?.output?.stopRecording();
+}
+
+/**
+ * Check if currently recording
+ * @returns {boolean}
+ */
+export function isRecording() {
+  const ctrl = getSuperdoughAudioController();
+  return ctrl?.output?.isRecording ?? false;
+}
+
 export function connectToDestination(input, channels) {
   const controller = getSuperdoughAudioController();
   controller.output.connectToDestination(input, channels);
