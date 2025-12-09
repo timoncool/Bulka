@@ -537,6 +537,8 @@ export function useChatContext(replContext) {
                   settings.aiProvider === 'gemini' ? settings.geminiApiKey : ''),
     provider: settings.aiProvider,
     model: settings.aiModel,
+    // Error handling
+    setError,
     // Action hints (автоскрытие через 3 сек)
     lastAction,
     setLastAction,

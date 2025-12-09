@@ -518,10 +518,23 @@ export function ChatTab({ context }) {
         )}
       </div>
 
-      {/* Error */}
+      {/* Error with "Send to Chat" button */}
       {chat.error && (
         <div className="mx-3 mb-2 p-2 text-xs text-red-400 bg-red-500/10 rounded-md border border-red-500/30">
-          {chat.error}
+          <div className="flex items-start justify-between gap-2">
+            <span className="flex-1">{chat.error}</span>
+            <button
+              onClick={() => {
+                const errorMsg = `Произошла ошибка: ${chat.error}\n\nПомоги разобраться и исправить.`;
+                chat.setError(null);
+                chat.sendMessage(errorMsg);
+              }}
+              className="shrink-0 px-2 py-1 text-xs bg-red-500/20 hover:bg-red-500/30 rounded border border-red-500/50"
+              title="Отправить ошибку в чат для анализа"
+            >
+              📤 В чат
+            </button>
+          </div>
         </div>
       )}
 

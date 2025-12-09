@@ -13,8 +13,8 @@ export function WelcomeTab({ context }) {
         прямо в браузере! Это бесплатный проект с открытым исходным кодом, созданный как для новичков, так и для экспертов.
         <br />
         <br />
-        <span className="underline">1. нажми play</span> - <span className="underline">2. измени что-нибудь</span> -{' '}
-        <span className="underline">3. нажми update</span>
+        <span className="underline">1. нажми «играть»</span> - <span className="underline">2. измени что-нибудь</span> -{' '}
+        <span className="underline">3. нажми «обновить»</span>
       </p>
       <p>
         Чтобы начать, изучите{' '}
@@ -29,11 +29,7 @@ export function WelcomeTab({ context }) {
         <a href="https://strudel.cc/" target="_blank">
           Strudel
         </a>
-        , который является JavaScript-версией{' '}
-        <a href="https://tidalcycles.org/" target="_blank">
-          TidalCycles
-        </a>
-        . Оригинальный Strudel создан Alex McLean и сообществом. Исходный код Bulka доступен на{' '}
+        {' '}с встроенным AI-агентом. Исходный код доступен на{' '}
         <a href="https://github.com/timoncool/Bulka" target="_blank">
           GitHub
         </a>
@@ -48,7 +44,11 @@ export function WelcomeTab({ context }) {
         <a href="https://artgeneration.me/" target="_blank">
           ArtGeneration.me
         </a>
-        , техноблогером и нейро-евангелистом.
+        ,{' '}
+        <a href="https://www.youtube.com/@nerual_dreming" target="_blank">
+          техноблогером
+        </a>
+        {' '}и нейро-евангелистом.
       </p>
     </div>
   );

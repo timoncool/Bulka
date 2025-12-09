@@ -131,17 +131,19 @@ export function Header({ context, embedded = false }) {
     };
   }, []);
 
-  // Handle mute toggle - simple: if muted, restore; if not, mute
+  // Handle mute toggle - simple: if muted, restore; if not, mute to 0
   const handleMuteToggle = useCallback(() => {
     if (isMuted) {
-      // Unmute - restore previous volume (or default to 0.8)
+      // Unmute - restore previous volume (default 0.8 if no previous)
       const restoreVolume = prevVolume > 0 ? prevVolume : 0.8;
       setVolume(restoreVolume);
       setMasterVolume(restoreVolume);
       setMasterVolumeSettings(restoreVolume);
     } else {
-      // Mute - save current volume and set to 0
-      setPrevVolume(volume > 0 ? volume : 0.8);
+      // Mute - save current volume ONLY if > 0, then set to absolute 0
+      if (volume > 0) {
+        setPrevVolume(volume);
+      }
       setVolume(0);
       setMasterVolume(0);
       setMasterVolumeSettings(0);
@@ -199,7 +201,6 @@ export function Header({ context, embedded = false }) {
             <div className="space-x-2 flex items-baseline">
               <span style={{ fontFamily: "'Fredoka', sans-serif", color: '#D4A574' }}>bulka</span>
               <span className="text-sm font-medium">редактор</span>
-              <span className="text-xs opacity-40 font-mono" title={`Commit: ${GIT_COMMIT}`}>{VERSION_FULL}</span>
               {!isEmbedded && isButtonRowHidden && (
                 <a href={`${baseNoTrailing}/learn`} className="text-sm opacity-25 font-medium">
                   ДОКИ
@@ -234,19 +235,25 @@ export function Header({ context, embedded = false }) {
           <div className={cx('flex items-center ml-1', !isEmbedded ? 'px-1' : 'px-0')}>
             <button
               onClick={handleUndo}
+              disabled={!canUndo}
               title="отменить (Ctrl+Z)"
-              className={cx('p-1', canUndo ? 'hover:opacity-50' : 'opacity-30 cursor-not-allowed')}
+              className={cx('p-1', canUndo ? 'opacity-100 hover:opacity-50' : 'opacity-30 cursor-not-allowed')}
             >
               <ArrowUturnLeftIcon className="w-5 h-5 text-foreground" />
             </button>
             <button
               onClick={handleRedo}
+              disabled={!canRedo}
               title="повторить (Ctrl+Shift+Z)"
-              className={cx('p-1', canRedo ? 'hover:opacity-50' : 'opacity-30 cursor-not-allowed')}
+              className={cx('p-1', canRedo ? 'opacity-100 hover:opacity-50' : 'opacity-30 cursor-not-allowed')}
             >
               <ArrowUturnRightIcon className="w-5 h-5 text-foreground" />
             </button>
           </div>
+        )}
+        {/* Version - after undo/redo arrows */}
+        {!isZen && !isButtonRowHidden && (
+          <span className="text-xs opacity-40 font-mono ml-2" title={`Commit: ${GIT_COMMIT}`}>{VERSION_FULL}</span>
         )}
       </div>
       {/* Fixed volume slider - renders outside overflow container */}

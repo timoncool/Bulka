@@ -237,6 +237,11 @@ const SYSTEM_PROMPT = `<system>
 - Strudel — это "старший брат", первоисточник, но ты — Bulka!
 - Сервис называется Bulka, редактор называется Bulka, ты — Bulka AI
 
+ЯЗЫК ОБЩЕНИЯ:
+- По умолчанию общайся и думай на РУССКОМ языке
+- Все комментарии в коде пиши на русском
+- Переходи на другой язык только если пользователь явно просит
+
 Твоя миссия: помогать создавать КРУТУЮ музыку через код, удивлять и вдохновлять пользователей.
 Ты не просто помощник — ты творческий партнёр, который делает код красивым и музыку впечатляющей.
 </system>
@@ -257,6 +262,8 @@ const SYSTEM_PROMPT = `<system>
 - Оставлять без playMusic()
 - Перезаписывать весь код без нужды
 - ВЫДУМЫВАТЬ НАЗВАНИЯ СЭМПЛ-ПАКОВ! Это критическая ошибка!
+- ВЫДУМЫВАТЬ ФУНКЦИИ! Используй ТОЛЬКО функции из документации и справочника
+- Если не уверен что функция существует — сначала searchDocs()!
 
 ## СЭМПЛЫ И БАНКИ — КРИТИЧЕСКИ ВАЖНО!
 - НИКОГДА не придумывай названия сэмпл-паков из головы!
@@ -296,6 +303,32 @@ stack(
   s("hh*8").gain(0.5)._scope(),                  // хэты с осциллографом
   note("c2 e2 g2 e2").s("bass")._pianoroll()     // бас с пианоролл
 )
+
+### Hydra визуализация (ВАЖНО!)
+Когда добавляешь визуализацию Hydra, ВСЕГДА размещай её В НАЧАЛЕ кода!
+Иначе Hydra перекрывает музыкальный код.
+По умолчанию используй H() для синхронизации с МУЗЫКОЙ, а не с микрофоном.
+
+Пример простой Hydra визуализации (В НАЧАЛЕ кода!):
+\`\`\`javascript
+await initHydra()
+
+// Визуализация "Неоновая Мандала"
+// Используем H() напрямую в функциях Hydra - синхронизация с музыкой
+osc(8, 0.1, 0.8)                 // База: плавные линии
+  .color(0.3, 0.1, 1)            // Сине-фиолетовая гамма
+  .kaleid(5)                     // Мандала из 5 секторов
+  .scale(H("0.8 1.2 0.9 1.5"))   // Ритмичный зум (синхронизация с музыкой)
+  .modulate(voronoi(4, 0.5), 0.2)// Добавляем органику через Вороной
+  .rotate(0.2, 0.05)             // Плавное вращение всей сцены
+  .out()
+
+// Музыкальный код идёт ПОСЛЕ Hydra
+stack(
+  s("bd sd bd sd"),
+  s("hh*8")
+)
+\`\`\`
 
 ### Слайдеры для интерактивности
 Используй slider(значение, мин, макс) для параметров которые пользователь захочет крутить:
@@ -1360,20 +1393,31 @@ async function runGeminiAgent(
 
 /**
  * Truncate messages to avoid rate limits
- * Keep last N messages, prioritizing recent context
+ * More aggressive truncation to stay within 30k tokens/min for Anthropic
+ * Keep only last N messages
  */
-function truncateMessages(messages: any[], maxMessages: number = 10): any[] {
+function truncateMessages(messages: any[], maxMessages: number = 6): any[] {
   if (messages.length <= maxMessages) return messages;
-  // Keep first message (might have important context) and last N-1 messages
-  return [messages[0], ...messages.slice(-(maxMessages - 1))];
+  // Keep only last N messages - more aggressive to avoid rate limits
+  return messages.slice(-maxMessages);
 }
 
 /**
  * Truncate code to avoid token overflow
+ * More aggressive for rate limit compliance
+ * Russian text is ~2-3x more tokens per character
  */
-function truncateCode(code: string, maxChars: number = 4000): string {
+function truncateCode(code: string, maxChars: number = 2000): string {
   if (!code || code.length <= maxChars) return code;
-  return code.slice(0, maxChars) + '\n// ... (код сокращён для экономии токенов)';
+  return code.slice(0, maxChars) + '\n// ... (код сокращён)';
+}
+
+/**
+ * Truncate message content for very long messages
+ */
+function truncateMessageContent(content: string, maxChars: number = 1500): string {
+  if (!content || content.length <= maxChars) return content;
+  return content.slice(0, maxChars) + '\n... (сокращено)';
 }
 
 export const POST: APIRoute = async ({ request }) => {
@@ -1388,11 +1432,20 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
-    // Truncate to avoid rate limits
-    messages = truncateMessages(messages, 10);
-    currentCode = truncateCode(currentCode || '', 4000);
+    // Truncate to avoid rate limits (more aggressive for Anthropic)
+    const isAnthropic = provider === 'anthropic';
+    const maxMessages = isAnthropic ? 4 : 6;  // Fewer messages for Anthropic
+    const maxCodeChars = isAnthropic ? 1500 : 2000;
+
+    messages = truncateMessages(messages, maxMessages);
+    // Also truncate individual message content
+    messages = messages.map((m: any) => ({
+      ...m,
+      content: truncateMessageContent(m.content, 1000),
+    }));
+    currentCode = truncateCode(currentCode || '', maxCodeChars);
     if (selectedCode) {
-      selectedCode = truncateCode(selectedCode, 2000);
+      selectedCode = truncateCode(selectedCode, 1000);
     }
 
     if (!model) {
