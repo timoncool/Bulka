@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import cx from '@src/cx.mjs';
-import { startRecording, stopRecording, isRecording as checkIsRecording } from '@strudel/webaudio';
+import { startRecording, stopRecording } from '@strudel/webaudio';
 
 // Format milliseconds to MM:SS
 function formatTime(ms) {
@@ -10,14 +10,28 @@ function formatTime(ms) {
   return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
 
-export function Recorder({ started }) {
+// Extract @title from code
+function extractTitle(code) {
+  if (!code) return null;
+  const match = code.match(/\/\/\s*@title\s+(.+?)(?:\n|$)/);
+  return match ? match[1].trim() : null;
+}
+
+// Sanitize filename
+function sanitizeFilename(name) {
+  return name.replace(/[<>:"/\\|?*]/g, '_').substring(0, 100);
+}
+
+export function Recorder({ started, activeCode }) {
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
 
   const handleToggleRecording = useCallback(() => {
     if (isRecording) {
-      // Stop recording
-      stopRecording();
+      // Stop recording - pass title for filename
+      const title = extractTitle(activeCode);
+      const filename = title ? sanitizeFilename(title) : null;
+      stopRecording(filename);
       setIsRecording(false);
       setRecordingTime(0);
     } else {
@@ -27,15 +41,15 @@ export function Recorder({ started }) {
       });
       setIsRecording(true);
     }
-  }, [isRecording]);
+  }, [isRecording, activeCode]);
 
   return (
-    <div className="flex items-center">
+    <div className="flex items-center ml-1">
       <button
         onClick={handleToggleRecording}
         title={isRecording ? 'остановить запись' : 'начать запись'}
         className={cx(
-          'flex items-center space-x-1.5 px-2 py-1 rounded-md transition-all',
+          'flex items-center space-x-1.5 px-2 py-1 rounded transition-all',
           isRecording
             ? 'bg-red-500/20 hover:bg-red-500/30'
             : 'hover:opacity-50',
@@ -44,17 +58,17 @@ export function Recorder({ started }) {
         {/* REC indicator */}
         <span
           className={cx(
-            'w-3 h-3 rounded-full border-2 transition-all',
+            'w-2.5 h-2.5 rounded-full transition-all',
             isRecording
-              ? 'bg-red-500 border-red-500 animate-pulse'
-              : 'border-foreground/50 bg-transparent',
+              ? 'bg-red-500 animate-pulse'
+              : 'border-2 border-foreground/50',
           )}
         />
         {/* Label or timer */}
         <span
           className={cx(
             'text-xs font-mono',
-            isRecording ? 'text-red-400' : 'text-foreground opacity-70',
+            isRecording ? 'text-red-400' : 'text-foreground opacity-60',
           )}
         >
           {isRecording ? formatTime(recordingTime) : 'REC'}

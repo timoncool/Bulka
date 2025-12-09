@@ -115,17 +115,57 @@ export class Orbit {
   }
 }
 
+// WAV encoder - converts PCM data to WAV format (lossless)
+function encodeWAV(samples, sampleRate, numChannels) {
+  const bytesPerSample = 2; // 16-bit
+  const blockAlign = numChannels * bytesPerSample;
+  const byteRate = sampleRate * blockAlign;
+  const dataSize = samples.length * bytesPerSample;
+  const buffer = new ArrayBuffer(44 + dataSize);
+  const view = new DataView(buffer);
+
+  // WAV header
+  const writeString = (offset, str) => {
+    for (let i = 0; i < str.length; i++) {
+      view.setUint8(offset + i, str.charCodeAt(i));
+    }
+  };
+
+  writeString(0, 'RIFF');
+  view.setUint32(4, 36 + dataSize, true);
+  writeString(8, 'WAVE');
+  writeString(12, 'fmt ');
+  view.setUint32(16, 16, true); // PCM chunk size
+  view.setUint16(20, 1, true); // PCM format
+  view.setUint16(22, numChannels, true);
+  view.setUint32(24, sampleRate, true);
+  view.setUint32(28, byteRate, true);
+  view.setUint16(32, blockAlign, true);
+  view.setUint16(34, 16, true); // bits per sample
+  writeString(36, 'data');
+  view.setUint32(40, dataSize, true);
+
+  // Write PCM samples (16-bit)
+  let offset = 44;
+  for (let i = 0; i < samples.length; i++) {
+    const s = Math.max(-1, Math.min(1, samples[i]));
+    view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+    offset += 2;
+  }
+
+  return new Blob([buffer], { type: 'audio/wav' });
+}
+
 export class SuperdoughOutput {
   channelMerger;
   destinationGain;
   // Recording
-  mediaStreamDestination;
-  mediaRecorder;
-  recordedChunks = [];
+  recorderNode;
+  recordedBuffers = [];
   isRecording = false;
   recordingStartTime = 0;
-  onRecordingTimeUpdate = null;
   recordingTimerInterval = null;
+  pendingFilename = null;
 
   constructor(audioContext) {
     this.audioContext = audioContext;
@@ -140,52 +180,37 @@ export class SuperdoughOutput {
     this.destinationGain = new GainNode(audioContext);
     this.channelMerger.connect(this.destinationGain);
     this.destinationGain.connect(audioContext.destination);
-
-    // Create MediaStreamDestination for recording
-    this.mediaStreamDestination = audioContext.createMediaStreamDestination();
-    this.destinationGain.connect(this.mediaStreamDestination);
   }
 
   startRecording(onTimeUpdate) {
     if (this.isRecording) return;
 
-    this.recordedChunks = [];
-    this.onRecordingTimeUpdate = onTimeUpdate;
+    this.recordedBuffers = [];
+    const bufferSize = 4096;
 
-    // Determine best supported format
-    const mimeTypes = [
-      'audio/webm;codecs=opus',
-      'audio/webm',
-      'audio/ogg;codecs=opus',
-      'audio/mp4',
-    ];
-
-    let mimeType = '';
-    for (const type of mimeTypes) {
-      if (MediaRecorder.isTypeSupported(type)) {
-        mimeType = type;
-        break;
+    // Create ScriptProcessorNode for recording (captures raw PCM)
+    this.recorderNode = this.audioContext.createScriptProcessor(bufferSize, 2, 2);
+    this.recorderNode.onaudioprocess = (e) => {
+      if (!this.isRecording) return;
+      // Capture stereo interleaved
+      const left = e.inputBuffer.getChannelData(0);
+      const right = e.inputBuffer.getChannelData(1);
+      const interleaved = new Float32Array(left.length * 2);
+      for (let i = 0; i < left.length; i++) {
+        interleaved[i * 2] = left[i];
+        interleaved[i * 2 + 1] = right[i];
       }
-    }
-
-    const options = mimeType ? { mimeType } : {};
-    this.mediaRecorder = new MediaRecorder(this.mediaStreamDestination.stream, options);
-
-    this.mediaRecorder.ondataavailable = (e) => {
-      if (e.data.size > 0) {
-        this.recordedChunks.push(e.data);
-      }
+      this.recordedBuffers.push(interleaved);
     };
 
-    this.mediaRecorder.onstop = () => {
-      this._exportRecording();
-    };
+    // Connect recorder node
+    this.destinationGain.connect(this.recorderNode);
+    this.recorderNode.connect(this.audioContext.destination); // Required for processing
 
-    this.mediaRecorder.start(100); // Collect data every 100ms
     this.isRecording = true;
     this.recordingStartTime = Date.now();
 
-    // Start timer for UI updates
+    // Timer for UI updates
     if (onTimeUpdate) {
       this.recordingTimerInterval = setInterval(() => {
         const elapsed = Date.now() - this.recordingStartTime;
@@ -194,47 +219,69 @@ export class SuperdoughOutput {
     }
   }
 
-  stopRecording() {
-    if (!this.isRecording || !this.mediaRecorder) return;
+  stopRecording(filename) {
+    if (!this.isRecording) return;
+
+    this.pendingFilename = filename;
 
     if (this.recordingTimerInterval) {
       clearInterval(this.recordingTimerInterval);
       this.recordingTimerInterval = null;
     }
 
-    this.mediaRecorder.stop();
     this.isRecording = false;
+
+    // Disconnect recorder
+    if (this.recorderNode) {
+      this.recorderNode.disconnect();
+      this.destinationGain.disconnect(this.recorderNode);
+      this.recorderNode = null;
+    }
+
+    this._exportRecording();
   }
 
   _exportRecording() {
-    if (this.recordedChunks.length === 0) return;
+    if (this.recordedBuffers.length === 0) return;
 
-    const mimeType = this.mediaRecorder?.mimeType || 'audio/webm';
-    const blob = new Blob(this.recordedChunks, { type: mimeType });
+    // Merge all buffers
+    const totalLength = this.recordedBuffers.reduce((acc, buf) => acc + buf.length, 0);
+    const samples = new Float32Array(totalLength);
+    let offset = 0;
+    for (const buffer of this.recordedBuffers) {
+      samples.set(buffer, offset);
+      offset += buffer.length;
+    }
 
-    // Determine file extension
-    let extension = 'webm';
-    if (mimeType.includes('ogg')) extension = 'ogg';
-    else if (mimeType.includes('mp4')) extension = 'm4a';
+    // Encode to WAV (lossless)
+    const blob = encodeWAV(samples, this.audioContext.sampleRate, 2);
 
     // Create download
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
-    a.download = `bulka_${timestamp}.${extension}`;
+
+    // Use provided filename or generate one
+    const basename = this.pendingFilename || `bulka_${new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)}`;
+    a.download = `${basename}.wav`;
+
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
 
-    this.recordedChunks = [];
+    this.recordedBuffers = [];
+    this.pendingFilename = null;
   }
 
   reset() {
+    if (this.isRecording) {
+      this.stopRecording();
+    }
     this.disconnect();
     this.initializeAudio();
   }
+
   disconnect() {
     this.channelMerger.disconnect();
     this.destinationGain.disconnect();
