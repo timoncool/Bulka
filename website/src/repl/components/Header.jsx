@@ -231,7 +231,11 @@ export function Header({ context, embedded = false }) {
             </button>
           </div>
         )}
-        {/* Undo/Redo buttons - after volume */}
+        {/* Recorder - right after volume */}
+        {!isZen && !isButtonRowHidden && !isEmbedded && (
+          <Recorder started={started} activeCode={activeCode} />
+        )}
+        {/* Undo/Redo buttons - after recorder */}
         {!isZen && !isButtonRowHidden && (
           <div className={cx('flex items-center ml-1', !isEmbedded ? 'px-1' : 'px-0')}>
             <button
@@ -252,13 +256,9 @@ export function Header({ context, embedded = false }) {
             </button>
           </div>
         )}
-        {/* Recorder - after undo/redo arrows */}
-        {!isZen && !isButtonRowHidden && !isEmbedded && (
-          <Recorder started={started} />
-        )}
-        {/* Version - after recorder */}
+        {/* Version - after undo/redo */}
         {!isZen && !isButtonRowHidden && (
-          <span className="text-xs text-foreground opacity-40 font-mono ml-2">{GIT_COMMIT}</span>
+          <span className="text-xs text-foreground opacity-40 font-mono ml-2">v{GIT_COMMIT}</span>
         )}
       </div>
       {/* Fixed volume slider - renders outside overflow container */}

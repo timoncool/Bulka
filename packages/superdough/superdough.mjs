@@ -313,10 +313,11 @@ export function startRecording(onTimeUpdate) {
 
 /**
  * Stop recording and trigger download
+ * @param {string} filename - Optional filename for the recording
  */
-export function stopRecording() {
+export function stopRecording(filename) {
   const ctrl = getSuperdoughAudioController();
-  ctrl?.output?.stopRecording();
+  ctrl?.output?.stopRecording(filename);
 }
 
 /**
