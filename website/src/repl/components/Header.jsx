@@ -237,7 +237,7 @@ export function Header({ context, embedded = false }) {
         )}
         {/* Undo/Redo buttons - after recorder */}
         {!isZen && !isButtonRowHidden && (
-          <div className={cx('flex items-center ml-1', !isEmbedded ? 'px-1' : 'px-0')}>
+          <div className={cx('flex items-center ml-3', !isEmbedded ? 'px-1' : 'px-0')}>
             <button
               onClick={handleUndo}
               disabled={!canUndo}
@@ -256,9 +256,9 @@ export function Header({ context, embedded = false }) {
             </button>
           </div>
         )}
-        {/* Version - after undo/redo */}
+        {/* Version - pushed to center with more spacing */}
         {!isZen && !isButtonRowHidden && (
-          <span className="text-xs text-foreground opacity-40 font-mono ml-2">v{GIT_COMMIT}</span>
+          <span className="text-xs text-foreground opacity-40 font-mono ml-6">v{GIT_COMMIT}</span>
         )}
       </div>
       {/* Fixed volume slider - renders outside overflow container */}
