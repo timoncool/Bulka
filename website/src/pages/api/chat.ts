@@ -432,6 +432,7 @@ let bass = note("c2 e2 g2 e2")
 | UK Garage, 2-step, Future Garage | sparkway-drum-kit (spk_*) |
 | DnB, Jungle | sparkway-drum-kit, Dirt-Samples (amen, break) |
 | 80s Pop, Synth-pop, Funk, R&B | LinnDrum, LinnLM1 |
+| Jazz, Soul, Neo-Soul, Lo-Fi | e-pianos (cp80, wurlitzer, pianet) |
 | Electro, Old-school Electronic | RolandTR606, RolandTR707, OberheimDMX |
 | Классика, Оркестр | vcsl (струнные, духовые), piano |
 | Индийская музыка, World | mridangam, Dirt-Samples (tabla) |
@@ -515,6 +516,16 @@ let bass = note("c2 e2 g2 e2")
 - Использование: note("c3 e3 g3").s("piano")
 - **Когда использовать**: мелодии, аккорды, классика, джаз, баллады, любой трек где нужно живое пианино
 
+**e-pianos** — классические электропиано 70-80х (CC-BY):
+Три культовых инструмента эпохи фанка, соула и джаза.
+- **cp80**: Yamaha CP80 электрогранд — яркий, богатый звук, хит 70-80х
+  - note("c4 e4 g4").s("cp80")
+- **wurlitzer**: Wurlitzer 200A — тёплый, слегка грязный винтаж, классика фанка
+  - note("c3 eb3 g3").s("wurlitzer")
+- **pianet**: Hohner Pianet T — нежный, колокольчатый звук
+  - note("g4 a4 b4").s("pianet")
+- **Когда использовать**: Jazz, Soul, Funk, Neo-Soul, R&B, Lo-Fi Hip-Hop, Chill, ретро-звучание
+
 **mridangam** — индийский барабан мридангам:
 Традиционный двухсторонний барабан из Южной Индии, основа Carnatic музыки.
 Характерное металлическое гудение, богатые обертона.
@@ -557,6 +568,11 @@ s("spk_808").lpf(500)  // саб-бас
 // === 80s POP / SYNTH-POP (используй LinnDrum) ===
 s("bd sd bd sd").bank("LinnDrum")
 s("hh*4").bank("LinnDrum")
+
+// === JAZZ / SOUL / NEO-SOUL (используй e-pianos) ===
+note("c4 e4 g4 b4").s("cp80").room(0.3)  // Yamaha CP80
+note("[c3 eb3]*2 [f3 ab3]*2").s("wurlitzer").lpf(1500)  // Wurlitzer funk
+note("g4 a4 b4 d5").s("pianet").delay(0.2)  // Hohner Pianet
 
 // === DnB / JUNGLE (используй amen break) ===
 s("amen").speed(1.5).chop(16)
