@@ -70,6 +70,7 @@ export const SIDEBAR: Sidebar = {
       { text: 'Рецепты', link: 'recipes/recipes' },
       { text: 'Mini-Notation', link: 'learn/mini-notation' },
       { text: 'Визуальная обратная связь', link: 'learn/visual-feedback' },
+      { text: 'Темы редактора', link: 'learn/themes' },
       { text: 'Оффлайн', link: 'learn/pwa' },
       { text: 'Patterns', link: 'technical-manual/patterns' },
       { text: 'Mondo Notation', link: 'learn/mondo-notation' },

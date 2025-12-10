@@ -10,10 +10,10 @@ export function shuffleArray(array) {
   }
   return array;
 }
-let _shuffled;
 
 export function Showcase() {
-  const [videos, setVideos] = useState(_shuffled);
+  // По умолчанию newest first (без перемешивания)
+  const [videos, setVideos] = useState(_videos);
   return (
     <>
       <div className="flex space-x-2">
@@ -99,5 +99,3 @@ let _videos = [
   { title: 'froos @ Algorave 10th Birthday stream', id: 'IcMSocdKwvw' },
   { title: 'todepasta 1.5', id: 'gCwaVu1Mijg' },
 ];
-
-_shuffled = shuffleArray(_videos);
