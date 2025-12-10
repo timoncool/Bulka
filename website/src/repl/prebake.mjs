@@ -78,6 +78,11 @@ export async function prebake() {
       tag: 'drum-machines',
       pack: 'sparkway-drum-kit',
     }),
+    // E-Pianos - Yamaha CP80, Wurlitzer, Hohner Pianet (CC-BY)
+    samples(`${baseNoTrailing}/samples/e-pianos/strudel.json`, `${baseNoTrailing}/samples/e-pianos/`, {
+      prebake: true,
+      pack: 'e-pianos',
+    }),
   ]);
 
   aliasBank(`${baseCDN}/tidal-drum-machines-alias.json`);
