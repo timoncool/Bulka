@@ -303,6 +303,47 @@ s("hh*16").degradeBy(0.3)      // 30% звуков убрать
     keywords: ['fast', 'slow', 'every', 'jux', 'rev', 'degrade', 'модификатор', 'скорость'],
   },
   {
+    id: 'sparkway-drum-kit',
+    title: 'Sparkway Drum Kit',
+    content: `Sparkway Drum Kit - набор современных драм-семплов от @wonderluverz (168 семплов).
+
+Банки:
+- \`spk_808\` - 808 басы (12 семплов): drake, goyard, joker, monin, shloppy, soiuzers, spining, stomp, yuppi, moodf1x, shewantsdruzio, yonky
+- \`spk_reese\` - Reese/Moog басы (6 семплов): friendly, gin, kino, mqa, papers, reason
+- \`spk_kick\` - Кики (13 семплов): bomb, burial, calvin, crysis, doodlejump, duduk, groove, hatelove, indigo, mbwtcs, maximum, pooma, when
+- \`spk_snare\` - Снейры (14 семплов): cobalt, flamyway, glaremade, king, lifestyle, mbwtcs, millenium, neurons, polosa, stability, starwood, streli, uk, windy
+- \`spk_clap\` - Хлопки (8 семплов): bb, bars, druzio, glorage, imba, snow, sparkway, tap
+- \`spk_hat\` - Хай-хэты (14 семплов): 88, candy, hard, jam, mb, perfect, potentia, setting, shake, trick, vroom, wv, winner, xxx
+- \`spk_oh\` - Открытые хэты (3 семпла): fg, mbwtcs, strong
+- \`spk_crash\` - Крэши (8 семплов): bestie, blow, blur, cup, dora, dream, ego, orchid
+- \`spk_perc\` - Перкуссия (23 семпла): 4life, bell, chichime, cyber, die, friendly, glaremade, galaxy, hoverboard, luche, mbwtcs, mind, mission, mucha, no-aarne, opdf, obed, orbit, remove, rodnoy, soiuz-money, sparkway, technology
+- \`spk_drumloop\` - Драм лупы (40 семплов, 104-150 BPM)
+- \`spk_percloop\` - Перкуссионные лупы (8 семплов)
+- \`spk_shot\` - One-shot семплы (5 семплов)
+- \`spk_vocal\` - Вокальные лупы (14 семплов, разные тональности)
+
+Примеры использования:
+\`\`\`
+// Простой бит
+s("spk_kick spk_snare spk_hat*2 spk_clap")
+
+// 808 бас с нотами
+s("spk_808:0").note("c2 e2 g2 c3")
+
+// Drum loop с подгонкой
+s("spk_drumloop:5").fit().loopAt(4)
+
+// Комбинация с эффектами
+stack(
+  s("spk_kick ~ spk_kick ~"),
+  s("~ spk_snare:3 ~ spk_snare:3"),
+  s("spk_hat*8").gain(0.6)
+).room(0.2)
+\`\`\``,
+    category: 'sounds',
+    keywords: ['sparkway', 'spk', '808', 'kick', 'snare', 'clap', 'hat', 'perc', 'drumloop', 'vocal', 'reese', 'moog', 'wonderluverz', 'drum kit'],
+  },
+  {
     id: 'drum-machines',
     title: 'Драм-машины (банки звуков)',
     content: `Драм-машины подключаются через .bank():
