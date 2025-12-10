@@ -422,10 +422,23 @@ export function ChatTab({ context }) {
   const messagesEndRef = useRef(null);
   const chat = useChatContext(context);
   const [showSettings, setShowSettings] = useState(false);
+  const lastAutoSentErrorRef = useRef(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chat.messages]);
+
+  // Автоотправка ошибок выполнения кода в чат
+  useEffect(() => {
+    if (context?.error && !chat.isLoading && chat.hasApiKey) {
+      const errorMsg = context.error.message || String(context.error);
+      // Не отправляем одну и ту же ошибку повторно
+      if (errorMsg && errorMsg !== lastAutoSentErrorRef.current) {
+        lastAutoSentErrorRef.current = errorMsg;
+        chat.sendEditorError(errorMsg);
+      }
+    }
+  }, [context?.error, chat.isLoading, chat.hasApiKey, chat.sendEditorError]);
 
   // Show settings if no API key
   if (!chat.hasApiKey || showSettings) {
