@@ -13,10 +13,6 @@ import fs from 'fs';
 import tailwind from '@astrojs/tailwind';
 import AstroPWA from '@vite-pwa/astro';
 
-// Get version info at build time
-const packageJson = JSON.parse(fs.readFileSync('./package.json', 'utf-8'));
-const APP_VERSION = packageJson.version || '0.0.0';
-
 // Get git commit hash
 let GIT_COMMIT = 'dev';
 try {
@@ -28,7 +24,10 @@ try {
 // Build timestamp
 const BUILD_TIME = new Date().toISOString();
 
-console.log(`📦 Building Bulka v${APP_VERSION} (${GIT_COMMIT})`);
+// No versioning - just use git commit
+const APP_VERSION = GIT_COMMIT;
+
+console.log(`📦 Building Bulka ${GIT_COMMIT}`);
 
 const site = `https://strudel.cc/`; // root url without a path
 const base = '/'; // base path of the strudel site
