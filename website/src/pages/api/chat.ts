@@ -1091,9 +1091,9 @@ User: "Сделай трап бит"
 
 Actions:
 1. getAvailablePacks()  // находим RolandTR808
-2. setFullCode(`s("bd ~ ~ bd ~ ~ sd ~").bank("RolandTR808")
+2. setFullCode(\`s("bd ~ ~ bd ~ ~ sd ~").bank("RolandTR808")
 s("hh*8").bank("RolandTR808").gain(0.6)
-note("c1 ~ c1 ~").s("sawtooth").lpf(200)`)
+note("c1 ~ c1 ~").s("sawtooth").lpf(200)\`)
 3. playMusic()
 
 Response: "Трап бит на 808х готов, бас качает! 🔊"

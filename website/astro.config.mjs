@@ -13,10 +13,6 @@ import fs from 'fs';
 import tailwind from '@astrojs/tailwind';
 import AstroPWA from '@vite-pwa/astro';
 
-// Get version info at build time
-const packageJson = JSON.parse(fs.readFileSync('./package.json', 'utf-8'));
-const APP_VERSION = packageJson.version || '0.0.0';
-
 // Get git commit hash
 let GIT_COMMIT = 'dev';
 try {
@@ -28,7 +24,14 @@ try {
 // Build timestamp
 const BUILD_TIME = new Date().toISOString();
 
-console.log(`📦 Building Bulka v${APP_VERSION} (${GIT_COMMIT})`);
+// Auto-version based on date: YYYY.MM.DD
+const now = new Date();
+const year = now.getFullYear();
+const month = String(now.getMonth() + 1).padStart(2, '0');
+const day = String(now.getDate()).padStart(2, '0');
+const APP_VERSION = `${year}.${month}.${day}`;
+
+console.log(`📦 Building Bulka ${GIT_COMMIT}`);
 
 const site = `https://strudel.cc/`; // root url without a path
 const base = '/'; // base path of the strudel site
