@@ -616,6 +616,54 @@ Thinking помогает избежать:
 3. **Layering** - stack(drums, bass, chords, melody) для многослойности
 4. **Arrangement** - arrange() для структуры intro/verse/chorus
 5. **Scales** - n("0 2 4 5 7").scale("c4:minor") для тональности
+
+### Как строится ТРЕК (краткая памятка)
+
+Типичная структура композиции:
+\`\`\`javascript
+// 1. Определи chord progression
+const progression = chord("<Em C Am D>");  // Или C-G-Am-F, Am-F-Dm-E
+
+// 2. Создай элементы
+const drums = stack(
+  s("bd ~ sd ~"),                          // Кик и снейр
+  s("hh*8").gain(0.6)                      // Хэт
+);
+
+const bass = progression
+  .rootNotes(2)                            // Бас из корней аккордов
+  .s("sawtooth").lpf(400);
+
+const chords = progression
+  .voicing()                               // Озвучивание аккордов
+  .s("piano").room(0.5);
+
+const melody = n("<4 2 5 3>")
+  .set(progression)                        // Мелодия следует за аккордами
+  .voicing().add(12)                       // Октава выше
+  .s("triangle");
+
+// 3. Создай секции
+const intro = drums;
+const verse = stack(drums, bass);
+const chorus = stack(drums, bass, chords, melody);
+
+// 4. Собери структуру
+arrange([
+  [4, intro],     // 4 цикла интро
+  [8, verse],     // 8 циклов куплет
+  [8, chorus],    // 8 циклов припев
+  [8, verse],
+  [8, chorus],
+  [4, intro]      // аутро
+]);
+\`\`\`
+
+Layers (слои) в треке:
+- **Drums** (ударные) - s("bd sd hh") - ритмическая основа
+- **Bass** (бас) - progression.rootNotes(2) - гармоническая основа
+- **Chords** (аккорды) - progression.voicing() - гармоническое заполнение
+- **Melody** (мелодия) - n().set(progression).voicing() - главная тема
 </agent_behavior>
 
 <parallel_tools>
