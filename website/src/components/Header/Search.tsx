@@ -82,7 +82,7 @@ export default function Search() {
             appId={ALGOLIA.appId}
             apiKey={ALGOLIA.apiKey}
             getMissingResultsUrl={({ query }) => {
-              return `https://codeberg.org/uzu/strudel/issues/new?title=Missing%20doc%20for${encodeURIComponent(query)}`;
+              return `https://github.com/timoncool/Bulka/issues/new?title=Missing%20doc%20for${encodeURIComponent(query)}`;
             }}
             transformItems={(items) => {
               return items.map((item) => {
