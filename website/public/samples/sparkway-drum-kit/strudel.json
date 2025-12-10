@@ -15,7 +15,6 @@
   ],
   "spk_reese": [
     "808-reese/0-friendly.wav",
-    "808-reese/1-gin.wav",
     "808-reese/2-kino.wav",
     "808-reese/3-mqa.wav",
     "808-reese/4-papers.wav",
@@ -146,7 +145,6 @@
   ],
   "spk_percloop": [
     "percloop/0-atmoloop--148_2.wav",
-    "percloop/1-cdk4---ambience---poker_2.wav",
     "percloop/2-nc_top_loop_teacher_116.wav",
     "percloop/3-perc-loop-130-(1).wav",
     "percloop/4-perc-loop-130-(2).wav",
@@ -180,17 +178,12 @@
   "spk_vocal": [
     "vocal/0--am.wav",
     "vocal/1-104-gm.wav",
-    "vocal/2-108-bbm.wav",
-    "vocal/3-115-cm.wav",
     "vocal/4-118-dm.wav",
     "vocal/5-118-ebm.wav",
-    "vocal/6-120-bbm.wav",
-    "vocal/7-124-fm--2.wav",
     "vocal/8-124-fm.wav",
     "vocal/9-126-gm.wav",
     "vocal/10-130-dbm.wav",
     "vocal/11-134-am.wav",
-    "vocal/12-137-bm.wav",
     "vocal/13-140-bm.wav"
   ]
 }
