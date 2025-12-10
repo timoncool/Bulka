@@ -72,6 +72,11 @@ export async function prebake() {
       prebake: true,
       pack: 'felixroos',
     }),
+    samples(`${baseNoTrailing}/samples/sparkway-drum-kit/strudel.json`, `${baseNoTrailing}/samples/sparkway-drum-kit/`, {
+      prebake: true,
+      tag: 'drum-machines',
+      pack: 'sparkway-drum-kit',
+    }),
   ]);
 
   aliasBank(`${baseCDN}/tidal-drum-machines-alias.json`);
