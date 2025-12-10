@@ -307,6 +307,8 @@ s("hh*16").degradeBy(0.3)      // 30% звуков убрать
     title: 'Sparkway Drum Kit',
     content: `Sparkway Drum Kit - набор современных драм-семплов от @wonderluverz (168 семплов).
 
+Идеально подходит для: UK Garage, Future Garage, Drum'n'Bass, Trap, Hip-Hop, Lo-Fi, современная электронная музыка.
+
 Банки:
 - \`spk_808\` - 808 басы (12 семплов): drake, goyard, joker, monin, shloppy, soiuzers, spining, stomp, yuppi, moodf1x, shewantsdruzio, yonky
 - \`spk_reese\` - Reese/Moog басы (6 семплов): friendly, gin, kino, mqa, papers, reason
@@ -341,7 +343,7 @@ stack(
 ).room(0.2)
 \`\`\``,
     category: 'sounds',
-    keywords: ['sparkway', 'spk', '808', 'kick', 'snare', 'clap', 'hat', 'perc', 'drumloop', 'vocal', 'reese', 'moog', 'wonderluverz', 'drum kit'],
+    keywords: ['sparkway', 'spk', '808', 'kick', 'snare', 'clap', 'hat', 'perc', 'drumloop', 'vocal', 'reese', 'moog', 'wonderluverz', 'drum kit', 'uk garage', 'future garage', 'drum and bass', 'dnb', 'trap', 'hip-hop', 'lo-fi', 'electronic', 'современный', 'электронная музыка'],
   },
   {
     id: 'drum-machines',
