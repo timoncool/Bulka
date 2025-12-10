@@ -8,6 +8,7 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { useSettings } from '../settings.mjs';
 import { soundMap } from '@strudel/webaudio';
+import { $strudel_log_history } from './components/useLogger.jsx';
 
 const CHAT_STORAGE_KEY = 'bulka-chat-messages';
 
@@ -469,6 +470,31 @@ export function useChatContext(replContext) {
             } else {
               setLastAction(`⚠ Банк ${args.bankName} не найден`);
               actionsExecuted.push(`Банк ${args.bankName} не найден`);
+            }
+          }
+          // getConsole - получить логи консоли для отладки
+          else if (name === 'getConsole') {
+            // Сначала останавливаем воспроизведение
+            editor.stop();
+            setLastAction('⏹ Остановлено для чтения консоли');
+
+            // Получаем логи из истории
+            const logs = $strudel_log_history.get() || [];
+
+            if (logs.length === 0) {
+              message.consoleResult = 'Консоль пуста - нет логов.';
+              actionsExecuted.push('Консоль: пуста');
+            } else {
+              // Форматируем логи для агента
+              const formattedLogs = logs.map((log, i) => {
+                const countStr = log.count && log.count > 1 ? ` (x${log.count})` : '';
+                const typeStr = log.type ? `[${log.type}]` : '';
+                return `${i + 1}. ${typeStr} ${log.message}${countStr}`;
+              }).join('\n');
+
+              message.consoleResult = `Логи консоли (последние ${logs.length}):\n${formattedLogs}`;
+              setLastAction(`📋 Консоль: ${logs.length} записей`);
+              actionsExecuted.push(`Консоль: ${logs.length} записей`);
             }
           }
         }
