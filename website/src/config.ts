@@ -28,7 +28,7 @@ export const KNOWN_LANGUAGES = {
 } as const;
 export const KNOWN_LANGUAGE_CODES = Object.values(KNOWN_LANGUAGES);
 
-export const GITHUB_EDIT_URL = `https://codeberg.org/uzu/strudel/src/branch/main/website`;
+export const GITHUB_EDIT_URL = `https://github.com/timoncool/Bulka/tree/main/website`;
 
 export const COMMUNITY_INVITE_URL = `https://discord.com/invite/HGEdXmRkzT`;
 
@@ -42,17 +42,7 @@ export const ALGOLIA = {
 export type SidebarLang = Record<string, { text: string; link: string }[]>;
 export type Sidebar = Record<(typeof KNOWN_LANGUAGE_CODES)[number], SidebarLang>;
 export const SIDEBAR: Sidebar = {
-  de: {
-    Workshop: [
-      { text: 'Intro', link: 'de/workshop/getting-started' },
-      { text: 'Erste Sounds', link: 'de/workshop/first-sounds' },
-      { text: 'Erste Töne', link: 'de/workshop/first-notes' },
-      { text: 'Erste Effekte', link: 'de/workshop/first-effects' },
-      { text: 'Pattern Effekte', link: 'de/workshop/pattern-effects' },
-      { text: 'Rückblick', link: 'de/workshop/recap' },
-      { text: 'Mehr Seiten auf Englisch', link: 'workshop/getting-started' },
-    ],
-  },
+  de: {},
   en: {
     'Презентация': [
       { text: 'Что такое Bulka?', link: 'workshop/getting-started' },
@@ -68,7 +58,6 @@ export const SIDEBAR: Sidebar = {
       { text: 'Первые эффекты', link: 'workshop/first-effects' },
       { text: 'Эффекты паттернов', link: 'workshop/pattern-effects' },
       { text: 'Итоги', link: 'workshop/recap' },
-      { text: 'Воркшоп на немецком', link: 'de/workshop/getting-started' },
     ],
     'Создание звука': [
       { text: 'Samples', link: 'learn/samples' },
