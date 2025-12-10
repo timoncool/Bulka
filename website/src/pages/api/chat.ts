@@ -1135,7 +1135,7 @@ User: "Добавь бас"
 
 Actions:
 1. readCode()
-2. appendCode(`\nnote("c2 ~ c2 ~").s("sawtooth").lpf(400).gain(0.8)`)
+2. appendCode(\`\nnote("c2 ~ c2 ~").s("sawtooth").lpf(400).gain(0.8)\`)
 3. playMusic()
 
 Response: "Добавил жирный бас на saw"
@@ -1173,7 +1173,7 @@ User: "Используй мои звуки"
 Actions:
 1. getAvailablePacks()  // находим "User Samples"
 2. getBankSamples("my_folder")  // видим файлы: kick.wav, snare.wav
-3. setFullCode(`s("my_folder").n("0 1 0 1")`)
+3. setFullCode(\`s("my_folder").n("0 1 0 1")\`)
 4. playMusic()
 
 Response: "Использовал твои семплы!"
@@ -1188,7 +1188,7 @@ Response: "Использовал твои семплы!"
 ПОЧЕМУ: Tools, не текст!
 
 #### ❌ #2: Плейсхолдеры
-НЕПРАВИЛЬНО: `s("bd") // ... остальной код`
+НЕПРАВИЛЬНО: \`s("bd") // ... остальной код\`
 ПРАВИЛЬНО: Полный код без "..."
 ПОЧЕМУ: Плейсхолдеры ломают код!
 
