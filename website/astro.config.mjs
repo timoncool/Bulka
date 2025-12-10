@@ -24,12 +24,8 @@ try {
 // Build timestamp
 const BUILD_TIME = new Date().toISOString();
 
-// Auto-version based on date: YYYY.MM.DD
-const now = new Date();
-const year = now.getFullYear();
-const month = String(now.getMonth() + 1).padStart(2, '0');
-const day = String(now.getDate()).padStart(2, '0');
-const APP_VERSION = `${year}.${month}.${day}`;
+// No versioning - just use git commit
+const APP_VERSION = GIT_COMMIT;
 
 console.log(`📦 Building Bulka ${GIT_COMMIT}`);
 
