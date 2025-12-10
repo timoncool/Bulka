@@ -923,6 +923,336 @@ arrange([
     category: 'examples',
     keywords: ['arrange', 'arrangement', 'аранжировка', 'structure', 'структура', 'song', 'композиция'],
   },
+
+  // Music Theory: Chord Progressions
+  {
+    id: 'chord-progressions',
+    title: 'Прогрессии аккордов (Chord Progressions)',
+    content: `Chord progressions - последовательности аккордов, создающие гармоническую основу композиции.
+
+Популярные прогрессии:
+\`\`\`
+// I-V-VI-IV (поп-музыка)
+const prog1 = chord("<C G Am F>");
+
+// I-VI-IV-V (эмоциональная)
+const prog2 = chord("<Em C Am D>");
+
+// VI-IV-II-V (минорная)
+const prog3 = chord("<Am F Dm E>");
+
+// Для танцевальной музыки
+const prog4 = chord("<Ab Cm Bb F@2>");
+
+// Jazz (ii-V-I)
+const jazz = chord("<Dm7 G7 C^7>");
+\`\`\`
+
+Как использовать прогрессии:
+\`\`\`
+const progression = chord("<C G Am F>");
+
+// Бас из корневых нот:
+progression.rootNotes(2).s("sine").lpf(400)
+
+// Аккорды с voicing:
+progression.voicing().s("piano")
+
+// Мелодия следует за аккордами:
+n("<4 2 5 3>").set(progression).voicing().add(12)
+\`\`\`
+
+Модуляция (смена тональности):
+\`\`\`
+// Переход C major → G major
+chord("<C F G@2 | G C D@2>")
+
+// Или через .transpose():
+chord("<C G Am F>").transpose("<0 | 5>")
+\`\`\``,
+    category: 'theory',
+    keywords: ['chord progression', 'прогрессия', 'аккорды', 'harmony', 'гармония', 'модуляция', 'тональность'],
+  },
+
+  // Melody Writing
+  {
+    id: 'melody-writing',
+    title: 'Создание мелодий',
+    content: `Как создавать красивые, запоминающиеся мелодии:
+
+1. Мелодия следует за аккордами:
+\`\`\`
+const progression = chord("<C G Am F>");
+
+// Мелодия из степеней аккордов:
+n("<0 2 4 2>")              // 1, 3, 5, 3 ступени
+  .set(progression)         // Привязка к прогрессии
+  .voicing()               // Правильные ноты
+  .add(12)                 // Октава выше
+  .s("piano")
+\`\`\`
+
+2. Использование scale():
+\`\`\`
+// Минорная мелодия:
+n("0 2 3 5 7 5 3 2")
+  .scale("c4:minor")
+  .s("triangle")
+
+// Мажорная:
+n("0 2 4 5 7 9 11 12")
+  .scale("c3:major")
+  .s("sine")
+\`\`\`
+
+3. Арпеджио (разложенные аккорды):
+\`\`\`
+const progression = chord("<Am F C G>");
+
+// Восходящее арпеджио:
+n(run(8))                   // 0 1 2 3 4 5 6 7
+  .set(progression)
+  .voicing()
+  .s("sine")
+
+// Или вручную:
+n("<0 2 4 6>")
+  .set(progression)
+  .voicing()
+\`\`\`
+
+4. Мотив и вариации:
+\`\`\`
+// Основной мотив:
+const motif = n("0 2 4 2");
+
+// Вариация 1 - транспозиция:
+motif.add(2)                // На тон выше
+
+// Вариация 2 - реверс:
+motif.rev()
+
+// Вариация 3 - удлинение:
+motif.slow(2)
+\`\`\`
+
+5. Контурные мелодии:
+\`\`\`
+// Восходящая:
+n("0 1 2 3 4 5 6 7")
+
+// Нисходящая:
+n("7 6 5 4 3 2 1 0")
+
+// Волнообразная:
+n("0 2 4 6 4 2 0 -2")
+\`\`\`
+
+6. Ритмическая вариация:
+\`\`\`
+// Синкопы:
+n("c4 ~ e4 ~ g4 ~ e4 ~")
+
+// Триоли:
+n("c4 e4 g4").fast(3/2)
+
+// Пунктирный ритм:
+n("[c4@3 e4] [g4@3 e4]")
+\`\`\``,
+    category: 'theory',
+    keywords: ['melody', 'мелодия', 'composition', 'композиция', 'writing', 'создание', 'arpeggio', 'арпеджио', 'мотив'],
+  },
+
+  // Voicings
+  {
+    id: 'voicings-theory',
+    title: 'Voicings - Озвучивание аккордов',
+    content: `Voicing - способ расположения нот в аккорде.
+
+Основные функции:
+\`\`\`
+// Автоматическое voicing:
+chord("<C G Am F>")
+  .voicing()                // Умное расположение нот
+  .s("piano")
+
+// С anchor (базовая нота):
+chord("<C G Am F>")
+  .anchor("E4")             // Вокруг E4
+  .voicing()
+
+// Режимы:
+chord("<C G Am F>")
+  .mode('root')             // Только корни
+  .voicing()
+
+chord("<C G Am F>")
+  .mode('below')            // Ноты ниже anchor
+  .voicing()
+\`\`\`
+
+Voicing для разных инструментов:
+\`\`\`
+const progression = chord("<C G Am F>");
+
+// Piano (широкое расположение):
+progression
+  .anchor("C4")
+  .voicing()
+  .s("piano")
+
+// Strings (плотное):
+progression
+  .anchor("G3")
+  .voicing()
+  .s("gm_string_ensemble_1")
+
+// Bass (только корни):
+progression
+  .rootNotes(2)             // C2, G2, A2, F2
+  .s("sawtooth")
+  .lpf(400)
+\`\`\`
+
+Drop voicings (джазовые):
+\`\`\`
+// Drop-2 voicing вручную:
+chord("C^7")                // C E G B
+  .layer(
+    x => x.mode('root').voicing(),
+    x => x.mode('above').voicing().add(12)
+  )
+\`\`\`
+
+Leadsheet voicings:
+\`\`\`
+// Preset voicings:
+chord("<C^7 A7b13 Dm7 G7>")
+  .dict('ireal')            // iReal Pro стиль
+  .voicing()
+  .s("piano")
+\`\`\``,
+    category: 'theory',
+    keywords: ['voicing', 'voicings', 'озвучивание', 'аккорды', 'anchor', 'mode', 'расположение', 'drop'],
+  },
+
+  // Scales and Modes
+  {
+    id: 'scales-modes',
+    title: 'Гаммы и лады (Scales & Modes)',
+    content: `Scales - наборы нот, создающие тональность.
+
+Основные гаммы:
+\`\`\`
+// Major (мажор):
+n("0 2 4 5 7 9 11 12")
+  .scale("c4:major")
+
+// Minor (минор):
+n("0 2 3 5 7 8 10 12")
+  .scale("a3:minor")
+
+// Harmonic minor:
+n("0 2 3 5 7 8 11 12")
+  .scale("a3:harmonic minor")
+
+// Melodic minor:
+n("0 2 3 5 7 9 11 12")
+  .scale("a3:melodic minor")
+\`\`\`
+
+Лады (Modes):
+\`\`\`
+// Ionian (мажор):
+n("0 2 4 5 7 9 11").scale("c:ionian")
+
+// Dorian (джазовый минор):
+n("0 2 3 5 7 9 10").scale("d:dorian")
+
+// Phrygian (испанский):
+n("0 1 3 5 7 8 10").scale("e:phrygian")
+
+// Lydian (мечтательный):
+n("0 2 4 6 7 9 11").scale("f:lydian")
+
+// Mixolydian (блюзовый мажор):
+n("0 2 4 5 7 9 10").scale("g:mixolydian")
+
+// Aeolian (натуральный минор):
+n("0 2 3 5 7 8 10").scale("a:aeolian")
+
+// Locrian (уменьшенный):
+n("0 1 3 5 6 8 10").scale("b:locrian")
+\`\`\`
+
+Пентатоника:
+\`\`\`
+// Major pentatonic:
+n("0 2 4 7 9")
+  .scale("c4:major pentatonic")
+
+// Minor pentatonic:
+n("0 3 5 7 10")
+  .scale("a3:minor pentatonic")
+\`\`\`
+
+Экзотические:
+\`\`\`
+// Whole tone:
+n("0 2 4 6 8 10").scale("c:whole")
+
+// Diminished:
+n("0 2 3 5 6 8 9 11").scale("c:diminished")
+
+// Blues:
+n("0 3 5 6 7 10").scale("c:blues")
+\`\`\`
+
+Транспозиция в гамме:
+\`\`\`
+// scaleTranspose - транспозиция по ступеням:
+n("0 2 4 6")
+  .scale("c:major")
+  .scaleTranspose("<0 2 4>")    // Транспозиция на 0, 2, 4 ступени
+\`\`\``,
+    category: 'theory',
+    keywords: ['scale', 'scales', 'гамма', 'гаммы', 'mode', 'modes', 'лад', 'лады', 'pentatonic', 'пентатоника'],
+  },
+
+  // Musical Examples Reference
+  {
+    id: 'gallery-examples',
+    title: 'Примеры из галереи',
+    content: `В галерее есть 10+ полных примеров композиций.
+
+Как получить доступ:
+\`\`\`
+searchDocs('gallery')
+searchDocs('examples')
+searchDocs('chord progression examples')
+\`\`\`
+
+Примеры включают:
+- "Почему я?" - полная композиция с arrange(), chord progressions Am-F-Dm-E
+- "Love Again" - структура intro/verse/chorus/drop с Em-C-Am-D
+- "Blue Monday" - минималистичный электронный трек
+- "The Rhythm of the Night" - dance трек с Ab-Cm-Bb-F
+- "Waltz No. 2" - классический вальс с chord progressions
+- "Pyramid Song" - сложные piano voicings
+- "Happy Birthday" - мелодия с аккордовым аккомпанементом
+- "Shanghai" - прогрессивный рок с модуляцией
+
+Каждый пример показывает:
+- Использование chord progressions
+- Layering (многослойность)
+- Arrangement (структура секций)
+- Voicings (озвучивание аккордов)
+- Melody + Chords взаимодействие
+
+Изучай эти примеры для вдохновения!`,
+    category: 'examples',
+    keywords: ['gallery', 'галерея', 'examples', 'примеры', 'inspiration', 'вдохновение', 'композиция', 'composition'],
+  },
 ];
 
 /**
