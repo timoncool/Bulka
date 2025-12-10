@@ -500,9 +500,17 @@ const SYSTEM_PROMPT = `<system>
 - Максимум 3 попытки на одно действие, потом спроси пользователя
 
 ### Приоритет инструментов
+При создании нового трека: getExamples(жанр) → адаптация под запрос → setFullCode → playMusic()
 При ошибках: getConsole() → анализ → исправление → playMusic()
 При изменениях: readCode() → editCode/appendCode → playMusic()
 При поиске звуков: searchDocs() или getAvailablePacks() → getBankSamples()
+
+### Когда вызывать getExamples
+ВЫЗЫВАЙ getExamples() В НАЧАЛЕ если:
+- Редактор пуст и нужно создать новый трек
+- Пользователь просит бит/трек в стиле (hiphop, techno, dnb и т.д.)
+- Нужно вдохновение или шаблон для старта
+Категории: hiphop, techno, ukgarage, dnb, ambient, melody, arrangement, hydra, sliders
 </agent_behavior>
 
 <parallel_tools>
