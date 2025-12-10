@@ -346,6 +346,49 @@ stack(
     keywords: ['sparkway', 'spk', '808', 'kick', 'snare', 'clap', 'hat', 'perc', 'drumloop', 'vocal', 'reese', 'moog', 'wonderluverz', 'drum kit', 'uk garage', 'future garage', 'drum and bass', 'dnb', 'trap', 'hip-hop', 'lo-fi', 'electronic', 'современный', 'электронная музыка'],
   },
   {
+    id: 'e-pianos',
+    title: 'E-Pianos (электропиано)',
+    content: `E-Pianos - набор классических электропиано 70-80х годов (50 семплов, 3.2 MB).
+
+Идеально подходит для: Jazz, Soul, Funk, R&B, Neo-Soul, Lo-Fi Hip-Hop, Chill, мягкие аккомпанементы.
+
+Банки:
+- \`cp80\` - Yamaha CP80 электрогранд (22 семпла) - яркий, богатый звук, знаменит по записям 70-80х
+- \`wurlitzer\` - Wurlitzer 200A (11 семплов) - тёплый, немного грязный винтажный звук, классика фанка
+- \`pianet\` - Hohner Pianet T (17 семплов) - нежный, колокольчатый звук, мягче Wurlitzer
+
+Особенности:
+- Записаны в высоком качестве (CC-BY Greg Sullivan)
+- Только FF (forte) velocity для чистого, яркого звука
+- Охватывают полный диапазон клавиатуры
+
+Примеры использования:
+\`\`\`
+// Мягкие аккорды на CP80
+note("c4 e4 g4 b4").s("cp80").room(0.3)
+
+// Funk riff на Wurlitzer
+note("[c3 eb3]*2 [f3 ab3]*2")
+  .s("wurlitzer")
+  .lpf(1500)
+  .gain(0.7)
+
+// Нежная мелодия на Pianet
+note("g4 a4 b4 d5 e5")
+  .s("pianet")
+  .delay(0.25)
+  .room(0.4)
+
+// Аккорды с ритмом
+note("<[c4,e4,g4] [f4,a4,c5] [g4,b4,d5] [e4,g4,b4]>")
+  .s("cp80")
+  .attack(0.01)
+  .release(0.5)
+\`\`\``,
+    category: 'sounds',
+    keywords: ['e-piano', 'epiano', 'электропиано', 'cp80', 'wurlitzer', 'pianet', 'rhodes', 'piano', 'пианино', 'jazz', 'soul', 'funk', 'neo-soul', 'lofi', 'lo-fi', 'chill', 'vintage', 'винтаж', '70s', '80s', 'мягкий', 'тёплый'],
+  },
+  {
     id: 'drum-machines',
     title: 'Драм-машины (банки звуков)',
     content: `Драм-машины подключаются через .bank():
