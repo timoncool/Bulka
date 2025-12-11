@@ -25,6 +25,8 @@ cabal.project.local~
 .ghc.environment.*
 node_modules/
 .DS_Store
+desktop.ini
+Thumbs.db
 repl-parcel
 mytunes.ts
 doc
