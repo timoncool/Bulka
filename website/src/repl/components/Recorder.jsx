@@ -2,6 +2,25 @@ import React, { useState, useCallback } from 'react';
 import cx from '@src/cx.mjs';
 import { startRecording, stopRecording } from '@strudel/webaudio';
 
+// Custom record icon component - matches heroicons style
+const RecordIcon = ({ className, filled = false }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 20 20"
+    fill={filled ? 'currentColor' : 'none'}
+    className={className}
+  >
+    <circle
+      cx="10"
+      cy="10"
+      r="7"
+      stroke="currentColor"
+      strokeWidth={filled ? 0 : 2}
+      fill={filled ? 'currentColor' : 'none'}
+    />
+  </svg>
+);
+
 // Format milliseconds to MM:SS
 function formatTime(ms) {
   const totalSeconds = Math.floor(ms / 1000);
@@ -55,13 +74,14 @@ export function Recorder({ started, activeCode }) {
             : 'hover:opacity-50',
         )}
       >
-        {/* REC indicator */}
-        <span
+        {/* REC icon - matches heroicons style */}
+        <RecordIcon
+          filled={isRecording}
           className={cx(
-            'w-2.5 h-2.5 rounded-full transition-all',
+            'w-5 h-5 transition-all',
             isRecording
-              ? 'bg-red-500 animate-pulse'
-              : 'border-2 border-foreground/50',
+              ? 'text-red-500 animate-pulse'
+              : 'text-foreground',
           )}
         />
         {/* Label or timer */}
