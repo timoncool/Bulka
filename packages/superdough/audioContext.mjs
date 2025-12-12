@@ -1,7 +1,9 @@
 let audioContext;
 
 export const setDefaultAudioContext = () => {
-  audioContext = new AudioContext();
+  // Use 48000 Hz to match the SAMPLE_RATE constant in dough.mjs
+  // This prevents playback speed issues when sample rates don't match
+  audioContext = new AudioContext({ sampleRate: 48000 });
   return audioContext;
 };
 
