@@ -1842,4 +1842,60 @@ $: note("<eb1 f1 gb1 [ab1@3 bb1]>")
       .mask("<0@8 1@16>")
     ).bank('RolandTR909')
   )`,
+  `// @title Silent Talk
+// @by Nerual Dreming
+
+// Мелодия - красный - центр
+const melody = note("<[f#5 g5 f#5 e5] [f#5 g5 f#5 e5] [f#5 g5 f#5 e5] [d5 e5 d5 c#5] [f#5 g5 f#5 e5] [f#5 g5 a5 g5] [f#5 e5 d5 c#5] [d5 ~ ~ ~] [~ e5 f#5 g5] [f#5 ~ e5 ~] [d5 e5 f#5 e5] [d5 c#5 b4 ~] [~ ~ f#5 g5] [f#5 g5 a5 b5] [a5 g5 f#5 e5] [f#5 ~ ~ ~]>")
+  .sound("piano")
+  .room(0.7)
+  .delay(".35:.2:.5")
+  .gain(0.12)
+  .pan(0.5)
+  .color("red")
+  ._pianoroll({labels:1})
+
+// Арпеджио левой руки - синий - левее
+const arp = note("<[b3 f#4 b4 f#4] [b3 f#4 b4 f#4] [g3 d4 g4 d4] [a3 e4 a4 e4] [b3 f#4 b4 f#4] [b3 f#4 b4 f#4] [d4 a4 d5 a4] [g3 d4 g4 d4] [a3 e4 a4 e4] [b3 f#4 b4 f#4] [g3 d4 g4 d4] [a3 e4 a4 e4] [b3 f#4 b4 f#4] [b3 f#4 b4 f#4] [g3 d4 g4 d4] [d4 a4 d5 a4]>")
+  .sound("piano")
+  .gain(0.08)
+  .pan(0.35)
+  .color("cyan")
+  ._pianoroll({labels:1})
+
+// Бас - зелёный - правее
+const bass = note("<b2 b2 g2 a2 b2 b2 d3 g2 a2 b2 g2 a2 b2 b2 g2 d3>")
+  .sound("piano")
+  .gain(0.07)
+  .pan(0.65)
+  .color("green")
+  ._pianoroll({labels:1})
+
+// Октавный бас для климакса - белый
+const bassOctave = note("<[b2 b3] [b2 b3] [g2 g3] [a2 a3] [b2 b3] [b2 b3] [d3 d4] [g2 g3] [a2 a3] [b2 b3] [g2 g3] [a2 a3] [b2 b3] [b2 b3] [g2 g3] [d3 d4]>")
+  .sound("piano")
+  .gain(0.1)
+  .pan(0.5)
+  .color("white")
+  ._pianoroll({labels:1})
+
+// Высокая мелодия для климакса - оранжевый
+const melodyHigh = note("<[f#6 g6 f#6 e6] [f#6 g6 f#6 e6] [f#6 g6 f#6 e6] [d6 e6 d6 c#6] [f#6 g6 f#6 e6] [f#6 g6 a6 g6] [f#6 e6 d6 c#6] [d6 ~ ~ ~] [~ e6 f#6 g6] [f#6 ~ e6 ~] [d6 e6 f#6 e6] [d6 c#6 b5 ~] [~ ~ f#6 g6] [f#6 g6 a6 b6] [a6 g6 f#6 e6] [f#6 ~ ~ ~]>")
+  .sound("piano")
+  .room(0.8)
+  .delay(".4:.2:.6")
+  .gain(0.08)
+  .pan(0.6)
+  .color("orange")
+  ._pianoroll({labels:1})
+
+// Аранжировка
+arrange(
+  [4, melody],
+  [16, stack(melody, arp)],
+  [16, stack(melody, arp, bass)],
+  [16, stack(melody, melodyHigh, arp, bass, bassOctave)],
+  [8, stack(melody, arp)],
+  [4, melody]
+)`,
 ];

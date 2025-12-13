@@ -213,6 +213,12 @@ Epic rock composition with transitions.
 
 ---
 
+## Silent Talk — Nerual Dreming
+
+Piano piece with melody, arpeggio and bass. Beautiful arrangement with rising climax.
+
+---
+
 ## Community Resources
 
 ### Direct links to tracks
