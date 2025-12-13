@@ -1,0 +1,287 @@
+---
+title: Трансформации
+layout: ../../layouts/MainLayout.astro
+---
+
+import { MiniRepl } from '../../docs/MiniRepl';
+
+# Трансформации
+
+Трансформации изменяют визуальный сигнал после его создания источником. Делятся на **геометрические** и **цветовые**.
+
+## Геометрические трансформации
+
+### rotate() — Вращение
+
+```javascript
+rotate(angle, speed)
+```
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10).rotate(0.5).out()
+`}
+/>
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Постоянное вращение
+osc(10, 0.1, 0.5)
+  .rotate(() => time * 0.1)
+  .out()
+`}
+/>
+
+---
+
+### scale() — Масштабирование
+
+```javascript
+scale(amount, xMult, yMult, offsetX, offsetY)
+```
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10).scale(2).out()
+`}
+/>
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Пульсирующий масштаб
+osc(10, 0.1, 0.5)
+  .scale(() => 1 + Math.sin(time) * 0.5)
+  .out()
+`}
+/>
+
+---
+
+### pixelate() — Пикселизация
+
+```javascript
+pixelate(pixelX, pixelY)
+```
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10, 0.1, 0.5).pixelate(20, 20).out()
+`}
+/>
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Прямоугольные пиксели
+noise(5).pixelate(10, 50).out()
+`}
+/>
+
+---
+
+### kaleid() — Калейдоскоп
+
+```javascript
+kaleid(nSides)
+```
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10, 0.1, 0.5).kaleid(4).out()
+`}
+/>
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Анимированный калейдоскоп
+noise(5)
+  .kaleid(() => Math.floor(time % 8) + 3)
+  .out()
+`}
+/>
+
+---
+
+### repeat() — Повторение
+
+```javascript
+repeat(repeatX, repeatY, offsetX, offsetY)
+```
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+shape(4, 0.3).repeat(4, 4).out()
+`}
+/>
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Смещение создаёт эффект кирпичной кладки
+shape(4, 0.2)
+  .repeat(4, 4, 0.5, 0)
+  .color(1, 0.5, 0)
+  .out()
+`}
+/>
+
+---
+
+### scroll() — Прокрутка
+
+```javascript
+scrollX(scrollX, speed)
+scrollY(scrollY, speed)
+```
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10, 0.1, 0.5)
+  .scrollX(0, 0.5)
+  .out()
+`}
+/>
+
+---
+
+## Цветовые трансформации
+
+### color() — Установка цвета
+
+```javascript
+color(r, g, b, a)
+```
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Красный оттенок
+noise(5).color(1, 0, 0).out()
+`}
+/>
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Пурпурный
+osc(10).color(1, 0, 1).out()
+`}
+/>
+
+---
+
+### brightness() и contrast()
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10, 0.1, 0.5)
+  .brightness(0.3)
+  .contrast(2)
+  .out()
+`}
+/>
+
+---
+
+### saturate() — Насыщенность
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10, 0.1, 0.5).saturate(3).out()
+`}
+/>
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Чёрно-белое (без насыщенности)
+osc(10, 0.1, 0.5).saturate(0).out()
+`}
+/>
+
+---
+
+### hue() — Сдвиг оттенка
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Анимация оттенка
+osc(10, 0.1, 0.5)
+  .hue(() => time * 0.1)
+  .out()
+`}
+/>
+
+---
+
+### invert() — Инверсия
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10, 0.1, 0.5).invert().out()
+`}
+/>
+
+---
+
+### thresh() — Пороговая обработка
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+noise(5).thresh(0.5).out()
+`}
+/>
+
+---
+
+### posterize() — Постеризация
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10, 0.1, 0.5).posterize(3).out()
+`}
+/>
+
+---
+
+### colorama() — Цветовой сдвиг
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10, 0.1, 0.5).colorama(0.5).out()
+`}
+/>
+
+---
+
+## Комбинирование трансформаций
+
+Трансформации можно объединять в цепочки:
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10, 0.1, 0.5)
+  .rotate(() => time * 0.1)
+  .kaleid(4)
+  .color(1, 0.5, 0.2)
+  .pixelate(20, 20)
+  .out()
+`}
+/>

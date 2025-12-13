@@ -1,0 +1,275 @@
+---
+title: Источники (Sources)
+layout: ../../layouts/MainLayout.astro
+---
+
+import { MiniRepl } from '../../docs/MiniRepl';
+
+# Источники (Sources)
+
+Источники — это функции, которые **генерируют** визуальный сигнал. Они являются отправной точкой любого визуала в Hydra.
+
+## osc() — Осциллятор
+
+Создаёт полосатый паттерн, похожий на сигнал осциллятора.
+
+```javascript
+osc(frequency, sync, offset)
+```
+
+| Параметр | По умолчанию | Описание |
+|----------|--------------|----------|
+| frequency | 60 | Частота полос |
+| sync | 0.1 | Скорость движения |
+| offset | 0 | Цветовое смещение |
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Базовый осциллятор
+osc().out()
+`}
+/>
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Медленный цветной осциллятор
+osc(10, 0.1, 0.8).out()
+`}
+/>
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Быстрый радужный осциллятор
+osc(60, 0.5, 1.5).out()
+`}
+/>
+
+---
+
+## noise() — Шум Перлина
+
+Генерирует органичный шумовой паттерн.
+
+```javascript
+noise(scale, offset)
+```
+
+| Параметр | По умолчанию | Описание |
+|----------|--------------|----------|
+| scale | 10 | Масштаб шума |
+| offset | 0.1 | Скорость анимации |
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Базовый шум
+noise().out()
+`}
+/>
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Крупный медленный шум с цветом
+noise(3, 0.05)
+  .color(1, 0.5, 0.2)
+  .out()
+`}
+/>
+
+---
+
+## shape() — Геометрические фигуры
+
+Создаёт правильные многоугольники.
+
+```javascript
+shape(sides, radius, smoothing)
+```
+
+| Параметр | По умолчанию | Описание |
+|----------|--------------|----------|
+| sides | 3 | Количество сторон |
+| radius | 0.3 | Размер фигуры (0-1) |
+| smoothing | 0.01 | Размытие краёв |
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Треугольник
+shape(3).out()
+`}
+/>
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Квадрат
+shape(4, 0.5, 0.01).out()
+`}
+/>
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Сетка фигур
+shape(6, 0.3, 0.01)
+  .repeat(4, 4)
+  .color(1, 0, 0.5)
+  .out()
+`}
+/>
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Круг (много сторон)
+shape(100, 0.3, 0.01).out()
+`}
+/>
+
+---
+
+## voronoi() — Диаграмма Вороного
+
+Создаёт клеточный паттерн.
+
+```javascript
+voronoi(scale, speed, blending)
+```
+
+| Параметр | По умолчанию | Описание |
+|----------|--------------|----------|
+| scale | 5 | Количество ячеек |
+| speed | 0.3 | Скорость движения |
+| blending | 0.3 | Смешивание цветов |
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Базовый Вороной
+voronoi().out()
+`}
+/>
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Много мелких ячеек
+voronoi(20, 0.1, 0.1).out()
+`}
+/>
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Вороной с калейдоскопом
+voronoi(10, 0.3, 0.3)
+  .kaleid(6)
+  .out()
+`}
+/>
+
+---
+
+## gradient() — Градиент
+
+Создаёт цветовой градиент.
+
+```javascript
+gradient(speed)
+```
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Статический градиент
+gradient().out()
+`}
+/>
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Анимированный градиент с калейдоскопом
+gradient(0.5)
+  .kaleid(8)
+  .out()
+`}
+/>
+
+---
+
+## solid() — Сплошной цвет
+
+Создаёт однотонный цветовой фон.
+
+```javascript
+solid(r, g, b, a)
+```
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Красный фон
+solid(1, 0, 0).out()
+`}
+/>
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Пульсирующий цвет
+solid(
+  () => Math.sin(time) * 0.5 + 0.5,
+  0.2,
+  0.8
+).out()
+`}
+/>
+
+---
+
+## src() — Внешний источник
+
+Использует входные источники (`s0-s3`) или выходные буферы (`o0-o3`).
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Использование другого буфера
+osc(10).out(o1)
+src(o1).kaleid(4).out(o0)
+`}
+/>
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Feedback эффект
+src(o0)
+  .scale(1.01)
+  .rotate(0.01)
+  .blend(osc(10, 0.1, 0.5), 0.1)
+  .out()
+`}
+/>
+
+---
+
+## Комбинирование источников
+
+Источники можно комбинировать с помощью функций смешивания:
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10)
+  .blend(noise(3), 0.5)
+  .diff(shape(4, 0.3))
+  .out()
+`}
+/>

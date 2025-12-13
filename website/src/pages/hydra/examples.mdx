@@ -1,0 +1,309 @@
+---
+title: Галерея примеров
+layout: ../../layouts/MainLayout.astro
+---
+
+import { MiniRepl } from '../../docs/MiniRepl';
+
+# Галерея примеров
+
+Коллекция готовых визуализаций для изучения и вдохновения.
+
+---
+
+## Базовые визуалы
+
+### Радужный осциллятор
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10, 0.1, 1.5)
+  .rotate(0.5)
+  .out()
+`}
+/>
+
+### Калейдоскопический шум
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+noise(5, 0.1)
+  .kaleid(8)
+  .color(1, 0.5, 0.2)
+  .out()
+`}
+/>
+
+### Пульсирующие формы
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+shape(6, () => 0.2 + Math.sin(time * 2) * 0.1)
+  .repeat(4, 4)
+  .rotate(() => time * 0.1)
+  .colorama(0.5)
+  .out()
+`}
+/>
+
+---
+
+## Текстуры и паттерны
+
+### Мрамор
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(20, 0.01, 0)
+  .modulate(noise(3), 0.5)
+  .color(0.9, 0.85, 0.8)
+  .out()
+`}
+/>
+
+### Вода
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+voronoi(15, 0.2, 0.4)
+  .modulate(osc(3).rotate(1.57), 0.1)
+  .color(0.2, 0.5, 0.8)
+  .out()
+`}
+/>
+
+### Огонь
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+voronoi(20, 0.5, 0)
+  .modulate(noise(5), 0.3)
+  .color(1, 0.5, 0)
+  .brightness(0.2)
+  .contrast(2)
+  .out()
+`}
+/>
+
+---
+
+## Геометрические эффекты
+
+### Зеркальный тоннель
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10, 0.1, 0.5)
+  .kaleid(4)
+  .scale(() => 1 + Math.sin(time) * 0.3)
+  .modulate(osc(2), 0.1)
+  .out()
+`}
+/>
+
+### Вращающиеся кольца
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+shape(100, 0.3, 0.01)
+  .diff(shape(100, 0.25, 0.01))
+  .repeat(3, 3)
+  .rotate(() => time * 0.1)
+  .color(1, 0, 0.5)
+  .out()
+`}
+/>
+
+### Мозаика
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10, 0.1, 0.5)
+  .kaleid(6)
+  .pixelate(20, 20)
+  .modulate(noise(3), 0.1)
+  .out()
+`}
+/>
+
+---
+
+## Психоделические визуалы
+
+### Гипноз
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(50, 0.05, 0)
+  .modulate(osc(2).rotate(1.57), 0.5)
+  .rotate(() => time * 0.1)
+  .colorama(0.5)
+  .out()
+`}
+/>
+
+### Жидкий металл
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+voronoi(10, 0.3, 0.3)
+  .modulateScale(noise(5), 0.5)
+  .color(0.8, 0.8, 0.9)
+  .contrast(1.5)
+  .out()
+`}
+/>
+
+### Неоновые волны
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(20, 0.1, 0)
+  .modulate(noise(3), 0.3)
+  .thresh(0.5, 0.1)
+  .color(0, 1, 1)
+  .layer(
+    osc(20, 0.1, 0.5)
+      .modulate(noise(3), 0.3)
+      .thresh(0.5, 0.1)
+      .color(1, 0, 1)
+      .scrollX(0.1)
+  )
+  .out()
+`}
+/>
+
+---
+
+## Анимированные паттерны
+
+### Дыхание
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc([10, 20, 30].smooth(), 0.1, [0, 0.5, 1].smooth())
+  .kaleid([3, 4, 5, 6].fast(0.3))
+  .scale(() => 1 + Math.sin(time) * 0.2)
+  .out()
+`}
+/>
+
+### Глитч
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(30, 0.1, 0.5)
+  .pixelate(() => Math.random() > 0.9 ? 10 : 100)
+  .scrollX(() => Math.random() > 0.95 ? Math.random() * 0.5 : 0)
+  .colorama(() => Math.random() > 0.9 ? 0.5 : 0)
+  .out()
+`}
+/>
+
+### Сердцебиение
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+shape(3, () => 0.15 + Math.pow(Math.sin(time * 4), 8) * 0.1)
+  .color(1, 0, 0.3)
+  .repeat(5, 5)
+  .modulate(noise(2), 0.02)
+  .out()
+`}
+/>
+
+---
+
+## Визуалы со Strudel
+
+### Аудио-реактивный осциллятор
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra({detectAudio: true})
+a.setBins(4)
+a.setSmooth(0.8)
+
+osc(() => 10 + a.fft[0] * 50, 0.1, 0.5)
+  .kaleid(() => Math.floor(a.fft[1] * 6) + 3)
+  .rotate(() => time * 0.1)
+  .out()
+
+s("bd*4, hh*8").bank("RolandTR909")
+`}
+/>
+
+### Паттерн-синхронизация
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+
+let pat = "<3 4 5 6>"
+
+shape(H(pat), 0.3)
+  .repeat(H(pat), H(pat))
+  .rotate(() => time * 0.1)
+  .color(1, 0.5, 0)
+  .out()
+
+n(pat).scale("C:minor").piano().room(0.5)
+`}
+/>
+
+---
+
+## Космический вихрь
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+src(o0)
+  .scale(1.01)
+  .rotate(() => 0.01 + Math.sin(time * 0.5) * 0.005)
+  .colorama(0.005)
+  .blend(
+    osc(30, 0.1, 0.5).kaleid(4),
+    0.1
+  )
+  .out()
+`}
+/>
+
+---
+
+## Многослойный визуал
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(5, 0.1, 0.5)
+  .modulate(noise(2), 0.2)
+  .out(o1)
+
+shape(6, 0.3)
+  .color(1, 0, 0.5)
+  .rotate(() => time * 0.2)
+  .out(o2)
+
+src(o1)
+  .blend(src(o2), 0.5)
+  .modulate(src(o2), 0.1)
+  .out(o0)
+`}
+/>

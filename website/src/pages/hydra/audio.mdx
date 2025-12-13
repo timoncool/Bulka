@@ -1,0 +1,212 @@
+---
+title: Аудио-реактивность
+layout: ../../layouts/MainLayout.astro
+---
+
+import { MiniRepl } from '../../docs/MiniRepl';
+
+# Аудио-реактивность
+
+Hydra может создавать визуализации, реагирующие на звук в реальном времени через FFT анализ.
+
+## Объект `a` — аудио анализ
+
+| Свойство/Метод | Описание |
+|----------------|----------|
+| `a.fft[n]` | Значение частотного диапазона (0-1) |
+| `a.show()` | Показать визуализацию FFT |
+| `a.hide()` | Скрыть визуализацию |
+| `a.setBins(n)` | Установить количество частотных диапазонов |
+| `a.setSmooth(n)` | Установить сглаживание (0-1) |
+| `a.setScale(n)` | Установить чувствительность |
+| `a.setCutoff(n)` | Установить порог шума |
+
+---
+
+## Базовый пример
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra({detectAudio: true})
+a.show()
+a.setBins(4)
+a.setSmooth(0.8)
+
+osc(() => a.fft[0] * 60 + 10, 0.1, 0.5).out()
+
+s("bd*4, hh*8").bank("RolandTR909")
+`}
+/>
+
+---
+
+## Разные частоты — разные параметры
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra({detectAudio: true})
+a.setBins(4)
+a.setSmooth(0.8)
+
+osc(10, 0.1, 0.5)
+  .rotate(() => a.fft[0] * 2)        // Низкие частоты → вращение
+  .scale(() => 1 + a.fft[1] * 0.5)   // Средние → масштаб
+  .color(1, () => a.fft[2], 0.5)     // Высокие → цвет
+  .out()
+
+s("bd*4, hh*8, ~ sd").bank("RolandTR909")
+`}
+/>
+
+---
+
+## Модуляция громкостью
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra({detectAudio: true})
+a.setBins(5)
+a.setSmooth(0.8)
+
+noise(3)
+  .modulate(osc(10), () => a.fft[0] * 0.5)
+  .out()
+
+s("bd*4, hh*8").bank("RolandTR909")
+`}
+/>
+
+---
+
+## Пульсирующий калейдоскоп
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra({detectAudio: true})
+a.setBins(4)
+a.setSmooth(0.8)
+
+osc(10, 0.1, 0.5)
+  .kaleid(() => Math.floor(a.fft[0] * 8) + 3)
+  .scale(() => 1 + a.fft[1] * 0.5)
+  .rotate(() => time * 0.1)
+  .out()
+
+s("bd*4, hh*8, ~ sd").bank("RolandTR909")
+`}
+/>
+
+---
+
+## Реактивный шум
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra({detectAudio: true})
+a.setBins(5)
+a.setSmooth(0.7)
+
+noise(() => a.fft[0] * 10 + 3)
+  .color(
+    () => a.fft[1],
+    () => a.fft[2],
+    () => a.fft[3]
+  )
+  .modulate(osc(3), () => a.fft[0] * 0.3)
+  .out()
+
+s("bd*4, hh*8, ~ sd").bank("RolandTR909")
+`}
+/>
+
+---
+
+## Feedback с аудио
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra({detectAudio: true})
+a.setBins(4)
+a.setSmooth(0.9)
+
+src(o0)
+  .scale(() => 1.01 + a.fft[0] * 0.02)
+  .rotate(() => a.fft[1] * 0.05)
+  .blend(osc(10, 0.1, 0.5).kaleid(4), 0.1)
+  .out()
+
+s("bd*4, hh*8, ~ sd").bank("RolandTR909")
+`}
+/>
+
+---
+
+## Паттерны Strudel в Hydra
+
+Функция `H()` позволяет использовать Strudel паттерны как входные значения для Hydra:
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+
+let pattern = "<3 4 5 [6 7]*2>"
+
+shape(H(pattern))
+  .repeat(3, 3)
+  .rotate(() => time * 0.1)
+  .out()
+
+n(pattern).scale("A:minor").piano().room(0.5)
+`}
+/>
+
+---
+
+## feedStrudel — визуализация паттерна
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra({feedStrudel: 1})
+
+src(s0)
+  .kaleid(4)
+  .modulate(osc(3), 0.1)
+  .out()
+
+s("bd*4, hh*8, ~ sd")
+  .bank("RolandTR909")
+  .fft(8).scope()
+`}
+/>
+
+---
+
+## Советы по аудио-реактивности
+
+### Оптимальные настройки
+
+```javascript
+a.setBins(4)       // Достаточно для bass/mid/high
+a.setSmooth(0.8)   // Плавные переходы
+a.setScale(8)      // Хорошая чувствительность
+a.setCutoff(0.1)   // Отсечение шума
+```
+
+### Частотные диапазоны
+
+| Индекс | Частоты | Применение |
+|--------|---------|------------|
+| `a.fft[0]` | Низкие (басы) | Пульсация, масштаб |
+| `a.fft[1]` | Нижние средние | Вращение |
+| `a.fft[2]` | Верхние средние | Цвет, яркость |
+| `a.fft[3]` | Высокие | Мелкие детали |
+
+### Избегайте хаоса
+
+```javascript
+// Плохо: слишком много реактивности
+osc(() => a.fft[0] * 100).out()
+
+// Лучше: умеренные значения с базой
+osc(() => a.fft[0] * 30 + 10).out()
+```

@@ -1,0 +1,147 @@
+---
+title: Введение в Hydra
+layout: ../../layouts/MainLayout.astro
+---
+
+import { MiniRepl } from '../../docs/MiniRepl';
+
+# Введение в Hydra
+
+**Hydra** — это live-кодируемый видеосинтезатор, который работает прямо в браузере. Инструмент создан художницей Olivia Jack и вдохновлён аналоговыми модульными видеосинтезаторами.
+
+## Что такое Hydra?
+
+Hydra позволяет создавать визуальные эффекты в реальном времени с помощью простого JavaScript кода. Синтаксис вдохновлён модульным синтезом — вместо физических кабелей вы соединяете JavaScript-функции через точки.
+
+### Простейший пример
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10, 0.1, 0.8).out()
+`}
+/>
+
+## Принцип модульного синтеза
+
+```
+ИСТОЧНИК → ТРАНСФОРМАЦИИ → ВЫХОД
+source   →    transforms   → .out()
+```
+
+Числовые аргументы внутри функций аналогичны положению ручек на модулях синтезатора.
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10)           // Источник: осциллятор
+  .rotate(0.5)    // Трансформация: поворот
+  .kaleid(4)      // Трансформация: калейдоскоп
+  .out()          // Вывод на экран
+`}
+/>
+
+## Пять типов функций
+
+### 1. Sources (Источники)
+Генерируют визуальный сигнал: `osc()`, `noise()`, `shape()`, `voronoi()`, `gradient()`, `solid()`
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Разные источники
+noise(5, 0.1).out(o0)
+// Попробуйте: osc(10), shape(4), voronoi(5), gradient()
+`}
+/>
+
+### 2. Geometry (Геометрия)
+Трансформируют координаты: `rotate()`, `scale()`, `pixelate()`, `kaleid()`, `repeat()`
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10, 0.1, 0.5)
+  .kaleid(6)
+  .pixelate(20, 20)
+  .out()
+`}
+/>
+
+### 3. Color (Цвет)
+Изменяют цветовые значения: `color()`, `brightness()`, `contrast()`, `saturate()`, `hue()`, `invert()`
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10, 0.1, 0.5)
+  .color(1, 0.5, 0.2)
+  .contrast(1.5)
+  .out()
+`}
+/>
+
+### 4. Blend (Смешивание)
+Комбинируют два источника: `add()`, `mult()`, `diff()`, `blend()`, `layer()`, `mask()`
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10)
+  .blend(noise(3), 0.5)
+  .out()
+`}
+/>
+
+### 5. Modulate (Модуляция)
+Используют один источник для искажения геометрии другого: `modulate()`, `modulateScale()`, `modulateRotate()`
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10, 0.1, 0.5)
+  .modulate(noise(3), 0.3)
+  .out()
+`}
+/>
+
+## Выходные буферы
+
+Hydra имеет **четыре выходных буфера**: `o0`, `o1`, `o2`, `o3`
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Разные визуалы в разных буферах
+osc(10).out(o0)
+noise(3).out(o1)
+shape(4).out(o2)
+voronoi(5).out(o3)
+
+// Отобразить все четыре
+render()
+`}
+/>
+
+## Динамические параметры
+
+Любой параметр может быть функцией, которая вычисляется в реальном времени:
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Частота осциллятора меняется со временем
+osc(() => Math.sin(time) * 20 + 30, 0.1, 0.5)
+  .rotate(() => time * 0.1)
+  .out()
+`}
+/>
+
+## Следующие шаги
+
+Изучите детально каждый аспект Hydra:
+- [Источники](/hydra/sources) — все генераторы визуалов
+- [Трансформации](/hydra/transforms) — геометрия и цвет
+- [Смешивание](/hydra/blending) — комбинирование источников
+- [Модуляция](/hydra/modulation) — продвинутые эффекты
+- [Аудио-реактивность](/hydra/audio) — визуализация звука

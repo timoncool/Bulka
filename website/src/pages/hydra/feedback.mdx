@@ -1,0 +1,215 @@
+---
+title: Feedback эффекты
+layout: ../../layouts/MainLayout.astro
+---
+
+import { MiniRepl } from '../../docs/MiniRepl';
+
+# Feedback эффекты
+
+Feedback (обратная связь) — когда выход используется как вход, создавая эффект бесконечного зеркала.
+
+## Базовый Feedback
+
+### Feedback с масштабированием
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+src(o0)
+  .scale(1.01)
+  .blend(osc(10, 0.1, 0.5), 0.1)
+  .out()
+`}
+/>
+
+### Feedback с вращением
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+src(o0)
+  .rotate(0.01)
+  .blend(osc(10, 0.1, 0.5), 0.1)
+  .out()
+`}
+/>
+
+---
+
+## Структура Feedback патча
+
+```javascript
+src(o0)                    // 1. Берём предыдущий кадр
+  .scale(1.01)             // 2. Применяем трансформацию
+  .rotate(0.01)
+  .blend(source, amount)    // 3. Смешиваем с новым источником
+  .out()                    // 4. Выводим
+```
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+src(o0)
+  .scale(1.02)
+  .rotate(0.02)
+  .blend(noise(3).color(1, 0, 0.5), 0.1)
+  .out()
+`}
+/>
+
+---
+
+## Техники Feedback
+
+### Бесконечный тоннель
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+src(o0)
+  .scale(0.99)
+  .blend(shape(4, 0.1).color(1, 0.5, 0), 0.05)
+  .out()
+`}
+/>
+
+### Спиральный feedback
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+src(o0)
+  .scale(1.01)
+  .rotate(() => 0.01 + Math.sin(time) * 0.005)
+  .blend(osc(20, 0.1, 0.5).kaleid(4), 0.1)
+  .out()
+`}
+/>
+
+### Feedback с модуляцией
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+src(o0)
+  .modulate(osc(3), 0.01)
+  .blend(osc(10, 0.1, 0.5), 0.1)
+  .out()
+`}
+/>
+
+---
+
+## Перекрёстный Feedback
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10, 0.1, 0.5)
+  .modulate(src(o1), 0.2)
+  .out(o0)
+
+noise(3)
+  .modulate(src(o0), 0.2)
+  .out(o1)
+
+render(o0)
+`}
+/>
+
+---
+
+## Управление интенсивностью
+
+### Затухание feedback
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+src(o0)
+  .scale(1.01)
+  .brightness(-0.01)  // Постепенное затухание
+  .blend(osc(10, 0.1, 0.5).kaleid(4), 0.1)
+  .out()
+`}
+/>
+
+### Цветовой сдвиг
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+src(o0)
+  .scale(1.01)
+  .hue(0.005)
+  .blend(shape(4, 0.1), 0.1)
+  .out()
+`}
+/>
+
+---
+
+## Комплексные примеры
+
+### Психоделический feedback
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+src(o0)
+  .scale(1.02)
+  .rotate(() => 0.01 * Math.sin(time))
+  .colorama(0.01)
+  .blend(
+    osc(20, 0.1, 0.5)
+      .kaleid(4)
+      .modulate(noise(3), 0.1),
+    0.1
+  )
+  .out()
+`}
+/>
+
+### Глитч feedback
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+src(o0)
+  .scrollX(() => Math.random() * 0.01 - 0.005)
+  .scrollY(() => Math.random() * 0.01 - 0.005)
+  .blend(
+    osc(30).thresh(0.5).color(1, 0, 0.5),
+    0.1
+  )
+  .out()
+`}
+/>
+
+### Органический рост
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+src(o0)
+  .scale(1.005)
+  .modulate(noise(3), 0.005)
+  .blend(
+    voronoi(10, 0.1)
+      .thresh(0.5)
+      .color(0.2, 0.8, 0.5),
+    0.05
+  )
+  .out()
+`}
+/>
+
+---
+
+## Советы по Feedback
+
+1. **Начинайте с малых значений** (scale: 1.01, rotate: 0.01)
+2. **Добавляйте затухание** (brightness: -0.005)
+3. **Используйте blend для контроля** (0.05-0.3)
+4. **Очистка экрана**: `solid(0, 0, 0).out()` если "взорвалось" белым
