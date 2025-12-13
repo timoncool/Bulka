@@ -9,131 +9,207 @@ Best tracks and covers from Strudel community. Hit play!
 
 ---
 
-_Note: This page contains interactive music examples. Please visit the web version to play and explore these tracks._
+## test — mustbetuesday
 
-## Почему я? — Nerual Dreming
+Multi-layered composition with drums, piano, bass and violin.
 
-<!-- Interactive example available in web version -->
+---
+
+## Unnamed Rhythmic Pattern 4/4 — @quincy@chaos.social
+
+Rhythmic pattern with cajon and agogo.
+
+---
+
+## unnamed (harp) — @quincy@chaos.social
+
+Atmospheric composition with harp and eastern motives.
+
+---
+
+## Theme From Ernest Borgnine
+
+Melody with sawtooth wave and echo effects.
+
+---
+
+## chords
+
+Demonstration of chords and voicings.
+
+---
+
+## Array (Lil Data Edit) — DJ_Dave
+
+Complex arrangement with samples and visualization.
+
+---
+
+## Billie Jean — MJ (arranged by sinus@sinpi.net)
+
+Full arrangement of the classic hit with bass, drums, chords and vocals.
+
+---
+
+## chords demo
+
+Demonstration of chords, melodies and arrangement.
+
+---
+
+## Princess Zelda's Rescue — Koji Kondo
+
+Classic melody from The Legend of Zelda.
+
+---
+
+## pitchwheel demo — froos
+
+Pitchwheel visualization demo with Japanese hirajoshi scale.
+
+---
+
+## BIRDS OF A FEATHER (REMAKE) — saga_3k
+
+Billie Eilish song remake with kalimba, drums and arrangement.
+
+---
+
+## Waltz #2 — Dmitri Shostakovich (script @by eefano)
+
+Famous waltz with dynamic tempo changes.
+
+---
+
+## Pump Up The Jam — Technotronic (script @by eefano)
+
+Techno-pop classic in Strudel.
+
+---
+
+## The Rhythm Of The Night — Corona (script @by eeefano)
+
+90s eurodance hit in Strudel.
 
 ---
 
 ## Love Again — Nerual Dreming
 
-<!-- Interactive example available in web version -->
+Full arrangement with intro, verses, choruses and drop.
 
 ---
 
-## Charli XCX - 360 (cover / remix) — KAIXI
+## Pixel Sunrise — Strudel composer
 
-<!-- Interactive example available in web version -->
-
----
-
-## Grimes - Music 4 Machines (cover) — KAIXI
-
-<!-- Interactive example available in web version -->
+Chiptune composition with 8-bit sounds.
 
 ---
 
-## Birds of a Feather — Billie Eilish (saga_3k)
+## Лесник (King and Jester cover) — Strudel composer
 
-<!-- Interactive example available in web version -->
-
----
-
-## Determination — Undertale (Claffystic)
-
-<!-- Interactive example available in web version -->
+Punk-rock cover of legendary Russian band song.
 
 ---
 
-## Blue Monday — New Order
+## Я - солдат (5'nizza cover) — Strudel composer
 
-<!-- Interactive example available in web version -->
-
----
-
-## Stranger Things Theme
-
-<!-- Interactive example available in web version -->
+Reggae arrangement of 5'nizza song.
 
 ---
 
-## The Rhythm of the Night — Corona
+## Алюминиевые огурцы (cover) — Strudel composer
 
-<!-- Interactive example available in web version -->
-
----
-
-## Waltz No. 2 — Shostakovich
-
-<!-- Interactive example available in web version -->
+Post-punk in the style of "Kino" band.
 
 ---
 
-## Endless Tarantella
+## Neo-Sector 7 Grime — Strudel composer
 
-<!-- Interactive example available in web version -->
-
----
-
-## Enjoy The Silence — Depeche Mode
-
-<!-- Interactive example available in web version -->
+Industrial/grime with aggressive beats.
 
 ---
 
-## Pump Up The Jam — Technotronic
+## Determination — Toby Fox (cover @by Claffystic)
 
-<!-- Interactive example available in web version -->
-
----
-
-## Pyramid Song — Radiohead
-
-<!-- Interactive example available in web version -->
+Cover of Undertale theme.
 
 ---
 
-## Amelie Waltz
+## this is a great song — v10101a
 
-<!-- Interactive example available in web version -->
-
----
-
-## Happy Birthday
-
-<!-- Interactive example available in web version -->
+Visual composition with Hydra.
 
 ---
 
-## Satiesfaction — Satie
+## repetition on the computer — pastagang
 
-<!-- Interactive example available in web version -->
-
----
-
-## Shanghai — King Gizzard
-
-<!-- Interactive example available in web version -->
+Funky pattern with speech samples.
 
 ---
 
-## Clubbed
+## requiem for a crow — pastagang
 
-<!-- Interactive example available in web version -->
-
----
-
-## Human Performance — Parquet Courts
-
-<!-- Interactive example available in web version -->
+Jazz chords with crow sounds.
 
 ---
 
-## Cabinet — Spratleys Japs
+## coastline — eddyflux
 
-<!-- Interactive example available in web version -->
+Atmospheric composition with phaser and chords.
+
+---
+
+## Morning Splendor — Pauline Anna Strom (cover by Lil Data)
+
+Visual composition with Hydra.
+
+---
+
+## Man in finance — Erra P.
+
+Techno with speech samples.
+
+---
+
+## By Design [DJ_Dave Edit] — Spill Tab
+
+Edit with sidechain and vocal chops.
+
+---
+
+## jam as you are — pastagang
+
+Dorian mode with break beats.
+
+---
+
+## Bronski Beat - Smalltown Boy Cover
+
+Cover with synth bass and arpeggio.
+
+---
+
+## broken cut #1 — froos
+
+Experimental composition with visual effects.
+
+---
+
+## stark pollen — eddyflux
+
+Atmospheric track with vocal samples.
+
+---
+
+## acidic tooth — eddyflux
+
+Acid synth with 24db filter.
+
+---
+
+## Почему я? — Nerual Dreming
+
+Epic rock composition with transitions.
 
 ---
 
