@@ -1,12 +1,97 @@
 ---
 import HeadCommon from '../components/HeadCommon.astro';
 import { Repl } from '../repl/Repl';
+import { createClient } from '@supabase/supabase-js';
+import { getMetadata } from '../metadata_parser';
+
+// Получаем hash из query параметра
+const url = new URL(Astro.request.url);
+const hash = url.searchParams.keys().next().value; // Первый query параметр - это hash
+
+// Метаданные по умолчанию
+let title = 'Bulka REPL — Лайв-кодинг музыки';
+let description = 'Bulka — платформа для лайв-кодинга музыки в браузере.';
+let trackTitle = '';
+let trackArtist = '';
+let trackGenre = '';
+let hasTrackMeta = false;
+
+// Если есть hash, загружаем код из Supabase и парсим метаданные
+if (hash && hash.length >= 8 && hash.length <= 20) {
+  try {
+    const supabase = createClient(
+      'https://giqrbepsnxmugtusqnce.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdpcXJiZXBzbnhtdWd0dXNxbmNlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUzMjkyODksImV4cCI6MjA4MDkwNTI4OX0.U4KEbP0CeEQT-QDU2hO2q8cUer-kZ9cXvNN22AqjXRA',
+    );
+
+    const { data, error } = await supabase
+      .from('code_v1')
+      .select('code')
+      .eq('hash', hash)
+      .single();
+
+    if (data?.code && !error) {
+      const metadata = getMetadata(data.code);
+
+      if (metadata.title) {
+        trackTitle = metadata.title;
+        hasTrackMeta = true;
+      }
+
+      if (metadata.by) {
+        trackArtist = Array.isArray(metadata.by) ? metadata.by.join(', ') : metadata.by;
+        hasTrackMeta = true;
+      }
+
+      if (metadata.genre) {
+        trackGenre = Array.isArray(metadata.genre) ? metadata.genre.join(', ') : metadata.genre;
+      }
+
+      // Формируем title и description для OG
+      if (trackTitle && trackArtist) {
+        title = `${trackTitle} — ${trackArtist} | Bulka`;
+        description = `Слушай "${trackTitle}" от ${trackArtist} в Bulka REPL`;
+      } else if (trackTitle) {
+        title = `${trackTitle} | Bulka`;
+        description = `Слушай "${trackTitle}" в Bulka REPL`;
+      } else if (trackArtist) {
+        title = `Трек от ${trackArtist} | Bulka`;
+        description = `Слушай музыку от ${trackArtist} в Bulka REPL`;
+      }
+
+      if (trackGenre) {
+        description += ` • ${trackGenre}`;
+      }
+    }
+  } catch (e) {
+    console.error('Error loading track metadata:', e);
+  }
+}
+
+const canonicalUrl = url.origin + url.pathname + (hash ? '?' + hash : '');
 ---
 
 <html lang="en" class="m-0 dark">
   <head>
     <HeadCommon />
-    <title>Bulka REPL — Лайв-кодинг музыки</title>
+    <title>{title}</title>
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content={hasTrackMeta ? "music.song" : "website"} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:site_name" content="Bulka" />
+    <meta property="og:image" content={url.origin + "/icon.png"} />
+    {trackTitle && <meta property="og:audio:title" content={trackTitle} />}
+    {trackArtist && <meta property="og:audio:artist" content={trackArtist} />}
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:url" content={canonicalUrl} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={url.origin + "/icon.png"} />
   </head>
   <body class="h-app-height bg-background m-0">
     <Repl client:only="react" />
