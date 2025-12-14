@@ -1,56 +1,32 @@
-import { CheckIcon, ClipboardDocumentIcon } from '@heroicons/react/20/solid';
+import { CheckIcon, ClipboardDocumentIcon, XMarkIcon } from '@heroicons/react/20/solid';
 import cx from '@src/cx.mjs';
 import { useState, useEffect, useRef } from 'react';
 
 export function ShareToast({ isOpen, onClose, shareUrl, hash, onPublicChange, isPublic, anchorRef }) {
   const [copied, setCopied] = useState(false);
   const toastRef = useRef(null);
+  const [position, setPosition] = useState({ top: 0, left: 0 });
+
+  // Calculate position relative to anchor button
+  useEffect(() => {
+    if (isOpen && anchorRef?.current) {
+      const rect = anchorRef.current.getBoundingClientRect();
+      setPosition({
+        top: rect.bottom + 8,
+        left: Math.max(10, rect.right - 320), // 320 = min-width, keep on screen
+      });
+    }
+  }, [isOpen, anchorRef]);
 
   // Auto-copy on open
   useEffect(() => {
     if (isOpen && shareUrl) {
       navigator.clipboard.writeText(shareUrl).then(() => {
         setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
       }).catch(console.error);
     }
-    if (!isOpen) {
-      setCopied(false);
-    }
   }, [isOpen, shareUrl]);
-
-  // Click outside to close
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const handleClickOutside = (e) => {
-      if (toastRef.current && !toastRef.current.contains(e.target)) {
-        // Don't close if clicking the share button itself
-        if (anchorRef?.current && anchorRef.current.contains(e.target)) return;
-        onClose();
-      }
-    };
-
-    // Delay to prevent immediate close
-    const timeout = setTimeout(() => {
-      document.addEventListener('click', handleClickOutside);
-    }, 100);
-
-    return () => {
-      clearTimeout(timeout);
-      document.removeEventListener('click', handleClickOutside);
-    };
-  }, [isOpen, onClose, anchorRef]);
-
-  // Auto-hide after 5 seconds if not interacting
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const timeout = setTimeout(() => {
-      onClose();
-    }, 6000);
-
-    return () => clearTimeout(timeout);
-  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -58,6 +34,7 @@ export function ShareToast({ isOpen, onClose, shareUrl, hash, onPublicChange, is
     try {
       await navigator.clipboard.writeText(shareUrl);
       setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     } catch (e) {
       console.error('Failed to copy:', e);
     }
@@ -66,56 +43,107 @@ export function ShareToast({ isOpen, onClose, shareUrl, hash, onPublicChange, is
   return (
     <div
       ref={toastRef}
+      style={{ top: position.top, left: position.left }}
       className={cx(
-        'absolute top-full right-0 mt-2 z-[100]',
+        'fixed z-[9999]',
         'bg-background border border-foreground/30 rounded-lg',
-        'p-3 shadow-xl min-w-[280px]',
-        'text-foreground text-sm',
-        'animate-in fade-in slide-in-from-top-2 duration-200'
+        'p-4 shadow-2xl min-w-[320px] max-w-[400px]',
+        'text-foreground'
       )}
     >
-      {/* Success message */}
-      <div className="flex items-center gap-2 mb-3">
-        <CheckIcon className="w-5 h-5 text-green-500 shrink-0" />
-        <span className="font-medium">Ссылка скопирована!</span>
+      {/* Header with title and close */}
+      <div className="flex justify-between items-center mb-3">
+        <span className="font-medium">Поделиться</span>
+        <button
+          onClick={onClose}
+          className="hover:opacity-50 p-1"
+        >
+          <XMarkIcon className="w-5 h-5" />
+        </button>
       </div>
 
-      {/* URL display */}
-      <div
-        className={cx(
-          'flex items-center gap-2 bg-lineHighlight rounded px-2 py-1.5 mb-3',
-          'cursor-pointer hover:opacity-80 transition-opacity'
-        )}
-        onClick={handleCopy}
-        title="Копировать ещё раз"
-      >
-        <span className="text-xs opacity-70 truncate flex-1">{shareUrl}</span>
-        <ClipboardDocumentIcon className="w-4 h-4 shrink-0 opacity-50" />
+      {/* URL field + copy button */}
+      <div className="mb-3">
+        <label className="text-xs opacity-70 mb-1 block">Ссылка на паттерн</label>
+        <div className="flex gap-2">
+          <input
+            type="text"
+            readOnly
+            value={shareUrl}
+            className={cx(
+              'flex-1 bg-lineHighlight border border-foreground/30 rounded-md',
+              'px-3 py-2 text-sm text-foreground',
+              'focus:outline-none focus:border-foreground'
+            )}
+            onClick={(e) => e.target.select()}
+          />
+          <button
+            onClick={handleCopy}
+            className={cx(
+              'bg-lineHighlight border border-foreground/30 rounded-md',
+              'px-3 py-2 hover:opacity-50 transition-opacity',
+              'flex items-center gap-1 shrink-0'
+            )}
+          >
+            {copied ? (
+              <>
+                <CheckIcon className="w-4 h-4 text-green-500" />
+                <span className="text-sm">Ок</span>
+              </>
+            ) : (
+              <>
+                <ClipboardDocumentIcon className="w-4 h-4" />
+                <span className="text-sm">Копировать</span>
+              </>
+            )}
+          </button>
+        </div>
       </div>
 
       {/* Public checkbox */}
       {hash && (
-        <label className="flex items-center gap-2 cursor-pointer select-none group">
+        <div className="flex items-center gap-3 mb-3">
           <input
             type="checkbox"
+            id="share-public-checkbox"
             checked={isPublic}
             onChange={(e) => onPublicChange(e.target.checked)}
             className={cx(
-              'w-4 h-4 rounded border border-foreground/50',
+              'w-5 h-5 rounded border border-foreground',
               'bg-background cursor-pointer',
               'accent-foreground'
             )}
           />
-          <span className="text-xs opacity-70 group-hover:opacity-100 transition-opacity">
-            {isPublic ? 'Виден в ленте' : 'Только по ссылке'}
-          </span>
-        </label>
+          <label htmlFor="share-public-checkbox" className="cursor-pointer select-none">
+            Опубликовать в ленте
+          </label>
+        </div>
       )}
+
+      {/* Info text */}
+      <p className="text-xs opacity-50 mb-4">
+        {isPublic
+          ? 'Паттерн будет виден в ленте сообщества'
+          : 'Паттерн доступен только по ссылке'}
+      </p>
+
+      {/* OK button */}
+      <div className="flex justify-end">
+        <button
+          onClick={onClose}
+          className={cx(
+            'bg-foreground text-background rounded-md',
+            'px-4 py-2 hover:opacity-80 transition-opacity'
+          )}
+        >
+          Готово
+        </button>
+      </div>
     </div>
   );
 }
 
-// Keep old export for compatibility, but point to new component
+// Keep old export for compatibility
 export function ShareDialog(props) {
   return <ShareToast {...props} />;
 }
