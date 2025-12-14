@@ -10,7 +10,7 @@
         "description": "добавить страницу Лента с галереей треков и системой лайков",
         "scope": null,
         "author": "Claude",
-        "hash": "f78755d"
+        "hash": "f78755d9"
       },
       {
         "type": "feat",
@@ -19,7 +19,7 @@
         "description": "сохранение черновика чата в localStorage",
         "scope": null,
         "author": "Claude",
-        "hash": "78dd067"
+        "hash": "78dd0678"
       },
       {
         "type": "feat",
@@ -28,7 +28,7 @@
         "description": "легкая плашка вместо модального окна для шаринга + объединение Пекарни и Ленты",
         "scope": null,
         "author": "Claude",
-        "hash": "a8130ae"
+        "hash": "a8130ae3"
       },
       {
         "type": "fix",
@@ -37,7 +37,7 @@
         "description": "исправить позиционирование плашки шаринга",
         "scope": null,
         "author": "Claude",
-        "hash": "aca75e6"
+        "hash": "aca75e65"
       },
       {
         "type": "fix",
@@ -46,7 +46,7 @@
         "description": "предотвратить дубликаты и пустые записи при шаринге",
         "scope": null,
         "author": "Claude",
-        "hash": "95a0d43"
+        "hash": "95a0d434"
       },
       {
         "type": "feat",
@@ -55,7 +55,7 @@
         "description": "3 колонки в ленте на широких экранах",
         "scope": null,
         "author": "Claude",
-        "hash": "641fcda"
+        "hash": "641fcda7"
       },
       {
         "type": "feat",
@@ -64,7 +64,7 @@
         "description": "добавить ссылку 'сообщество' в навигацию",
         "scope": null,
         "author": "Claude",
-        "hash": "df6fb33"
+        "hash": "df6fb334"
       },
       {
         "type": "feat",
@@ -73,7 +73,7 @@
         "description": "добавить Hydra визуализацию к треку coastline в примерах",
         "scope": null,
         "author": "Claude",
-        "hash": "ceca8b8"
+        "hash": "ceca8b8d"
       },
       {
         "type": "fix",
@@ -82,7 +82,7 @@
         "description": "заменить первый пример на coastline с Hydra",
         "scope": null,
         "author": "Claude",
-        "hash": "d6f8d0c"
+        "hash": "d6f8d0ce"
       },
       {
         "type": "fix",
@@ -91,7 +91,7 @@
         "description": "исключить URL функции Hydra из парсинга mini-нотации",
         "scope": null,
         "author": "Claude",
-        "hash": "57ca8ea"
+        "hash": "57ca8ea8"
       },
       {
         "type": "fix",
@@ -100,7 +100,7 @@
         "description": "разрешить перезапись уже расшаренных треков",
         "scope": null,
         "author": "Claude",
-        "hash": "04c90e7"
+        "hash": "04c90e7e"
       },
       {
         "type": "docs",
@@ -109,7 +109,7 @@
         "description": "добавить примеры использования initImage и initVideo с URL",
         "scope": null,
         "author": "Claude",
-        "hash": "2912f79"
+        "hash": "2912f794"
       },
       {
         "type": "docs",
@@ -118,7 +118,7 @@
         "description": "добавить ссылку на внешние источники в навигацию",
         "scope": null,
         "author": "Claude",
-        "hash": "406f9ed"
+        "hash": "406f9ed8"
       },
       {
         "type": "debug",
@@ -127,7 +127,7 @@
         "description": "добавить логирование в shareCode",
         "scope": null,
         "author": "Claude",
-        "hash": "08b2e28"
+        "hash": "08b2e285"
       },
       {
         "type": "fix",
@@ -136,7 +136,7 @@
         "description": "брать код из редактора напрямую при шеринге",
         "scope": null,
         "author": "Claude",
-        "hash": "05011fa"
+        "hash": "05011fad"
       },
       {
         "type": "fix",
@@ -145,7 +145,43 @@
         "description": "использовать editorRef.current.code для шеринга",
         "scope": null,
         "author": "Claude",
-        "hash": "225ff8c"
+        "hash": "225ff8ca"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "реально копировать ссылку в буфер при шеринге",
+        "scope": null,
+        "author": "Claude",
+        "hash": "be03bb8c"
+      },
+      {
+        "type": "feat",
+        "typeLabel": "Новые возможности",
+        "emoji": "✨",
+        "description": "автоматический changelog и страница /whatsnew",
+        "scope": null,
+        "author": "Claude",
+        "hash": "23b898fb"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "переместить 'Что нового' в конец раздела Презентация",
+        "scope": null,
+        "author": "Claude",
+        "hash": "3f797173"
+      },
+      {
+        "type": "feat",
+        "typeLabel": "Новые возможности",
+        "emoji": "✨",
+        "description": "добавить версию (git commit) в header документации",
+        "scope": null,
+        "author": "Claude",
+        "hash": "eb04b0e1"
       }
     ]
   },
@@ -160,7 +196,7 @@
         "description": "заменить иконки штруделя на булку для og:image превью",
         "scope": null,
         "author": "Claude",
-        "hash": "68b3cc2"
+        "hash": "68b3cc22"
       },
       {
         "type": "feat",
@@ -169,7 +205,7 @@
         "description": "добавить секцию поддержки проекта с графиком звёзд",
         "scope": null,
         "author": "Claude",
-        "hash": "7139d93"
+        "hash": "7139d930"
       },
       {
         "type": "feat",
@@ -178,7 +214,7 @@
         "description": "добавить 35 новых примеров треков в галерею",
         "scope": null,
         "author": "Claude",
-        "hash": "7e3cca7"
+        "hash": "7e3cca73"
       },
       {
         "type": "feat",
@@ -187,7 +223,7 @@
         "description": "добавить 35+ треков в галерею и примеры",
         "scope": null,
         "author": "Claude",
-        "hash": "2033ed5"
+        "hash": "2033ed57"
       },
       {
         "type": "feat",
@@ -196,7 +232,7 @@
         "description": "добавить динамические Open Graph мета-теги для шеринга треков",
         "scope": null,
         "author": "Claude",
-        "hash": "2586e02"
+        "hash": "2586e026"
       },
       {
         "type": "fix",
@@ -205,7 +241,7 @@
         "description": "заменить OG-картинку на версию с тёмным фоном",
         "scope": null,
         "author": "Claude",
-        "hash": "9636d80"
+        "hash": "9636d807"
       },
       {
         "type": "feat",
@@ -214,7 +250,7 @@
         "description": "добавить полную документацию по Hydra на русском языке",
         "scope": null,
         "author": "Claude",
-        "hash": "b6ff1ed"
+        "hash": "b6ff1ed2"
       }
     ]
   },
@@ -229,7 +265,7 @@
         "description": "update Supabase credentials for URL shortener",
         "scope": null,
         "author": "Claude",
-        "hash": "4322c07"
+        "hash": "4322c070"
       },
       {
         "type": "other",
@@ -238,7 +274,7 @@
         "description": "Описание изменений",
         "scope": null,
         "author": "Nerual Dreming",
-        "hash": "e2be366"
+        "hash": "e2be3660"
       },
       {
         "type": "other",
@@ -247,7 +283,7 @@
         "description": "Описание изменений",
         "scope": null,
         "author": "Nerual Dreming",
-        "hash": "c995e5b"
+        "hash": "c995e5bc"
       },
       {
         "type": "feat",
@@ -256,7 +292,7 @@
         "description": "обновление домена, сообщества и добавление Яндекс.Метрики",
         "scope": null,
         "author": "Claude",
-        "hash": "6940255"
+        "hash": "69402558"
       },
       {
         "type": "refactor",
@@ -265,7 +301,7 @@
         "description": "улучшение README и создание отдельной страницы скриншотов",
         "scope": null,
         "author": "Claude",
-        "hash": "c5d4d3d"
+        "hash": "c5d4d3da"
       },
       {
         "type": "chore",
@@ -274,7 +310,7 @@
         "description": "удаление мусорных MD файлов и обновление .gitignore",
         "scope": null,
         "author": "Claude",
-        "hash": "3967642"
+        "hash": "3967642b"
       },
       {
         "type": "fix",
@@ -283,7 +319,7 @@
         "description": "заменить иконку REC на SVG с поддержкой цветов темы",
         "scope": null,
         "author": "Claude",
-        "hash": "5526bcb"
+        "hash": "5526bcb0"
       }
     ]
   },
@@ -298,7 +334,7 @@
         "description": "Add color themes documentation and improve gallery",
         "scope": null,
         "author": "Claude",
-        "hash": "85e636c"
+        "hash": "85e636c8"
       },
       {
         "type": "fix",
@@ -307,7 +343,7 @@
         "description": "Showcase newest first by default, add themes page",
         "scope": null,
         "author": "Claude",
-        "hash": "fa4e750"
+        "hash": "fa4e7505"
       },
       {
         "type": "blog",
@@ -316,7 +352,7 @@
         "description": "Replace Strudel changelog with Bulka changelog",
         "scope": null,
         "author": "Claude",
-        "hash": "425b579"
+        "hash": "425b5794"
       },
       {
         "type": "other",
@@ -325,7 +361,7 @@
         "description": "Добавлен пак семплов Sparkway Drum Kit",
         "scope": null,
         "author": "Nerual Dreming",
-        "hash": "0898290"
+        "hash": "0898290b"
       },
       {
         "type": "feat",
@@ -334,7 +370,7 @@
         "description": "Integrate Sparkway Drum Kit sample pack (168 samples)",
         "scope": null,
         "author": "Claude",
-        "hash": "7d965d0"
+        "hash": "7d965d0d"
       },
       {
         "type": "docs",
@@ -343,7 +379,7 @@
         "description": "Add Sparkway Drum Kit to AI agent knowledge base",
         "scope": null,
         "author": "Claude",
-        "hash": "0b8be5d"
+        "hash": "0b8be5db"
       },
       {
         "type": "docs",
@@ -352,7 +388,7 @@
         "description": "Mark Sparkway Drum Kit for modern electronic genres",
         "scope": null,
         "author": "Claude",
-        "hash": "83b1b57"
+        "hash": "83b1b57e"
       },
       {
         "type": "fix",
@@ -361,7 +397,7 @@
         "description": "Remove oversized samples (>5MB) to fix build",
         "scope": null,
         "author": "Claude",
-        "hash": "1234fb4"
+        "hash": "1234fb4f"
       },
       {
         "type": "fix",
@@ -370,7 +406,7 @@
         "description": "Convert all samples to OGG format (168 files, 20MB total)",
         "scope": null,
         "author": "Claude",
-        "hash": "049b179"
+        "hash": "049b1790"
       },
       {
         "type": "feat",
@@ -379,7 +415,7 @@
         "description": "Add Sparkway Drum Kit and fix sample count display",
         "scope": null,
         "author": "Claude",
-        "hash": "847acea"
+        "hash": "847acea8"
       },
       {
         "type": "feat",
@@ -388,7 +424,7 @@
         "description": "Add expandable sample banks in sounds browser",
         "scope": null,
         "author": "Claude",
-        "hash": "63f2687"
+        "hash": "63f2687c"
       },
       {
         "type": "feat",
@@ -397,7 +433,7 @@
         "description": "Add sample pack tools for AI agent",
         "scope": null,
         "author": "Claude",
-        "hash": "d857ca0"
+        "hash": "d857ca04"
       },
       {
         "type": "fix",
@@ -406,7 +442,7 @@
         "description": "Show bank names in getAvailablePacks for agent",
         "scope": null,
         "author": "Claude",
-        "hash": "3356bcf"
+        "hash": "3356bcf1"
       },
       {
         "type": "docs",
@@ -415,7 +451,7 @@
         "description": "Expand sample pack descriptions with genre guidance for AI agent",
         "scope": null,
         "author": "Claude",
-        "hash": "646a68d"
+        "hash": "646a68d7"
       },
       {
         "type": "feat",
@@ -424,7 +460,7 @@
         "description": "Add E-Pianos sample pack (CP80, Wurlitzer, Pianet)",
         "scope": null,
         "author": "Claude",
-        "hash": "6cdfa57"
+        "hash": "6cdfa576"
       },
       {
         "type": "docs",
@@ -433,7 +469,7 @@
         "description": "Add E-Pianos to agent knowledge base",
         "scope": null,
         "author": "Claude",
-        "hash": "c830479"
+        "hash": "c830479b"
       },
       {
         "type": "feat",
@@ -442,7 +478,7 @@
         "description": "Add E-Pianos sample pack (CP80, Wurlitzer, Pianet)",
         "scope": null,
         "author": "Claude",
-        "hash": "bd605ab"
+        "hash": "bd605abb"
       },
       {
         "type": "docs",
@@ -451,7 +487,7 @@
         "description": "Add e-pianos to agent genre recommendations",
         "scope": null,
         "author": "Claude",
-        "hash": "a1b8756"
+        "hash": "a1b87564"
       },
       {
         "type": "feat",
@@ -460,7 +496,7 @@
         "description": "Add agent behavior patterns and console debugging",
         "scope": null,
         "author": "Claude",
-        "hash": "007349e"
+        "hash": "007349ec"
       },
       {
         "type": "fix",
@@ -469,7 +505,7 @@
         "description": "address rate limit errors for OpenAI and Anthropic APIs",
         "scope": null,
         "author": "Claude",
-        "hash": "10bc1be"
+        "hash": "10bc1bee"
       },
       {
         "type": "feat",
@@ -478,7 +514,7 @@
         "description": "add getExamples usage instructions for agent",
         "scope": null,
         "author": "Claude",
-        "hash": "a1eb3a2"
+        "hash": "a1eb3a24"
       },
       {
         "type": "fix",
@@ -487,7 +523,7 @@
         "description": "Resolve rate limit errors based on analysis of top AI agents",
         "scope": null,
         "author": "Claude",
-        "hash": "e25dc5f"
+        "hash": "e25dc5ff"
       },
       {
         "type": "docs",
@@ -496,7 +532,7 @@
         "description": "добавлен критический отчёт о несоответствиях в системе знаний агента",
         "scope": null,
         "author": "Claude",
-        "hash": "0d95d5d"
+        "hash": "0d95d5d6"
       },
       {
         "type": "fix",
@@ -505,7 +541,7 @@
         "description": "add critical warnings to enforce tool usage for samples",
         "scope": null,
         "author": "Claude",
-        "hash": "31ca3f8"
+        "hash": "31ca3f88"
       },
       {
         "type": "fix",
@@ -514,7 +550,7 @@
         "description": "correct .room().size() to .room().roomsize() syntax",
         "scope": null,
         "author": "Claude",
-        "hash": "d398dbc"
+        "hash": "d398dbc8"
       },
       {
         "type": "docs",
@@ -523,7 +559,7 @@
         "description": "comprehensive AI prompts analysis and recommendations",
         "scope": null,
         "author": "Claude",
-        "hash": "eb0371b"
+        "hash": "eb0371be"
       },
       {
         "type": "feat",
@@ -532,7 +568,7 @@
         "description": "add thinking protocol and workflow examples to AI agent",
         "scope": null,
         "author": "Claude",
-        "hash": "4225b11"
+        "hash": "4225b110"
       },
       {
         "type": "feat",
@@ -541,7 +577,7 @@
         "description": "add advanced API functions to knowledge base",
         "scope": null,
         "author": "Claude",
-        "hash": "67467c5"
+        "hash": "67467c50"
       },
       {
         "type": "feat",
@@ -550,7 +586,7 @@
         "description": "add 10 anti-patterns to agent prompt",
         "scope": null,
         "author": "Claude",
-        "hash": "dc04ceb"
+        "hash": "dc04cebe"
       },
       {
         "type": "feat",
@@ -559,7 +595,7 @@
         "description": "add music theory and composition knowledge to AI agent",
         "scope": null,
         "author": "Claude",
-        "hash": "40dd36a"
+        "hash": "40dd36a4"
       },
       {
         "type": "feat",
@@ -568,7 +604,7 @@
         "description": "add track structure guide to agent prompt",
         "scope": null,
         "author": "Claude",
-        "hash": "fab1552"
+        "hash": "fab15526"
       },
       {
         "type": "refactor",
@@ -577,7 +613,7 @@
         "description": "replace rigid structure with abstract music principles",
         "scope": null,
         "author": "Claude",
-        "hash": "c88cdbe"
+        "hash": "c88cdbe2"
       },
       {
         "type": "fix",
@@ -586,7 +622,7 @@
         "description": "syntax error and auto-versioning",
         "scope": null,
         "author": "Claude",
-        "hash": "d99dedb"
+        "hash": "d99dedb3"
       },
       {
         "type": "chore",
@@ -595,7 +631,7 @@
         "description": "remove version numbering, use git commit only",
         "scope": null,
         "author": "Claude",
-        "hash": "2d2f066"
+        "hash": "2d2f0664"
       },
       {
         "type": "fix",
@@ -604,7 +640,7 @@
         "description": "escape backticks in code examples",
         "scope": null,
         "author": "Claude",
-        "hash": "9c66e69"
+        "hash": "9c66e69f"
       },
       {
         "type": "feat",
@@ -613,7 +649,7 @@
         "description": "add arpeggios usage guide and metadata tags",
         "scope": null,
         "author": "Claude",
-        "hash": "40cd131"
+        "hash": "40cd1313"
       }
     ]
   },
@@ -628,7 +664,7 @@
         "description": "Proper streaming and thinking for all providers",
         "scope": null,
         "author": "Claude",
-        "hash": "b2646a6"
+        "hash": "b2646a65"
       },
       {
         "type": "fix",
@@ -637,7 +673,7 @@
         "description": "Real-time streaming for all AI providers",
         "scope": null,
         "author": "Claude",
-        "hash": "abb4b6c"
+        "hash": "abb4b6c2"
       },
       {
         "type": "fix",
@@ -646,7 +682,7 @@
         "description": "Capture thinking signature for Anthropic conversation continuity",
         "scope": null,
         "author": "Claude",
-        "hash": "5adf751"
+        "hash": "5adf751f"
       },
       {
         "type": "fix",
@@ -655,7 +691,7 @@
         "description": "GPT-5 series model support with reasoning_effort",
         "scope": null,
         "author": "Claude",
-        "hash": "7ae7055"
+        "hash": "7ae7055c"
       },
       {
         "type": "fix",
@@ -664,7 +700,7 @@
         "description": "Hide o-series models that don't support tools",
         "scope": null,
         "author": "Claude",
-        "hash": "d7bd176"
+        "hash": "d7bd176f"
       },
       {
         "type": "feat",
@@ -673,7 +709,7 @@
         "description": "Add version and commit hash to header and console",
         "scope": null,
         "author": "Claude",
-        "hash": "031abdf"
+        "hash": "031abdff"
       },
       {
         "type": "fix",
@@ -682,7 +718,7 @@
         "description": "GPT-5 models don't support temperature parameter",
         "scope": null,
         "author": "Claude",
-        "hash": "b3e84d7"
+        "hash": "b3e84d70"
       },
       {
         "type": "fix",
@@ -691,7 +727,7 @@
         "description": "Remove unsupported reasoning_effort parameter for GPT-5 models",
         "scope": null,
         "author": "Claude",
-        "hash": "36e3450"
+        "hash": "36e3450e"
       },
       {
         "type": "feat",
@@ -700,7 +736,7 @@
         "description": "Major UI/UX improvements and AI agent enhancements",
         "scope": null,
         "author": "Claude",
-        "hash": "7465340"
+        "hash": "7465340f"
       },
       {
         "type": "fix",
@@ -709,7 +745,7 @@
         "description": "Version color, update AI docs, remove Mastodon link",
         "scope": null,
         "author": "Claude",
-        "hash": "4448791"
+        "hash": "44487919"
       },
       {
         "type": "fix",
@@ -718,7 +754,7 @@
         "description": "Change default volume from 80% to 100%",
         "scope": null,
         "author": "Claude",
-        "hash": "31b72c3"
+        "hash": "31b72c3c"
       },
       {
         "type": "fix",
@@ -727,7 +763,7 @@
         "description": "Default volume 100%, fix falsy check for 0 volume",
         "scope": null,
         "author": "Claude",
-        "hash": "e39e84b"
+        "hash": "e39e84b3"
       },
       {
         "type": "fix",
@@ -736,7 +772,7 @@
         "description": "Show only commit hash in header instead of unused version number",
         "scope": null,
         "author": "Claude",
-        "hash": "5f5ce29"
+        "hash": "5f5ce29d"
       },
       {
         "type": "feat",
@@ -745,7 +781,7 @@
         "description": "Add audio recorder to header",
         "scope": null,
         "author": "Claude",
-        "hash": "8354d7d"
+        "hash": "8354d7df"
       },
       {
         "type": "fix",
@@ -754,7 +790,7 @@
         "description": "Improve audio recorder - WAV lossless, @title filename, UI position",
         "scope": null,
         "author": "Claude",
-        "hash": "2ef6bc0"
+        "hash": "2ef6bc08"
       },
       {
         "type": "fix",
@@ -763,7 +799,7 @@
         "description": "Improve header spacing - more distance between elements",
         "scope": null,
         "author": "Claude",
-        "hash": "1996584"
+        "hash": "19965843"
       }
     ]
   },
@@ -778,7 +814,7 @@
         "description": "Заменены жанровые примеры на каверы от eefano + обновлена Витрина",
         "scope": null,
         "author": "Claude",
-        "hash": "40d054c"
+        "hash": "40d054c8"
       },
       {
         "type": "other",
@@ -787,7 +823,7 @@
         "description": "Fix GitHub sample packs loading - pass empty baseUrl",
         "scope": null,
         "author": "Claude",
-        "hash": "b815729"
+        "hash": "b815729b"
       },
       {
         "type": "other",
@@ -796,7 +832,7 @@
         "description": "Добавлены видео 2025 в Витрину + треки Nerual Dreming в Галерею",
         "scope": null,
         "author": "Claude",
-        "hash": "d355a25"
+        "hash": "d355a252"
       },
       {
         "type": "other",
@@ -805,7 +841,7 @@
         "description": "Добавлены сложные примеры от сообщества в Галерею",
         "scope": null,
         "author": "Claude",
-        "hash": "fe4bdee"
+        "hash": "fe4bdee5"
       },
       {
         "type": "other",
@@ -814,7 +850,7 @@
         "description": "Удалены дубликаты треков Nerual Dreming из конца Галереи",
         "scope": null,
         "author": "Claude",
-        "hash": "25ccfa8"
+        "hash": "25ccfa8e"
       },
       {
         "type": "other",
@@ -823,7 +859,7 @@
         "description": "Добавлена полная документация в формате Markdown для обучения AI агента",
         "scope": null,
         "author": "Claude",
-        "hash": "9f840f3"
+        "hash": "9f840f3e"
       },
       {
         "type": "other",
@@ -832,7 +868,7 @@
         "description": "Исправлена EN документация: добавлены все примеры кода",
         "scope": null,
         "author": "Claude",
-        "hash": "6b375d2"
+        "hash": "6b375d2d"
       },
       {
         "type": "feat",
@@ -841,7 +877,7 @@
         "description": "Add AI Music Agent chat interface for vibe-coding music",
         "scope": null,
         "author": "Claude",
-        "hash": "fd5879e"
+        "hash": "fd5879eb"
       },
       {
         "type": "feat",
@@ -850,7 +886,7 @@
         "description": "Add AI Music Agent with full RAG on MD documentation",
         "scope": null,
         "author": "Claude",
-        "hash": "57b7b26"
+        "hash": "57b7b268"
       },
       {
         "type": "fix",
@@ -859,7 +895,7 @@
         "description": "Switch to Vercel adapter for server-side API routes",
         "scope": null,
         "author": "Claude",
-        "hash": "c37523d"
+        "hash": "c37523dc"
       },
       {
         "type": "chore",
@@ -868,7 +904,7 @@
         "description": "Add .vercel to gitignore, remove build artifacts",
         "scope": null,
         "author": "Claude",
-        "hash": "bf2097f"
+        "hash": "bf2097f7"
       },
       {
         "type": "fix",
@@ -877,7 +913,7 @@
         "description": "Copy docs_md to website for Vercel serverless access",
         "scope": null,
         "author": "Claude",
-        "hash": "2fb3188"
+        "hash": "2fb3188d"
       },
       {
         "type": "fix",
@@ -886,7 +922,7 @@
         "description": "Update Vercel outputDirectory to .vercel/output for Astro adapter",
         "scope": null,
         "author": "Claude",
-        "hash": "ebe8f54"
+        "hash": "ebe8f541"
       },
       {
         "type": "fix",
@@ -895,7 +931,7 @@
         "description": "Remove outputDirectory - let Astro Vercel adapter handle output automatically",
         "scope": null,
         "author": "Claude",
-        "hash": "f7f43b3"
+        "hash": "f7f43b31"
       },
       {
         "type": "fix",
@@ -904,7 +940,7 @@
         "description": "Copy .vercel/output to root after build for Vercel to find it",
         "scope": null,
         "author": "Claude",
-        "hash": "910f28a"
+        "hash": "910f28a7"
       },
       {
         "type": "fix",
@@ -913,7 +949,7 @@
         "description": "Correct path for copying .vercel/output to root",
         "scope": null,
         "author": "Claude",
-        "hash": "194ed89"
+        "hash": "194ed89e"
       },
       {
         "type": "fix",
@@ -922,7 +958,7 @@
         "description": "Update ChatTab colors to match other panel tabs",
         "scope": null,
         "author": "Claude",
-        "hash": "9a7ddd8"
+        "hash": "9a7ddd88"
       },
       {
         "type": "feat",
@@ -931,7 +967,7 @@
         "description": "Update AI models to latest versions (GPT-4.1, o3, Claude 4.5)",
         "scope": null,
         "author": "Claude",
-        "hash": "5aaa09e"
+        "hash": "5aaa09e9"
       },
       {
         "type": "fix",
@@ -940,7 +976,7 @@
         "description": "Add Claude Opus 4.5 as top model",
         "scope": null,
         "author": "Claude",
-        "hash": "e3e964f"
+        "hash": "e3e964fb"
       },
       {
         "type": "feat",
@@ -949,7 +985,7 @@
         "description": "Implement full AI agent with tool calling",
         "scope": null,
         "author": "Claude",
-        "hash": "c7a6890"
+        "hash": "c7a6890d"
       },
       {
         "type": "feat",
@@ -958,7 +994,7 @@
         "description": "Add GPT-5/5.1 and Claude Opus 4.5 models",
         "scope": null,
         "author": "Claude",
-        "hash": "45f4fba"
+        "hash": "45f4fbac"
       },
       {
         "type": "feat",
@@ -967,7 +1003,7 @@
         "description": "Artifact-style code editing + fix model defaults",
         "scope": null,
         "author": "Claude",
-        "hash": "230493e"
+        "hash": "230493e7"
       },
       {
         "type": "fix",
@@ -976,7 +1012,7 @@
         "description": "Correct docs_md path for RAG search",
         "scope": null,
         "author": "Claude",
-        "hash": "e6e28e0"
+        "hash": "e6e28e01"
       },
       {
         "type": "feat",
@@ -985,7 +1021,7 @@
         "description": "Add markdown rendering in chat messages",
         "scope": null,
         "author": "Claude",
-        "hash": "59a7543"
+        "hash": "59a7543a"
       },
       {
         "type": "fix",
@@ -994,7 +1030,7 @@
         "description": "Update default Anthropic model to Claude Sonnet 4.5",
         "scope": null,
         "author": "Claude",
-        "hash": "834dd84"
+        "hash": "834dd842"
       },
       {
         "type": "feat",
@@ -1003,7 +1039,7 @@
         "description": "Improve AI music agent UX and system prompt",
         "scope": null,
         "author": "Claude",
-        "hash": "14880d7"
+        "hash": "14880d75"
       },
       {
         "type": "docs",
@@ -1012,7 +1048,7 @@
         "description": "Add autonomous agents analysis from research",
         "scope": null,
         "author": "Claude",
-        "hash": "b7a5df1"
+        "hash": "b7a5df15"
       },
       {
         "type": "refactor",
@@ -1021,7 +1057,7 @@
         "description": "Simplify system prompt to ~1600 chars",
         "scope": null,
         "author": "Claude",
-        "hash": "744f641"
+        "hash": "744f641e"
       },
       {
         "type": "feat",
@@ -1030,7 +1066,7 @@
         "description": "Enhanced system prompt with detailed tools, Strudel reference and examples (~7k chars)",
         "scope": null,
         "author": "Claude",
-        "hash": "74e6d58"
+        "hash": "74e6d587"
       },
       {
         "type": "feat",
@@ -1039,7 +1075,7 @@
         "description": "Enhanced system prompt with creativity, visualization, sliders and complex examples",
         "scope": null,
         "author": "Claude",
-        "hash": "f7304b2"
+        "hash": "f7304b2d"
       },
       {
         "type": "feat",
@@ -1048,7 +1084,7 @@
         "description": "Enhanced system prompt with creativity, visualization, sliders and complex examples",
         "scope": null,
         "author": "Claude",
-        "hash": "23b6e6d"
+        "hash": "23b6e6da"
       },
       {
         "type": "feat",
@@ -1057,7 +1093,7 @@
         "description": "Add volume control, undo/redo, selection support and highlight tool",
         "scope": null,
         "author": "Claude",
-        "hash": "94b60cd"
+        "hash": "94b60cde"
       },
       {
         "type": "docs",
@@ -1066,7 +1102,7 @@
         "description": "Add Bulka AI Agent documentation page",
         "scope": null,
         "author": "Claude",
-        "hash": "b1d722b"
+        "hash": "b1d722b0"
       },
       {
         "type": "feat",
@@ -1075,7 +1111,7 @@
         "description": "Persist chat dialog in localStorage",
         "scope": null,
         "author": "Claude",
-        "hash": "85e79f3"
+        "hash": "85e79f3e"
       },
       {
         "type": "fix",
@@ -1084,7 +1120,7 @@
         "description": "Change superdough import to webaudio for Vercel client build",
         "scope": null,
         "author": "Claude",
-        "hash": "3b95b0f"
+        "hash": "3b95b0f3"
       },
       {
         "type": "feat",
@@ -1093,7 +1129,7 @@
         "description": "UI improvements and rate limit handling",
         "scope": null,
         "author": "Claude",
-        "hash": "3427c6c"
+        "hash": "3427c6cd"
       },
       {
         "type": "feat",
@@ -1102,7 +1138,7 @@
         "description": "Add Claude extended thinking streaming support",
         "scope": null,
         "author": "Claude",
-        "hash": "f78c24b"
+        "hash": "f78c24b7"
       },
       {
         "type": "feat",
@@ -1111,7 +1147,7 @@
         "description": "Add GPT-5.1 Responses API with reasoning summaries streaming",
         "scope": null,
         "author": "Claude",
-        "hash": "8a706ab"
+        "hash": "8a706ab4"
       },
       {
         "type": "feat",
@@ -1120,7 +1156,7 @@
         "description": "UI tweaks and short URLs",
         "scope": null,
         "author": "Claude",
-        "hash": "7f1d1e8"
+        "hash": "7f1d1e8f"
       },
       {
         "type": "fix",
@@ -1129,7 +1165,7 @@
         "description": "Prevent AI agent from inventing sample pack names",
         "scope": null,
         "author": "Claude",
-        "hash": "8222dc0"
+        "hash": "8222dc00"
       },
       {
         "type": "fix",
@@ -1138,7 +1174,7 @@
         "description": "Volume slider as floating overlay + mute state sync",
         "scope": null,
         "author": "Claude",
-        "hash": "c1a7cdf"
+        "hash": "c1a7cdf7"
       },
       {
         "type": "fix",
@@ -1147,7 +1183,7 @@
         "description": "Volume slider UX improvements and undo/redo fixes",
         "scope": null,
         "author": "Claude",
-        "hash": "00bf123"
+        "hash": "00bf123e"
       },
       {
         "type": "feat",
@@ -1156,7 +1192,7 @@
         "description": "Multi-provider API keys + Gemini support + reasoning models fix",
         "scope": null,
         "author": "Claude",
-        "hash": "fdf8f96"
+        "hash": "fdf8f964"
       },
       {
         "type": "fix",
@@ -1165,7 +1201,7 @@
         "description": "Update to December 2025 model names",
         "scope": null,
         "author": "Claude",
-        "hash": "211f68d"
+        "hash": "211f68dd"
       },
       {
         "type": "fix",
@@ -1174,7 +1210,7 @@
         "description": "Use real working model names",
         "scope": null,
         "author": "Claude",
-        "hash": "a504034"
+        "hash": "a5040342"
       },
       {
         "type": "feat",
@@ -1183,7 +1219,7 @@
         "description": "Dynamic model fetching from provider APIs",
         "scope": null,
         "author": "Claude",
-        "hash": "95393fe"
+        "hash": "95393fe9"
       },
       {
         "type": "fix",
@@ -1192,7 +1228,7 @@
         "description": "Proper model filtering and thinking display",
         "scope": null,
         "author": "Claude",
-        "hash": "297e768"
+        "hash": "297e7686"
       }
     ]
   },
@@ -1207,7 +1243,7 @@
         "description": "Set Pixel Sunrise as default tune",
         "scope": null,
         "author": "Claude",
-        "hash": "222e6d2"
+        "hash": "222e6d2b"
       },
       {
         "type": "other",
@@ -1216,7 +1252,7 @@
         "description": "Fix default tune - exact Pixel Sunrise code",
         "scope": null,
         "author": "Claude",
-        "hash": "54cba34"
+        "hash": "54cba34e"
       },
       {
         "type": "fix",
@@ -1225,7 +1261,7 @@
         "description": "use simpleTune (Pixel Sunrise) as default",
         "scope": null,
         "author": "Claude",
-        "hash": "1f5e08a"
+        "hash": "1f5e08a9"
       },
       {
         "type": "other",
@@ -1234,7 +1270,7 @@
         "description": "Add samples() to load RolandTR808 drum machines",
         "scope": null,
         "author": "Claude",
-        "hash": "90cb836"
+        "hash": "90cb836a"
       },
       {
         "type": "other",
@@ -1243,7 +1279,7 @@
         "description": "Load all sample packs globally in prebake instead of per-tune",
         "scope": null,
         "author": "Claude",
-        "hash": "818c248"
+        "hash": "818c2489"
       },
       {
         "type": "other",
@@ -1252,7 +1288,7 @@
         "description": "Update composer credit to Nerual Dreming",
         "scope": null,
         "author": "Claude",
-        "hash": "886c609"
+        "hash": "886c6096"
       },
       {
         "type": "other",
@@ -1261,7 +1297,7 @@
         "description": "Add Vercel config to deploy full website instead of minimal example",
         "scope": null,
         "author": "Claude",
-        "hash": "4dbc703"
+        "hash": "4dbc703b"
       },
       {
         "type": "other",
@@ -1270,7 +1306,7 @@
         "description": "Fix Vercel output directory - remove framework override",
         "scope": null,
         "author": "Claude",
-        "hash": "2192d80"
+        "hash": "2192d80f"
       },
       {
         "type": "other",
@@ -1279,7 +1315,7 @@
         "description": "Replace default tune with Pixel Sunrise by Nerual Dreming",
         "scope": null,
         "author": "Claude",
-        "hash": "b90f290"
+        "hash": "b90f290c"
       },
       {
         "type": "other",
@@ -1288,7 +1324,7 @@
         "description": "Rebrand project to Bulka - Russian fork of Strudel",
         "scope": null,
         "author": "Claude",
-        "hash": "9890c75"
+        "hash": "9890c75b"
       },
       {
         "type": "other",
@@ -1297,7 +1333,7 @@
         "description": "Fix Vercel build config - explicitly build website directory",
         "scope": null,
         "author": "Claude",
-        "hash": "aa19cb9"
+        "hash": "aa19cb9f"
       },
       {
         "type": "other",
@@ -1306,7 +1342,7 @@
         "description": "Clean up branding - remove excessive attribution, add noto:bread favicon",
         "scope": null,
         "author": "Claude",
-        "hash": "881d536"
+        "hash": "881d5362"
       },
       {
         "type": "other",
@@ -1315,7 +1351,7 @@
         "description": "Локализация интерфейса на русский язык",
         "scope": null,
         "author": "Claude",
-        "hash": "a219d78"
+        "hash": "a219d784"
       },
       {
         "type": "other",
@@ -1324,7 +1360,7 @@
         "description": "Обновлён README - фокус на проект, а не на форк",
         "scope": null,
         "author": "Claude",
-        "hash": "babe5f6"
+        "hash": "babe5f6c"
       },
       {
         "type": "other",
@@ -1333,7 +1369,7 @@
         "description": "Исправлен switch в Panel.jsx - вкладки снова работают",
         "scope": null,
         "author": "Claude",
-        "hash": "4cd6467"
+        "hash": "4cd64670"
       },
       {
         "type": "other",
@@ -1342,7 +1378,7 @@
         "description": "Перевод встроенной справки API на русский язык",
         "scope": null,
         "author": "Claude",
-        "hash": "b419466"
+        "hash": "b4194669"
       },
       {
         "type": "other",
@@ -1351,7 +1387,7 @@
         "description": "Перевод документации и туториалов на русский язык",
         "scope": null,
         "author": "Claude",
-        "hash": "757a77e"
+        "hash": "757a77ec"
       },
       {
         "type": "other",
@@ -1360,7 +1396,7 @@
         "description": "Перевод навигации и Technical Manual на русский язык",
         "scope": null,
         "author": "Claude",
-        "hash": "1a8b387"
+        "hash": "1a8b387b"
       },
       {
         "type": "other",
@@ -1369,7 +1405,7 @@
         "description": "Добавлены кнопки копирования и вставки звуков",
         "scope": null,
         "author": "Claude",
-        "hash": "75584a5"
+        "hash": "75584a56"
       },
       {
         "type": "other",
@@ -1378,7 +1414,7 @@
         "description": "Исправлена кнопка вставки звука в редактор",
         "scope": null,
         "author": "Claude",
-        "hash": "d1e4161"
+        "hash": "d1e41614"
       },
       {
         "type": "other",
@@ -1387,7 +1423,7 @@
         "description": "Обновлены тексты и добавлена информация об авторе",
         "scope": null,
         "author": "Claude",
-        "hash": "ef3117d"
+        "hash": "ef3117d9"
       },
       {
         "type": "other",
@@ -1396,7 +1432,7 @@
         "description": "Добавлен фильтр по пакам для браузера семплов",
         "scope": null,
         "author": "Claude",
-        "hash": "4e27152"
+        "hash": "4e271525"
       },
       {
         "type": "other",
@@ -1405,7 +1441,7 @@
         "description": "Добавлена документация по сообществу и продвинутым интеграциям",
         "scope": null,
         "author": "Claude",
-        "hash": "582b9ee"
+        "hash": "582b9ee6"
       },
       {
         "type": "other",
@@ -1414,7 +1450,7 @@
         "description": "Add 5 new sample packs (4733 samples)",
         "scope": null,
         "author": "Claude",
-        "hash": "5c6b869"
+        "hash": "5c6b8694"
       },
       {
         "type": "other",
@@ -1423,7 +1459,7 @@
         "description": "Add tree view component and UX spec for samples browser",
         "scope": null,
         "author": "Claude",
-        "hash": "c1c18c0"
+        "hash": "c1c18c08"
       },
       {
         "type": "other",
@@ -1432,7 +1468,7 @@
         "description": "Integrate TreeView for samples browser",
         "scope": null,
         "author": "Claude",
-        "hash": "8e52982"
+        "hash": "8e52982c"
       },
       {
         "type": "other",
@@ -1441,7 +1477,7 @@
         "description": "Добавлена галерея треков от сообщества",
         "scope": null,
         "author": "Claude",
-        "hash": "b467be3"
+        "hash": "b467be34"
       },
       {
         "type": "other",
@@ -1450,7 +1486,7 @@
         "description": "Fix samples browser and add local sample packs",
         "scope": null,
         "author": "Claude",
-        "hash": "06a3bfc"
+        "hash": "06a3bfc8"
       },
       {
         "type": "other",
@@ -1459,7 +1495,7 @@
         "description": "Исправлены примеры в галерее треков",
         "scope": null,
         "author": "Claude",
-        "hash": "2a8e412"
+        "hash": "2a8e4120"
       },
       {
         "type": "other",
@@ -1468,7 +1504,7 @@
         "description": "Восстановлены оригинальные треки от сообщества",
         "scope": null,
         "author": "Claude",
-        "hash": "e4bf28c"
+        "hash": "e4bf28cd"
       },
       {
         "type": "other",
@@ -1477,7 +1513,7 @@
         "description": "Галерея с оригинальным кодом от сообщества",
         "scope": null,
         "author": "Claude",
-        "hash": "eea28db"
+        "hash": "eea28db1"
       },
       {
         "type": "other",
@@ -1486,7 +1522,7 @@
         "description": "Галерея с 15 треками от сообщества",
         "scope": null,
         "author": "Claude",
-        "hash": "57395fb"
+        "hash": "57395fb0"
       },
       {
         "type": "other",
@@ -1495,7 +1531,7 @@
         "description": "Load ALL Dirt-Samples via JSON + add local sample packs",
         "scope": null,
         "author": "Claude",
-        "hash": "3a883b5"
+        "hash": "3a883b54"
       },
       {
         "type": "other",
@@ -1504,7 +1540,7 @@
         "description": "Fix sample loading paths and add local sample packs",
         "scope": null,
         "author": "Claude",
-        "hash": "f1e65e4"
+        "hash": "f1e65e40"
       },
       {
         "type": "other",
@@ -1513,7 +1549,7 @@
         "description": "Fix _base paths in local sample JSON files",
         "scope": null,
         "author": "Claude",
-        "hash": "ad8e372"
+        "hash": "ad8e3725"
       }
     ]
   }

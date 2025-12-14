@@ -7,7 +7,7 @@ import Search from './Search';
 import CommandLineIcon from '@heroicons/react/20/solid/CommandLineIcon';
 import MobileNav from '../../docs/MobileNav';
 import { SIDEBAR } from '../../config';
-import { execSync } from 'child_process';
+import { GIT_COMMIT } from '../../version';
 
 type Props = {
   currentPage?: string;
@@ -20,14 +20,6 @@ const sidebar = SIDEBAR[langCode];
 
 const { BASE_URL } = import.meta.env;
 const baseNoTrailing = BASE_URL.endsWith('/') ? BASE_URL.slice(0, -1) : BASE_URL;
-
-// Get git commit hash
-let GIT_COMMIT = 'dev';
-try {
-  GIT_COMMIT = execSync('git rev-parse --short HEAD').toString().trim();
-} catch (e) {
-  // fallback to dev
-}
 ---
 
 <nav
