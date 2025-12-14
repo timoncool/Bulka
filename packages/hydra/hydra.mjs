@@ -3,8 +3,31 @@ import { controls, getTime, reify } from '@strudel/core';
 
 let latestOptions;
 let hydra;
+let hydraDisabled = false;
+
+// Check if Hydra is currently active (has canvas)
+export function isHydraActive() {
+  return !!document.getElementById('hydra-canvas');
+}
+
+// Set disabled state from external settings
+export function setHydraDisabledState(disabled) {
+  hydraDisabled = disabled;
+  if (disabled) {
+    clearHydra();
+  }
+}
+
+// Get current disabled state
+export function isHydraDisabledState() {
+  return hydraDisabled;
+}
 
 export async function initHydra(options = {}) {
+  // If Hydra is globally disabled, don't initialize
+  if (hydraDisabled) {
+    return null;
+  }
   // reset if options have changed since last init
   if (latestOptions && JSON.stringify(latestOptions) !== JSON.stringify(options)) {
     document.getElementById('hydra-canvas')?.remove();

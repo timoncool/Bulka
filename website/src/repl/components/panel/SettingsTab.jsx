@@ -9,6 +9,7 @@ import { confirmDialog } from '../../util.mjs';
 import { DEFAULT_MAX_POLYPHONY, setMaxPolyphony, setMultiChannelOrbits } from '@strudel/webaudio';
 import { ActionButton, SpecialActionButton } from '../button/action-button.jsx';
 import { ImportPrebakeScriptButton } from './ImportPrebakeScriptButton.jsx';
+import { setHydraDisabledState, clearHydra } from '@strudel/hydra';
 
 function Checkbox({ label, value, onChange, disabled = false }) {
   return (
@@ -116,6 +117,7 @@ export function SettingsTab({ started }) {
     isMultiCursorEnabled,
     patternAutoStart,
     includePrebakeScriptInShare,
+    isHydraDisabled,
   } = useSettings();
   const shouldAlwaysSync = isUdels();
   const canChangeAudioDevice = AudioContext.prototype.setSinkId != null;
@@ -316,6 +318,18 @@ export function SettingsTab({ started }) {
           label="Отключить CSS-анимации"
           onChange={(cbEvent) => settingsMap.setKey('isCSSAnimationDisabled', cbEvent.target.checked)}
           value={isCSSAnimationDisabled}
+        />
+        <Checkbox
+          label="Отключить Hydra визуалы"
+          onChange={(cbEvent) => {
+            const disabled = cbEvent.target.checked;
+            settingsMap.setKey('isHydraDisabled', disabled);
+            setHydraDisabledState(disabled);
+            if (disabled) {
+              clearHydra();
+            }
+          }}
+          value={isHydraDisabled}
         />
         <Checkbox
           label="Авто-старт паттерна при изменении"

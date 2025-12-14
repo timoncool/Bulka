@@ -61,6 +61,7 @@ export const defaultSettings = {
   audioEngineTarget: audioEngineTargets.webaudio,
   isButtonRowHidden: false,
   isCSSAnimationDisabled: false,
+  isHydraDisabled: false,
   maxPolyphony: 128,
   multiChannelOrbits: false,
   includePrebakeScriptInShare: true,
@@ -111,6 +112,7 @@ export function useSettings() {
     isPatternHighlightingEnabled: parseBoolean(state.isPatternHighlightingEnabled),
     isButtonRowHidden: parseBoolean(state.isButtonRowHidden),
     isCSSAnimationDisabled: parseBoolean(state.isCSSAnimationDisabled),
+    isHydraDisabled: parseBoolean(state.isHydraDisabled),
     isTooltipEnabled: parseBoolean(state.isTooltipEnabled),
     isLineWrappingEnabled: parseBoolean(state.isLineWrappingEnabled),
     isFlashEnabled: parseBoolean(state.isFlashEnabled),
@@ -178,3 +180,6 @@ export const getApiKeyForProvider = (provider, settings) => {
 
 // Volume settings
 export const setMasterVolumeSettings = (volume) => settingsMap.setKey('masterVolume', volume);
+
+// Hydra settings
+export const setHydraDisabled = (disabled) => settingsMap.setKey('isHydraDisabled', disabled);

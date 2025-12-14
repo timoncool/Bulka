@@ -4,9 +4,12 @@ import SpeakerWaveIcon from '@heroicons/react/20/solid/SpeakerWaveIcon';
 import SpeakerXMarkIcon from '@heroicons/react/20/solid/SpeakerXMarkIcon';
 import ArrowUturnLeftIcon from '@heroicons/react/20/solid/ArrowUturnLeftIcon';
 import ArrowUturnRightIcon from '@heroicons/react/20/solid/ArrowUturnRightIcon';
+import EyeIcon from '@heroicons/react/20/solid/EyeIcon';
+import EyeSlashIcon from '@heroicons/react/20/solid/EyeSlashIcon';
 import cx from '@src/cx.mjs';
-import { useSettings, setIsZen, setMasterVolumeSettings } from '../../settings.mjs';
+import { useSettings, setIsZen, setMasterVolumeSettings, settingsMap } from '../../settings.mjs';
 import { setMasterVolume } from '@strudel/webaudio';
+import { setHydraDisabledState, clearHydra } from '@strudel/hydra';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { GIT_COMMIT } from '../../version';
 import { Recorder } from './Recorder';
@@ -22,7 +25,7 @@ export function Header({ context, embedded = false }) {
   const { started, pending, isDirty, activeCode, handleTogglePlay, handleEvaluate, handleShuffle, editorRef } =
     context;
   const isEmbedded = typeof window !== 'undefined' && (embedded || window.location !== window.parent.location);
-  const { isZen, isButtonRowHidden, isCSSAnimationDisabled, fontFamily, masterVolume } = useSettings();
+  const { isZen, isButtonRowHidden, isCSSAnimationDisabled, fontFamily, masterVolume, isHydraDisabled } = useSettings();
 
   // Share toast state
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
@@ -183,6 +186,16 @@ export function Header({ context, embedded = false }) {
     }
   }, [isMuted, volume, prevVolume]);
 
+  // Handle Hydra visual toggle
+  const handleHydraToggle = useCallback(() => {
+    const newDisabled = !isHydraDisabled;
+    settingsMap.setKey('isHydraDisabled', newDisabled);
+    setHydraDisabledState(newDisabled);
+    if (newDisabled) {
+      clearHydra();
+    }
+  }, [isHydraDisabled]);
+
   // Handle undo
   const handleUndo = useCallback(() => {
     editorRef?.current?.undo?.();
@@ -262,6 +275,20 @@ export function Header({ context, embedded = false }) {
               )}
             </button>
           </div>
+        )}
+        {/* Hydra visual toggle button */}
+        {!isZen && !isButtonRowHidden && (
+          <button
+            onClick={handleHydraToggle}
+            title={isHydraDisabled ? 'включить визуалы' : 'отключить визуалы'}
+            className="hover:opacity-50 p-1 ml-1"
+          >
+            {isHydraDisabled ? (
+              <EyeSlashIcon className="w-5 h-5 text-foreground" />
+            ) : (
+              <EyeIcon className="w-5 h-5 text-foreground" />
+            )}
+          </button>
         )}
         {/* Recorder - right after volume */}
         {!isZen && !isButtonRowHidden && !isEmbedded && (
