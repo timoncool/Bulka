@@ -30,10 +30,11 @@ function CheckIcon() {
   );
 }
 
-function EditIcon() {
+function OpenInEditorIcon() {
   return (
     <svg className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
-      <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+      <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+      <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
     </svg>
   );
 }
@@ -263,14 +264,14 @@ function TrackCard({ pattern, onRefresh }) {
             {copied && <span className="text-sm">Скопировано</span>}
           </button>
 
-          {/* Edit */}
+          {/* Open in Editor */}
           <button
             onClick={handleEdit}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-background hover:bg-background/80 text-foreground/60 hover:text-foreground transition-colors"
             title="Открыть в редакторе"
           >
-            <EditIcon />
-            <span className="text-sm hidden sm:inline">Редактировать</span>
+            <OpenInEditorIcon />
+            <span className="text-sm hidden sm:inline">Открыть</span>
           </button>
         </div>
       </div>
