@@ -46,11 +46,11 @@ export const SIDEBAR: Sidebar = {
   en: {
     'Презентация': [
       { text: 'Что такое Bulka?', link: 'workshop/getting-started' },
-      { text: 'Что нового', link: 'whatsnew' },
       { text: 'Лента', link: 'feed' },
       { text: 'Галерея треков', link: 'intro/gallery' },
       { text: 'Витрина', link: 'intro/showcase' },
       { text: 'Блог', link: 'blog' },
+      { text: 'Что нового', link: 'whatsnew' },
     ],
     'Воркшоп': [
       // { text: 'Начало работы', link: 'workshop/getting-started' },
