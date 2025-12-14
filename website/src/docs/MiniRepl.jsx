@@ -5,6 +5,7 @@ import { getDrawContext, getPunchcardPainter } from '@strudel/draw';
 import { transpiler } from '@strudel/transpiler';
 import { getAudioContext, webaudioOutput, initAudioOnFirstClick } from '@strudel/webaudio';
 import { StrudelMirror } from '@strudel/codemirror';
+import { clearHydra } from '@strudel/hydra';
 import { prebake } from '../repl/prebake.mjs';
 import { loadModules, setVersionDefaultsFrom } from '../repl/util.mjs';
 import Claviature from '@components/Claviature';
@@ -80,8 +81,8 @@ export function MiniRepl({
         setReplState({ ...state });
       },
       onToggle: (playing) => {
-        if (!playing) {
-          // clearHydra(); // TBD: doesn't work with multiple MiniRepl's on a page
+        if (playing) {
+          clearHydra();
         }
       },
       beforeStart: () => audioReady,
