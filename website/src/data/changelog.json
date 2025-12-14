@@ -7,6 +7,114 @@
         "type": "fix",
         "typeLabel": "Исправления",
         "emoji": "🐛",
+        "description": "очистка Hydra при включении нового трека",
+        "scope": null,
+        "author": "Claude",
+        "hash": "90e1d9c1"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "очистка Hydra при включении нового трека",
+        "scope": null,
+        "author": "Claude",
+        "hash": "62d02b12"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "откатить ленту к состоянию до 3 колонок",
+        "scope": null,
+        "author": "Claude",
+        "hash": "f6bd6639"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "вернуть центрирование контейнера ленты",
+        "scope": null,
+        "author": "Claude",
+        "hash": "bf227ad0"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "вернуть 2 колонки в ленте вместо 3",
+        "scope": null,
+        "author": "Claude",
+        "hash": "521d4cd0"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "убрать устаревшие названия моделей из описания AI-ассистента",
+        "scope": null,
+        "author": "Claude",
+        "hash": "a65c61b7"
+      },
+      {
+        "type": "polish",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "сделать описания возможностей более привлекательными",
+        "scope": null,
+        "author": "Claude",
+        "hash": "54e93d7e"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "убрать hydra demo из примеров и дополнить возможности Bulka",
+        "scope": null,
+        "author": "Claude",
+        "hash": "20c7fef0"
+      },
+      {
+        "type": "merge",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "разрешить конфликт в блоге про Hydra",
+        "scope": null,
+        "author": "Claude",
+        "hash": "8eedb425"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "переписать пост про Hydra - конкретно про initImage/initVideo",
+        "scope": null,
+        "author": "Claude",
+        "hash": "f08c58e9"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "исправить шеринг из ленты и расширить контейнер",
+        "scope": null,
+        "author": "Claude",
+        "hash": "1247b2a1"
+      },
+      {
+        "type": "blog",
+        "typeLabel": "Блог",
+        "emoji": "📝",
+        "description": "пост про расширение Hydra и документацию",
+        "scope": null,
+        "author": "Claude",
+        "hash": "ddecebb1"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
         "description": "дедупликация в changelog",
         "scope": null,
         "author": "Claude",

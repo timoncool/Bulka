@@ -7,7 +7,7 @@
     "setup": "pnpm i",
     "changelog": "node scripts/generate-changelog.js",
     "pretest": "npm run jsdoc-json",
-    "prebuild": "npm run jsdoc-json",
+    "prebuild": "npm run jsdoc-json && npm run changelog",
     "prestart": "npm run jsdoc-json",
     "test": "npm run pretest && vitest run --version",
     "test-ui": "npm run pretest && vitest --ui",
