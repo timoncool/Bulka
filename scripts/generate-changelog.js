@@ -241,6 +241,14 @@ function generateMarkdown(groupedByDate) {
 }
 
 function mergeChangelogs(existing, newChanges) {
+  // Собираем все известные хэши для дедупликации
+  const knownHashes = new Set();
+  for (const day of existing) {
+    for (const change of day.changes) {
+      knownHashes.add(change.hash);
+    }
+  }
+
   // Создаём map по датам для быстрого доступа
   const byDate = {};
 
@@ -249,14 +257,26 @@ function mergeChangelogs(existing, newChanges) {
     byDate[day.date] = { ...day, changes: [...day.changes] };
   }
 
-  // Добавляем новые (в начало каждого дня)
+  // Добавляем только новые коммиты (без дубликатов)
   for (const day of newChanges) {
+    const uniqueChanges = day.changes.filter(c => !knownHashes.has(c.hash));
+    if (uniqueChanges.length === 0) continue;
+
     if (byDate[day.date]) {
-      // День уже есть - добавляем новые коммиты в начало
-      byDate[day.date].changes = [...day.changes, ...byDate[day.date].changes];
+      byDate[day.date].changes = [...uniqueChanges, ...byDate[day.date].changes];
     } else {
-      byDate[day.date] = day;
+      byDate[day.date] = { ...day, changes: uniqueChanges };
     }
+  }
+
+  // Дедупликация внутри каждого дня (на всякий случай)
+  for (const date of Object.keys(byDate)) {
+    const seen = new Set();
+    byDate[date].changes = byDate[date].changes.filter(c => {
+      if (seen.has(c.hash)) return false;
+      seen.add(c.hash);
+      return true;
+    });
   }
 
   // Сортируем по датам (новые сверху)
