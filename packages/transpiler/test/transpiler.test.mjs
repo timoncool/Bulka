@@ -42,4 +42,18 @@ describe('transpiler', () => {
       [12, 14],
     ]);
   });
+  it('does not parse URL strings in Hydra source functions as mini-notation', () => {
+    // initImage, initVideo, loadScript should preserve URLs without mini-notation parsing
+    expect(transpiler('s0.initImage("https://example.com/image.jpg")', simple).output).toEqual(
+      "s0.initImage('https://example.com/image.jpg');",
+    );
+    expect(transpiler('s0.initVideo("https://example.com/video.mp4")', simple).output).toEqual(
+      "s0.initVideo('https://example.com/video.mp4');",
+    );
+    expect(transpiler('loadScript("https://cdn.example.com/lib.js")', simple).output).toEqual(
+      "loadScript('https://cdn.example.com/lib.js');",
+    );
+    // But regular strings should still be parsed as mini-notation
+    expect(transpiler('s("bd sd")', simple).output).toEqual("s(m('bd sd', 2));");
+  });
 });

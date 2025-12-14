@@ -8,6 +8,38 @@ export function registerWidgetType(type) {
   widgetMethods.push(type);
 }
 
+// Functions that accept URLs and should NOT have their string arguments parsed as mini-notation
+// This prevents URLs like "https://example.com/image.jpg" from being broken by the "/" operator
+const urlFunctions = new Set([
+  'initImage',
+  'initVideo',
+  'initCam',
+  'initScreen',
+  'initStream',
+  'loadScript',
+]);
+
+function isUrlFunctionArgument(node, parent) {
+  if (!parent || parent.type !== 'CallExpression') {
+    return false;
+  }
+  // Check for method calls like s0.initImage("url")
+  if (parent.callee?.type === 'MemberExpression') {
+    const methodName = parent.callee.property?.name;
+    if (urlFunctions.has(methodName)) {
+      return true;
+    }
+  }
+  // Check for direct function calls like loadScript("url")
+  if (parent.callee?.type === 'Identifier') {
+    const funcName = parent.callee.name;
+    if (urlFunctions.has(funcName)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 let languages = new Map();
 // config = { getLocations: (code: string, offset?: number) => number[][] }
 // see mondough.mjs for example use
@@ -72,7 +104,7 @@ export function transpiler(input, options = {}) {
         emitMiniLocations && collectMiniLocations(raw, node);
         return this.replace(miniWithLocation(raw, node));
       }
-      if (isStringWithDoubleQuotes(node)) {
+      if (isStringWithDoubleQuotes(node) && !isUrlFunctionArgument(node, parent)) {
         const { value } = node;
         this.skip();
         emitMiniLocations && collectMiniLocations(value, node);
