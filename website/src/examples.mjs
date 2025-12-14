@@ -1,40 +1,44 @@
 export const examples = [
-  `// "test" @by mustbetuesday
+  `await initHydra()
 
+// ПИКСЕЛЬНАЯ АУДИОРЕАКТИВНАЯ HYDRA
+osc(20, 0.05, 1)
+  .pixelate(H("20 60 30 80"), H("15 40 25 60"))
+  .modulateScale(noise(3,0.3), H("0.2 0.6 0.3"))
+  .contrast(1.2)
+  .brightness(-0.2)
+  .out()
+
+// "coastline" @by eddyflux
+// @version 1.0
+samples('github:eddyflux/crate')
+setcps(.75)
+let chords = chord("<Bbm9 Fm9>/4").dict('ireal')
 stack(
-
-//drums
-sound([~ ~ oh ~ ] [~ ~ ~ ~ ] [~ ~ ~ ~ ] [~ ~ ~ ~ ], [hh hh ~ ~ ] [hh ~ hh ~ ] [hh ~ hh ~ ] [hh ~ <hh [hh*4]> [<~ hh*4>] ], [~ ~ ~ ~ ] [cp ~ ~ ~ ] [~ ~ <~ cp> ~ ] [cp ~ ~ ~ ], [bd ~ ~ ~ ] [~ ~ ~ bd] [~ ~ bd ~ ] [~ ~ ~ bd]).gain(0)
-,
-
-//piano
-note(
-"48*4".add("12").add("<0 4 7 4>*4")
-.add("[0 <5 -2 5 -5> <0 5> <0 -5 0 [0 -5]>]/4")
+  stack( // DRUMS
+    s("bd").struct("<[x*<1 2> [~@3 x]] x>"),
+    s("~ [rim, sd:<2 3>]").room("<0 .2>"),
+    n("[0 <1 3>]*<2!3 4>").s("hh"),
+    s("rd:<1!3 2>*2").mask("<0 0 1 1>/16").gain(.5)
+  ).bank('crate')
+  .mask("<[0 1] 1 1 1>/16".early(.5))
+  , // CHORDS
+  chords.offset(-1).voicing().s("gm_epiano1:1")
+  .phaser(4).room(.5)
+  , // MELODY
+  n("<0!3 1*2>").set(chords).mode("root:g2")
+  .voicing().s("gm_acoustic_bass"),
+  chords.n("[0 <4 3 <2 5>>*2](<3 5>,8)")
+  .anchor("D5").voicing()
+  .segment(4).clip(rand.range(.4,.8))
+  .room(.75).shape(.3).delay(.25)
+  .fm(sine.range(3,8).slow(8))
+  .lpf(sine.range(500,1000).slow(8)).lpq(5)
+  .rarely(ply("2")).chunk(4, fast(2))
+  .gain(perlin.range(.6, .9))
+  .mask("<0 1 1 0>/16")
 )
-.sound("piano").delay(".6:.25")
-.lpf(sine.range(500, 2000))
-,
-
-//bass
-note(
-"36"
-.add("0 12") .add("[0 <0 2> <0 5> <0 -5 0 [0 -5]>]/16")
-)
-.struct("<[x ] [x x] [ x] [x ~] ~>")
-.sound("gm_electric_bass_finger").fast(4)
-.adsr("0:1:.5:1")
-,
-//violin
-note("<67 [69 67] [64@3 62] [60@3 62] 64 [65 64] [62@2 60 59] [55@3 ~] 67 [69 67] [64@3 62] [60@3 62] [64@3 65] [64 62] 60 ~>")
-.sound("gm_violin").adsr(".2:.8:.8:.2")//.gain(0)
-,
-//violin 2
-note("<64 [65 64] [60@3 60] [55@3 55] 60 [60 60] [57@2 57 57] [50@3 ~] 64 [65 64] [60@3 60] [55@3 55] [60@3 60] [55 55] 53 ~>")
-.sound("gm_violin").adsr(".2:.8:.5:.2")
-).cpm(100/4)
-
-.pianoroll()`,
+.late("[0 .01]*4").late("[0 .01]*2").size(4)`,
   `// @title Unnamed Rhythmic Pattern 4/4 + ~ January 6, 2025
 // @by @quincy@chaos.social
 // @license CC0
@@ -1432,7 +1436,17 @@ async function hubda(orgList,repoList=''){const orgs=listToArray(orgList);const 
 const repoChoices=listToArray(repoList);for(const orgChoice of orgChoices){for(const repoChoice of repoChoices){orgRepos.push({org:orgChoice,repo:repoChoice})}}
 const addresses=orgRepos.map(({org,repo})=>'github:'+org+'/'+repo);for(const address of addresses){samples(address)}}
 window.speechda=speechda;window.spagda=spagda;window.spag=spag;window.hubda=hubda;hubda('mot4i','garden');hubda('eddyflux','crate');hubda('yaxu','clean-breaks')`,
-  `// "coastline" @by eddyflux
+  `await initHydra()
+
+// ПИКСЕЛЬНАЯ АУДИОРЕАКТИВНАЯ HYDRA
+osc(20, 0.05, 1)
+  .pixelate(H("20 60 30 80"), H("15 40 25 60"))
+  .modulateScale(noise(3,0.3), H("0.2 0.6 0.3"))
+  .contrast(1.2)
+  .brightness(-0.2)
+  .out()
+
+// "coastline" @by eddyflux
 // @version 1.0
 samples('github:eddyflux/crate')
 setcps(.75)
