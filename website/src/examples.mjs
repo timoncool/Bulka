@@ -1432,7 +1432,17 @@ async function hubda(orgList,repoList=''){const orgs=listToArray(orgList);const 
 const repoChoices=listToArray(repoList);for(const orgChoice of orgChoices){for(const repoChoice of repoChoices){orgRepos.push({org:orgChoice,repo:repoChoice})}}
 const addresses=orgRepos.map(({org,repo})=>'github:'+org+'/'+repo);for(const address of addresses){samples(address)}}
 window.speechda=speechda;window.spagda=spagda;window.spag=spag;window.hubda=hubda;hubda('mot4i','garden');hubda('eddyflux','crate');hubda('yaxu','clean-breaks')`,
-  `// "coastline" @by eddyflux
+  `await initHydra()
+
+// ПИКСЕЛЬНАЯ АУДИОРЕАКТИВНАЯ HYDRA
+osc(20, 0.05, 1)
+  .pixelate(H("20 60 30 80"), H("15 40 25 60"))
+  .modulateScale(noise(3,0.3), H("0.2 0.6 0.3"))
+  .contrast(1.2)
+  .brightness(-0.2)
+  .out()
+
+// "coastline" @by eddyflux
 // @version 1.0
 samples('github:eddyflux/crate')
 setcps(.75)
