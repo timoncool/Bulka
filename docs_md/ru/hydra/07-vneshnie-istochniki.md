@@ -102,17 +102,48 @@ s0.initImage(url)
 
 **Загрузка изображения:**
 ```javascript
-s0.initImage("https://example.com/image.jpg")
+await initHydra()
+
+s0.initImage("https://upload.wikimedia.org/wikipedia/commons/2/25/Hydra-Foto.jpg")
 src(s0).out()
 ```
 
-**Изображение с эффектами:**
+**Изображение с калейдоскопом:**
 ```javascript
-s0.initImage("https://upload.wikimedia.org/wikipedia/commons/2/2a/Heckert_GNU_white.svg")
+await initHydra()
+
+s0.initImage("https://upload.wikimedia.org/wikipedia/commons/2/25/Hydra-Foto.jpg")
 src(s0)
   .kaleid(6)
-  .modulate(noise(3), 0.2)
   .out()
+```
+
+**Изображение как модулятор осциллятора:**
+```javascript
+await initHydra()
+
+s0.initImage("https://upload.wikimedia.org/wikipedia/commons/2/25/Hydra-Foto.jpg")
+osc(20, 0.05, 1)
+  .modulate(src(s0), 0.5)
+  .out()
+```
+
+**Глитч-эффект с изображением и музыкой:**
+```javascript
+await initHydra()
+
+s0.initImage("https://upload.wikimedia.org/wikipedia/commons/2/25/Hydra-Foto.jpg")
+src(s0)
+  .pixelate(H("20 40 60 80"), H("15 30 45 60"))
+  .modulate(osc(3, 0.1, 0.5), 0.2)
+  .kaleid(H("<3 4 5 6>"))
+  .out()
+
+// Ambient музыка
+note("[c3 eb3 g3 bb3]/4")
+  .s("sawtooth")
+  .lpf(sine.range(300, 800).slow(8))
+  .room(0.8)
 ```
 
 ### Решение проблем CORS
@@ -143,25 +174,54 @@ s0.initVideo(url)
 
 **Загрузка видео:**
 ```javascript
-s0.initVideo("https://example.com/video.mp4")
+await initHydra()
+
+s0.initVideo("https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/720/Big_Buck_Bunny_720_10s_1MB.mp4")
 src(s0).out()
+```
+
+**Видео с калейдоскопом:**
+```javascript
+await initHydra()
+
+s0.initVideo("https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/720/Big_Buck_Bunny_720_10s_1MB.mp4")
+src(s0)
+  .kaleid(4)
+  .colorama(0.3)
+  .out()
+```
+
+**Видео как модулятор:**
+```javascript
+await initHydra()
+
+s0.initVideo("https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/720/Big_Buck_Bunny_720_10s_1MB.mp4")
+osc(10, 0.1, 0.5)
+  .modulate(src(s0), 0.3)
+  .out()
 ```
 
 **Управление воспроизведением:**
 ```javascript
-s0.initVideo("video.mp4")
+await initHydra()
+
+s0.initVideo("https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/720/Big_Buck_Bunny_720_10s_1MB.mp4")
 
 // Доступ к HTML video элементу
 s0.src.playbackRate = 0.5  // Замедлить в 2 раза
-s0.src.currentTime = 10    // Перемотать на 10 секунду
+s0.src.currentTime = 2     // Перемотать на 2 секунду
 s0.src.loop = true         // Зациклить
+
+src(s0).out()
 ```
 
-**Видео с эффектами:**
+**Видео с пиксельным эффектом:**
 ```javascript
-s0.initVideo("video.mp4")
+await initHydra()
+
+s0.initVideo("https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/720/Big_Buck_Bunny_720_10s_1MB.mp4")
 src(s0)
-  .pixelate(20, 20)
+  .pixelate(H("20 40 60"), H("15 30 45"))
   .colorama(0.5)
   .out()
 ```
