@@ -148,10 +148,36 @@ export function confirmDialog(msg) {
 let lastShared;
 let lastShareHash;
 
+// Validate code before sharing
+function isValidCode(code) {
+  if (!code || typeof code !== 'string') return false;
+
+  const trimmed = code.trim();
+
+  // Too short
+  if (trimmed.length < 10) return false;
+
+  // Contains only comments or loading placeholders
+  const withoutComments = trimmed.replace(/\/\/.*$/gm, '').replace(/\/\*[\s\S]*?\*\//g, '').trim();
+  if (withoutComments.length < 5) return false;
+
+  // Specific bad patterns
+  const badPatterns = ['// LOADING', '//LOADING', 'LOADING'];
+  if (badPatterns.some(p => trimmed.toUpperCase().includes(p))) return false;
+
+  return true;
+}
+
 // New shareCode that returns data for ShareDialog
 export async function shareCode(codeToShare, isPublic = true) {
   try {
-    // Check if already shared this exact code
+    // Validate code first
+    if (!isValidCode(codeToShare)) {
+      logger('Код слишком короткий или пустой', 'error');
+      return { success: false, error: 'Invalid code' };
+    }
+
+    // Check if already shared this exact code (local cache)
     if (lastShared === codeToShare && lastShareHash) {
       const shareUrl = window.location.origin + window.location.pathname + '?' + lastShareHash;
       return {
@@ -164,6 +190,30 @@ export async function shareCode(codeToShare, isPublic = true) {
 
     // Try to create short URL via Supabase
     try {
+      // First check if this code already exists in DB
+      const { data: existing } = await supabase
+        .from('code_v1')
+        .select('hash')
+        .eq('code', codeToShare)
+        .limit(1)
+        .single();
+
+      if (existing?.hash) {
+        // Code already exists, return existing link
+        const shareUrl = window.location.origin + window.location.pathname + '?' + existing.hash;
+        lastShared = codeToShare;
+        lastShareHash = existing.hash;
+
+        logger('Ссылка скопирована!', 'highlight');
+        return {
+          success: true,
+          shareUrl,
+          hash: existing.hash,
+          isExisting: true
+        };
+      }
+
+      // Create new entry
       const hash = nanoid(12);
       const { error } = await supabase.from('code_v1').insert([{
         code: codeToShare,
