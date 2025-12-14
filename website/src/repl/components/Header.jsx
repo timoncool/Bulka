@@ -33,7 +33,8 @@ export function Header({ context, embedded = false }) {
 
   // Handle share button click
   const handleShareClick = useCallback(async () => {
-    const code = activeCode || '';
+    // Берём код из редактора напрямую (editorRef.current.code)
+    const code = editorRef?.current?.code || activeCode || '';
     const result = await shareCode(code, true);
 
     if (result.success) {
@@ -42,7 +43,7 @@ export function Header({ context, embedded = false }) {
       setIsPublic(true);
       setIsShareDialogOpen(true);
     }
-  }, [activeCode]);
+  }, [activeCode, editorRef]);
 
   // Handle public toggle change
   const handlePublicChange = useCallback(async (checked) => {
