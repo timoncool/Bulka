@@ -69,6 +69,7 @@ export const SIDEBAR: Sidebar = {
       { text: 'Введение в Hydra', link: 'hydra/intro' },
       { text: 'Интерактивный туториал', link: 'hydra/tutorial' },
       { text: 'Источники (Sources)', link: 'hydra/sources' },
+      { text: 'Внешние источники', link: 'hydra/external-sources' },
       { text: 'Трансформации', link: 'hydra/transforms' },
       { text: 'Смешивание (Blending)', link: 'hydra/blending' },
       { text: 'Модуляция', link: 'hydra/modulation' },
