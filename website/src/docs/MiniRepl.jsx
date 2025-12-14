@@ -81,15 +81,17 @@ export function MiniRepl({
         setReplState({ ...state });
       },
       onToggle: (playing) => {
-        if (playing) {
-          // Clear any existing Hydra when starting a new track
-          // This fixes the issue where Hydra from previous track persists
-          if (isHydraActive()) {
-            clearHydra();
-          }
-        }
+        // Hydra cleanup moved to beforeEval
       },
       beforeStart: () => audioReady,
+      beforeEval: async () => {
+        // Clear Hydra before evaluating new code
+        // If the new code has initHydra(), it will reinitialize
+        // If not, Hydra stays cleared (which is correct)
+        if (isHydraActive()) {
+          clearHydra();
+        }
+      },
       afterEval: ({ code }) => setVersionDefaultsFrom(code),
       mondo,
     });

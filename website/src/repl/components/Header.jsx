@@ -9,7 +9,7 @@ import EyeSlashIcon from '@heroicons/react/20/solid/EyeSlashIcon';
 import cx from '@src/cx.mjs';
 import { useSettings, setIsZen, setMasterVolumeSettings, settingsMap } from '../../settings.mjs';
 import { setMasterVolume } from '@strudel/webaudio';
-import { setHydraDisabledState, clearHydra } from '@strudel/hydra';
+import { setHydraDisabledState } from '@strudel/hydra';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { GIT_COMMIT } from '../../version';
 import { Recorder } from './Recorder';
@@ -26,6 +26,11 @@ export function Header({ context, embedded = false }) {
     context;
   const isEmbedded = typeof window !== 'undefined' && (embedded || window.location !== window.parent.location);
   const { isZen, isButtonRowHidden, isCSSAnimationDisabled, fontFamily, masterVolume, isHydraDisabled } = useSettings();
+
+  // Sync hydra disabled state on mount and when setting changes
+  useEffect(() => {
+    setHydraDisabledState(isHydraDisabled);
+  }, [isHydraDisabled]);
 
   // Share toast state
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
@@ -190,10 +195,7 @@ export function Header({ context, embedded = false }) {
   const handleHydraToggle = useCallback(() => {
     const newDisabled = !isHydraDisabled;
     settingsMap.setKey('isHydraDisabled', newDisabled);
-    setHydraDisabledState(newDisabled);
-    if (newDisabled) {
-      clearHydra();
-    }
+    // setHydraDisabledState is called by useEffect when isHydraDisabled changes
   }, [isHydraDisabled]);
 
   // Handle undo

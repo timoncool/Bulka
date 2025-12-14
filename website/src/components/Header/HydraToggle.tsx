@@ -1,10 +1,16 @@
 import { useStore } from '@nanostores/react';
+import { useEffect } from 'react';
 import { settingsMap } from '../../settings.mjs';
 import { setHydraDisabledState, clearHydra } from '@strudel/hydra';
 
 export default function HydraToggle() {
   const settings = useStore(settingsMap);
   const isHydraDisabled = settings.isHydraDisabled === true || settings.isHydraDisabled === 'true';
+
+  // Sync hydra disabled state on mount and when setting changes
+  useEffect(() => {
+    setHydraDisabledState(isHydraDisabled);
+  }, [isHydraDisabled]);
 
   const handleToggle = () => {
     const newDisabled = !isHydraDisabled;

@@ -9,7 +9,7 @@ import { confirmDialog } from '../../util.mjs';
 import { DEFAULT_MAX_POLYPHONY, setMaxPolyphony, setMultiChannelOrbits } from '@strudel/webaudio';
 import { ActionButton, SpecialActionButton } from '../button/action-button.jsx';
 import { ImportPrebakeScriptButton } from './ImportPrebakeScriptButton.jsx';
-import { setHydraDisabledState, clearHydra } from '@strudel/hydra';
+import { setHydraDisabledState } from '@strudel/hydra';
 
 function Checkbox({ label, value, onChange, disabled = false }) {
   return (
@@ -325,9 +325,6 @@ export function SettingsTab({ started }) {
             const disabled = cbEvent.target.checked;
             settingsMap.setKey('isHydraDisabled', disabled);
             setHydraDisabledState(disabled);
-            if (disabled) {
-              clearHydra();
-            }
           }}
           value={isHydraDisabled}
         />
