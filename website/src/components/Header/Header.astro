@@ -7,6 +7,7 @@ import Search from './Search';
 import CommandLineIcon from '@heroicons/react/20/solid/CommandLineIcon';
 import MobileNav from '../../docs/MobileNav';
 import { SIDEBAR } from '../../config';
+import { execSync } from 'child_process';
 
 type Props = {
   currentPage?: string;
@@ -19,6 +20,14 @@ const sidebar = SIDEBAR[langCode];
 
 const { BASE_URL } = import.meta.env;
 const baseNoTrailing = BASE_URL.endsWith('/') ? BASE_URL.slice(0, -1) : BASE_URL;
+
+// Get git commit hash
+let GIT_COMMIT = 'dev';
+try {
+  GIT_COMMIT = execSync('git rev-parse --short HEAD').toString().trim();
+} catch (e) {
+  // fallback to dev
+}
 ---
 
 <nav
@@ -32,6 +41,7 @@ const baseNoTrailing = BASE_URL.endsWith('/') ? BASE_URL.slice(0, -1) : BASE_URL
         <div class="flex space-x-2 items-baseline">
           <span class="bulka-logo" style="font-family: 'Fredoka', sans-serif; color: #D4A574;">bulka</span>
           <span class="text-sm font-medium">DOCS</span>
+          <span class="text-xs font-mono opacity-40 ml-2">v{GIT_COMMIT}</span>
         </div>
       </h1>
     </div>
