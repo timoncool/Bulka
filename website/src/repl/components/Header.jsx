@@ -33,8 +33,8 @@ export function Header({ context, embedded = false }) {
 
   // Handle share button click
   const handleShareClick = useCallback(async () => {
-    // Берём код из редактора напрямую, а не activeCode (который только после eval)
-    const code = editorRef?.current?.getCode?.() || activeCode || '';
+    // Берём код из редактора напрямую (editorRef.current.code)
+    const code = editorRef?.current?.code || activeCode || '';
     const result = await shareCode(code, true);
 
     if (result.success) {
