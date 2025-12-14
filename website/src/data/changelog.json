@@ -4,6 +4,33 @@
     "dateFormatted": "14 декабря 2025",
     "changes": [
       {
+        "type": "feat",
+        "typeLabel": "Новые возможности",
+        "emoji": "✨",
+        "description": "pre-commit hook для автообновления changelog",
+        "scope": null,
+        "author": "Claude",
+        "hash": "9dbc62e5"
+      },
+      {
+        "type": "chore",
+        "typeLabel": "Обслуживание",
+        "emoji": "🔧",
+        "description": "обновить changelog [skip ci]",
+        "scope": null,
+        "author": "github-actions[bot]",
+        "hash": "3fd8aec3"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "реально копировать ссылку в буфер при шеринге",
+        "scope": null,
+        "author": "Claude",
+        "hash": "be03bb8c"
+      },
+      {
         "type": "fix",
         "typeLabel": "Исправления",
         "emoji": "🐛",
