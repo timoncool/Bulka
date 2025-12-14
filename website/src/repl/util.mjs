@@ -188,9 +188,11 @@ function isValidCode(code) {
 
 // New shareCode that returns data for ShareDialog
 export async function shareCode(codeToShare, isPublic = true) {
+  console.log('[shareCode] called with:', { codeToShare: codeToShare?.slice(0, 100), isPublic, originHash });
   try {
     // Validate code first
     if (!isValidCode(codeToShare)) {
+      console.log('[shareCode] isValidCode failed:', { code: codeToShare, type: typeof codeToShare, length: codeToShare?.length });
       logger('Код слишком короткий или пустой', 'error');
       return { success: false, error: 'Invalid code' };
     }
