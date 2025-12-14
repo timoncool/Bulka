@@ -80,12 +80,11 @@ export function MiniRepl({
       onUpdateState: (state) => {
         setReplState({ ...state });
       },
-      onToggle: (playing) => {
-        if (playing) {
-          clearHydra();
-        }
-      },
+      onToggle: (playing) => {},
       beforeStart: () => audioReady,
+      beforeEval: async () => {
+        clearHydra();
+      },
       afterEval: ({ code }) => setVersionDefaultsFrom(code),
       mondo,
     });
