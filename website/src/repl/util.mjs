@@ -166,6 +166,21 @@ export function confirmDialog(msg) {
 let lastShared;
 let lastShareHash;
 
+// Helper to copy text to clipboard
+async function copyToClipboard(text) {
+  try {
+    if (isTauri()) {
+      await writeText(text);
+    } else {
+      await navigator.clipboard.writeText(text);
+    }
+    return true;
+  } catch (e) {
+    console.warn('Failed to copy to clipboard:', e);
+    return false;
+  }
+}
+
 // Validate code before sharing
 function isValidCode(code) {
   if (!code || typeof code !== 'string') return false;
@@ -198,6 +213,8 @@ export async function shareCode(codeToShare, isPublic = true) {
     // Check if already shared this exact code (local cache)
     if (lastShared === codeToShare && lastShareHash) {
       const shareUrl = window.location.origin + window.location.pathname + '?' + lastShareHash;
+      await copyToClipboard(shareUrl);
+      logger('Ссылка скопирована!', 'highlight');
       return {
         success: true,
         shareUrl,
@@ -220,6 +237,7 @@ export async function shareCode(codeToShare, isPublic = true) {
           lastShared = codeToShare;
           lastShareHash = originHash;
 
+          await copyToClipboard(shareUrl);
           logger('Трек обновлён!', 'highlight');
           return {
             success: true,
@@ -247,6 +265,7 @@ export async function shareCode(codeToShare, isPublic = true) {
         lastShared = codeToShare;
         lastShareHash = existing.hash;
 
+        await copyToClipboard(shareUrl);
         logger('Ссылка скопирована!', 'highlight');
         return {
           success: true,
@@ -271,6 +290,7 @@ export async function shareCode(codeToShare, isPublic = true) {
         // Устанавливаем originHash для возможных будущих обновлений
         originHash = hash;
 
+        await copyToClipboard(shareUrl);
         logger('Ссылка скопирована!', 'highlight');
         return {
           success: true,
@@ -288,6 +308,7 @@ export async function shareCode(codeToShare, isPublic = true) {
     const longHash = '#' + code2hash(codeToShare);
     const shareUrl = window.location.origin + window.location.pathname + longHash;
 
+    await copyToClipboard(shareUrl);
     logger('Ссылка скопирована!', 'highlight');
     return {
       success: true,
