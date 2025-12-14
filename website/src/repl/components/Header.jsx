@@ -393,6 +393,17 @@ export function Header({ context, embedded = false }) {
               <span>уроки</span>
             </a>
           )}
+          {!isEmbedded && (
+            <a
+              title="сообщество"
+              href="https://t.me/bulka_app"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={cx('hover:opacity-50 flex items-center space-x-1', !isEmbedded ? 'p-2' : 'px-2')}
+            >
+              <span>сообщество</span>
+            </a>
+          )}
         </div>
       )}
 
