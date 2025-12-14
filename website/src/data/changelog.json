@@ -7,6 +7,15 @@
         "type": "fix",
         "typeLabel": "Исправления",
         "emoji": "🐛",
+        "description": "инкрементальное обновление changelog (только новые коммиты)",
+        "scope": null,
+        "author": "Claude",
+        "hash": "1688a1bc"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
         "description": "удалить GitHub Action, использовать prebuild на Vercel",
         "scope": null,
         "author": "Claude",

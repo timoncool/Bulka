@@ -7,7 +7,7 @@
     "setup": "pnpm i",
     "changelog": "node scripts/generate-changelog.js",
     "pretest": "npm run jsdoc-json",
-    "prebuild": "npm run jsdoc-json && npm run changelog",
+    "prebuild": "npm run jsdoc-json",
     "prestart": "npm run jsdoc-json",
     "test": "npm run pretest && vitest run --version",
     "test-ui": "npm run pretest && vitest --ui",
@@ -28,7 +28,8 @@
     "report-undocumented": "npm run jsdoc-json && node jsdoc/undocumented.mjs > undocumented.json",
     "check": "npm run format-check && npm run lint && npm run test",
     "sampler": "cd samples && node ../packages/sampler/sample-server.mjs",
-    "iclc": "cd paper && pandoc --template=pandoc/iclc.html --citeproc  --number-sections iclc2023.md -o iclc2023.html && pandoc --template=pandoc/iclc.latex --citeproc --number-sections iclc2023.md -o iclc2023.pdf"
+    "iclc": "cd paper && pandoc --template=pandoc/iclc.html --citeproc  --number-sections iclc2023.md -o iclc2023.html && pandoc --template=pandoc/iclc.latex --citeproc --number-sections iclc2023.md -o iclc2023.pdf",
+    "prepare": "husky"
   },
   "repository": {
     "type": "git",
@@ -69,12 +70,13 @@
     "eslint-plugin-import": "^2.31.0",
     "events": "^3.3.0",
     "globals": "^15.14.0",
+    "husky": "^9.1.7",
     "jsdoc": "^4.0.4",
     "jsdoc-json": "^2.0.2",
     "lerna": "^8.1.9",
     "prettier": "^3.4.2",
-    "vitest": "^3.0.4",
-    "vite-plugin-bundle-audioworklet": "workspace:*"
+    "vite-plugin-bundle-audioworklet": "workspace:*",
+    "vitest": "^3.0.4"
   },
   "engines": {
     "node": ">=18.0.0"
