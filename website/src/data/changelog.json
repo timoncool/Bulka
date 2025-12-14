@@ -4,6 +4,375 @@
     "dateFormatted": "14 декабря 2025",
     "changes": [
       {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "удалить GitHub Action, использовать prebuild на Vercel",
+        "scope": null,
+        "author": "Claude",
+        "hash": "8f9c8c36"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "добавить permissions для GitHub Action",
+        "scope": null,
+        "author": "Claude",
+        "hash": "d3aa073c"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "использовать version.ts для отображения версии в доках + GitHub Action для автообновления changelog",
+        "scope": null,
+        "author": "Claude",
+        "hash": "1b0e9c9b"
+      },
+      {
+        "type": "feat",
+        "typeLabel": "Новые возможности",
+        "emoji": "✨",
+        "description": "добавить версию (git commit) в header документации",
+        "scope": null,
+        "author": "Claude",
+        "hash": "eb04b0e1"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "переместить 'Что нового' в конец раздела Презентация",
+        "scope": null,
+        "author": "Claude",
+        "hash": "3f797173"
+      },
+      {
+        "type": "feat",
+        "typeLabel": "Новые возможности",
+        "emoji": "✨",
+        "description": "автоматический changelog и страница /whatsnew",
+        "scope": null,
+        "author": "Claude",
+        "hash": "23b898fb"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "использовать editorRef.current.code для шеринга",
+        "scope": null,
+        "author": "Claude",
+        "hash": "225ff8ca"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "брать код из редактора напрямую при шеринге",
+        "scope": null,
+        "author": "Claude",
+        "hash": "05011fad"
+      },
+      {
+        "type": "debug",
+        "typeLabel": "Отладка",
+        "emoji": "🔍",
+        "description": "добавить логирование в shareCode",
+        "scope": null,
+        "author": "Claude",
+        "hash": "08b2e285"
+      },
+      {
+        "type": "docs",
+        "typeLabel": "Документация",
+        "emoji": "📚",
+        "description": "добавить ссылку на внешние источники в навигацию",
+        "scope": null,
+        "author": "Claude",
+        "hash": "406f9ed8"
+      },
+      {
+        "type": "docs",
+        "typeLabel": "Документация",
+        "emoji": "📚",
+        "description": "добавить примеры использования initImage и initVideo с URL",
+        "scope": null,
+        "author": "Claude",
+        "hash": "2912f794"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "разрешить перезапись уже расшаренных треков",
+        "scope": null,
+        "author": "Claude",
+        "hash": "04c90e7e"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "исключить URL функции Hydra из парсинга mini-нотации",
+        "scope": null,
+        "author": "Claude",
+        "hash": "57ca8ea8"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "заменить первый пример на coastline с Hydra",
+        "scope": null,
+        "author": "Claude",
+        "hash": "d6f8d0ce"
+      },
+      {
+        "type": "feat",
+        "typeLabel": "Новые возможности",
+        "emoji": "✨",
+        "description": "добавить Hydra визуализацию к треку coastline в примерах",
+        "scope": null,
+        "author": "Claude",
+        "hash": "ceca8b8d"
+      },
+      {
+        "type": "feat",
+        "typeLabel": "Новые возможности",
+        "emoji": "✨",
+        "description": "добавить ссылку 'сообщество' в навигацию",
+        "scope": null,
+        "author": "Claude",
+        "hash": "df6fb334"
+      },
+      {
+        "type": "feat",
+        "typeLabel": "Новые возможности",
+        "emoji": "✨",
+        "description": "3 колонки в ленте на широких экранах",
+        "scope": null,
+        "author": "Claude",
+        "hash": "641fcda7"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "предотвратить дубликаты и пустые записи при шаринге",
+        "scope": null,
+        "author": "Claude",
+        "hash": "95a0d434"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "исправить позиционирование плашки шаринга",
+        "scope": null,
+        "author": "Claude",
+        "hash": "aca75e65"
+      },
+      {
+        "type": "feat",
+        "typeLabel": "Новые возможности",
+        "emoji": "✨",
+        "description": "легкая плашка вместо модального окна для шаринга + объединение Пекарни и Ленты",
+        "scope": null,
+        "author": "Claude",
+        "hash": "a8130ae3"
+      },
+      {
+        "type": "feat",
+        "typeLabel": "Новые возможности",
+        "emoji": "✨",
+        "description": "сохранение черновика чата в localStorage",
+        "scope": null,
+        "author": "Claude",
+        "hash": "78dd0678"
+      },
+      {
+        "type": "feat",
+        "typeLabel": "Новые возможности",
+        "emoji": "✨",
+        "description": "легкая плашка вместо модального окна для шаринга + объединение Пекарни и Ленты",
+        "scope": null,
+        "author": "Claude",
+        "hash": "a8130ae3"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "исправить позиционирование плашки шаринга",
+        "scope": null,
+        "author": "Claude",
+        "hash": "aca75e65"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "предотвратить дубликаты и пустые записи при шаринге",
+        "scope": null,
+        "author": "Claude",
+        "hash": "95a0d434"
+      },
+      {
+        "type": "feat",
+        "typeLabel": "Новые возможности",
+        "emoji": "✨",
+        "description": "3 колонки в ленте на широких экранах",
+        "scope": null,
+        "author": "Claude",
+        "hash": "641fcda7"
+      },
+      {
+        "type": "feat",
+        "typeLabel": "Новые возможности",
+        "emoji": "✨",
+        "description": "добавить ссылку 'сообщество' в навигацию",
+        "scope": null,
+        "author": "Claude",
+        "hash": "df6fb334"
+      },
+      {
+        "type": "feat",
+        "typeLabel": "Новые возможности",
+        "emoji": "✨",
+        "description": "добавить Hydra визуализацию к треку coastline в примерах",
+        "scope": null,
+        "author": "Claude",
+        "hash": "ceca8b8d"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "заменить первый пример на coastline с Hydra",
+        "scope": null,
+        "author": "Claude",
+        "hash": "d6f8d0ce"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "исключить URL функции Hydra из парсинга mini-нотации",
+        "scope": null,
+        "author": "Claude",
+        "hash": "57ca8ea8"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "разрешить перезапись уже расшаренных треков",
+        "scope": null,
+        "author": "Claude",
+        "hash": "04c90e7e"
+      },
+      {
+        "type": "docs",
+        "typeLabel": "Документация",
+        "emoji": "📚",
+        "description": "добавить примеры использования initImage и initVideo с URL",
+        "scope": null,
+        "author": "Claude",
+        "hash": "2912f794"
+      },
+      {
+        "type": "docs",
+        "typeLabel": "Документация",
+        "emoji": "📚",
+        "description": "добавить ссылку на внешние источники в навигацию",
+        "scope": null,
+        "author": "Claude",
+        "hash": "406f9ed8"
+      },
+      {
+        "type": "debug",
+        "typeLabel": "Отладка",
+        "emoji": "🔍",
+        "description": "добавить логирование в shareCode",
+        "scope": null,
+        "author": "Claude",
+        "hash": "08b2e285"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "брать код из редактора напрямую при шеринге",
+        "scope": null,
+        "author": "Claude",
+        "hash": "05011fad"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "использовать editorRef.current.code для шеринга",
+        "scope": null,
+        "author": "Claude",
+        "hash": "225ff8ca"
+      },
+      {
+        "type": "feat",
+        "typeLabel": "Новые возможности",
+        "emoji": "✨",
+        "description": "автоматический changelog и страница /whatsnew",
+        "scope": null,
+        "author": "Claude",
+        "hash": "23b898fb"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "переместить 'Что нового' в конец раздела Презентация",
+        "scope": null,
+        "author": "Claude",
+        "hash": "3f797173"
+      },
+      {
+        "type": "feat",
+        "typeLabel": "Новые возможности",
+        "emoji": "✨",
+        "description": "добавить версию (git commit) в header документации",
+        "scope": null,
+        "author": "Claude",
+        "hash": "eb04b0e1"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "использовать version.ts для отображения версии в доках + GitHub Action для автообновления changelog",
+        "scope": null,
+        "author": "Claude",
+        "hash": "1b0e9c9b"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "добавить permissions для GitHub Action",
+        "scope": null,
+        "author": "Claude",
+        "hash": "d3aa073c"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "удалить GitHub Action, использовать prebuild на Vercel",
+        "scope": null,
+        "author": "Claude",
+        "hash": "8f9c8c36"
+      },
+      {
         "type": "feat",
         "typeLabel": "Новые возможности",
         "emoji": "✨",

@@ -76,10 +76,34 @@ function parseCommit(line) {
   };
 }
 
-function getGitLog() {
+function getExistingChangelog() {
+  const jsonPath = path.join(ROOT_DIR, 'website/src/data/changelog.json');
+  if (fs.existsSync(jsonPath)) {
+    try {
+      return JSON.parse(fs.readFileSync(jsonPath, 'utf-8'));
+    } catch (e) {
+      return [];
+    }
+  }
+  return [];
+}
+
+function getLastKnownHash(existingChangelog) {
+  // Ищем последний (самый новый) хэш в существующем changelog
+  for (const day of existingChangelog) {
+    if (day.changes && day.changes.length > 0) {
+      return day.changes[0].hash;
+    }
+  }
+  return null;
+}
+
+function getGitLog(sinceHash = null) {
   try {
+    // Если есть хэш - берём только новые коммиты
+    const range = sinceHash ? `${sinceHash}..HEAD` : '';
     const log = execSync(
-      'git log --pretty=format:"%ad|%s|%an|%h" --date=short --reverse',
+      `git log ${range} --pretty=format:"%ad|%s|%an|%h" --date=short`,
       { encoding: 'utf-8', cwd: ROOT_DIR, maxBuffer: 10 * 1024 * 1024 }
     );
 
@@ -216,51 +240,88 @@ function generateMarkdown(groupedByDate) {
   return md;
 }
 
-function main() {
-  console.log('🍞 Генерация changelog для Bulka...\n');
+function mergeChangelogs(existing, newChanges) {
+  // Создаём map по датам для быстрого доступа
+  const byDate = {};
 
-  const commits = getGitLog();
-  console.log(`📊 Найдено ${commits.length} коммитов\n`);
-
-  if (commits.length === 0) {
-    console.error('Коммиты не найдены!');
-    process.exit(1);
+  // Сначала добавляем существующие
+  for (const day of existing) {
+    byDate[day.date] = { ...day, changes: [...day.changes] };
   }
 
-  const groupedByDate = groupByDate(commits);
+  // Добавляем новые (в начало каждого дня)
+  for (const day of newChanges) {
+    if (byDate[day.date]) {
+      // День уже есть - добавляем новые коммиты в начало
+      byDate[day.date].changes = [...day.changes, ...byDate[day.date].changes];
+    } else {
+      byDate[day.date] = day;
+    }
+  }
 
-  // Генерируем JSON для страницы whatsnew
-  const jsonData = generateJSON(groupedByDate);
+  // Сортируем по датам (новые сверху)
+  return Object.values(byDate).sort((a, b) => b.date.localeCompare(a.date));
+}
+
+function main() {
+  console.log('🍞 Обновление changelog для Bulka...\n');
+
+  // Читаем существующий changelog
+  const existingChangelog = getExistingChangelog();
+  const lastHash = getLastKnownHash(existingChangelog);
+
+  if (lastHash) {
+    console.log(`📌 Последний известный коммит: ${lastHash}`);
+  }
+
+  // Получаем только новые коммиты
+  const newCommits = getGitLog(lastHash);
+
+  if (newCommits.length === 0) {
+    console.log('✅ Changelog актуален, новых коммитов нет.\n');
+    return;
+  }
+
+  console.log(`📊 Найдено ${newCommits.length} новых коммитов\n`);
+
+  // Группируем новые коммиты по датам
+  const newGroupedByDate = groupByDate(newCommits);
+  const newJsonData = generateJSON(newGroupedByDate);
+
+  // Мерджим с существующим changelog
+  const mergedChangelog = mergeChangelogs(existingChangelog, newJsonData);
+
+  // Сохраняем JSON
   const jsonPath = path.join(ROOT_DIR, 'website/src/data/changelog.json');
-
-  // Создаём директорию если нет
   const dataDir = path.dirname(jsonPath);
   if (!fs.existsSync(dataDir)) {
     fs.mkdirSync(dataDir, { recursive: true });
   }
 
-  fs.writeFileSync(jsonPath, JSON.stringify(jsonData, null, 2), 'utf-8');
+  fs.writeFileSync(jsonPath, JSON.stringify(mergedChangelog, null, 2), 'utf-8');
   console.log(`✅ JSON: ${jsonPath}`);
 
-  // Генерируем Markdown
-  const markdown = generateMarkdown(groupedByDate);
+  // Для markdown собираем все коммиты
+  const allCommits = [];
+  for (const day of mergedChangelog) {
+    for (const change of day.changes) {
+      allCommits.push({
+        date: day.date,
+        type: change.type,
+        scope: change.scope,
+        description: change.description,
+        author: change.author,
+        hash: change.hash,
+      });
+    }
+  }
+
+  const markdown = generateMarkdown(groupByDate(allCommits));
   const mdPath = path.join(ROOT_DIR, 'CHANGELOG.md');
   fs.writeFileSync(mdPath, markdown, 'utf-8');
   console.log(`✅ Markdown: ${mdPath}`);
 
-  // Статистика
-  const stats = {};
-  for (const commit of commits) {
-    stats[commit.type] = (stats[commit.type] || 0) + 1;
-  }
-
-  console.log('\n📈 Статистика по типам:');
-  for (const [type, count] of Object.entries(stats).sort((a, b) => b[1] - a[1])) {
-    const info = COMMIT_TYPES[type] || { emoji: '📦', label: type };
-    console.log(`   ${info.emoji} ${info.label}: ${count}`);
-  }
-
-  console.log('\n✨ Changelog сгенерирован успешно!');
+  console.log(`\n✨ Добавлено ${newCommits.length} новых записей!`);
 }
 
 main();
