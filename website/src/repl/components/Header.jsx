@@ -10,7 +10,7 @@ import { setMasterVolume } from '@strudel/webaudio';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { GIT_COMMIT } from '../../version';
 import { Recorder } from './Recorder';
-import { ShareDialog } from './ShareDialog';
+import { ShareToast } from './ShareDialog';
 import { shareCode } from '../util.mjs';
 import { updateTrackPublicity } from '@src/user_pattern_utils.mjs';
 import '../Repl.css';
@@ -24,11 +24,12 @@ export function Header({ context, embedded = false }) {
   const isEmbedded = typeof window !== 'undefined' && (embedded || window.location !== window.parent.location);
   const { isZen, isButtonRowHidden, isCSSAnimationDisabled, fontFamily, masterVolume } = useSettings();
 
-  // Share dialog state
+  // Share toast state
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
   const [shareUrl, setShareUrl] = useState('');
   const [shareHash, setShareHash] = useState(null);
   const [isPublic, setIsPublic] = useState(true);
+  const shareButtonRef = useRef(null);
 
   // Handle share button click
   const handleShareClick = useCallback(async () => {
@@ -351,16 +352,28 @@ export function Header({ context, embedded = false }) {
             {!isEmbedded && <span>обновить</span>}
           </button>
           {!isEmbedded && (
-            <button
-              title="поделиться"
-              className={cx(
-                'cursor-pointer hover:opacity-50 flex items-center space-x-1',
-                !isEmbedded ? 'p-2' : 'px-2',
-              )}
-              onClick={handleShareClick}
-            >
-              <span>поделиться</span>
-            </button>
+            <div className="relative">
+              <button
+                ref={shareButtonRef}
+                title="поделиться"
+                className={cx(
+                  'cursor-pointer hover:opacity-50 flex items-center space-x-1',
+                  !isEmbedded ? 'p-2' : 'px-2',
+                )}
+                onClick={handleShareClick}
+              >
+                <span>поделиться</span>
+              </button>
+              <ShareToast
+                isOpen={isShareDialogOpen}
+                onClose={() => setIsShareDialogOpen(false)}
+                shareUrl={shareUrl}
+                hash={shareHash}
+                isPublic={isPublic}
+                onPublicChange={handlePublicChange}
+                anchorRef={shareButtonRef}
+              />
+            </div>
           )}
           {!isEmbedded && (
             <a
@@ -383,15 +396,6 @@ export function Header({ context, embedded = false }) {
         </div>
       )}
 
-      {/* Share Dialog */}
-      <ShareDialog
-        isOpen={isShareDialogOpen}
-        onClose={() => setIsShareDialogOpen(false)}
-        shareUrl={shareUrl}
-        hash={shareHash}
-        isPublic={isPublic}
-        onPublicChange={handlePublicChange}
-      />
     </header>
   );
 }
