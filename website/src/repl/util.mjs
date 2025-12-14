@@ -20,6 +20,21 @@ let dbLoaded;
   dbLoaded = loadDBPatterns();
 } */
 
+// Хранит хеш с которого был загружен трек (для перезаписи при шеринге)
+let originHash = null;
+
+export function getOriginHash() {
+  return originHash;
+}
+
+export function setOriginHash(hash) {
+  originHash = hash;
+}
+
+export function clearOriginHash() {
+  originHash = null;
+}
+
 export async function initCode() {
   // load code from url hash (either short hash from database or decode long hash)
   try {
@@ -28,6 +43,8 @@ export async function initCode() {
     const codeParam = window.location.href.split('#')[1] || '';
     if (codeParam) {
       // looking like https://strudel.cc/#ImMzIGUzIg%3D%3D (hash length depends on code length)
+      // Для long URL нет originHash - это новый код
+      originHash = null;
       return hash2code(codeParam);
     } else if (hash) {
       // looking like https://strudel.cc/?J01s5i1J0200 (fixed hash length)
@@ -40,7 +57,8 @@ export async function initCode() {
             console.warn('failed to load hash', error);
           }
           if (data.length) {
-            //console.log('load hash from database', hash);
+            // Сохраняем originHash для возможности перезаписи при шеринге
+            originHash = hash;
             return data[0].code;
           }
         });
@@ -190,7 +208,32 @@ export async function shareCode(codeToShare, isPublic = true) {
 
     // Try to create short URL via Supabase
     try {
-      // First check if this code already exists in DB
+      // Если есть originHash - обновляем существующую запись (перезапись трека)
+      if (originHash) {
+        const { error: updateError } = await supabase
+          .from('code_v1')
+          .update({ code: codeToShare, public: isPublic })
+          .eq('hash', originHash);
+
+        if (!updateError) {
+          const shareUrl = window.location.origin + window.location.pathname + '?' + originHash;
+          lastShared = codeToShare;
+          lastShareHash = originHash;
+
+          logger('Трек обновлён!', 'highlight');
+          return {
+            success: true,
+            shareUrl,
+            hash: originHash,
+            isExisting: true,
+            wasUpdated: true
+          };
+        }
+        // Если UPDATE не сработал - продолжаем стандартную логику
+        console.warn('Failed to update existing track, creating new:', updateError);
+      }
+
+      // Проверяем, есть ли уже такой код в БД (защита от дубликатов)
       const { data: existing } = await supabase
         .from('code_v1')
         .select('hash')
@@ -225,6 +268,8 @@ export async function shareCode(codeToShare, isPublic = true) {
         const shareUrl = window.location.origin + window.location.pathname + '?' + hash;
         lastShared = codeToShare;
         lastShareHash = hash;
+        // Устанавливаем originHash для возможных будущих обновлений
+        originHash = hash;
 
         logger('Ссылка скопирована!', 'highlight');
         return {
