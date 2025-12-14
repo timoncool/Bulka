@@ -11,6 +11,7 @@ import { soundMap } from '@strudel/webaudio';
 import { $strudel_log_history } from './components/useLogger.jsx';
 
 const CHAT_STORAGE_KEY = 'bulka-chat-messages';
+const CHAT_DRAFT_KEY = 'bulka-chat-draft';
 
 /**
  * Load messages from localStorage
@@ -42,6 +43,35 @@ function saveMessagesToStorage(messages) {
     localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(toSave));
   } catch (e) {
     console.warn('[Chat] Failed to save messages to storage:', e);
+  }
+}
+
+/**
+ * Load draft message from localStorage
+ */
+function loadDraftFromStorage() {
+  if (typeof window === 'undefined') return '';
+  try {
+    return localStorage.getItem(CHAT_DRAFT_KEY) || '';
+  } catch (e) {
+    console.warn('[Chat] Failed to load draft from storage:', e);
+    return '';
+  }
+}
+
+/**
+ * Save draft message to localStorage
+ */
+function saveDraftToStorage(draft) {
+  if (typeof window === 'undefined') return;
+  try {
+    if (draft) {
+      localStorage.setItem(CHAT_DRAFT_KEY, draft);
+    } else {
+      localStorage.removeItem(CHAT_DRAFT_KEY);
+    }
+  } catch (e) {
+    console.warn('[Chat] Failed to save draft to storage:', e);
   }
 }
 
@@ -103,7 +133,7 @@ function extractCodeBlocks(text) {
 export function useChatContext(replContext) {
   const settings = useSettings();
   const [messages, setMessages] = useState(() => loadMessagesFromStorage());
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState(() => loadDraftFromStorage());
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [lastAction, setLastAction] = useState(null); // Для показа hint'ов с автоскрытием
@@ -119,6 +149,11 @@ export function useChatContext(replContext) {
       saveMessagesToStorage(messagesWithContent);
     }
   }, [messages]);
+
+  // Save draft to localStorage when input changes
+  useEffect(() => {
+    saveDraftToStorage(input);
+  }, [input]);
 
   // Автоскрытие lastAction hint через 3 секунды
   useEffect(() => {

@@ -10,16 +10,46 @@ import { setMasterVolume } from '@strudel/webaudio';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { GIT_COMMIT } from '../../version';
 import { Recorder } from './Recorder';
+import { ShareDialog } from './ShareDialog';
+import { shareCode } from '../util.mjs';
+import { updateTrackPublicity } from '@src/user_pattern_utils.mjs';
 import '../Repl.css';
 
 const { BASE_URL } = import.meta.env;
 const baseNoTrailing = BASE_URL.endsWith('/') ? BASE_URL.slice(0, -1) : BASE_URL;
 
 export function Header({ context, embedded = false }) {
-  const { started, pending, isDirty, activeCode, handleTogglePlay, handleEvaluate, handleShuffle, handleShare, editorRef } =
+  const { started, pending, isDirty, activeCode, handleTogglePlay, handleEvaluate, handleShuffle, editorRef } =
     context;
   const isEmbedded = typeof window !== 'undefined' && (embedded || window.location !== window.parent.location);
   const { isZen, isButtonRowHidden, isCSSAnimationDisabled, fontFamily, masterVolume } = useSettings();
+
+  // Share dialog state
+  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
+  const [shareUrl, setShareUrl] = useState('');
+  const [shareHash, setShareHash] = useState(null);
+  const [isPublic, setIsPublic] = useState(true);
+
+  // Handle share button click
+  const handleShareClick = useCallback(async () => {
+    const code = activeCode || '';
+    const result = await shareCode(code, true);
+
+    if (result.success) {
+      setShareUrl(result.shareUrl);
+      setShareHash(result.hash);
+      setIsPublic(true);
+      setIsShareDialogOpen(true);
+    }
+  }, [activeCode]);
+
+  // Handle public toggle change
+  const handlePublicChange = useCallback(async (checked) => {
+    setIsPublic(checked);
+    if (shareHash) {
+      await updateTrackPublicity(shareHash, checked);
+    }
+  }, [shareHash]);
 
   // Volume state - simplified: volume === 0 means muted
   const [volume, setVolume] = useState(masterVolume);
@@ -327,10 +357,19 @@ export function Header({ context, embedded = false }) {
                 'cursor-pointer hover:opacity-50 flex items-center space-x-1',
                 !isEmbedded ? 'p-2' : 'px-2',
               )}
-              onClick={handleShare}
+              onClick={handleShareClick}
             >
               <span>поделиться</span>
             </button>
+          )}
+          {!isEmbedded && (
+            <a
+              title="лента"
+              href={`${baseNoTrailing}/feed`}
+              className={cx('hover:opacity-50 flex items-center space-x-1', !isEmbedded ? 'p-2' : 'px-2')}
+            >
+              <span>лента</span>
+            </a>
           )}
           {!isEmbedded && (
             <a
@@ -343,6 +382,16 @@ export function Header({ context, embedded = false }) {
           )}
         </div>
       )}
+
+      {/* Share Dialog */}
+      <ShareDialog
+        isOpen={isShareDialogOpen}
+        onClose={() => setIsShareDialogOpen(false)}
+        shareUrl={shareUrl}
+        hash={shareHash}
+        isPublic={isPublic}
+        onPublicChange={handlePublicChange}
+      />
     </header>
   );
 }

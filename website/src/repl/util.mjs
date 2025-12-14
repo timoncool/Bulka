@@ -146,12 +146,20 @@ export function confirmDialog(msg) {
 // }
 
 let lastShared;
-export async function shareCode(codeToShare) {
+let lastShareHash;
+
+// New shareCode that returns data for ShareDialog
+export async function shareCode(codeToShare, isPublic = true) {
   try {
     // Check if already shared this exact code
-    if (lastShared === codeToShare) {
-      logger('Ссылка уже скопирована!', 'highlight');
-      return;
+    if (lastShared === codeToShare && lastShareHash) {
+      const shareUrl = window.location.origin + window.location.pathname + '?' + lastShareHash;
+      return {
+        success: true,
+        shareUrl,
+        hash: lastShareHash,
+        isExisting: true
+      };
     }
 
     // Try to create short URL via Supabase
@@ -160,21 +168,21 @@ export async function shareCode(codeToShare) {
       const { error } = await supabase.from('code_v1').insert([{
         code: codeToShare,
         hash,
-        public: false, // Private by default
+        public: isPublic,
       }]);
 
       if (!error) {
         const shareUrl = window.location.origin + window.location.pathname + '?' + hash;
         lastShared = codeToShare;
-        if (isTauri()) {
-          await writeText(shareUrl);
-        } else {
-          await navigator.clipboard.writeText(shareUrl);
-        }
-        const message = `Короткая ссылка скопирована!`;
-        alert(message);
-        logger(message, 'highlight');
-        return;
+        lastShareHash = hash;
+
+        logger('Ссылка скопирована!', 'highlight');
+        return {
+          success: true,
+          shareUrl,
+          hash,
+          isExisting: false
+        };
       }
       console.warn('Supabase error, falling back to long URL:', error);
     } catch (e) {
@@ -184,17 +192,18 @@ export async function shareCode(codeToShare) {
     // Fallback to long URL (base64 encoded code in hash)
     const longHash = '#' + code2hash(codeToShare);
     const shareUrl = window.location.origin + window.location.pathname + longHash;
-    if (isTauri()) {
-      await writeText(shareUrl);
-    } else {
-      await navigator.clipboard.writeText(shareUrl);
-    }
-    const message = `Ссылка скопирована!`;
-    alert(message);
-    logger(message, 'highlight');
+
+    logger('Ссылка скопирована!', 'highlight');
+    return {
+      success: true,
+      shareUrl,
+      hash: null,
+      isExisting: false
+    };
   } catch (e) {
     console.error(e);
     logger('Ошибка при создании ссылки', 'error');
+    return { success: false, error: e.message };
   }
 }
 

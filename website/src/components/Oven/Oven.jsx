@@ -1,11 +1,21 @@
-import { useState, useEffect } from 'react';
-import { loadFeaturedPatterns, loadPublicPatterns } from '@src/user_pattern_utils.mjs';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { loadFeaturedPatterns, loadPublicPatterns, toggleLike, isTrackLiked } from '@src/user_pattern_utils.mjs';
 import { MiniRepl } from '@src/docs/MiniRepl';
 import { PatternLabel } from '@src/repl/components/panel/PatternsTab';
 import { getMetadata } from '@src/metadata_parser.js';
+import cx from '@src/cx.mjs';
 
 // Priority authors - their patterns will be shown first
 const PRIORITY_AUTHORS = ['KAIXI', 'neural'];
+
+// Heart Icon
+function HeartIcon({ filled }) {
+  return (
+    <svg className="w-4 h-4" viewBox="0 0 20 20" fill={filled ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.5">
+      <path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" />
+    </svg>
+  );
+}
 
 // Sort patterns: priority authors first (by date), then others (by date)
 function sortPatternsWithPriority(patterns) {
@@ -31,21 +41,74 @@ function sortPatternsWithPriority(patterns) {
   });
 }
 
+// Pattern Item with like button
+function PatternItem({ pattern }) {
+  const [liked, setLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(pattern.like_count || 0);
+  const [isLiking, setIsLiking] = useState(false);
+
+  useEffect(() => {
+    if (pattern.hash) {
+      setLiked(isTrackLiked(pattern.hash));
+    }
+  }, [pattern.hash]);
+
+  const handleLike = useCallback(async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (isLiking || !pattern.hash) return;
+    setIsLiking(true);
+
+    const newLiked = !liked;
+    setLiked(newLiked);
+    setLikeCount(prev => newLiked ? prev + 1 : Math.max(0, prev - 1));
+
+    try {
+      const result = await toggleLike(pattern.hash);
+      // If result is null, it means rate limited or cooldown - revert
+      if (result === null) {
+        setLiked(!newLiked);
+        setLikeCount(prev => newLiked ? Math.max(0, prev - 1) : prev + 1);
+      }
+    } catch (err) {
+      setLiked(!newLiked);
+      setLikeCount(prev => newLiked ? Math.max(0, prev - 1) : prev + 1);
+    } finally {
+      setIsLiking(false);
+    }
+  }, [liked, isLiking, pattern.hash]);
+
+  return (
+    <div key={pattern.id}>
+      <div className="flex justify-between items-center not-prose pb-2">
+        <h2 className="text-lg flex-1">
+          <a href={`/?${pattern.hash}`} target="_blank" className="underline">
+            <PatternLabel pattern={pattern} />
+          </a>
+        </h2>
+        <button
+          onClick={handleLike}
+          disabled={isLiking}
+          className={cx(
+            'flex items-center gap-1 px-2 py-1 rounded transition-colors ml-2',
+            liked ? 'text-red-400' : 'text-foreground/50 hover:text-red-400'
+          )}
+          title={liked ? 'Убрать лайк' : 'Поставить лайк'}
+        >
+          <HeartIcon filled={liked} />
+          <span className="text-sm">{likeCount}</span>
+        </button>
+      </div>
+      <MiniRepl tune={pattern.code.trim()} maxHeight={300} />
+    </div>
+  );
+}
+
 function PatternList({ patterns }) {
   return (
     <div className="space-y-4">
-      {/* <MiniRepl tunes={patterns.map((pat) => pat.code.trim())} /> */}
       {patterns.map((pat) => (
-        <div key={pat.id}>
-          <div className="flex justify-between not-prose pb-2">
-            <h2 className="text-lg">
-              <a href={`/?${pat.hash}`} target="_blank" className="underline">
-                <PatternLabel pattern={pat} />
-              </a>
-            </h2>
-          </div>
-          <MiniRepl tune={pat.code.trim()} maxHeight={300} />
-        </div>
+        <PatternItem key={pat.id} pattern={pat} />
       ))}
     </div>
   );
@@ -56,23 +119,19 @@ export function Oven() {
   const [publicPatterns, setPublicPatterns] = useState([]);
   useEffect(() => {
     loadPublicPatterns().then(({ data: pats }) => {
-      console.log('pats', pats);
-      // Sort by date (newest first) - already sorted by API, but ensure it
       const sorted = sortPatternsWithPriority(pats);
       setPublicPatterns(sorted);
     });
     loadFeaturedPatterns().then(({ data: pats }) => {
-      console.log('pats', pats);
-      // Sort featured patterns with priority authors first
       const sorted = sortPatternsWithPriority(pats);
       setFeaturedPatterns(sorted);
     });
   }, []);
   return (
     <div>
-      <h2 id="featured">Featured Patterns</h2>
+      <h2 id="featured">Избранные паттерны</h2>
       <PatternList patterns={featuredPatterns} />
-      <h2 id="latest">Last Creations</h2>
+      <h2 id="latest">Последние творения</h2>
       <PatternList patterns={publicPatterns} />
     </div>
   );
