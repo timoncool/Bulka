@@ -3,7 +3,6 @@ import { loadPublicPatterns, loadPatternsByLikes, toggleLike, isTrackLiked } fro
 import { MiniRepl } from '@src/docs/MiniRepl';
 import { PatternLabel } from '@src/repl/components/panel/PatternsTab';
 import { getMetadata } from '@src/metadata_parser.js';
-import { shareCode } from '@src/repl/util.mjs';
 import cx from '@src/cx.mjs';
 
 // Icons
@@ -19,6 +18,14 @@ function ShareIcon() {
   return (
     <svg className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
       <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
+    </svg>
+  );
+}
+
+function CheckIcon() {
+  return (
+    <svg className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
     </svg>
   );
 }
@@ -115,6 +122,7 @@ function TrackCard({ pattern, onRefresh }) {
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(pattern.like_count || 0);
   const [isLiking, setIsLiking] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const metadata = useMemo(() => getMetadata(pattern.code), [pattern.code]);
   const title = metadata.title || 'Без названия';
@@ -160,8 +168,17 @@ function TrackCard({ pattern, onRefresh }) {
   }, [liked, isLiking, pattern.hash]);
 
   const handleShare = useCallback(async () => {
-    await shareCode(pattern.code, true);
-  }, [pattern.code]);
+    if (!pattern.hash) return;
+    // Формируем ссылку напрямую на редактор (без /feed/)
+    const shareUrl = window.location.origin + '/?' + pattern.hash;
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (e) {
+      console.warn('Failed to copy:', e);
+    }
+  }, [pattern.hash]);
 
   const handleEdit = useCallback(() => {
     window.open(`/?${pattern.hash}`, '_blank');
@@ -234,10 +251,16 @@ function TrackCard({ pattern, onRefresh }) {
           {/* Share */}
           <button
             onClick={handleShare}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-background hover:bg-background/80 text-foreground/60 hover:text-foreground transition-colors"
-            title="Поделиться"
+            className={cx(
+              'flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-colors',
+              copied
+                ? 'bg-green-500/20 text-green-400'
+                : 'bg-background hover:bg-background/80 text-foreground/60 hover:text-foreground'
+            )}
+            title={copied ? 'Скопировано!' : 'Поделиться'}
           >
-            <ShareIcon />
+            {copied ? <CheckIcon /> : <ShareIcon />}
+            {copied && <span className="text-sm">Скопировано</span>}
           </button>
 
           {/* Edit */}

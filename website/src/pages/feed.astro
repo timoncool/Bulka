@@ -2,7 +2,6 @@
 import HeadCommon from '../components/HeadCommon.astro';
 import Header from '../components/Header/Header.astro';
 import LeftSidebar from '../components/LeftSidebar/LeftSidebar.astro';
-import PageContent from '../components/PageContent/PageContent.astro';
 import RightSidebar from '../components/RightSidebar/RightSidebar.astro';
 import { Feed } from '../components/Feed/Feed.jsx';
 
@@ -22,19 +21,19 @@ const currentPage = Astro.url.pathname;
         <Header currentPage={currentPage} />
       </header>
       <main class="relative pt-16">
-        <div class="h-full top-0 overflow-auto min-w-[300px] flex xl:justify-center pr-4 pl-4 md:pl-[300px] xl:pl-0">
+        <div class="h-full top-0 overflow-auto min-w-[300px] pr-4 pl-4 md:pl-[300px] xl:pl-4 xl:pr-[220px]">
           <aside title="Site Navigation" class="w-[300px] px-6 left-0 hidden md:block fixed h-full">
             <LeftSidebar currentPage={currentPage} />
           </aside>
-          <PageContent>
-            <h1>Лента</h1>
+          <article class="w-full pb-8">
+            <h1 class="text-4xl font-bold mb-4">Лента</h1>
             <p class="text-foreground/70 mb-6">
               Слушай треки от сообщества, голосуй за лучшие и делись своими творениями.
               Нажми "Поделиться" в редакторе, чтобы опубликовать свой трек.
             </p>
             <Feed client:only="react" />
-          </PageContent>
-          <aside class="fixed right-0 h-full overflow-auto pr-4 pl-0 pb-16 hidden xl:block" title="Table of Contents">
+          </article>
+          <aside class="fixed right-0 h-full overflow-auto pr-4 pl-0 pb-16 hidden xl:block w-[200px]" title="Table of Contents">
             <RightSidebar
               headings={[
                 { depth: 1, slug: 'popular', text: 'Популярное' },
