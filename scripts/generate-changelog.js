@@ -137,19 +137,6 @@ function groupByDate(commits) {
   }));
 }
 
-function groupByType(commits) {
-  const grouped = {};
-
-  for (const commit of commits) {
-    const type = COMMIT_TYPES[commit.type] ? commit.type : 'other';
-    if (!grouped[type]) {
-      grouped[type] = [];
-    }
-    grouped[type].push(commit);
-  }
-
-  return grouped;
-}
 
 function formatDate(dateStr) {
   const date = new Date(dateStr);
@@ -178,67 +165,6 @@ function generateJSON(groupedByDate) {
   return changelog;
 }
 
-function generateMarkdown(groupedByDate) {
-  let md = `# Changelog Bulka
-
-Все изменения проекта Bulka документируются в этом файле.
-
-Формат основан на [Keep a Changelog](https://keepachangelog.com/ru/1.0.0/).
-
----
-
-`;
-
-  // Группируем по месяцам для markdown
-  const byMonth = {};
-  for (const day of groupedByDate) {
-    const [year, month] = day.date.split('-');
-    const monthKey = `${year}-${month}`;
-    if (!byMonth[monthKey]) {
-      byMonth[monthKey] = [];
-    }
-    byMonth[monthKey].push(...day.commits);
-  }
-
-  const months = [
-    'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
-    'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
-  ];
-
-  const sortedMonths = Object.keys(byMonth).sort((a, b) => b.localeCompare(a));
-
-  for (const monthKey of sortedMonths) {
-    const [year, month] = monthKey.split('-');
-    const monthName = months[parseInt(month, 10) - 1];
-
-    md += `## ${monthName} ${year}\n\n`;
-
-    const byType = groupByType(byMonth[monthKey]);
-    const sortedTypes = Object.keys(byType).sort((a, b) => {
-      const orderA = COMMIT_TYPES[a]?.order || 99;
-      const orderB = COMMIT_TYPES[b]?.order || 99;
-      return orderA - orderB;
-    });
-
-    for (const type of sortedTypes) {
-      const typeInfo = COMMIT_TYPES[type] || { label: 'Прочее', emoji: '📦' };
-      md += `### ${typeInfo.emoji} ${typeInfo.label}\n\n`;
-
-      for (const commit of byType[type]) {
-        const scope = commit.scope ? `**${commit.scope}**: ` : '';
-        md += `- ${scope}${commit.description} (\`${commit.hash}\`)\n`;
-      }
-      md += '\n';
-    }
-  }
-
-  md += `---
-
-*Сгенерировано автоматически: ${new Date().toISOString().split('T')[0]}*
-`;
-
-  return md;
-}
 
 function mergeChangelogs(existing, newChanges) {
   // Собираем все известные хэши для дедупликации
@@ -320,26 +246,6 @@ function main() {
 
   fs.writeFileSync(jsonPath, JSON.stringify(mergedChangelog, null, 2), 'utf-8');
   console.log(`✅ JSON: ${jsonPath}`);
-
-  // Для markdown собираем все коммиты
-  const allCommits = [];
-  for (const day of mergedChangelog) {
-    for (const change of day.changes) {
-      allCommits.push({
-        date: day.date,
-        type: change.type,
-        scope: change.scope,
-        description: change.description,
-        author: change.author,
-        hash: change.hash,
-      });
-    }
-  }
-
-  const markdown = generateMarkdown(groupByDate(allCommits));
-  const mdPath = path.join(ROOT_DIR, 'CHANGELOG.md');
-  fs.writeFileSync(mdPath, markdown, 'utf-8');
-  console.log(`✅ Markdown: ${mdPath}`);
 
   console.log(`\n✨ Добавлено ${newCommits.length} новых записей!`);
 }

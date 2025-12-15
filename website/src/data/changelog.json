@@ -4,6 +4,15 @@
     "dateFormatted": "15 декабря 2025",
     "changes": [
       {
+        "type": "chore",
+        "typeLabel": "Обслуживание",
+        "emoji": "🔧",
+        "description": "обновить changelog",
+        "scope": null,
+        "author": "Claude",
+        "hash": "f7f97d9"
+      },
+      {
         "type": "fix",
         "typeLabel": "Исправления",
         "emoji": "🐛",
