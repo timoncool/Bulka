@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "astro dev --host 0.0.0.0",
     "start": "astro dev",
-    "build": "astro build",
+    "build": "node scripts/build-docs-index.js && astro build",
     "preview": "astro preview --port 3009 --host 0.0.0.0",
     "astro": "astro"
   },

@@ -1253,6 +1253,102 @@ searchDocs('chord progression examples')
     category: 'examples',
     keywords: ['gallery', 'галерея', 'examples', 'примеры', 'inspiration', 'вдохновение', 'композиция', 'composition'],
   },
+
+  // Hydra External Sources
+  {
+    id: 'hydra-external-sources',
+    title: 'Hydra внешние источники (initVideo, initImage, initCam)',
+    content: `Hydra позволяет использовать внешние медиа-источники: изображения, видео, веб-камеру и экран. Они загружаются в переменные s0, s1, s2, s3.
+
+## initImage() — Изображение
+
+Загружает изображение по URL как источник для визуализации.
+
+\`\`\`javascript
+await initHydra()
+s0.initImage(url)
+src(s0).out()
+\`\`\`
+
+**Поддерживаемые форматы:** .jpeg, .jpg, .png, .bmp, .gif, .webp
+
+Примеры:
+\`\`\`javascript
+await initHydra()
+s0.initImage("https://example.com/image.jpg")
+src(s0).out()
+
+// С калейдоскопом
+s0.initImage("https://example.com/image.jpg")
+src(s0).kaleid(6).colorama(0.5).out()
+\`\`\`
+
+## initVideo() — Видео
+
+Загружает видео файл по URL как источник.
+
+\`\`\`javascript
+await initHydra()
+s0.initVideo(url)
+src(s0).out()
+\`\`\`
+
+**Поддерживаемые форматы:** .mp4, .ogg, .webm
+
+Примеры:
+\`\`\`javascript
+await initHydra()
+s0.initVideo("https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4")
+src(s0).out()
+
+// Видео с эффектами
+s0.initVideo("https://example.com/video.mp4")
+src(s0).kaleid(4).colorama(0.3).out()
+\`\`\`
+
+## initCam() — Веб-камера
+
+Инициализирует видеопоток с веб-камеры.
+
+\`\`\`javascript
+await initHydra()
+s0.initCam(index)  // index = номер камеры (по умолчанию 0)
+src(s0).out()
+\`\`\`
+
+Примеры:
+\`\`\`javascript
+await initHydra()
+s0.initCam()
+src(s0).out()
+
+// Камера с эффектами
+s0.initCam()
+src(s0).saturate(3).contrast(1.5).kaleid(6).out()
+\`\`\`
+
+## initScreen() — Захват экрана
+
+Захватывает содержимое экрана, окна или вкладки браузера.
+
+\`\`\`javascript
+await initHydra()
+s0.initScreen()
+src(s0).out()
+\`\`\`
+
+## Комбинирование источников
+
+Можно использовать несколько источников одновременно:
+\`\`\`javascript
+await initHydra()
+s0.initCam()
+s1.initVideo("https://example.com/video.mp4")
+src(s0).blend(src(s1), 0.5).out()
+\`\`\``,
+    category: 'functions',
+    keywords: ['hydra', 'гидра', 'initVideo', 'initImage', 'initCam', 'initScreen', 'видео', 'video', 'изображение', 'image', 'камера', 'camera', 'webcam', 'веб-камера', 'экран', 'screen', 'внешние источники', 'external sources', 's0', 's1', 's2', 's3'],
+  },
 ];
 
 /**
