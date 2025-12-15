@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "src/pages/api/chat.ts": {
+      "includeFiles": "../hydra/**/*.mdx,../learn/**/*.mdx,../recipes/**/*.mdx,../functions/**/*.mdx,../workshop/**/*.mdx,../technical-manual/**/*.mdx,../understand/**/*.mdx,../intro/**/*.mdx"
+    }
+  }
+}
