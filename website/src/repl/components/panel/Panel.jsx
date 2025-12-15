@@ -25,7 +25,7 @@ export function HorizontalPanel({ context }) {
       {isPanelOpen ? (
         <>
           <div className="flex grow overflow-auto pr-10">
-            <PanelContent context={context} tab={tab} />
+            <PanelContent context={context} tab={tab} isBottomPanel={true} />
           </div>
 
           <div className="absolute right-4 top-4">
@@ -70,7 +70,7 @@ export function VerticalPanel({ context }) {
           </div>
 
           <div className="overflow-auto grow">
-            <PanelContent context={context} tab={tab} />
+            <PanelContent context={context} tab={tab} isBottomPanel={false} />
           </div>
         </div>
       ) : (
@@ -131,11 +131,11 @@ function PanelNav({ children, className, settings, ...props }) {
   );
 }
 
-function PanelContent({ context, tab }) {
+function PanelContent({ context, tab, isBottomPanel }) {
   useLogger();
   switch (tab) {
     case 'chat':
-      return <ChatTab context={context} />;
+      return <ChatTab context={context} isBottomPanel={isBottomPanel} />;
     case 'patterns':
       return <PatternsTab context={context} />;
     case 'console':
