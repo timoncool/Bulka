@@ -7,25 +7,26 @@ import { useSettings, settingsMap } from '@src/settings.mjs';
 import { useCallback, useRef } from 'react';
 
 // Resize handle component
-function ResizeHandle({ direction, onResize }) {
+function ResizeHandle({ direction, currentSize, onResize }) {
   const isHorizontal = direction === 'horizontal';
   const isDragging = useRef(false);
   const startPos = useRef(0);
+  const startSize = useRef(0);
 
   const handlePointerDown = useCallback((e) => {
     isDragging.current = true;
     startPos.current = isHorizontal ? e.clientY : e.clientX;
+    startSize.current = currentSize;
     e.currentTarget.setPointerCapture(e.pointerId);
     document.body.style.cursor = isHorizontal ? 'row-resize' : 'col-resize';
     document.body.style.userSelect = 'none';
-  }, [isHorizontal]);
+  }, [isHorizontal, currentSize]);
 
   const handlePointerMove = useCallback((e) => {
     if (!isDragging.current) return;
     const currentPos = isHorizontal ? e.clientY : e.clientX;
-    const delta = startPos.current - currentPos;
-    startPos.current = currentPos; // Update for next frame
-    onResize?.(delta);
+    const totalDelta = startPos.current - currentPos;
+    onResize?.(totalDelta, startSize.current);
   }, [isHorizontal, onResize]);
 
   const handlePointerUp = useCallback((e) => {
@@ -68,22 +69,22 @@ export default function ReplEditor(Props) {
   const containerElRef = useRef(null);
 
   // Handle resize for right panel (width in %)
-  const handleResizeRight = useCallback((delta) => {
+  const handleResizeRight = useCallback((totalDelta, initialSize) => {
     if (!containerElRef.current) return;
     const containerWidth = containerElRef.current.offsetWidth;
-    const deltaPercent = (delta / containerWidth) * 100;
-    const newSize = Math.max(15, Math.min(60, panelSizeRight + deltaPercent));
+    const deltaPercent = (totalDelta / containerWidth) * 100;
+    const newSize = Math.max(15, Math.min(60, initialSize + deltaPercent));
     settingsMap.setKey('panelSizeRight', newSize);
-  }, [panelSizeRight]);
+  }, []);
 
   // Handle resize for bottom panel (height in %)
-  const handleResizeBottom = useCallback((delta) => {
+  const handleResizeBottom = useCallback((totalDelta, initialSize) => {
     if (!containerElRef.current) return;
     const containerHeight = containerElRef.current.offsetHeight;
-    const deltaPercent = (delta / containerHeight) * 100;
-    const newSize = Math.max(15, Math.min(60, panelSizeBottom + deltaPercent));
+    const deltaPercent = (totalDelta / containerHeight) * 100;
+    const newSize = Math.max(15, Math.min(60, initialSize + deltaPercent));
     settingsMap.setKey('panelSizeBottom', newSize);
-  }, [panelSizeBottom]);
+  }, []);
 
   const showRightPanel = !isZen && panelPosition === 'right';
   const showBottomPanel = !isZen && panelPosition === 'bottom';
@@ -97,7 +98,11 @@ export default function ReplEditor(Props) {
         {/* Code is always the first child here - never changes position */}
         <Code containerRef={containerRef} editorRef={editorRef} init={init} />
         {showRightPanel && isPanelOpen && (
-          <ResizeHandle direction="vertical" onResize={handleResizeRight} />
+          <ResizeHandle
+            direction="vertical"
+            currentSize={panelSizeRight}
+            onResize={handleResizeRight}
+          />
         )}
         {showRightPanel && (
           <div
@@ -110,7 +115,11 @@ export default function ReplEditor(Props) {
       </div>
       <UserFacingErrorMessage error={error} />
       {showBottomPanel && isPanelOpen && (
-        <ResizeHandle direction="horizontal" onResize={handleResizeBottom} />
+        <ResizeHandle
+          direction="horizontal"
+          currentSize={panelSizeBottom}
+          onResize={handleResizeBottom}
+        />
       )}
       {showBottomPanel && (
         <div
