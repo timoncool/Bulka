@@ -6,15 +6,81 @@
  */
 
 import type { APIRoute } from 'astro';
-import fs from 'fs/promises';
-import path from 'path';
+import { searchKnowledge } from '../../repl/ai-agent/knowledge';
+import docsIndex from '../../data/docs-index.json';
 
 export const prerender = false;
 
-// Use process.cwd() for Vercel serverless file access
-// Confirmed working by Astro team member (Rishi Raj Jain) in issue #9743
-// https://github.com/withastro/astro/issues/9743
-const DOCS_PATH = path.join(process.cwd(), 'src', 'pages');
+// Types for docs index
+interface DocEntry {
+  id: string;
+  title: string;
+  content: string;
+  category: string;
+  keywords: string[];
+  path: string;
+}
+
+/**
+ * Search ALL documentation from pre-built index (70+ MDX files)
+ * This works in Vercel serverless because the index is bundled at build time
+ */
+function searchAllDocs(query: string, maxResults: number = 5): string[] {
+  const queryLower = query.toLowerCase();
+  const queryWords = queryLower.split(/\s+/).filter(w => w.length > 2);
+
+  const results: { doc: DocEntry; score: number }[] = [];
+
+  for (const doc of docsIndex as DocEntry[]) {
+    let score = 0;
+
+    // Title match (highest weight)
+    if (doc.title.toLowerCase().includes(queryLower)) {
+      score += 15;
+    }
+
+    // Keyword matches
+    for (const keyword of doc.keywords) {
+      if (keyword.includes(queryLower)) {
+        score += 10;
+      }
+      for (const word of queryWords) {
+        if (keyword.includes(word)) {
+          score += 3;
+        }
+      }
+    }
+
+    // Content matches
+    const contentLower = doc.content.toLowerCase();
+    if (contentLower.includes(queryLower)) {
+      score += 8;
+    }
+    for (const word of queryWords) {
+      const matches = (contentLower.match(new RegExp(word, 'g')) || []).length;
+      score += Math.min(matches, 5);
+    }
+
+    // Category boost
+    if (doc.category === 'hydra' && queryLower.includes('hydra')) score += 10;
+    if (doc.category === 'learn' && queryLower.includes('learn')) score += 5;
+
+    if (score > 0) {
+      results.push({ doc, score });
+    }
+  }
+
+  // Sort by score and return top results
+  results.sort((a, b) => b.score - a.score);
+
+  return results.slice(0, maxResults).map(r => {
+    // Limit content length for response
+    const content = r.doc.content.length > 2000
+      ? r.doc.content.slice(0, 2000) + '...'
+      : r.doc.content;
+    return `## ${r.doc.title}\n${content}`;
+  });
+}
 
 /**
  * Code examples library - loaded on demand via getExamples tool
@@ -321,153 +387,6 @@ const TOOLS_ANTHROPIC = TOOLS_OPENAI.map(t => ({
   description: t.function.description,
   input_schema: t.function.parameters,
 }));
-
-/**
- * Strip MDX-specific syntax (imports, JSX components) to get clean markdown
- */
-function stripMdxSyntax(content: string): string {
-  return content
-    // Remove import statements
-    .replace(/^import\s+.*$/gm, '')
-    // Remove JSX components like <MiniRepl ... />
-    .replace(/<[A-Z][a-zA-Z]*\s+[\s\S]*?\/>/g, '')
-    // Remove JSX components with children <Component>...</Component>
-    .replace(/<[A-Z][a-zA-Z]*[^>]*>[\s\S]*?<\/[A-Z][a-zA-Z]*>/g, '')
-    // Remove frontmatter
-    .replace(/^---[\s\S]*?---\n/m, '')
-    // Clean up multiple empty lines
-    .replace(/\n{3,}/g, '\n\n')
-    .trim();
-}
-
-/**
- * Search documentation - reads MDX pages directly from website/src/pages/
- * Searches ALL subdirectories recursively
- */
-async function searchDocumentation(query: string, maxResults: number = 5): Promise<string[]> {
-  const results: { file: string; content: string; score: number }[] = [];
-  const queryLower = query.toLowerCase();
-  const queryWords = queryLower.split(/\s+/).filter(w => w.length > 2);
-
-  // Search recursively in ALL subdirectories of DOCS_PATH
-  try {
-    await searchDirectory(DOCS_PATH, queryWords, queryLower, results);
-  } catch (e) {
-    console.error('Error searching docs:', e);
-  }
-
-  results.sort((a, b) => b.score - a.score);
-  return results.slice(0, maxResults).map(r => r.content);
-}
-
-async function searchDirectory(
-  dir: string,
-  queryWords: string[],
-  queryLower: string,
-  results: { file: string; content: string; score: number }[]
-): Promise<void> {
-  try {
-    const entries = await fs.readdir(dir, { withFileTypes: true });
-
-    for (const entry of entries) {
-      const fullPath = path.join(dir, entry.name);
-
-      if (entry.isDirectory()) {
-        // Skip api folder and other non-documentation directories
-        if (entry.name === 'api' || entry.name === 'swatch' || entry.name === 'udels') {
-          continue;
-        }
-        await searchDirectory(fullPath, queryWords, queryLower, results);
-      } else if (entry.name.endsWith('.mdx') || entry.name.endsWith('.md')) {
-        try {
-          const rawContent = await fs.readFile(fullPath, 'utf-8');
-          // Strip MDX syntax to get clean markdown for searching
-          const content = entry.name.endsWith('.mdx') ? stripMdxSyntax(rawContent) : rawContent;
-          const contentLower = content.toLowerCase();
-
-          let score = 0;
-          if (contentLower.includes(queryLower)) score += 10;
-          for (const word of queryWords) {
-            const matches = (contentLower.match(new RegExp(word, 'g')) || []).length;
-            score += Math.min(matches, 10);
-          }
-
-          // Boost scores for relevant file names
-          const nameLower = entry.name.toLowerCase();
-          if (nameLower.includes('mini-notation')) score += 15;
-          if (nameLower.includes('effect')) score += 10;
-          if (nameLower.includes('sound')) score += 10;
-          if (nameLower.includes('sample')) score += 10;
-          if (nameLower.includes('synth')) score += 8;
-          if (nameLower.includes('drum')) score += 8;
-          if (nameLower.includes('hydra')) score += 8;
-          if (nameLower.includes('external')) score += 8;
-          if (nameLower.includes('source')) score += 5;
-
-          if (score > 0) {
-            const relevantContent = extractRelevantSection(content, queryWords, 2000);
-            const fileName = entry.name.replace(/\.(mdx?|md)$/, '');
-            results.push({
-              file: fullPath,
-              content: `## ${fileName}\n${relevantContent}`,
-              score,
-            });
-          }
-        } catch (e) { }
-      }
-    }
-  } catch (e) { }
-}
-
-/**
- * Extract relevant sections from markdown content
- * Uses header-based chunking (best practice for RAG with markdown)
- */
-function extractRelevantSection(content: string, queryWords: string[], maxLength: number): string {
-  // Split content into sections by headers (## or ###)
-  const sections = content.split(/(?=^#{1,3}\s)/m).filter(s => s.trim());
-
-  // Score each section
-  const scoredSections = sections.map(section => {
-    const sectionLower = section.toLowerCase();
-    let score = 0;
-
-    // Check for query matches
-    for (const word of queryWords) {
-      // Exact word match in header gets highest score
-      const headerMatch = section.match(/^#+\s+(.+)$/m);
-      if (headerMatch && headerMatch[1].toLowerCase().includes(word)) {
-        score += 15;
-      }
-      // Count matches in content
-      const matches = (sectionLower.match(new RegExp(word, 'g')) || []).length;
-      score += Math.min(matches * 2, 10);
-    }
-
-    // Boost sections with code examples (valuable for coding assistant)
-    if (section.includes('```')) score += 5;
-
-    return { section, score };
-  });
-
-  // Sort by score and take best sections until maxLength
-  scoredSections.sort((a, b) => b.score - a.score);
-
-  let result = '';
-  for (const { section, score } of scoredSections) {
-    if (score === 0) break;
-    if (result.length + section.length > maxLength) {
-      // Try to fit at least partial content
-      if (result.length === 0) {
-        result = section.slice(0, maxLength);
-      }
-      break;
-    }
-    result += section + '\n\n';
-  }
-
-  return result.trim();
-}
 
 /**
  * System Prompt for Bulka Music AI Agent
@@ -1587,7 +1506,7 @@ async function runOpenAIAgent(
             }
             else if (toolName === 'searchDocs') {
               controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: `🔍 Ищу в документации: "${toolArgs.query}"...` })}\n\n`));
-              const docs = await searchDocumentation(toolArgs.query || '', 3);
+              const docs = searchAllDocs(toolArgs.query || '', 3);
               conversationMessages.push({
                 role: 'tool',
                 tool_call_id: tc.id,
@@ -1905,7 +1824,7 @@ async function runAnthropicAgent(
             }
             else if (toolName === 'searchDocs') {
               controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: `🔍 Ищу в документации: "${toolArgs.query}"...` })}\n\n`));
-              const docs = await searchDocumentation(toolArgs.query || '', 3);
+              const docs = searchAllDocs(toolArgs.query || '', 3);
               toolResults.push({
                 type: 'tool_result',
                 tool_use_id: block.id,
@@ -2176,7 +2095,7 @@ async function runGeminiAgent(
             }
             else if (toolName === 'searchDocs') {
               controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: `🔍 Ищу в документации: "${toolArgs.query}"...` })}\n\n`));
-              const docs = await searchDocumentation(toolArgs.query || '', 3);
+              const docs = searchAllDocs(toolArgs.query || '', 3);
               functionResponses.push({
                 functionResponse: {
                   name: toolName,

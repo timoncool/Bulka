@@ -1,7 +1,0 @@
-{
-  "functions": {
-    "src/pages/api/chat.ts": {
-      "includeFiles": "../**/*.mdx"
-    }
-  }
-}
