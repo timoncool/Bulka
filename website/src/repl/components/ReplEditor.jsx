@@ -25,7 +25,7 @@ function ResizeHandle({ direction, containerRef, settingKey }) {
     const deltaPercent = (movement / size) * 100;
 
     const currentSize = Number(settingsMap.get()[settingKey]) || (isHorizontal ? 35 : 30);
-    const newSize = Math.max(5, Math.min(85, currentSize + deltaPercent));
+    const newSize = Math.max(20, Math.min(50, currentSize + deltaPercent));
     settingsMap.setKey(settingKey, newSize);
   };
 

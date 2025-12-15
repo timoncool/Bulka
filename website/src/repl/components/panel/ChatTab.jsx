@@ -85,7 +85,7 @@ async function fetchModels(provider, apiKey) {
  * Models are fetched dynamically from provider APIs
  * Adapts layout for bottom panel (horizontal) vs right panel (vertical)
  */
-function SettingsPanel({ onClose }) {
+function SettingsPanel({ onClose, isBottomPanel }) {
   const settings = useSettings();
   const [openaiKey, setOpenaiKey] = useState(settings.openaiApiKey || '');
   const [anthropicKey, setAnthropicKey] = useState(settings.anthropicApiKey || '');
@@ -249,8 +249,8 @@ function SettingsPanel({ onClose }) {
       {/* API Keys */}
       <div className="space-y-1">
         <h4 className="text-xs font-medium">API Ключи</h4>
-        <div className="flex gap-2 flex-wrap">
-          <div className="grid gap-1 min-w-[120px] flex-1">
+        <div className={isBottomPanel ? 'flex gap-2 flex-wrap' : 'space-y-2'}>
+          <div className={cx('grid gap-1', isBottomPanel && 'min-w-[120px] flex-1')}>
             <label className="text-xs flex items-center gap-1">
               OpenAI {openaiKey && <span className="text-green-400">✓</span>}
             </label>
@@ -262,7 +262,7 @@ function SettingsPanel({ onClose }) {
               className={cx(inputClass, 'text-sm py-1')}
             />
           </div>
-          <div className="grid gap-1 min-w-[120px] flex-1">
+          <div className={cx('grid gap-1', isBottomPanel && 'min-w-[120px] flex-1')}>
             <label className="text-xs flex items-center gap-1">
               Anthropic {anthropicKey && <span className="text-green-400">✓</span>}
             </label>
@@ -274,7 +274,7 @@ function SettingsPanel({ onClose }) {
               className={cx(inputClass, 'text-sm py-1')}
             />
           </div>
-          <div className="grid gap-1 min-w-[120px] flex-1">
+          <div className={cx('grid gap-1', isBottomPanel && 'min-w-[120px] flex-1')}>
             <label className="text-xs flex items-center gap-1">
               Gemini {geminiKey && <span className="text-green-400">✓</span>}
             </label>
@@ -410,7 +410,7 @@ function Message({ message }) {
 /**
  * Main ChatTab component
  */
-export function ChatTab({ context }) {
+export function ChatTab({ context, isBottomPanel }) {
   const messagesEndRef = useRef(null);
   const chat = useChatContext(context);
   const [showSettings, setShowSettings] = useState(false);
@@ -450,7 +450,7 @@ export function ChatTab({ context }) {
             </button>
           )}
         </div>
-        <SettingsPanel onClose={() => setShowSettings(false)} />
+        <SettingsPanel onClose={() => setShowSettings(false)} isBottomPanel={isBottomPanel} />
       </div>
     );
   }
