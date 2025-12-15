@@ -7,27 +7,31 @@ import { useSettings, settingsMap } from '@src/settings.mjs';
 import { useCallback, useRef } from 'react';
 
 // Resize handle component
-function ResizeHandle({ direction, currentSize, onResize }) {
+function ResizeHandle({ direction, containerRef, onResize }) {
   const isHorizontal = direction === 'horizontal';
   const isDragging = useRef(false);
-  const startPos = useRef(0);
-  const startSize = useRef(0);
 
   const handlePointerDown = useCallback((e) => {
     isDragging.current = true;
-    startPos.current = isHorizontal ? e.clientY : e.clientX;
-    startSize.current = currentSize;
     e.currentTarget.setPointerCapture(e.pointerId);
     document.body.style.cursor = isHorizontal ? 'row-resize' : 'col-resize';
     document.body.style.userSelect = 'none';
-  }, [isHorizontal, currentSize]);
+  }, [isHorizontal]);
 
   const handlePointerMove = useCallback((e) => {
-    if (!isDragging.current) return;
-    const currentPos = isHorizontal ? e.clientY : e.clientX;
-    const totalDelta = startPos.current - currentPos;
-    onResize?.(totalDelta, startSize.current);
-  }, [isHorizontal, onResize]);
+    if (!isDragging.current || !containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+
+    if (isHorizontal) {
+      // Bottom panel: height = container bottom - mouse Y
+      const newSize = ((rect.bottom - e.clientY) / rect.height) * 100;
+      onResize(Math.max(15, Math.min(60, newSize)));
+    } else {
+      // Right panel: width = container right - mouse X
+      const newSize = ((rect.right - e.clientX) / rect.width) * 100;
+      onResize(Math.max(15, Math.min(60, newSize)));
+    }
+  }, [isHorizontal, containerRef, onResize]);
 
   const handlePointerUp = useCallback((e) => {
     isDragging.current = false;
@@ -68,39 +72,27 @@ export default function ReplEditor(Props) {
 
   const containerElRef = useRef(null);
 
-  // Handle resize for right panel (width in %)
-  const handleResizeRight = useCallback((totalDelta, initialSize) => {
-    if (!containerElRef.current) return;
-    const containerWidth = containerElRef.current.offsetWidth;
-    const deltaPercent = (totalDelta / containerWidth) * 100;
-    const newSize = Math.max(15, Math.min(60, initialSize + deltaPercent));
-    settingsMap.setKey('panelSizeRight', newSize);
+  const handleResizeRight = useCallback((size) => {
+    settingsMap.setKey('panelSizeRight', size);
   }, []);
 
-  // Handle resize for bottom panel (height in %)
-  const handleResizeBottom = useCallback((totalDelta, initialSize) => {
-    if (!containerElRef.current) return;
-    const containerHeight = containerElRef.current.offsetHeight;
-    const deltaPercent = (totalDelta / containerHeight) * 100;
-    const newSize = Math.max(15, Math.min(60, initialSize + deltaPercent));
-    settingsMap.setKey('panelSizeBottom', newSize);
+  const handleResizeBottom = useCallback((size) => {
+    settingsMap.setKey('panelSizeBottom', size);
   }, []);
 
   const showRightPanel = !isZen && panelPosition === 'right';
   const showBottomPanel = !isZen && panelPosition === 'bottom';
 
-  // Code component is ALWAYS in the same DOM position - never moves between renders
   return (
     <div ref={containerElRef} className="h-full flex flex-col relative" {...editorProps}>
       <Loader active={pending} />
       <Header context={context} />
       <div className="grow flex relative overflow-hidden">
-        {/* Code is always the first child here - never changes position */}
         <Code containerRef={containerRef} editorRef={editorRef} init={init} />
         {showRightPanel && isPanelOpen && (
           <ResizeHandle
             direction="vertical"
-            currentSize={panelSizeRight}
+            containerRef={containerElRef}
             onResize={handleResizeRight}
           />
         )}
@@ -117,7 +109,7 @@ export default function ReplEditor(Props) {
       {showBottomPanel && isPanelOpen && (
         <ResizeHandle
           direction="horizontal"
-          currentSize={panelSizeBottom}
+          containerRef={containerElRef}
           onResize={handleResizeBottom}
         />
       )}
