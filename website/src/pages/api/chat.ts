@@ -8,13 +8,12 @@
 import type { APIRoute } from 'astro';
 import fs from 'fs/promises';
 import path from 'path';
-import { fileURLToPath } from 'url';
 
 export const prerender = false;
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-// Use MDX pages directly - no need for separate docs_md copies
-const DOCS_PATH = path.resolve(__dirname, '..');
+// Use process.cwd() for Vercel serverless (NOT __dirname!)
+// See: https://vercel.com/guides/how-can-i-use-files-in-serverless-functions
+const DOCS_PATH = path.join(process.cwd(), 'src', 'pages');
 
 /**
  * Code examples library - loaded on demand via getExamples tool
@@ -373,6 +372,10 @@ async function searchDirectory(
       const fullPath = path.join(dir, entry.name);
 
       if (entry.isDirectory()) {
+        // Skip api folder and other non-documentation directories
+        if (entry.name === 'api' || entry.name === 'swatch' || entry.name === 'udels') {
+          continue;
+        }
         await searchDirectory(fullPath, queryWords, queryLower, results);
       } else if (entry.name.endsWith('.mdx') || entry.name.endsWith('.md')) {
         try {
