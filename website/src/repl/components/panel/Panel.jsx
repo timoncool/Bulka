@@ -24,7 +24,7 @@ export function HorizontalPanel({ context }) {
     >
       {isPanelOpen ? (
         <>
-          <div className="flex grow overflow-auto pr-10">
+          <div className="flex grow overflow-auto pr-10 h-full">
             <PanelContent context={context} tab={tab} isBottomPanel={true} />
           </div>
 
