@@ -435,7 +435,7 @@ export function ChatTab({ context, isBottomPanel }) {
   // Show settings if no API key
   if (!chat.hasApiKey || showSettings) {
     return (
-      <div className="h-full flex flex-col text-foreground">
+      <div className="h-full w-full flex flex-col text-foreground">
         <div className="flex items-center justify-between p-2 border-b border-foreground/20">
           <div className="flex items-center gap-2">
             <span>🤖</span>
@@ -456,7 +456,7 @@ export function ChatTab({ context, isBottomPanel }) {
   }
 
   return (
-    <div className="flex flex-col h-full text-foreground">
+    <div className="flex flex-col h-full w-full text-foreground">
       {/* Header */}
       <div className="flex items-center justify-between p-2 border-b border-foreground/20">
         <div className="flex items-center gap-2">
