@@ -69,6 +69,7 @@ export default function ReplEditor(Props) {
         <Loader active={pending} />
         <Header context={context} />
         <PanelGroup
+          key="horizontal"
           direction="horizontal"
           onLayout={handleLayoutChange}
           className="grow overflow-hidden"
@@ -97,6 +98,7 @@ export default function ReplEditor(Props) {
       <Loader active={pending} />
       <Header context={context} />
       <PanelGroup
+        key="vertical"
         direction="vertical"
         onLayout={handleLayoutChange}
         className="grow overflow-hidden"
