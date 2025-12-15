@@ -176,7 +176,7 @@ s0.initVideo(url)
 ```javascript
 await initHydra()
 
-s0.initVideo("https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/720/Big_Buck_Bunny_720_10s_1MB.mp4")
+s0.initVideo("https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4")
 src(s0).out()
 ```
 
@@ -184,7 +184,7 @@ src(s0).out()
 ```javascript
 await initHydra()
 
-s0.initVideo("https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/720/Big_Buck_Bunny_720_10s_1MB.mp4")
+s0.initVideo("https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4")
 src(s0)
   .kaleid(4)
   .colorama(0.3)
@@ -195,7 +195,7 @@ src(s0)
 ```javascript
 await initHydra()
 
-s0.initVideo("https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/720/Big_Buck_Bunny_720_10s_1MB.mp4")
+s0.initVideo("https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4")
 osc(10, 0.1, 0.5)
   .modulate(src(s0), 0.3)
   .out()
@@ -205,7 +205,7 @@ osc(10, 0.1, 0.5)
 ```javascript
 await initHydra()
 
-s0.initVideo("https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/720/Big_Buck_Bunny_720_10s_1MB.mp4")
+s0.initVideo("https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4")
 
 // Доступ к HTML video элементу
 s0.src.playbackRate = 0.5  // Замедлить в 2 раза
@@ -219,7 +219,7 @@ src(s0).out()
 ```javascript
 await initHydra()
 
-s0.initVideo("https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/720/Big_Buck_Bunny_720_10s_1MB.mp4")
+s0.initVideo("https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4")
 src(s0)
   .pixelate(H("20 40 60"), H("15 30 45"))
   .colorama(0.5)
