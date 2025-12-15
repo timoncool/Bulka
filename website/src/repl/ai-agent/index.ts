@@ -13,7 +13,6 @@
  * @module ai-agent
  */
 
-export { SYSTEM_PROMPT } from './system-prompt';
 export {
   toolSchemas,
   SOUND_CATEGORIES,
