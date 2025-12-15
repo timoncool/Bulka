@@ -1,8 +1,68 @@
 [
   {
+    "date": "2025-12-15",
+    "dateFormatted": "15 декабря 2025",
+    "changes": [
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "заменить ForBiggerBlazes на friday.mp4 от MDN",
+        "scope": null,
+        "author": "Claude",
+        "hash": "83ed7a4"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "заменить нерабочие URL видео на рабочие с CORS",
+        "scope": null,
+        "author": "Claude",
+        "hash": "bc15ab1"
+      },
+      {
+        "type": "style",
+        "typeLabel": "Стили",
+        "emoji": "🎨",
+        "description": "глобальная стилизация скроллбаров для всего приложения",
+        "scope": null,
+        "author": "Claude",
+        "hash": "e638417"
+      },
+      {
+        "type": "style",
+        "typeLabel": "Стили",
+        "emoji": "🎨",
+        "description": "добавить стилизацию скроллбаров под тему",
+        "scope": null,
+        "author": "Claude",
+        "hash": "ad667c7"
+      }
+    ]
+  },
+  {
     "date": "2025-12-14",
     "dateFormatted": "14 декабря 2025",
     "changes": [
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "вернуть changelog в prebuild для автообновления на Vercel",
+        "scope": null,
+        "author": "Claude",
+        "hash": "0fbf867"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "переименовать кнопку \"Редактировать\" в \"Открыть\" в ленте",
+        "scope": null,
+        "author": "Claude",
+        "hash": "5fbb2b9"
+      },
       {
         "type": "fix",
         "typeLabel": "Исправления",
