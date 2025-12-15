@@ -342,28 +342,18 @@ function stripMdxSyntax(content: string): string {
 
 /**
  * Search documentation - reads MDX pages directly from website/src/pages/
+ * Searches ALL subdirectories recursively
  */
 async function searchDocumentation(query: string, maxResults: number = 5): Promise<string[]> {
   const results: { file: string; content: string; score: number }[] = [];
   const queryLower = query.toLowerCase();
   const queryWords = queryLower.split(/\s+/).filter(w => w.length > 2);
 
-  // Search in all documentation directories (MDX pages)
-  const searchPaths = [
-    path.join(DOCS_PATH, 'hydra'),
-    path.join(DOCS_PATH, 'learn'),
-    path.join(DOCS_PATH, 'reference'),
-    path.join(DOCS_PATH, 'samples'),
-    path.join(DOCS_PATH, 'recipes'),
-    path.join(DOCS_PATH, 'functions'),
-  ];
-
-  for (const searchPath of searchPaths) {
-    try {
-      await searchDirectory(searchPath, queryWords, queryLower, results);
-    } catch (e) {
-      // Skip if not found
-    }
+  // Search recursively in ALL subdirectories of DOCS_PATH
+  try {
+    await searchDirectory(DOCS_PATH, queryWords, queryLower, results);
+  } catch (e) {
+    console.error('Error searching docs:', e);
   }
 
   results.sort((a, b) => b.score - a.score);
