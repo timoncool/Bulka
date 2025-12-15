@@ -134,6 +134,8 @@ export function useSettings() {
         ? true
         : parseBoolean(state.patternAutoStart),
     masterVolume: Number(state.masterVolume) ?? 1,
+    panelSizeBottom: Number(state.panelSizeBottom) || 35,
+    panelSizeRight: Number(state.panelSizeRight) || 30,
   };
 }
 

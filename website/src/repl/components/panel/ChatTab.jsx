@@ -87,8 +87,6 @@ async function fetchModels(provider, apiKey) {
  */
 function SettingsPanel({ onClose }) {
   const settings = useSettings();
-  const { panelPosition } = settings;
-  const isBottomPanel = panelPosition === 'bottom';
   const [openaiKey, setOpenaiKey] = useState(settings.openaiApiKey || '');
   const [anthropicKey, setAnthropicKey] = useState(settings.anthropicApiKey || '');
   const [geminiKey, setGeminiKey] = useState(settings.geminiApiKey || '');
@@ -194,95 +192,65 @@ function SettingsPanel({ onClose }) {
   const isLoadingCurrentModels = loadingModels[provider];
 
   return (
-    <div className={cx(
-      'p-3 text-foreground overflow-y-auto overflow-x-hidden',
-      isBottomPanel ? 'h-full flex flex-row gap-4' : 'space-y-3'
-    )}>
-      {/* Left column (or top section for vertical panel) */}
-      <div className={cx(isBottomPanel ? 'flex-1 min-w-0 space-y-2' : 'space-y-3')}>
-        <h3 className="text-base font-medium">Настройки AI</h3>
+    <div className="p-3 text-foreground overflow-y-auto overflow-x-hidden space-y-3">
+      <h3 className="text-base font-medium">Настройки AI</h3>
 
-        {/* Provider & Model row */}
-        <div className={cx(isBottomPanel ? 'flex gap-2' : 'space-y-2')}>
-          {/* Provider */}
-          <div className={cx('grid gap-1', isBottomPanel ? 'flex-1' : '')}>
-            <label className="text-xs font-medium">Провайдер</label>
-            <select
-              value={provider}
-              onChange={(e) => {
-                const newProvider = e.target.value;
-                setProvider(newProvider);
-                const newModels = models[newProvider] || FALLBACK_MODELS[newProvider];
-                if (newModels.length > 0) {
-                  setModel(newModels[0].value);
-                }
-              }}
-              className={cx(selectClass, 'text-sm py-1.5')}
-            >
-              <option value="openai">OpenAI {openaiKey ? '✓' : ''}</option>
-              <option value="anthropic">Anthropic {anthropicKey ? '✓' : ''}</option>
-              <option value="gemini">Gemini {geminiKey ? '✓' : ''}</option>
-            </select>
-          </div>
-
-          {/* Model */}
-          <div className={cx('grid gap-1', isBottomPanel ? 'flex-1' : '')}>
-            <label className="text-xs flex items-center gap-1">
-              Модель
-              {isLoadingCurrentModels && <span className="opacity-50">...</span>}
-            </label>
-            <div className="flex gap-1">
-              <select
-                value={model}
-                onChange={(e) => setModel(e.target.value)}
-                className={cx(selectClass, 'flex-1 text-sm py-1.5')}
-                disabled={isLoadingCurrentModels}
-              >
-                {currentModels.map((m) => (
-                  <option key={m.value} value={m.value}>{m.label}</option>
-                ))}
-              </select>
-              <button
-                type="button"
-                onClick={() => loadModelsForProvider(provider, getKeyForProvider(provider))}
-                disabled={isLoadingCurrentModels || !currentProviderHasKey()}
-                className="px-2 text-sm rounded border border-foreground/30 hover:bg-lineBackground disabled:opacity-30"
-                title="Обновить"
-              >
-                ↻
-              </button>
-            </div>
-          </div>
+      {/* Provider & Model - horizontal */}
+      <div className="flex gap-2 flex-wrap">
+        <div className="grid gap-1 min-w-[140px] flex-1">
+          <label className="text-xs font-medium">Провайдер</label>
+          <select
+            value={provider}
+            onChange={(e) => {
+              const newProvider = e.target.value;
+              setProvider(newProvider);
+              const newModels = models[newProvider] || FALLBACK_MODELS[newProvider];
+              if (newModels.length > 0) {
+                setModel(newModels[0].value);
+              }
+            }}
+            className={cx(selectClass, 'text-sm py-1.5')}
+          >
+            <option value="openai">OpenAI {openaiKey ? '✓' : ''}</option>
+            <option value="anthropic">Anthropic {anthropicKey ? '✓' : ''}</option>
+            <option value="gemini">Gemini {geminiKey ? '✓' : ''}</option>
+          </select>
         </div>
 
-        {/* Links & Save (for bottom panel, shown here) */}
-        {isBottomPanel && (
-          <div className="flex items-center gap-3 pt-1">
-            <button
-              onClick={handleSave}
-              disabled={!currentProviderHasKey()}
-              className={cx(buttonClass, 'text-sm py-1.5')}
+        <div className="grid gap-1 min-w-[180px] flex-1">
+          <label className="text-xs flex items-center gap-1">
+            Модель
+            {isLoadingCurrentModels && <span className="opacity-50">...</span>}
+          </label>
+          <div className="flex gap-1">
+            <select
+              value={model}
+              onChange={(e) => setModel(e.target.value)}
+              className={cx(selectClass, 'flex-1 text-sm py-1.5')}
+              disabled={isLoadingCurrentModels}
             >
-              {currentProviderHasKey() ? 'Сохранить' : 'Введите ключ'}
+              {currentModels.map((m) => (
+                <option key={m.value} value={m.value}>{m.label}</option>
+              ))}
+            </select>
+            <button
+              type="button"
+              onClick={() => loadModelsForProvider(provider, getKeyForProvider(provider))}
+              disabled={isLoadingCurrentModels || !currentProviderHasKey()}
+              className="px-2 text-sm rounded border border-foreground/30 hover:bg-lineBackground disabled:opacity-30"
+              title="Обновить"
+            >
+              ↻
             </button>
-            <div className="text-xs opacity-70 flex gap-2">
-              <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener" className="underline hover:opacity-50">OpenAI</a>
-              <a href="https://console.anthropic.com/" target="_blank" rel="noopener" className="underline hover:opacity-50">Anthropic</a>
-              <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" className="underline hover:opacity-50">Gemini</a>
-            </div>
           </div>
-        )}
+        </div>
       </div>
 
-      {/* Right column (or bottom section for vertical panel) - API Keys */}
-      <div className={cx(
-        isBottomPanel ? 'flex-1 min-w-0 border-l border-foreground/20 pl-4' : 'border-t border-foreground/20 pt-2'
-      )}>
-        <h4 className="text-xs font-medium mb-2">API Ключи</h4>
-
-        <div className={cx(isBottomPanel ? 'flex gap-2' : 'space-y-2')}>
-          {/* OpenAI Key */}
-          <div className={cx('grid gap-1', isBottomPanel ? 'flex-1' : '')}>
+      {/* API Keys */}
+      <div className="space-y-1">
+        <h4 className="text-xs font-medium">API Ключи</h4>
+        <div className="flex gap-2 flex-wrap">
+          <div className="grid gap-1 min-w-[120px] flex-1">
             <label className="text-xs flex items-center gap-1">
               OpenAI {openaiKey && <span className="text-green-400">✓</span>}
             </label>
@@ -294,9 +262,7 @@ function SettingsPanel({ onClose }) {
               className={cx(inputClass, 'text-sm py-1')}
             />
           </div>
-
-          {/* Anthropic Key */}
-          <div className={cx('grid gap-1', isBottomPanel ? 'flex-1' : '')}>
+          <div className="grid gap-1 min-w-[120px] flex-1">
             <label className="text-xs flex items-center gap-1">
               Anthropic {anthropicKey && <span className="text-green-400">✓</span>}
             </label>
@@ -308,9 +274,7 @@ function SettingsPanel({ onClose }) {
               className={cx(inputClass, 'text-sm py-1')}
             />
           </div>
-
-          {/* Gemini Key */}
-          <div className={cx('grid gap-1', isBottomPanel ? 'flex-1' : '')}>
+          <div className="grid gap-1 min-w-[120px] flex-1">
             <label className="text-xs flex items-center gap-1">
               Gemini {geminiKey && <span className="text-green-400">✓</span>}
             </label>
@@ -323,28 +287,25 @@ function SettingsPanel({ onClose }) {
             />
           </div>
         </div>
-
-        <p className="text-xs opacity-50 mt-1">Ключи хранятся локально</p>
+        <p className="text-xs opacity-50">Ключи хранятся локально</p>
       </div>
 
-      {/* Save button & Links (for vertical/right panel) */}
-      {!isBottomPanel && (
-        <div className="space-y-2 pt-1">
-          <div className="text-xs opacity-70 flex flex-wrap gap-2">
-            <span>Получить:</span>
-            <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener" className="underline hover:opacity-50">OpenAI</a>
-            <a href="https://console.anthropic.com/" target="_blank" rel="noopener" className="underline hover:opacity-50">Anthropic</a>
-            <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" className="underline hover:opacity-50">Gemini</a>
-          </div>
-          <button
-            onClick={handleSave}
-            disabled={!currentProviderHasKey()}
-            className={cx(buttonClass, 'w-full')}
-          >
-            {currentProviderHasKey() ? 'Сохранить' : `Введите ключ для ${provider}`}
-          </button>
+      {/* Save & Links */}
+      <div className="flex items-center gap-3 flex-wrap">
+        <button
+          onClick={handleSave}
+          disabled={!currentProviderHasKey()}
+          className={cx(buttonClass, 'text-sm py-1.5')}
+        >
+          {currentProviderHasKey() ? 'Сохранить' : 'Введите ключ'}
+        </button>
+        <div className="text-xs opacity-70 flex gap-2">
+          <span>Получить:</span>
+          <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener" className="underline hover:opacity-50">OpenAI</a>
+          <a href="https://console.anthropic.com/" target="_blank" rel="noopener" className="underline hover:opacity-50">Anthropic</a>
+          <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" className="underline hover:opacity-50">Gemini</a>
         </div>
-      )}
+      </div>
     </div>
   );
 }
