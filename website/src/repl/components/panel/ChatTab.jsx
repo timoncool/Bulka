@@ -21,27 +21,11 @@ const SUGGESTIONS = [
 ];
 
 // Fallback models (used if API fetch fails)
-// gpt4free models hardcoded - their API doesn't provide model list
 const FALLBACK_MODELS = {
   openai: [{ value: 'gpt-4o', label: 'gpt-4o' }],
   anthropic: [{ value: 'claude-sonnet-4-5-20250929', label: 'Claude Sonnet 4.5' }],
   gemini: [{ value: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash' }],
-  gpt4free: [
-    { value: 'gpt-4o', label: 'GPT-4o' },
-    { value: 'gpt-4o-mini', label: 'GPT-4o Mini' },
-    { value: 'gpt-4', label: 'GPT-4' },
-    { value: 'gpt-4-turbo', label: 'GPT-4 Turbo' },
-    { value: 'gpt-3.5-turbo', label: 'GPT-3.5 Turbo' },
-    { value: 'claude-3.5-sonnet', label: 'Claude 3.5 Sonnet' },
-    { value: 'claude-3-opus', label: 'Claude 3 Opus' },
-    { value: 'gemini-pro', label: 'Gemini Pro' },
-    { value: 'gemini-1.5-pro', label: 'Gemini 1.5 Pro' },
-    { value: 'llama-3.1-70b', label: 'Llama 3.1 70B' },
-    { value: 'llama-3.1-405b', label: 'Llama 3.1 405B' },
-    { value: 'mixtral-8x7b', label: 'Mixtral 8x7B' },
-    { value: 'qwen-2-72b', label: 'Qwen 2 72B' },
-    { value: 'deepseek-coder', label: 'DeepSeek Coder' },
-  ],
+  gpt4free: [], // Загружается динамически через client.models.list()
 };
 
 const MODELS_STORAGE_KEY = 'bulka_cached_models';
@@ -109,13 +93,41 @@ async function fetchModels(provider, apiKey) {
   }
 }
 
+// GPT4Free client (lazy loaded)
+let g4fClientForModels = null;
+
 /**
- * Get gpt4free models (hardcoded - their API doesn't provide model list)
+ * Fetch gpt4free models using official client.models.list()
  */
-function fetchGpt4freeModels() {
-  // g4f.dev API doesn't have working /models endpoint
-  // Return hardcoded list of popular models
-  return FALLBACK_MODELS.gpt4free;
+async function fetchGpt4freeModels() {
+  try {
+    // Load official g4f client
+    if (!g4fClientForModels) {
+      const module = await import('https://g4f.dev/dist/js/client.js');
+      const Client = module.default;
+      g4fClientForModels = new Client();
+    }
+
+    // Use official method to get models
+    const modelList = await g4fClientForModels.models.list();
+
+    // Filter and format models
+    const models = modelList
+      .filter(m => {
+        // Only chat/text models, skip image
+        if (m.type && !['chat', 'text'].includes(m.type)) return false;
+        return true;
+      })
+      .map(m => ({
+        value: m.id,
+        label: m.id + (m.type === 'image' ? ' 🎨' : ''),
+      }));
+
+    return models;
+  } catch (e) {
+    console.error('Error fetching gpt4free models:', e);
+    return [];
+  }
 }
 
 /**
@@ -183,6 +195,13 @@ function SettingsPanel({ onClose, isBottomPanel }) {
       setLoadingModels(prev => ({ ...prev, [p]: false }));
     }
   }, [provider, model]);
+
+  // Auto-load gpt4free models when selected
+  useEffect(() => {
+    if (provider === 'gpt4free' && (!models.gpt4free || models.gpt4free.length === 0)) {
+      loadModelsForProvider('gpt4free', null);
+    }
+  }, [provider, models.gpt4free, loadModelsForProvider]);
 
   // Track previous key values to detect changes
   const prevKeysRef = useRef({ openai: openaiKey, anthropic: anthropicKey, gemini: geminiKey });
