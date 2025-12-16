@@ -487,25 +487,34 @@ export function useChatContext(replContext) {
         }
 
         // Auto-play if code was set but no [PLAY] marker (model forgot)
-        // Only if no explicit [STOP] was requested
+        // Only if no explicit [STOP] was requested and playTriggered is still false
         if (editor && lastCodeBlockEnd > 0 && !playTriggered && !stopTriggered) {
           editor.evaluate();
-          actionsExecuted.push('Воспроизведение запущено (авто)');
-          setLastAction('▶ Воспроизведение запущено');
+          // Replace 'Воспроизведение запущено' if exists, otherwise add '(авто)'
+          const playIdx = actionsExecuted.indexOf('Воспроизведение запущено');
+          if (playIdx === -1) {
+            actionsExecuted.push('Воспроизведение запущено (авто)');
+          }
+          setLastAction('▶ Воспроизведение запущено (авто)');
         }
 
-        // Final update with action summary
+        // Final update with action summary (only once)
+        const cleanContent = fullContent
+          .replace(/\[PLAY\]/gi, '')
+          .replace(/\[STOP\]/gi, '')
+          .trim();
+
         if (actionsExecuted.length > 0) {
-          const cleanContent = fullContent
-            .replace(/\[PLAY\]/gi, '')
-            .replace(/\[STOP\]/gi, '')
-            .trim();
           const actionSummary = `\n\n✓ ${actionsExecuted.join(', ')}`;
           setMessages(prev => {
             const updated = [...prev];
             const lastIdx = updated.length - 1;
             if (updated[lastIdx]?.role === 'assistant') {
-              updated[lastIdx] = { ...updated[lastIdx], content: cleanContent + actionSummary };
+              // Only add summary if not already present
+              const currentContent = updated[lastIdx].content || '';
+              if (!currentContent.includes('✓ ')) {
+                updated[lastIdx] = { ...updated[lastIdx], content: cleanContent + actionSummary };
+              }
             }
             return updated;
           });
