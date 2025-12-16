@@ -247,12 +247,31 @@ function SettingsPanel({ onClose, isBottomPanel }) {
     }
   }, [provider, gpt4freeProviders.length]);
 
-  // Load gpt4free models when sub-provider changes
-  useEffect(() => {
-    if (provider === 'gpt4free') {
-      loadModelsForProvider('gpt4free', null, gpt4freeSubProvider);
+  // Load gpt4free models - called directly when sub-provider changes
+  const loadGpt4freeModels = useCallback(async (subProvider) => {
+    setLoadingModels(prev => ({ ...prev, gpt4free: true }));
+    setModels(prev => ({ ...prev, gpt4free: [] })); // Clear models, show "Loading..."
+
+    try {
+      const fetchedModels = await fetchGpt4freeModels(subProvider);
+      if (fetchedModels && fetchedModels.length > 0) {
+        setModels(prev => ({ ...prev, gpt4free: fetchedModels }));
+        // Set first model as default
+        setModel(fetchedModels[0].value);
+      }
+    } catch (e) {
+      console.error('Error loading gpt4free models:', e);
+    } finally {
+      setLoadingModels(prev => ({ ...prev, gpt4free: false }));
     }
-  }, [provider, gpt4freeSubProvider, loadModelsForProvider]);
+  }, []);
+
+  // Load gpt4free models on mount if gpt4free is selected
+  useEffect(() => {
+    if (provider === 'gpt4free' && models.gpt4free.length === 0) {
+      loadGpt4freeModels(gpt4freeSubProvider);
+    }
+  }, []); // Only on mount
 
   // Track previous key values to detect changes
   const prevKeysRef = useRef({ openai: openaiKey, anthropic: anthropicKey, gemini: geminiKey });
@@ -318,9 +337,16 @@ function SettingsPanel({ onClose, isBottomPanel }) {
             onChange={(e) => {
               const newProvider = e.target.value;
               setProvider(newProvider);
-              const newModels = models[newProvider] || FALLBACK_MODELS[newProvider];
-              if (newModels.length > 0) {
-                setModel(newModels[0].value);
+
+              // For gpt4free - load models dynamically
+              if (newProvider === 'gpt4free') {
+                loadGpt4freeModels(gpt4freeSubProvider);
+              } else {
+                // For other providers - use cached models
+                const newModels = models[newProvider] || FALLBACK_MODELS[newProvider];
+                if (newModels.length > 0) {
+                  setModel(newModels[0].value);
+                }
               }
             }}
             className={cx(selectClass, 'text-sm py-1.5')}
@@ -342,15 +368,27 @@ function SettingsPanel({ onClose, isBottomPanel }) {
               value={model}
               onChange={(e) => setModel(e.target.value)}
               className={cx(selectClass, 'flex-1 text-sm py-1.5')}
-              disabled={isLoadingCurrentModels}
+              disabled={isLoadingCurrentModels || currentModels.length === 0}
             >
-              {currentModels.map((m) => (
-                <option key={m.value} value={m.value}>{m.label}</option>
-              ))}
+              {currentModels.length === 0 ? (
+                <option value="">
+                  {isLoadingCurrentModels ? 'Загрузка моделей...' : 'Нет моделей'}
+                </option>
+              ) : (
+                currentModels.map((m) => (
+                  <option key={m.value} value={m.value}>{m.label}</option>
+                ))
+              )}
             </select>
             <button
               type="button"
-              onClick={() => loadModelsForProvider(provider, isGpt4free ? null : getKeyForProvider(provider))}
+              onClick={() => {
+                if (isGpt4free) {
+                  loadGpt4freeModels(gpt4freeSubProvider);
+                } else {
+                  loadModelsForProvider(provider, getKeyForProvider(provider));
+                }
+              }}
               disabled={isLoadingCurrentModels || (!isGpt4free && !currentProviderHasKey())}
               className="px-2 text-sm rounded border border-foreground/30 hover:bg-lineBackground disabled:opacity-30"
               title="Обновить модели"
@@ -377,8 +415,10 @@ function SettingsPanel({ onClose, isBottomPanel }) {
             <select
               value={gpt4freeSubProvider}
               onChange={(e) => {
-                setGpt4freeSubProviderLocal(e.target.value);
-                // Models will reload automatically via useEffect
+                const newSubProvider = e.target.value;
+                setGpt4freeSubProviderLocal(newSubProvider);
+                // Load models for new sub-provider immediately (like g4f.dev)
+                loadGpt4freeModels(newSubProvider);
               }}
               className={cx(selectClass, 'text-sm py-1.5')}
               disabled={loadingProviders}
