@@ -3,12 +3,63 @@
  *
  * Uses server-side RAG for documentation search.
  * API key stored in localStorage and sent with each request.
+ * GPT4Free uses client-side library (no API key needed).
  */
 
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { useSettings } from '../settings.mjs';
 import { soundMap } from '@strudel/webaudio';
 import { $strudel_log_history } from './components/useLogger.jsx';
+
+// GPT4Free client instance (lazy loaded)
+let g4fClient = null;
+
+/**
+ * Get or create GPT4Free client
+ * Uses official g4f.dev JS client - no backend required
+ */
+async function getGpt4freeClient() {
+  if (g4fClient) return g4fClient;
+
+  // Dynamic import from CDN
+  const module = await import('https://g4f.dev/dist/js/client.js');
+  const Client = module.default;
+  g4fClient = new Client();
+  return g4fClient;
+}
+
+/**
+ * GPT4Free client-side chat handler
+ * Uses official g4f.dev JS client - no backend required
+ */
+async function* runGpt4freeClientChat(messages, model, onStatus) {
+  onStatus?.('🔗 Подключение к GPT4Free...');
+
+  try {
+    const client = await getGpt4freeClient();
+
+    onStatus?.('📡 Отправляю запрос...');
+
+    // Use official client API
+    const result = await client.chat.completions.create({
+      model: model || 'gpt-4o',
+      messages: messages.map(m => ({
+        role: m.role,
+        content: m.content,
+      })),
+    });
+
+    // Return the response content
+    const content = result.choices?.[0]?.message?.content;
+    if (content) {
+      yield { type: 'text', content };
+    } else {
+      yield { type: 'error', error: 'Пустой ответ от GPT4Free' };
+    }
+  } catch (error) {
+    yield { type: 'error', error: error.message || 'Ошибка GPT4Free' };
+  }
+}
 
 const CHAT_STORAGE_KEY = 'bulka-chat-messages';
 const CHAT_DRAFT_KEY = 'bulka-chat-draft';
@@ -240,12 +291,16 @@ export function useChatContext(replContext) {
 
     const { aiProvider, aiModel, openaiApiKey, anthropicApiKey, geminiApiKey } = settings;
 
-    // Get API key for current provider
-    const aiApiKey = aiProvider === 'openai' ? openaiApiKey :
+    // gpt4free doesn't need API key
+    const isGpt4free = aiProvider === 'gpt4free';
+
+    // Get API key for current provider (not needed for gpt4free)
+    const aiApiKey = isGpt4free ? null :
+                     aiProvider === 'openai' ? openaiApiKey :
                      aiProvider === 'anthropic' ? anthropicApiKey :
                      aiProvider === 'gemini' ? geminiApiKey : '';
 
-    if (!aiApiKey) {
+    if (!isGpt4free && !aiApiKey) {
       setError(`API ключ для ${aiProvider} не установлен. Откройте настройки и добавьте ключ.`);
       return;
     }
@@ -283,6 +338,47 @@ export function useChatContext(replContext) {
 
       abortControllerRef.current = new AbortController();
 
+      let fullContent = '';
+      let thinkingContent = '';
+      let isThinking = false;
+      let actionsExecuted = [];
+
+      // GPT4Free: use client-side handler (no server needed)
+      if (isGpt4free) {
+        // Add code context to messages for gpt4free
+        let gpt4freeMessages = [...apiMessages];
+        if (currentCode) {
+          const codeContext = selectedCode
+            ? `[Выделенный код:\n${selectedCode}\n\nПолный код:\n${currentCode}]`
+            : `[Текущий код:\n${currentCode}]`;
+          gpt4freeMessages = [
+            { role: 'system', content: `Ты AI помощник для Strudel/Bulka - музыкального live-coding. Помогай писать код для создания музыки. ${codeContext}` },
+            ...apiMessages,
+          ];
+        }
+
+        for await (const message of runGpt4freeClientChat(gpt4freeMessages, aiModel, setLastAction)) {
+          if (message.type === 'text' && message.content) {
+            fullContent += message.content;
+            setMessages(prev => {
+              const updated = [...prev];
+              const lastIdx = updated.length - 1;
+              if (updated[lastIdx]?.role === 'assistant') {
+                updated[lastIdx] = { ...updated[lastIdx], content: fullContent };
+              }
+              return updated;
+            });
+          } else if (message.type === 'error') {
+            throw new Error(message.error);
+          }
+        }
+
+        // Done with gpt4free
+        setIsLoading(false);
+        return;
+      }
+
+      // Other providers: use server-side API
       // Retry logic with exponential backoff for rate limits
       let response;
       let retryCount = 0;
@@ -330,10 +426,6 @@ export function useChatContext(replContext) {
 
       // Parse streaming response from agent
       const reader = response.body.getReader();
-      let fullContent = '';
-      let thinkingContent = '';
-      let isThinking = false;
-      let actionsExecuted = [];
 
       for await (const message of parseAgentStream(reader)) {
         // Handle status messages (show what agent is doing)
@@ -653,8 +745,9 @@ export function useChatContext(replContext) {
     handleInputChange,
     handleSubmit,
     handleKeyDown,
-    // Settings for UI - check current provider's key
-    hasApiKey: !!(settings.aiProvider === 'openai' ? settings.openaiApiKey :
+    // Settings for UI - check current provider's key (gpt4free doesn't need key)
+    hasApiKey: settings.aiProvider === 'gpt4free' ? true :
+               !!(settings.aiProvider === 'openai' ? settings.openaiApiKey :
                   settings.aiProvider === 'anthropic' ? settings.anthropicApiKey :
                   settings.aiProvider === 'gemini' ? settings.geminiApiKey : ''),
     provider: settings.aiProvider,

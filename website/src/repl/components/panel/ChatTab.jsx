@@ -25,6 +25,7 @@ const FALLBACK_MODELS = {
   openai: [{ value: 'gpt-4o', label: 'gpt-4o' }],
   anthropic: [{ value: 'claude-sonnet-4-5-20250929', label: 'Claude Sonnet 4.5' }],
   gemini: [{ value: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash' }],
+  gpt4free: [], // Загружается динамически с g4f.dev
 };
 
 const MODELS_STORAGE_KEY = 'bulka_cached_models';
@@ -41,6 +42,7 @@ function loadCachedModels() {
         openai: parsed.openai || FALLBACK_MODELS.openai,
         anthropic: parsed.anthropic || FALLBACK_MODELS.anthropic,
         gemini: parsed.gemini || FALLBACK_MODELS.gemini,
+        gpt4free: FALLBACK_MODELS.gpt4free, // Always use hardcoded (no API)
       };
     }
   } catch (e) {
@@ -64,6 +66,11 @@ function saveCachedModels(models) {
  * Fetch available models from provider API
  */
 async function fetchModels(provider, apiKey) {
+  // gpt4free: fetch models client-side from g4f.dev
+  if (provider === 'gpt4free') {
+    return fetchGpt4freeModels();
+  }
+
   if (!apiKey) return null;
   try {
     const response = await fetch('/api/models', {
@@ -78,6 +85,49 @@ async function fetchModels(provider, apiKey) {
     console.error('Error fetching models:', e);
     return null;
   }
+}
+
+/**
+ * Fetch gpt4free models from g4f.dev (client-side, динамическая загрузка)
+ */
+async function fetchGpt4freeModels() {
+  const response = await fetch('https://g4f.dev/api/v1/models');
+  if (!response.ok) {
+    throw new Error(`Ошибка загрузки моделей: ${response.status}`);
+  }
+
+  const data = await response.json();
+  const modelList = data.data || data.models || data || [];
+
+  if (!Array.isArray(modelList) || modelList.length === 0) {
+    throw new Error('Список моделей пуст');
+  }
+
+  // Parse and sort models
+  const models = modelList
+    .map(m => {
+      const id = typeof m === 'string' ? m : (m.id || m.name || m.model);
+      if (!id) return null;
+      return { value: id, label: id };
+    })
+    .filter(Boolean)
+    .sort((a, b) => {
+      // Prioritize popular models
+      const priority = (id) => {
+        if (id.includes('gpt-4.1')) return 1;
+        if (id.includes('gpt-4o')) return 2;
+        if (id.includes('deepseek')) return 3;
+        if (id.includes('claude')) return 4;
+        if (id.includes('gemini')) return 5;
+        if (id.includes('llama')) return 6;
+        if (id.includes('qwen')) return 7;
+        return 10;
+      };
+      return priority(a.value) - priority(b.value);
+    })
+    .slice(0, 30);
+
+  return models;
 }
 
 /**
@@ -99,6 +149,7 @@ function SettingsPanel({ onClose, isBottomPanel }) {
       openai: FALLBACK_MODELS.openai,
       anthropic: FALLBACK_MODELS.anthropic,
       gemini: FALLBACK_MODELS.gemini,
+      gpt4free: FALLBACK_MODELS.gpt4free, // Always hardcoded
     };
   });
 
@@ -113,6 +164,7 @@ function SettingsPanel({ onClose, isBottomPanel }) {
     openai: false,
     anthropic: false,
     gemini: false,
+    gpt4free: false,
   });
 
   // Get current API key for provider
@@ -125,27 +177,39 @@ function SettingsPanel({ onClose, isBottomPanel }) {
     }
   }, [openaiKey, anthropicKey, geminiKey]);
 
-  // Fetch models when API key changes
+  // Fetch models when API key changes (or for gpt4free without key)
   const loadModelsForProvider = useCallback(async (p, key) => {
-    if (!key || key.length < 10) return;
+    // gpt4free doesn't need API key
+    if (p !== 'gpt4free' && (!key || key.length < 10)) return;
 
     setLoadingModels(prev => ({ ...prev, [p]: true }));
-    const fetchedModels = await fetchModels(p, key);
-    setLoadingModels(prev => ({ ...prev, [p]: false }));
-
-    if (fetchedModels && fetchedModels.length > 0) {
-      setModels(prev => {
-        const updated = { ...prev, [p]: fetchedModels };
-        // Save to localStorage
-        saveCachedModels(updated);
-        return updated;
-      });
-      // Set first model as default if current model not in list
-      if (p === provider && !fetchedModels.find(m => m.value === model)) {
-        setModel(fetchedModels[0].value);
+    try {
+      const fetchedModels = await fetchModels(p, key);
+      if (fetchedModels && fetchedModels.length > 0) {
+        setModels(prev => {
+          const updated = { ...prev, [p]: fetchedModels };
+          // Save to localStorage
+          saveCachedModels(updated);
+          return updated;
+        });
+        // Set first model as default if current model not in list
+        if (p === provider && !fetchedModels.find(m => m.value === model)) {
+          setModel(fetchedModels[0].value);
+        }
       }
+    } catch (e) {
+      console.error(`Error loading models for ${p}:`, e);
+    } finally {
+      setLoadingModels(prev => ({ ...prev, [p]: false }));
     }
   }, [provider, model]);
+
+  // Auto-load gpt4free models when provider is selected
+  useEffect(() => {
+    if (provider === 'gpt4free' && (!models.gpt4free || models.gpt4free.length === 0)) {
+      loadModelsForProvider('gpt4free', null);
+    }
+  }, [provider, models.gpt4free, loadModelsForProvider]);
 
   // Track previous key values to detect changes
   const prevKeysRef = useRef({ openai: openaiKey, anthropic: anthropicKey, gemini: geminiKey });
@@ -177,15 +241,19 @@ function SettingsPanel({ onClose, isBottomPanel }) {
     onClose?.();
   };
 
-  // Check if current provider has API key
+  // Check if current provider has API key (gpt4free doesn't need one)
   const currentProviderHasKey = () => {
     switch (provider) {
+      case 'gpt4free': return true; // No API key needed
       case 'openai': return openaiKey.trim().length > 0;
       case 'anthropic': return anthropicKey.trim().length > 0;
       case 'gemini': return geminiKey.trim().length > 0;
       default: return false;
     }
   };
+
+  // Check if current provider is gpt4free (no API key needed)
+  const isGpt4free = provider === 'gpt4free';
 
   // Get current models for selected provider
   const currentModels = models[provider] || FALLBACK_MODELS[provider];
@@ -211,6 +279,7 @@ function SettingsPanel({ onClose, isBottomPanel }) {
             }}
             className={cx(selectClass, 'text-sm py-1.5')}
           >
+            <option value="gpt4free">GPT4Free (бесплатно) ✓</option>
             <option value="openai">OpenAI {openaiKey ? '✓' : ''}</option>
             <option value="anthropic">Anthropic {anthropicKey ? '✓' : ''}</option>
             <option value="gemini">Gemini {geminiKey ? '✓' : ''}</option>
@@ -235,10 +304,10 @@ function SettingsPanel({ onClose, isBottomPanel }) {
             </select>
             <button
               type="button"
-              onClick={() => loadModelsForProvider(provider, getKeyForProvider(provider))}
-              disabled={isLoadingCurrentModels || !currentProviderHasKey()}
+              onClick={() => loadModelsForProvider(provider, isGpt4free ? null : getKeyForProvider(provider))}
+              disabled={isLoadingCurrentModels || (!isGpt4free && !currentProviderHasKey())}
               className="px-2 text-sm rounded border border-foreground/30 hover:bg-lineBackground disabled:opacity-30"
-              title="Обновить"
+              title="Обновить модели"
             >
               ↻
             </button>
@@ -246,65 +315,77 @@ function SettingsPanel({ onClose, isBottomPanel }) {
         </div>
       </div>
 
-      {/* API Keys */}
-      <div className="space-y-1">
-        <h4 className="text-xs font-medium">API Ключи</h4>
-        <div className={isBottomPanel ? 'flex gap-2 flex-wrap' : 'space-y-2'}>
-          <div className={cx('grid gap-1', isBottomPanel && 'min-w-[120px] flex-1')}>
-            <label className="text-xs flex items-center gap-1">
-              OpenAI {openaiKey && <span className="text-green-400">✓</span>}
-            </label>
-            <input
-              type="password"
-              value={openaiKey}
-              onChange={(e) => setOpenaiKey(e.target.value)}
-              placeholder="sk-..."
-              className={cx(inputClass, 'text-sm py-1')}
-            />
-          </div>
-          <div className={cx('grid gap-1', isBottomPanel && 'min-w-[120px] flex-1')}>
-            <label className="text-xs flex items-center gap-1">
-              Anthropic {anthropicKey && <span className="text-green-400">✓</span>}
-            </label>
-            <input
-              type="password"
-              value={anthropicKey}
-              onChange={(e) => setAnthropicKey(e.target.value)}
-              placeholder="sk-ant-..."
-              className={cx(inputClass, 'text-sm py-1')}
-            />
-          </div>
-          <div className={cx('grid gap-1', isBottomPanel && 'min-w-[120px] flex-1')}>
-            <label className="text-xs flex items-center gap-1">
-              Gemini {geminiKey && <span className="text-green-400">✓</span>}
-            </label>
-            <input
-              type="password"
-              value={geminiKey}
-              onChange={(e) => setGeminiKey(e.target.value)}
-              placeholder="AIza..."
-              className={cx(inputClass, 'text-sm py-1')}
-            />
-          </div>
+      {/* GPT4Free info - показываем когда выбран gpt4free */}
+      {isGpt4free && (
+        <div className="p-2 bg-green-500/10 rounded-md border border-green-500/30">
+          <p className="text-xs text-green-400">✓ Бесплатный доступ - API ключ не требуется</p>
+          <p className="text-xs opacity-50 mt-1">Модели загружаются с g4f.dev</p>
         </div>
-        <p className="text-xs opacity-50">Ключи хранятся локально</p>
-      </div>
+      )}
+
+      {/* API Keys - скрываем для gpt4free */}
+      {!isGpt4free && (
+        <div className="space-y-1">
+          <h4 className="text-xs font-medium">API Ключи</h4>
+          <div className={isBottomPanel ? 'flex gap-2 flex-wrap' : 'space-y-2'}>
+            <div className={cx('grid gap-1', isBottomPanel && 'min-w-[120px] flex-1')}>
+              <label className="text-xs flex items-center gap-1">
+                OpenAI {openaiKey && <span className="text-green-400">✓</span>}
+              </label>
+              <input
+                type="password"
+                value={openaiKey}
+                onChange={(e) => setOpenaiKey(e.target.value)}
+                placeholder="sk-..."
+                className={cx(inputClass, 'text-sm py-1')}
+              />
+            </div>
+            <div className={cx('grid gap-1', isBottomPanel && 'min-w-[120px] flex-1')}>
+              <label className="text-xs flex items-center gap-1">
+                Anthropic {anthropicKey && <span className="text-green-400">✓</span>}
+              </label>
+              <input
+                type="password"
+                value={anthropicKey}
+                onChange={(e) => setAnthropicKey(e.target.value)}
+                placeholder="sk-ant-..."
+                className={cx(inputClass, 'text-sm py-1')}
+              />
+            </div>
+            <div className={cx('grid gap-1', isBottomPanel && 'min-w-[120px] flex-1')}>
+              <label className="text-xs flex items-center gap-1">
+                Gemini {geminiKey && <span className="text-green-400">✓</span>}
+              </label>
+              <input
+                type="password"
+                value={geminiKey}
+                onChange={(e) => setGeminiKey(e.target.value)}
+                placeholder="AIza..."
+                className={cx(inputClass, 'text-sm py-1')}
+              />
+            </div>
+          </div>
+          <p className="text-xs opacity-50">Ключи хранятся локально</p>
+        </div>
+      )}
 
       {/* Save & Links */}
       <div className="flex items-center gap-3 flex-wrap">
         <button
           onClick={handleSave}
-          disabled={!currentProviderHasKey()}
+          disabled={!currentProviderHasKey() || (currentModels.length === 0)}
           className={cx(buttonClass, 'text-sm py-1.5')}
         >
-          {currentProviderHasKey() ? 'Сохранить' : 'Введите ключ'}
+          {isGpt4free ? 'Использовать' : (currentProviderHasKey() ? 'Сохранить' : 'Введите ключ')}
         </button>
-        <div className="text-xs opacity-70 flex gap-2">
-          <span>Получить:</span>
-          <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener" className="underline hover:opacity-50">OpenAI</a>
-          <a href="https://console.anthropic.com/" target="_blank" rel="noopener" className="underline hover:opacity-50">Anthropic</a>
-          <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" className="underline hover:opacity-50">Gemini</a>
-        </div>
+        {!isGpt4free && (
+          <div className="text-xs opacity-70 flex gap-2">
+            <span>Получить:</span>
+            <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener" className="underline hover:opacity-50">OpenAI</a>
+            <a href="https://console.anthropic.com/" target="_blank" rel="noopener" className="underline hover:opacity-50">Anthropic</a>
+            <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" className="underline hover:opacity-50">Gemini</a>
+          </div>
+        )}
       </div>
     </div>
   );

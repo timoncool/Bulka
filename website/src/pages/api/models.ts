@@ -195,6 +195,14 @@ export const POST: APIRoute = async ({ request }) => {
   try {
     const { provider, apiKey } = await request.json();
 
+    // gpt4free doesn't need server-side model fetching - uses client-side only
+    if (provider === 'gpt4free') {
+      return new Response(
+        JSON.stringify({ error: 'gpt4free uses client-side models' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
     if (!apiKey) {
       return new Response(
         JSON.stringify({ error: 'API key required' }),

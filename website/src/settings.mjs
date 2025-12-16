@@ -21,6 +21,7 @@ export const aiProviders = {
   openai: 'openai',
   anthropic: 'anthropic',
   gemini: 'gemini',
+  gpt4free: 'gpt4free',
 };
 
 export const defaultSettings = {
@@ -171,12 +172,13 @@ export const setGeminiApiKey = (key) => settingsMap.setKey('geminiApiKey', key);
 export const setAiProvider = (provider) => settingsMap.setKey('aiProvider', provider);
 export const setAiModel = (model) => settingsMap.setKey('aiModel', model);
 
-// Helper to get API key for current provider
+// Helper to get API key for current provider (gpt4free doesn't need a key)
 export const getApiKeyForProvider = (provider, settings) => {
   switch (provider) {
     case 'openai': return settings.openaiApiKey;
     case 'anthropic': return settings.anthropicApiKey;
     case 'gemini': return settings.geminiApiKey;
+    case 'gpt4free': return null; // GPT4Free is free, no key needed
     default: return '';
   }
 };
