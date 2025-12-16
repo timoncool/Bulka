@@ -607,21 +607,73 @@ export function ChatTab({ context, isBottomPanel }) {
   const [showSettings, setShowSettings] = useState(false);
   const lastAutoSentErrorRef = useRef(null);
 
+  // Pending error state for delayed auto-send
+  const [pendingError, setPendingError] = useState(null);
+  const [errorCountdown, setErrorCountdown] = useState(0);
+  const errorTimerRef = useRef(null);
+  const countdownIntervalRef = useRef(null);
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chat.messages]);
 
-  // Автоотправка ошибок выполнения кода в чат
+  // Автоотправка ошибок с таймером 5 сек
   useEffect(() => {
     if (context?.error && !chat.isLoading && chat.hasApiKey) {
       const errorMsg = context.error.message || String(context.error);
-      // Не отправляем одну и ту же ошибку повторно
-      if (errorMsg && errorMsg !== lastAutoSentErrorRef.current) {
+      // Не показываем одну и ту же ошибку повторно
+      if (errorMsg && errorMsg !== lastAutoSentErrorRef.current && !pendingError) {
         lastAutoSentErrorRef.current = errorMsg;
-        chat.sendEditorError(errorMsg);
+        setPendingError(errorMsg);
+        setErrorCountdown(5);
+
+        // Countdown interval
+        countdownIntervalRef.current = setInterval(() => {
+          setErrorCountdown(prev => {
+            if (prev <= 1) {
+              clearInterval(countdownIntervalRef.current);
+              return 0;
+            }
+            return prev - 1;
+          });
+        }, 1000);
+
+        // Auto-send timer
+        errorTimerRef.current = setTimeout(() => {
+          chat.sendEditorError(errorMsg);
+          setPendingError(null);
+          setErrorCountdown(0);
+        }, 5000);
       }
     }
-  }, [context?.error, chat.isLoading, chat.hasApiKey, chat.sendEditorError]);
+  }, [context?.error, chat.isLoading, chat.hasApiKey]);
+
+  // Cleanup timers on unmount
+  useEffect(() => {
+    return () => {
+      if (errorTimerRef.current) clearTimeout(errorTimerRef.current);
+      if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current);
+    };
+  }, []);
+
+  // Cancel pending error
+  const cancelPendingError = useCallback(() => {
+    if (errorTimerRef.current) clearTimeout(errorTimerRef.current);
+    if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current);
+    setPendingError(null);
+    setErrorCountdown(0);
+  }, []);
+
+  // Send pending error immediately
+  const sendPendingErrorNow = useCallback(() => {
+    if (pendingError) {
+      if (errorTimerRef.current) clearTimeout(errorTimerRef.current);
+      if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current);
+      chat.sendEditorError(pendingError);
+      setPendingError(null);
+      setErrorCountdown(0);
+    }
+  }, [pendingError, chat.sendEditorError]);
 
   // Show settings if no API key
   if (!chat.hasApiKey || showSettings) {
@@ -713,6 +765,37 @@ export function ChatTab({ context, isBottomPanel }) {
           </>
         )}
       </div>
+
+      {/* Pending Error with countdown timer */}
+      {pendingError && (
+        <div className="mx-3 mb-2 p-2 text-xs bg-orange-500/10 rounded-md border border-orange-500/30">
+          <div className="flex flex-col gap-2">
+            <div className="flex items-start gap-2">
+              <span className="text-orange-400">⚠️</span>
+              <span className="flex-1 text-orange-300 break-words">{pendingError.slice(0, 150)}{pendingError.length > 150 ? '...' : ''}</span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-orange-400/70">
+                Отправка в чат через {errorCountdown}с...
+              </span>
+              <div className="flex gap-1">
+                <button
+                  onClick={cancelPendingError}
+                  className="px-2 py-1 text-xs bg-orange-500/20 hover:bg-orange-500/30 rounded border border-orange-500/50 text-orange-300"
+                >
+                  ✕ Отмена
+                </button>
+                <button
+                  onClick={sendPendingErrorNow}
+                  className="px-2 py-1 text-xs bg-orange-500/30 hover:bg-orange-500/40 rounded border border-orange-500/50 text-orange-200"
+                >
+                  📤 Сейчас
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Error with "Send to Chat" button */}
       {chat.error && (

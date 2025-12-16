@@ -486,6 +486,14 @@ export function useChatContext(replContext) {
           }
         }
 
+        // Auto-play if code was set but no [PLAY] marker (model forgot)
+        // Only if no explicit [STOP] was requested
+        if (editor && lastCodeBlockEnd > 0 && !playTriggered && !stopTriggered) {
+          editor.evaluate();
+          actionsExecuted.push('Воспроизведение запущено (авто)');
+          setLastAction('▶ Воспроизведение запущено');
+        }
+
         // Final update with action summary
         if (actionsExecuted.length > 0) {
           const cleanContent = fullContent
