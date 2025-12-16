@@ -21,11 +21,27 @@ const SUGGESTIONS = [
 ];
 
 // Fallback models (used if API fetch fails)
+// gpt4free models hardcoded - their API doesn't provide model list
 const FALLBACK_MODELS = {
   openai: [{ value: 'gpt-4o', label: 'gpt-4o' }],
   anthropic: [{ value: 'claude-sonnet-4-5-20250929', label: 'Claude Sonnet 4.5' }],
   gemini: [{ value: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash' }],
-  gpt4free: [], // Загружается динамически с g4f.dev
+  gpt4free: [
+    { value: 'gpt-4o', label: 'GPT-4o' },
+    { value: 'gpt-4o-mini', label: 'GPT-4o Mini' },
+    { value: 'gpt-4', label: 'GPT-4' },
+    { value: 'gpt-4-turbo', label: 'GPT-4 Turbo' },
+    { value: 'gpt-3.5-turbo', label: 'GPT-3.5 Turbo' },
+    { value: 'claude-3.5-sonnet', label: 'Claude 3.5 Sonnet' },
+    { value: 'claude-3-opus', label: 'Claude 3 Opus' },
+    { value: 'gemini-pro', label: 'Gemini Pro' },
+    { value: 'gemini-1.5-pro', label: 'Gemini 1.5 Pro' },
+    { value: 'llama-3.1-70b', label: 'Llama 3.1 70B' },
+    { value: 'llama-3.1-405b', label: 'Llama 3.1 405B' },
+    { value: 'mixtral-8x7b', label: 'Mixtral 8x7B' },
+    { value: 'qwen-2-72b', label: 'Qwen 2 72B' },
+    { value: 'deepseek-coder', label: 'DeepSeek Coder' },
+  ],
 };
 
 const MODELS_STORAGE_KEY = 'bulka_cached_models';
@@ -42,13 +58,19 @@ function loadCachedModels() {
         openai: parsed.openai || FALLBACK_MODELS.openai,
         anthropic: parsed.anthropic || FALLBACK_MODELS.anthropic,
         gemini: parsed.gemini || FALLBACK_MODELS.gemini,
-        gpt4free: FALLBACK_MODELS.gpt4free, // Always use hardcoded (no API)
+        gpt4free: FALLBACK_MODELS.gpt4free, // Always hardcoded
       };
     }
   } catch (e) {
     console.error('Error loading cached models:', e);
   }
-  return null;
+  // Return default with gpt4free models
+  return {
+    openai: FALLBACK_MODELS.openai,
+    anthropic: FALLBACK_MODELS.anthropic,
+    gemini: FALLBACK_MODELS.gemini,
+    gpt4free: FALLBACK_MODELS.gpt4free,
+  };
 }
 
 /**
@@ -88,46 +110,12 @@ async function fetchModels(provider, apiKey) {
 }
 
 /**
- * Fetch gpt4free models from g4f.dev (client-side, динамическая загрузка)
+ * Get gpt4free models (hardcoded - their API doesn't provide model list)
  */
-async function fetchGpt4freeModels() {
-  const response = await fetch('https://g4f.dev/api/v1/models');
-  if (!response.ok) {
-    throw new Error(`Ошибка загрузки моделей: ${response.status}`);
-  }
-
-  const data = await response.json();
-  const modelList = data.data || data.models || data || [];
-
-  if (!Array.isArray(modelList) || modelList.length === 0) {
-    throw new Error('Список моделей пуст');
-  }
-
-  // Parse and sort models
-  const models = modelList
-    .map(m => {
-      const id = typeof m === 'string' ? m : (m.id || m.name || m.model);
-      if (!id) return null;
-      return { value: id, label: id };
-    })
-    .filter(Boolean)
-    .sort((a, b) => {
-      // Prioritize popular models
-      const priority = (id) => {
-        if (id.includes('gpt-4.1')) return 1;
-        if (id.includes('gpt-4o')) return 2;
-        if (id.includes('deepseek')) return 3;
-        if (id.includes('claude')) return 4;
-        if (id.includes('gemini')) return 5;
-        if (id.includes('llama')) return 6;
-        if (id.includes('qwen')) return 7;
-        return 10;
-      };
-      return priority(a.value) - priority(b.value);
-    })
-    .slice(0, 30);
-
-  return models;
+function fetchGpt4freeModels() {
+  // g4f.dev API doesn't have working /models endpoint
+  // Return hardcoded list of popular models
+  return FALLBACK_MODELS.gpt4free;
 }
 
 /**
@@ -142,16 +130,8 @@ function SettingsPanel({ onClose, isBottomPanel }) {
   const [geminiKey, setGeminiKey] = useState(settings.geminiApiKey || '');
   const [provider, setProvider] = useState(settings.aiProvider || 'openai');
 
-  // Dynamic models state - load from cache first
-  const [models, setModels] = useState(() => {
-    const cached = loadCachedModels();
-    return cached || {
-      openai: FALLBACK_MODELS.openai,
-      anthropic: FALLBACK_MODELS.anthropic,
-      gemini: FALLBACK_MODELS.gemini,
-      gpt4free: FALLBACK_MODELS.gpt4free, // Always hardcoded
-    };
-  });
+  // Dynamic models state - load from cache (gpt4free always hardcoded)
+  const [models, setModels] = useState(() => loadCachedModels());
 
   // Initialize model from settings or first available
   const [model, setModel] = useState(() => {
@@ -203,13 +183,6 @@ function SettingsPanel({ onClose, isBottomPanel }) {
       setLoadingModels(prev => ({ ...prev, [p]: false }));
     }
   }, [provider, model]);
-
-  // Auto-load gpt4free models when provider is selected
-  useEffect(() => {
-    if (provider === 'gpt4free' && (!models.gpt4free || models.gpt4free.length === 0)) {
-      loadModelsForProvider('gpt4free', null);
-    }
-  }, [provider, models.gpt4free, loadModelsForProvider]);
 
   // Track previous key values to detect changes
   const prevKeysRef = useRef({ openai: openaiKey, anthropic: anthropicKey, gemini: geminiKey });
