@@ -428,46 +428,12 @@ export function useChatContext(replContext) {
         ];
 
         const editor = replContext?.editorRef?.current;
-        let lastCodeBlockEnd = 0; // Track last processed code block
-        let playTriggered = false;
-        let stopTriggered = false;
 
         for await (const message of runGpt4freeClientChat(gpt4freeMessages, aiModel, gpt4freeSubProvider || 'default', setLastAction)) {
           if (message.type === 'text' && message.content) {
             fullContent += message.content;
 
-            // Real-time parsing: check for completed code blocks
-            if (editor) {
-              const codeBlocks = extractCodeBlocks(fullContent);
-              if (codeBlocks.length > lastCodeBlockEnd) {
-                // New code block completed - apply it immediately
-                const code = codeBlocks[codeBlocks.length - 1];
-                editor.setCode(code);
-                lastCodeBlockEnd = codeBlocks.length;
-                if (!actionsExecuted.includes('Код установлен')) {
-                  actionsExecuted.push('Код установлен');
-                }
-                setLastAction('✓ Код применён в редактор');
-              }
-
-              // Real-time parsing: check for [PLAY] marker
-              if (!playTriggered && /\[PLAY\]/i.test(fullContent)) {
-                playTriggered = true;
-                editor.evaluate();
-                actionsExecuted.push('Воспроизведение запущено');
-                setLastAction('▶ Воспроизведение запущено');
-              }
-
-              // Real-time parsing: check for [STOP] marker
-              if (!stopTriggered && /\[STOP\]/i.test(fullContent)) {
-                stopTriggered = true;
-                editor.stop();
-                actionsExecuted.push('Воспроизведение остановлено');
-                setLastAction('⏹ Воспроизведение остановлено');
-              }
-            }
-
-            // Update displayed message (clean markers for display)
+            // Update displayed message during streaming (clean markers for display)
             const displayContent = fullContent
               .replace(/\[PLAY\]/gi, '')
               .replace(/\[STOP\]/gi, '')
@@ -486,16 +452,35 @@ export function useChatContext(replContext) {
           }
         }
 
-        // Auto-play if code was set but no [PLAY] marker (model forgot)
-        // Only if no explicit [STOP] was requested and playTriggered is still false
-        if (editor && lastCodeBlockEnd > 0 && !playTriggered && !stopTriggered) {
-          editor.evaluate();
-          // Replace 'Воспроизведение запущено' if exists, otherwise add '(авто)'
-          const playIdx = actionsExecuted.indexOf('Воспроизведение запущено');
-          if (playIdx === -1) {
-            actionsExecuted.push('Воспроизведение запущено (авто)');
+        // === После завершения стриминга - обработка кода и действий ===
+        if (editor) {
+          // Применяем код
+          const codeBlocks = extractCodeBlocks(fullContent);
+          if (codeBlocks.length > 0) {
+            const code = codeBlocks[codeBlocks.length - 1];
+            editor.setCode(code);
+            actionsExecuted.push('Код установлен');
+            setLastAction('✓ Код применён в редактор');
           }
-          setLastAction('▶ Воспроизведение запущено (авто)');
+
+          // Проверяем маркеры [PLAY]/[STOP]
+          const hasPlay = /\[PLAY\]/i.test(fullContent);
+          const hasStop = /\[STOP\]/i.test(fullContent);
+
+          if (hasStop) {
+            editor.stop();
+            actionsExecuted.push('Воспроизведение остановлено');
+            setLastAction('⏹ Воспроизведение остановлено');
+          } else if (hasPlay) {
+            editor.evaluate();
+            actionsExecuted.push('Воспроизведение запущено');
+            setLastAction('▶ Воспроизведение запущено');
+          } else if (codeBlocks.length > 0) {
+            // Авто-плей если код есть но нет маркеров
+            editor.evaluate();
+            actionsExecuted.push('Воспроизведение запущено (авто)');
+            setLastAction('▶ Воспроизведение запущено (авто)');
+          }
         }
 
         // Final update with action summary (only once)
