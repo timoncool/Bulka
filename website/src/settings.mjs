@@ -33,6 +33,7 @@ export const defaultSettings = {
   geminiApiKey: '',
   aiProvider: aiProviders.openai,
   aiModel: '', // Loaded dynamically from provider API
+  gpt4freeSubProvider: 'default', // gpt4free sub-provider (default, nectar, pollinations, etc.)
   isBracketMatchingEnabled: true,
   isBracketClosingEnabled: true,
   isLineNumbersDisplayed: true,
@@ -171,6 +172,7 @@ export const setAnthropicApiKey = (key) => settingsMap.setKey('anthropicApiKey',
 export const setGeminiApiKey = (key) => settingsMap.setKey('geminiApiKey', key);
 export const setAiProvider = (provider) => settingsMap.setKey('aiProvider', provider);
 export const setAiModel = (model) => settingsMap.setKey('aiModel', model);
+export const setGpt4freeSubProvider = (provider) => settingsMap.setKey('gpt4freeSubProvider', provider);
 
 // Helper to get API key for current provider (gpt4free doesn't need a key)
 export const getApiKeyForProvider = (provider, settings) => {
