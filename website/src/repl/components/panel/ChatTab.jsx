@@ -360,8 +360,8 @@ function SettingsPanel({ onClose, isBottomPanel }) {
       {/* GPT4Free sub-provider - показываем сразу после провайдера */}
       {isGpt4free && (
         <div className="space-y-2">
-          <div className="p-2 bg-green-500/10 rounded-md border border-green-500/30">
-            <p className="text-xs text-green-400">✓ Бесплатный доступ - API ключ не требуется</p>
+          <div className="p-2 bg-yellow-500/10 rounded-md border border-yellow-500/30">
+            <p className="text-xs text-yellow-400">✓ Бесплатный доступ - API ключ не требуется, но могут работать не все функции и инструменты</p>
           </div>
 
           <div className="grid gap-1">

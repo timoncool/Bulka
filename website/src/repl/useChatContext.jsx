@@ -187,6 +187,68 @@ function extractCodeBlocks(text) {
 }
 
 /**
+ * GPT4Free System Prompt with action descriptors
+ * Since GPT4Free doesn't support tools, we use text-based action markers
+ */
+const GPT4FREE_SYSTEM_PROMPT = `Ты Bulka AI - помощник для музыкального live-coding на Strudel.
+
+ВАЖНО: Ты работаешь через GPT4Free без поддержки инструментов. Используй специальные маркеры действий:
+
+## ДОСТУПНЫЕ ДЕЙСТВИЯ:
+
+1. **Установить код** - оберни код в блок:
+\`\`\`javascript
+// твой код тут
+\`\`\`
+
+2. **Запустить воспроизведение** - добавь после кода:
+[PLAY]
+
+3. **Остановить воспроизведение**:
+[STOP]
+
+## ПРАВИЛА:
+- Всегда давай ПОЛНЫЙ рабочий код, не фрагменты
+- После написания кода ВСЕГДА добавляй [PLAY] чтобы запустить музыку
+- Код должен быть валидным Strudel/Tidal кодом
+- Используй stack() для нескольких партий одновременно
+- Будь кратким в объяснениях (1-2 предложения)
+
+## ПРИМЕР ОТВЕТА:
+Вот простой бит:
+\`\`\`javascript
+stack(
+  s("bd sd bd sd"),
+  s("hh*8")
+)
+\`\`\`
+[PLAY]
+`;
+
+/**
+ * Parse GPT4Free action markers from response
+ * Returns: { actions: Array<{type, args}>, cleanContent: string }
+ */
+function parseGpt4freeActions(content) {
+  const actions = [];
+  let cleanContent = content;
+
+  // Parse [PLAY] marker
+  if (/\[PLAY\]/i.test(content)) {
+    actions.push({ type: 'playMusic' });
+    cleanContent = cleanContent.replace(/\[PLAY\]/gi, '').trim();
+  }
+
+  // Parse [STOP] marker
+  if (/\[STOP\]/i.test(content)) {
+    actions.push({ type: 'stopMusic' });
+    cleanContent = cleanContent.replace(/\[STOP\]/gi, '').trim();
+  }
+
+  return { actions, cleanContent };
+}
+
+/**
  * Main chat hook
  */
 export function useChatContext(replContext) {
@@ -353,17 +415,17 @@ export function useChatContext(replContext) {
 
       // GPT4Free: use client-side handler (no server needed)
       if (isGpt4free) {
-        // Add code context to messages for gpt4free
-        let gpt4freeMessages = [...apiMessages];
-        if (currentCode) {
-          const codeContext = selectedCode
-            ? `[Выделенный код:\n${selectedCode}\n\nПолный код:\n${currentCode}]`
-            : `[Текущий код:\n${currentCode}]`;
-          gpt4freeMessages = [
-            { role: 'system', content: `Ты AI помощник для Strudel/Bulka - музыкального live-coding. Помогай писать код для создания музыки. ${codeContext}` },
-            ...apiMessages,
-          ];
-        }
+        // Build system prompt with code context
+        const codeContext = currentCode
+          ? (selectedCode
+              ? `\n\n## ТЕКУЩИЙ КОД В РЕДАКТОРЕ:\n\`\`\`javascript\n${currentCode}\n\`\`\`\n\n## ВЫДЕЛЕННЫЙ ФРАГМЕНТ:\n\`\`\`javascript\n${selectedCode}\n\`\`\``
+              : `\n\n## ТЕКУЩИЙ КОД В РЕДАКТОРЕ:\n\`\`\`javascript\n${currentCode}\n\`\`\``)
+          : '';
+
+        const gpt4freeMessages = [
+          { role: 'system', content: GPT4FREE_SYSTEM_PROMPT + codeContext },
+          ...apiMessages,
+        ];
 
         for await (const message of runGpt4freeClientChat(gpt4freeMessages, aiModel, gpt4freeSubProvider || 'default', setLastAction)) {
           if (message.type === 'text' && message.content) {
@@ -381,24 +443,42 @@ export function useChatContext(replContext) {
           }
         }
 
-        // GPT4Free: автоматически применить код из ответа (как для других провайдеров)
+        // GPT4Free: parse actions and apply code
         const editor = replContext?.editorRef?.current;
         if (editor && fullContent) {
+          const { actions, cleanContent } = parseGpt4freeActions(fullContent);
           const codeBlocks = extractCodeBlocks(fullContent);
+
+          // Apply code if found
           if (codeBlocks.length > 0) {
-            // Берём последний блок кода (обычно финальная версия)
             const code = codeBlocks[codeBlocks.length - 1];
             editor.setCode(code);
+            actionsExecuted.push('Код установлен');
             setLastAction('✓ Код применён в редактор');
+          }
 
-            // Добавляем summary к сообщению
-            const actionSummary = '\n\n✓ Код установлен в редактор';
-            fullContent += actionSummary;
+          // Execute parsed actions
+          for (const action of actions) {
+            if (action.type === 'playMusic') {
+              editor.evaluate();
+              actionsExecuted.push('Воспроизведение запущено');
+              setLastAction('▶ Воспроизведение запущено');
+            } else if (action.type === 'stopMusic') {
+              editor.stop();
+              actionsExecuted.push('Воспроизведение остановлено');
+              setLastAction('⏹ Воспроизведение остановлено');
+            }
+          }
+
+          // Update message with action summary
+          if (actionsExecuted.length > 0) {
+            const actionSummary = `\n\n✓ ${actionsExecuted.join(', ')}`;
+            const displayContent = cleanContent + actionSummary;
             setMessages(prev => {
               const updated = [...prev];
               const lastIdx = updated.length - 1;
               if (updated[lastIdx]?.role === 'assistant') {
-                updated[lastIdx] = { ...updated[lastIdx], content: fullContent };
+                updated[lastIdx] = { ...updated[lastIdx], content: displayContent };
               }
               return updated;
             });
