@@ -4,22 +4,193 @@
     "dateFormatted": "16 декабря 2025",
     "changes": [
       {
-        "type": "feat",
-        "typeLabel": "Новое",
-        "emoji": "🆓",
-        "description": "GPT4Free интеграция — бесплатный AI-агент без API ключей",
-        "scope": "ai",
-        "author": "Claude",
-        "hash": null
-      },
-      {
         "type": "docs",
         "typeLabel": "Документация",
-        "emoji": "📝",
-        "description": "добавлена документация GPT4Free и статья в блог",
-        "scope": "website",
+        "emoji": "📚",
+        "description": "add GPT4Free integration blog post and documentation",
+        "scope": null,
         "author": "Claude",
-        "hash": null
+        "hash": "e68c605"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "play/stop только после завершения стриминга",
+        "scope": null,
+        "author": "Claude",
+        "hash": "483804c"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "предотвращаю дублирование action summary",
+        "scope": null,
+        "author": "Claude",
+        "hash": "41f098f"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "перенёс pending message вниз перед input",
+        "scope": null,
+        "author": "Claude",
+        "hash": "d638a48"
+      },
+      {
+        "type": "refactor",
+        "typeLabel": "Рефакторинг",
+        "emoji": "♻️",
+        "description": "единый компонент pending message",
+        "scope": null,
+        "author": "Claude",
+        "hash": "d3c366d"
+      },
+      {
+        "type": "feat",
+        "typeLabel": "Новые возможности",
+        "emoji": "✨",
+        "description": "таймер 5 сек для suggestions + подпись \"Идеи:\"",
+        "scope": null,
+        "author": "Claude",
+        "hash": "e9e6dba"
+      },
+      {
+        "type": "feat",
+        "typeLabel": "Новые возможности",
+        "emoji": "✨",
+        "description": "понятные лейблы suggestions с глаголами",
+        "scope": null,
+        "author": "Claude",
+        "hash": "76eaa52"
+      },
+      {
+        "type": "feat",
+        "typeLabel": "Новые возможности",
+        "emoji": "✨",
+        "description": "расширенные suggestions (65+ вариантов)",
+        "scope": null,
+        "author": "Claude",
+        "hash": "fdfa39f"
+      },
+      {
+        "type": "feat",
+        "typeLabel": "Новые возможности",
+        "emoji": "✨",
+        "description": "динамические suggestions с 27 вариантами",
+        "scope": null,
+        "author": "Claude",
+        "hash": "7d0181c"
+      },
+      {
+        "type": "feat",
+        "typeLabel": "Новые возможности",
+        "emoji": "✨",
+        "description": "таймер автоотправки ошибок и автозапуск кода",
+        "scope": null,
+        "author": "Claude",
+        "hash": "d7db516"
+      },
+      {
+        "type": "feat",
+        "typeLabel": "Новые возможности",
+        "emoji": "✨",
+        "description": "real-time парсинг действий во время стриминга",
+        "scope": "gpt4free",
+        "author": "Claude",
+        "hash": "0f5ebb2"
+      },
+      {
+        "type": "feat",
+        "typeLabel": "Новые возможности",
+        "emoji": "✨",
+        "description": "добавить дескрипторы действий и улучшить интеграцию",
+        "scope": "gpt4free",
+        "author": "Claude",
+        "hash": "4b9a0fb"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "исправить порядок UI и автоприменение кода",
+        "scope": "gpt4free",
+        "author": "Claude",
+        "hash": "ab9f51c"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "динамическая загрузка моделей как на g4f.dev",
+        "scope": "gpt4free",
+        "author": "Claude",
+        "hash": "e34e01f"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "исправить загрузку моделей и UI",
+        "scope": "gpt4free",
+        "author": "Claude",
+        "hash": "bc796ee"
+      },
+      {
+        "type": "feat",
+        "typeLabel": "Новые возможности",
+        "emoji": "✨",
+        "description": "динамический выбор провайдера и моделей",
+        "scope": "gpt4free",
+        "author": "Claude",
+        "hash": "a969ac9"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "использовать официальный JS SDK для моделей и чата",
+        "scope": "gpt4free",
+        "author": "Claude",
+        "hash": "c3c67d1"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "динамическая загрузка моделей через client.models.list()",
+        "scope": "gpt4free",
+        "author": "Claude",
+        "hash": "966ae49"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "захардкодить модели - API g4f.dev не работает",
+        "scope": "gpt4free",
+        "author": "Claude",
+        "hash": "3a03a26"
+      },
+      {
+        "type": "feat",
+        "typeLabel": "Новые возможности",
+        "emoji": "✨",
+        "description": "добавить GPT4Free провайдер с клиентским JS",
+        "scope": "ai",
+        "author": "Claude",
+        "hash": "9e33e66"
+      },
+      {
+        "type": "feat",
+        "typeLabel": "Новые возможности",
+        "emoji": "✨",
+        "description": "синтезированный лучший системный промпт для прода",
+        "scope": "agent",
+        "author": "Claude",
+        "hash": "0d7de0f"
       }
     ]
   },
@@ -27,6 +198,51 @@
     "date": "2025-12-15",
     "dateFormatted": "15 декабря 2025",
     "changes": [
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "убрать дублирующийся заголовок из шаблона блога",
+        "scope": null,
+        "author": "Claude",
+        "hash": "ad6d3f0"
+      },
+      {
+        "type": "revert",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "откатить изменения в блоге",
+        "scope": null,
+        "author": "Claude",
+        "hash": "abdbe80"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "убрать дублирующиеся заголовки в блоге",
+        "scope": null,
+        "author": "Claude",
+        "hash": "2308416"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "убрать враньё про автообновление changelog",
+        "scope": null,
+        "author": "Claude",
+        "hash": "dcb3249"
+      },
+      {
+        "type": "refactor",
+        "typeLabel": "Рефакторинг",
+        "emoji": "♻️",
+        "description": "удалить CHANGELOG.md, использовать только JSON для /whatsnew",
+        "scope": null,
+        "author": "Claude",
+        "hash": "7de90fb"
+      },
       {
         "type": "chore",
         "typeLabel": "Обслуживание",
