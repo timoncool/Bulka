@@ -93,34 +93,29 @@ async function fetchModels(provider, apiKey) {
   }
 }
 
-// GPT4Free client (lazy loaded)
+// GPT4Free client for models (lazy loaded)
 let g4fClientForModels = null;
 
 /**
- * Fetch gpt4free models using official client.models.list()
+ * Fetch gpt4free models using official JS SDK
  */
 async function fetchGpt4freeModels() {
   try {
-    // Load official g4f client
+    // Load official client from CDN
     if (!g4fClientForModels) {
-      const module = await import('https://g4f.dev/dist/js/client.js');
-      const Client = module.default;
-      g4fClientForModels = new Client();
+      const { createClient } = await import('https://g4f.dev/dist/js/providers.js');
+      g4fClientForModels = createClient('default');
     }
 
-    // Use official method to get models
+    // Get models from client
     const modelList = await g4fClientForModels.models.list();
 
-    // Filter and format models
+    // Format models - filter chat/text only
     const models = modelList
-      .filter(m => {
-        // Only chat/text models, skip image
-        if (m.type && !['chat', 'text'].includes(m.type)) return false;
-        return true;
-      })
+      .filter(m => !m.type || ['chat', 'text'].includes(m.type))
       .map(m => ({
         value: m.id,
-        label: m.id + (m.type === 'image' ? ' 🎨' : ''),
+        label: m.label || m.id,
       }));
 
     return models;
