@@ -349,15 +349,21 @@ function SettingsPanel({ onClose, isBottomPanel }) {
               value={model}
               onChange={(e) => setModel(e.target.value)}
               className={cx(selectClass, 'flex-1 text-sm py-1.5')}
-              disabled={isLoadingCurrentModels}
+              disabled={isLoadingCurrentModels || currentModels.length === 0}
             >
-              {currentModels.map((m) => (
-                <option key={m.value} value={m.value}>{m.label}</option>
-              ))}
+              {currentModels.length === 0 ? (
+                <option value="">
+                  {isLoadingCurrentModels ? 'Загрузка моделей...' : 'Нет моделей'}
+                </option>
+              ) : (
+                currentModels.map((m) => (
+                  <option key={m.value} value={m.value}>{m.label}</option>
+                ))
+              )}
             </select>
             <button
               type="button"
-              onClick={() => loadModelsForProvider(provider, isGpt4free ? null : getKeyForProvider(provider))}
+              onClick={() => loadModelsForProvider(provider, isGpt4free ? null : getKeyForProvider(provider), gpt4freeSubProvider)}
               disabled={isLoadingCurrentModels || (!isGpt4free && !currentProviderHasKey())}
               className="px-2 text-sm rounded border border-foreground/30 hover:bg-lineBackground disabled:opacity-30"
               title="Обновить модели"
