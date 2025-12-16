@@ -761,56 +761,6 @@ export function ChatTab({ context, isBottomPanel }) {
         </button>
       </div>
 
-      {/* Pending Message with countdown timer (unified for errors and suggestions) */}
-      {pendingMessage && (
-        <div className={cx(
-          'mx-3 mt-2 p-2 text-xs rounded-md border',
-          pendingMessage.type === 'error'
-            ? 'bg-orange-500/10 border-orange-500/30'
-            : 'bg-blue-500/10 border-blue-500/30'
-        )}>
-          <div className="flex flex-col gap-2">
-            <div className="flex items-start gap-2">
-              <span className={pendingMessage.type === 'error' ? 'text-orange-400' : 'text-blue-400'}>
-                {pendingMessage.type === 'error' ? '⚠️' : '💡'}
-              </span>
-              <span className={cx('flex-1 break-words', pendingMessage.type === 'error' ? 'text-orange-300' : 'text-blue-300')}>
-                {pendingMessage.text}
-              </span>
-            </div>
-            <div className="flex items-center justify-between gap-2">
-              <span className={pendingMessage.type === 'error' ? 'text-orange-400/70' : 'text-blue-400/70'}>
-                Отправка через {countdown}с...
-              </span>
-              <div className="flex gap-1">
-                <button
-                  onClick={cancelPendingMessage}
-                  className={cx(
-                    'px-2 py-1 text-xs rounded border',
-                    pendingMessage.type === 'error'
-                      ? 'bg-orange-500/20 hover:bg-orange-500/30 border-orange-500/50 text-orange-300'
-                      : 'bg-blue-500/20 hover:bg-blue-500/30 border-blue-500/50 text-blue-300'
-                  )}
-                >
-                  ✕ Отмена
-                </button>
-                <button
-                  onClick={sendPendingMessageNow}
-                  className={cx(
-                    'px-2 py-1 text-xs rounded border',
-                    pendingMessage.type === 'error'
-                      ? 'bg-orange-500/30 hover:bg-orange-500/40 border-orange-500/50 text-orange-200'
-                      : 'bg-blue-500/30 hover:bg-blue-500/40 border-blue-500/50 text-blue-200'
-                  )}
-                >
-                  📤 Сейчас
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-3">
         {chat.messages.length === 0 ? (
@@ -869,6 +819,56 @@ export function ChatTab({ context, isBottomPanel }) {
             >
               ✕
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Pending Message with countdown timer (unified for errors and suggestions) */}
+      {pendingMessage && (
+        <div className={cx(
+          'mx-3 mb-2 p-2 text-xs rounded-md border',
+          pendingMessage.type === 'error'
+            ? 'bg-orange-500/10 border-orange-500/30'
+            : 'bg-blue-500/10 border-blue-500/30'
+        )}>
+          <div className="flex flex-col gap-2">
+            <div className="flex items-start gap-2">
+              <span className={pendingMessage.type === 'error' ? 'text-orange-400' : 'text-blue-400'}>
+                {pendingMessage.type === 'error' ? '⚠️' : '💡'}
+              </span>
+              <span className={cx('flex-1 break-words', pendingMessage.type === 'error' ? 'text-orange-300' : 'text-blue-300')}>
+                {pendingMessage.text}
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className={pendingMessage.type === 'error' ? 'text-orange-400/70' : 'text-blue-400/70'}>
+                Отправка через {countdown}с...
+              </span>
+              <div className="flex gap-1">
+                <button
+                  onClick={cancelPendingMessage}
+                  className={cx(
+                    'px-2 py-1 text-xs rounded border',
+                    pendingMessage.type === 'error'
+                      ? 'bg-orange-500/20 hover:bg-orange-500/30 border-orange-500/50 text-orange-300'
+                      : 'bg-blue-500/20 hover:bg-blue-500/30 border-blue-500/50 text-blue-300'
+                  )}
+                >
+                  ✕ Отмена
+                </button>
+                <button
+                  onClick={sendPendingMessageNow}
+                  className={cx(
+                    'px-2 py-1 text-xs rounded border',
+                    pendingMessage.type === 'error'
+                      ? 'bg-orange-500/30 hover:bg-orange-500/40 border-orange-500/50 text-orange-200'
+                      : 'bg-blue-500/30 hover:bg-blue-500/40 border-blue-500/50 text-blue-200'
+                  )}
+                >
+                  📤 Сейчас
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
