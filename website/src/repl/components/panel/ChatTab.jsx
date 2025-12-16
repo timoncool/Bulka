@@ -6,7 +6,7 @@ import { useRef, useEffect, useState, useCallback } from 'react';
 import cx from '@src/cx.mjs';
 import ReactMarkdown from 'react-markdown';
 import { useChatContext } from '../../useChatContext';
-import { useSettings, setOpenaiApiKey, setAnthropicApiKey, setGeminiApiKey, setAiProvider, setAiModel, getApiKeyForProvider } from '../../../settings.mjs';
+import { useSettings, setOpenaiApiKey, setAnthropicApiKey, setGeminiApiKey, setAiProvider, setAiModel, setGpt4freeSubProvider, getApiKeyForProvider } from '../../../settings.mjs';
 
 // Common input styles matching SettingsTab
 const inputClass = 'w-full p-2 bg-background rounded-md text-foreground border border-foreground/30 focus:border-foreground focus:outline-none';
@@ -25,7 +25,7 @@ const FALLBACK_MODELS = {
   openai: [{ value: 'gpt-4o', label: 'gpt-4o' }],
   anthropic: [{ value: 'claude-sonnet-4-5-20250929', label: 'Claude Sonnet 4.5' }],
   gemini: [{ value: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash' }],
-  gpt4free: [], // Загружается динамически с g4f.dev
+  gpt4free: [], // Загружается динамически через client.models.list()
 };
 
 const MODELS_STORAGE_KEY = 'bulka_cached_models';
@@ -42,13 +42,19 @@ function loadCachedModels() {
         openai: parsed.openai || FALLBACK_MODELS.openai,
         anthropic: parsed.anthropic || FALLBACK_MODELS.anthropic,
         gemini: parsed.gemini || FALLBACK_MODELS.gemini,
-        gpt4free: FALLBACK_MODELS.gpt4free, // Always use hardcoded (no API)
+        gpt4free: FALLBACK_MODELS.gpt4free, // Always hardcoded
       };
     }
   } catch (e) {
     console.error('Error loading cached models:', e);
   }
-  return null;
+  // Return default with gpt4free models
+  return {
+    openai: FALLBACK_MODELS.openai,
+    anthropic: FALLBACK_MODELS.anthropic,
+    gemini: FALLBACK_MODELS.gemini,
+    gpt4free: FALLBACK_MODELS.gpt4free,
+  };
 }
 
 /**
@@ -87,47 +93,69 @@ async function fetchModels(provider, apiKey) {
   }
 }
 
+// GPT4Free providers module (lazy loaded)
+let g4fProvidersModule = null;
+let g4fClientsCache = {};
+
 /**
- * Fetch gpt4free models from g4f.dev (client-side, динамическая загрузка)
+ * Load g4f providers module from CDN
  */
-async function fetchGpt4freeModels() {
-  const response = await fetch('https://g4f.dev/api/v1/models');
-  if (!response.ok) {
-    throw new Error(`Ошибка загрузки моделей: ${response.status}`);
+async function loadG4fProviders() {
+  if (!g4fProvidersModule) {
+    g4fProvidersModule = await import('https://g4f.dev/dist/js/providers.js');
   }
+  return g4fProvidersModule;
+}
 
-  const data = await response.json();
-  const modelList = data.data || data.models || data || [];
+/**
+ * Fetch list of gpt4free providers
+ */
+async function fetchGpt4freeProviders() {
+  try {
+    const module = await loadG4fProviders();
+    const providers = module.default; // providers object
 
-  if (!Array.isArray(modelList) || modelList.length === 0) {
-    throw new Error('Список моделей пуст');
+    // Convert to array and format
+    return Object.keys(providers).map(key => ({
+      value: key,
+      label: key === 'default' ? 'Auto (default)' : key,
+    }));
+  } catch (e) {
+    console.error('Error fetching gpt4free providers:', e);
+    return [{ value: 'default', label: 'Auto (default)' }];
   }
+}
 
-  // Parse and sort models
-  const models = modelList
-    .map(m => {
-      const id = typeof m === 'string' ? m : (m.id || m.name || m.model);
-      if (!id) return null;
-      return { value: id, label: id };
-    })
-    .filter(Boolean)
-    .sort((a, b) => {
-      // Prioritize popular models
-      const priority = (id) => {
-        if (id.includes('gpt-4.1')) return 1;
-        if (id.includes('gpt-4o')) return 2;
-        if (id.includes('deepseek')) return 3;
-        if (id.includes('claude')) return 4;
-        if (id.includes('gemini')) return 5;
-        if (id.includes('llama')) return 6;
-        if (id.includes('qwen')) return 7;
-        return 10;
-      };
-      return priority(a.value) - priority(b.value);
-    })
-    .slice(0, 30);
+/**
+ * Fetch gpt4free models for specific provider
+ */
+async function fetchGpt4freeModels(subProvider = 'default') {
+  try {
+    const module = await loadG4fProviders();
+    const { createClient } = module;
 
-  return models;
+    // Get or create client for this provider
+    if (!g4fClientsCache[subProvider]) {
+      g4fClientsCache[subProvider] = createClient(subProvider);
+    }
+    const client = g4fClientsCache[subProvider];
+
+    // Get models from client
+    const modelList = await client.models.list();
+
+    // Format models - filter chat/text only
+    const models = modelList
+      .filter(m => !m.type || ['chat', 'text'].includes(m.type))
+      .map(m => ({
+        value: m.id,
+        label: m.label || m.id,
+      }));
+
+    return models;
+  } catch (e) {
+    console.error('Error fetching gpt4free models:', e);
+    return [];
+  }
 }
 
 /**
@@ -142,16 +170,13 @@ function SettingsPanel({ onClose, isBottomPanel }) {
   const [geminiKey, setGeminiKey] = useState(settings.geminiApiKey || '');
   const [provider, setProvider] = useState(settings.aiProvider || 'openai');
 
-  // Dynamic models state - load from cache first
-  const [models, setModels] = useState(() => {
-    const cached = loadCachedModels();
-    return cached || {
-      openai: FALLBACK_MODELS.openai,
-      anthropic: FALLBACK_MODELS.anthropic,
-      gemini: FALLBACK_MODELS.gemini,
-      gpt4free: FALLBACK_MODELS.gpt4free, // Always hardcoded
-    };
-  });
+  // GPT4Free sub-provider state
+  const [gpt4freeSubProvider, setGpt4freeSubProviderLocal] = useState(settings.gpt4freeSubProvider || 'default');
+  const [gpt4freeProviders, setGpt4freeProviders] = useState([]); // Loaded dynamically
+  const [loadingProviders, setLoadingProviders] = useState(false);
+
+  // Dynamic models state - load from cache
+  const [models, setModels] = useState(() => loadCachedModels());
 
   // Initialize model from settings or first available
   const [model, setModel] = useState(() => {
@@ -178,18 +203,24 @@ function SettingsPanel({ onClose, isBottomPanel }) {
   }, [openaiKey, anthropicKey, geminiKey]);
 
   // Fetch models when API key changes (or for gpt4free without key)
-  const loadModelsForProvider = useCallback(async (p, key) => {
+  const loadModelsForProvider = useCallback(async (p, key, subProvider = 'default') => {
     // gpt4free doesn't need API key
     if (p !== 'gpt4free' && (!key || key.length < 10)) return;
 
     setLoadingModels(prev => ({ ...prev, [p]: true }));
     try {
-      const fetchedModels = await fetchModels(p, key);
+      // For gpt4free, pass sub-provider to fetch models
+      const fetchedModels = p === 'gpt4free'
+        ? await fetchGpt4freeModels(subProvider)
+        : await fetchModels(p, key);
+
       if (fetchedModels && fetchedModels.length > 0) {
         setModels(prev => {
           const updated = { ...prev, [p]: fetchedModels };
-          // Save to localStorage
-          saveCachedModels(updated);
+          // Save to localStorage (except gpt4free which is dynamic)
+          if (p !== 'gpt4free') {
+            saveCachedModels(updated);
+          }
           return updated;
         });
         // Set first model as default if current model not in list
@@ -204,12 +235,24 @@ function SettingsPanel({ onClose, isBottomPanel }) {
     }
   }, [provider, model]);
 
-  // Auto-load gpt4free models when provider is selected
+  // Load gpt4free providers list when selected
   useEffect(() => {
-    if (provider === 'gpt4free' && (!models.gpt4free || models.gpt4free.length === 0)) {
-      loadModelsForProvider('gpt4free', null);
+    if (provider === 'gpt4free' && gpt4freeProviders.length === 0) {
+      setLoadingProviders(true);
+      fetchGpt4freeProviders()
+        .then(providers => {
+          setGpt4freeProviders(providers);
+        })
+        .finally(() => setLoadingProviders(false));
     }
-  }, [provider, models.gpt4free, loadModelsForProvider]);
+  }, [provider, gpt4freeProviders.length]);
+
+  // Load gpt4free models when sub-provider changes
+  useEffect(() => {
+    if (provider === 'gpt4free') {
+      loadModelsForProvider('gpt4free', null, gpt4freeSubProvider);
+    }
+  }, [provider, gpt4freeSubProvider, loadModelsForProvider]);
 
   // Track previous key values to detect changes
   const prevKeysRef = useRef({ openai: openaiKey, anthropic: anthropicKey, gemini: geminiKey });
@@ -238,6 +281,9 @@ function SettingsPanel({ onClose, isBottomPanel }) {
     setGeminiApiKey(geminiKey);
     setAiProvider(provider);
     setAiModel(model);
+    if (provider === 'gpt4free') {
+      setGpt4freeSubProvider(gpt4freeSubProvider);
+    }
     onClose?.();
   };
 
@@ -315,11 +361,38 @@ function SettingsPanel({ onClose, isBottomPanel }) {
         </div>
       </div>
 
-      {/* GPT4Free info - показываем когда выбран gpt4free */}
+      {/* GPT4Free settings - показываем когда выбран gpt4free */}
       {isGpt4free && (
-        <div className="p-2 bg-green-500/10 rounded-md border border-green-500/30">
-          <p className="text-xs text-green-400">✓ Бесплатный доступ - API ключ не требуется</p>
-          <p className="text-xs opacity-50 mt-1">Модели загружаются с g4f.dev</p>
+        <div className="space-y-2">
+          <div className="p-2 bg-green-500/10 rounded-md border border-green-500/30">
+            <p className="text-xs text-green-400">✓ Бесплатный доступ - API ключ не требуется</p>
+          </div>
+
+          {/* Sub-provider selection */}
+          <div className="grid gap-1">
+            <label className="text-xs flex items-center gap-1">
+              Провайдер g4f
+              {loadingProviders && <span className="opacity-50">загрузка...</span>}
+            </label>
+            <select
+              value={gpt4freeSubProvider}
+              onChange={(e) => {
+                setGpt4freeSubProviderLocal(e.target.value);
+                // Models will reload automatically via useEffect
+              }}
+              className={cx(selectClass, 'text-sm py-1.5')}
+              disabled={loadingProviders}
+            >
+              {gpt4freeProviders.length === 0 ? (
+                <option value="default">Auto (default)</option>
+              ) : (
+                gpt4freeProviders.map((p) => (
+                  <option key={p.value} value={p.value}>{p.label}</option>
+                ))
+              )}
+            </select>
+            <p className="text-xs opacity-50">Модели зависят от выбранного провайдера</p>
+          </div>
         </div>
       )}
 

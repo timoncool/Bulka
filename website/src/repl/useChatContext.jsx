@@ -11,50 +11,58 @@ import { useSettings } from '../settings.mjs';
 import { soundMap } from '@strudel/webaudio';
 import { $strudel_log_history } from './components/useLogger.jsx';
 
-// GPT4Free client instance (lazy loaded)
-let g4fClient = null;
+// GPT4Free clients cache (lazy loaded from CDN)
+let g4fClientsCache = {};
+let g4fModule = null;
 
 /**
- * Get or create GPT4Free client
- * Uses official g4f.dev JS client - no backend required
+ * Get or create GPT4Free client for specific sub-provider
  */
-async function getGpt4freeClient() {
-  if (g4fClient) return g4fClient;
+async function getG4fClient(subProvider = 'default') {
+  // Check cache first
+  if (g4fClientsCache[subProvider]) {
+    return g4fClientsCache[subProvider];
+  }
 
-  // Dynamic import from CDN
-  const module = await import('https://g4f.dev/dist/js/client.js');
-  const Client = module.default;
-  g4fClient = new Client();
-  return g4fClient;
+  // Load module if not loaded
+  if (!g4fModule) {
+    g4fModule = await import('https://g4f.dev/dist/js/providers.js');
+  }
+
+  // Create client for this sub-provider
+  const { createClient } = g4fModule;
+  g4fClientsCache[subProvider] = createClient(subProvider);
+  return g4fClientsCache[subProvider];
 }
 
 /**
  * GPT4Free client-side chat handler
- * Uses official g4f.dev JS client - no backend required
+ * Uses official g4f.dev JS SDK - pure client-side, no backend
+ * @param {Array} messages - Chat messages
+ * @param {string} model - Model to use
+ * @param {string} subProvider - g4f sub-provider (default, nectar, pollinations, etc.)
+ * @param {Function} onStatus - Status callback
  */
-async function* runGpt4freeClientChat(messages, model, onStatus) {
-  onStatus?.('🔗 Подключение к GPT4Free...');
+async function* runGpt4freeClientChat(messages, model, subProvider, onStatus) {
+  onStatus?.(`🔗 Подключение к GPT4Free (${subProvider})...`);
 
   try {
-    const client = await getGpt4freeClient();
-
+    const client = await getG4fClient(subProvider);
     onStatus?.('📡 Отправляю запрос...');
 
-    // Use official client API
-    const result = await client.chat.completions.create({
+    // Use streaming API
+    const stream = await client.chat.completions.create({
       model: model || 'gpt-4o',
-      messages: messages.map(m => ({
-        role: m.role,
-        content: m.content,
-      })),
+      messages: messages.map(m => ({ role: m.role, content: m.content })),
+      stream: true,
     });
 
-    // Return the response content
-    const content = result.choices?.[0]?.message?.content;
-    if (content) {
-      yield { type: 'text', content };
-    } else {
-      yield { type: 'error', error: 'Пустой ответ от GPT4Free' };
+    // Stream response
+    for await (const chunk of stream) {
+      const content = chunk.choices?.[0]?.delta?.content;
+      if (content) {
+        yield { type: 'text', content };
+      }
     }
   } catch (error) {
     yield { type: 'error', error: error.message || 'Ошибка GPT4Free' };
@@ -289,7 +297,7 @@ export function useChatContext(replContext) {
   const sendMessage = useCallback(async (content) => {
     if (!content.trim() || isLoading) return;
 
-    const { aiProvider, aiModel, openaiApiKey, anthropicApiKey, geminiApiKey } = settings;
+    const { aiProvider, aiModel, openaiApiKey, anthropicApiKey, geminiApiKey, gpt4freeSubProvider } = settings;
 
     // gpt4free doesn't need API key
     const isGpt4free = aiProvider === 'gpt4free';
@@ -357,7 +365,7 @@ export function useChatContext(replContext) {
           ];
         }
 
-        for await (const message of runGpt4freeClientChat(gpt4freeMessages, aiModel, setLastAction)) {
+        for await (const message of runGpt4freeClientChat(gpt4freeMessages, aiModel, gpt4freeSubProvider || 'default', setLastAction)) {
           if (message.type === 'text' && message.content) {
             fullContent += message.content;
             setMessages(prev => {
