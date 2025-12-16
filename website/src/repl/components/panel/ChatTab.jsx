@@ -328,85 +328,42 @@ function SettingsPanel({ onClose, isBottomPanel }) {
     <div className="p-3 text-foreground overflow-y-auto overflow-x-hidden space-y-3">
       <h3 className="text-base font-medium">Настройки AI</h3>
 
-      {/* Provider & Model - horizontal */}
-      <div className="flex gap-2 flex-wrap">
-        <div className="grid gap-1 min-w-[140px] flex-1">
-          <label className="text-xs font-medium">Провайдер</label>
-          <select
-            value={provider}
-            onChange={(e) => {
-              const newProvider = e.target.value;
-              setProvider(newProvider);
+      {/* Provider selection */}
+      <div className="grid gap-1">
+        <label className="text-xs font-medium">Провайдер</label>
+        <select
+          value={provider}
+          onChange={(e) => {
+            const newProvider = e.target.value;
+            setProvider(newProvider);
 
-              // For gpt4free - load models dynamically
-              if (newProvider === 'gpt4free') {
-                loadGpt4freeModels(gpt4freeSubProvider);
-              } else {
-                // For other providers - use cached models
-                const newModels = models[newProvider] || FALLBACK_MODELS[newProvider];
-                if (newModels.length > 0) {
-                  setModel(newModels[0].value);
-                }
+            // For gpt4free - load models dynamically
+            if (newProvider === 'gpt4free') {
+              loadGpt4freeModels(gpt4freeSubProvider);
+            } else {
+              // For other providers - use cached models
+              const newModels = models[newProvider] || FALLBACK_MODELS[newProvider];
+              if (newModels.length > 0) {
+                setModel(newModels[0].value);
               }
-            }}
-            className={cx(selectClass, 'text-sm py-1.5')}
-          >
-            <option value="gpt4free">GPT4Free (бесплатно) ✓</option>
-            <option value="openai">OpenAI {openaiKey ? '✓' : ''}</option>
-            <option value="anthropic">Anthropic {anthropicKey ? '✓' : ''}</option>
-            <option value="gemini">Gemini {geminiKey ? '✓' : ''}</option>
-          </select>
-        </div>
-
-        <div className="grid gap-1 min-w-[180px] flex-1">
-          <label className="text-xs flex items-center gap-1">
-            Модель
-            {isLoadingCurrentModels && <span className="opacity-50">...</span>}
-          </label>
-          <div className="flex gap-1">
-            <select
-              value={model}
-              onChange={(e) => setModel(e.target.value)}
-              className={cx(selectClass, 'flex-1 text-sm py-1.5')}
-              disabled={isLoadingCurrentModels || currentModels.length === 0}
-            >
-              {currentModels.length === 0 ? (
-                <option value="">
-                  {isLoadingCurrentModels ? 'Загрузка моделей...' : 'Нет моделей'}
-                </option>
-              ) : (
-                currentModels.map((m) => (
-                  <option key={m.value} value={m.value}>{m.label}</option>
-                ))
-              )}
-            </select>
-            <button
-              type="button"
-              onClick={() => {
-                if (isGpt4free) {
-                  loadGpt4freeModels(gpt4freeSubProvider);
-                } else {
-                  loadModelsForProvider(provider, getKeyForProvider(provider));
-                }
-              }}
-              disabled={isLoadingCurrentModels || (!isGpt4free && !currentProviderHasKey())}
-              className="px-2 text-sm rounded border border-foreground/30 hover:bg-lineBackground disabled:opacity-30"
-              title="Обновить модели"
-            >
-              ↻
-            </button>
-          </div>
-        </div>
+            }
+          }}
+          className={cx(selectClass, 'text-sm py-1.5')}
+        >
+          <option value="gpt4free">GPT4Free (бесплатно) ✓</option>
+          <option value="openai">OpenAI {openaiKey ? '✓' : ''}</option>
+          <option value="anthropic">Anthropic {anthropicKey ? '✓' : ''}</option>
+          <option value="gemini">Gemini {geminiKey ? '✓' : ''}</option>
+        </select>
       </div>
 
-      {/* GPT4Free settings - показываем когда выбран gpt4free */}
+      {/* GPT4Free sub-provider - показываем сразу после провайдера */}
       {isGpt4free && (
         <div className="space-y-2">
           <div className="p-2 bg-green-500/10 rounded-md border border-green-500/30">
             <p className="text-xs text-green-400">✓ Бесплатный доступ - API ключ не требуется</p>
           </div>
 
-          {/* Sub-provider selection */}
           <div className="grid gap-1">
             <label className="text-xs flex items-center gap-1">
               Провайдер g4f
@@ -431,10 +388,50 @@ function SettingsPanel({ onClose, isBottomPanel }) {
                 ))
               )}
             </select>
-            <p className="text-xs opacity-50">Модели зависят от выбранного провайдера</p>
           </div>
         </div>
       )}
+
+      {/* Model selection */}
+      <div className="grid gap-1">
+        <label className="text-xs flex items-center gap-1">
+          Модель
+          {isLoadingCurrentModels && <span className="opacity-50">...</span>}
+        </label>
+        <div className="flex gap-1">
+          <select
+            value={model}
+            onChange={(e) => setModel(e.target.value)}
+            className={cx(selectClass, 'flex-1 text-sm py-1.5')}
+            disabled={isLoadingCurrentModels || currentModels.length === 0}
+          >
+            {currentModels.length === 0 ? (
+              <option value="">
+                {isLoadingCurrentModels ? 'Загрузка моделей...' : 'Нет моделей'}
+              </option>
+            ) : (
+              currentModels.map((m) => (
+                <option key={m.value} value={m.value}>{m.label}</option>
+              ))
+            )}
+          </select>
+          <button
+            type="button"
+            onClick={() => {
+              if (isGpt4free) {
+                loadGpt4freeModels(gpt4freeSubProvider);
+              } else {
+                loadModelsForProvider(provider, getKeyForProvider(provider));
+              }
+            }}
+            disabled={isLoadingCurrentModels || (!isGpt4free && !currentProviderHasKey())}
+            className="px-2 text-sm rounded border border-foreground/30 hover:bg-lineBackground disabled:opacity-30"
+            title="Обновить модели"
+          >
+            ↻
+          </button>
+        </div>
+      </div>
 
       {/* API Keys - скрываем для gpt4free */}
       {!isGpt4free && (

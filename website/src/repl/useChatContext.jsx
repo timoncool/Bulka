@@ -381,6 +381,30 @@ export function useChatContext(replContext) {
           }
         }
 
+        // GPT4Free: автоматически применить код из ответа (как для других провайдеров)
+        const editor = replContext?.editorRef?.current;
+        if (editor && fullContent) {
+          const codeBlocks = extractCodeBlocks(fullContent);
+          if (codeBlocks.length > 0) {
+            // Берём последний блок кода (обычно финальная версия)
+            const code = codeBlocks[codeBlocks.length - 1];
+            editor.setCode(code);
+            setLastAction('✓ Код применён в редактор');
+
+            // Добавляем summary к сообщению
+            const actionSummary = '\n\n✓ Код установлен в редактор';
+            fullContent += actionSummary;
+            setMessages(prev => {
+              const updated = [...prev];
+              const lastIdx = updated.length - 1;
+              if (updated[lastIdx]?.role === 'assistant') {
+                updated[lastIdx] = { ...updated[lastIdx], content: fullContent };
+              }
+              return updated;
+            });
+          }
+        }
+
         // Done with gpt4free
         setIsLoading(false);
         return;
