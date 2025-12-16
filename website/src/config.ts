@@ -81,6 +81,7 @@ export const SIDEBAR: Sidebar = {
     ],
     'Ещё': [
       { text: 'Bulka AI Agent', link: 'learn/ai-agent' },
+      { text: 'GPT4Free (бесплатно)', link: 'learn/gpt4free' },
       { text: 'Рецепты', link: 'recipes/recipes' },
       { text: 'Mini-Notation', link: 'learn/mini-notation' },
       { text: 'Визуальная обратная связь', link: 'learn/visual-feedback' },
