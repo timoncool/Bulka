@@ -13,6 +13,24 @@
         "type": "docs",
         "typeLabel": "Документация",
         "emoji": "📚",
+        "description": "remove specific model names - list is dynamic",
+        "scope": null,
+        "author": "Claude",
+        "hash": "29e9aa1"
+      },
+      {
+        "type": "docs",
+        "typeLabel": "Документация",
+        "emoji": "📚",
+        "description": "update ai-agent page - dynamic model list, add gpt4free link",
+        "scope": null,
+        "author": "Claude",
+        "hash": "1a35d36"
+      },
+      {
+        "type": "docs",
+        "typeLabel": "Документация",
+        "emoji": "📚",
         "description": "update ai-agent page - dynamic model list, add gpt4free link",
         "scope": null,
         "author": "Claude",
