@@ -29,9 +29,9 @@ async function getG4fClient(subProvider = 'default') {
     g4fModule = await import('https://g4f.dev/dist/js/providers.js');
   }
 
-  // Create client for this sub-provider
+  // Create client for this sub-provider (createClient is now async)
   const { createClient } = g4fModule;
-  g4fClientsCache[subProvider] = createClient(subProvider);
+  g4fClientsCache[subProvider] = await createClient(subProvider);
   return g4fClientsCache[subProvider];
 }
 

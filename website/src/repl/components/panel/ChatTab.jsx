@@ -107,7 +107,10 @@ async function loadG4fProviders() {
 async function fetchGpt4freeProviders() {
   try {
     const module = await loadG4fProviders();
-    const providers = module.default; // providers object
+    const { loadProviders } = module;
+
+    // loadProviders() is now async - returns providers object
+    const providers = await loadProviders();
 
     // Convert to array and format
     return Object.keys(providers).map(key => ({
@@ -128,9 +131,9 @@ async function fetchGpt4freeModels(subProvider = 'default') {
     const module = await loadG4fProviders();
     const { createClient } = module;
 
-    // Get or create client for this provider
+    // Get or create client for this provider (createClient is now async)
     if (!g4fClientsCache[subProvider]) {
-      g4fClientsCache[subProvider] = createClient(subProvider);
+      g4fClientsCache[subProvider] = await createClient(subProvider);
     }
     const client = g4fClientsCache[subProvider];
 
