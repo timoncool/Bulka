@@ -98,7 +98,9 @@ Bulka основана на проекте [Strudel](https://strudel.cc/) от A
 
 <div align="center">
 
-[![Star History Chart](https://api.star-history.com/svg?repos=timoncool/Bulka&type=Date)](https://star-history.com/#timoncool/Bulka&Date)
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=timoncool/Bulka&type=date&legend=top-left)](https://www.star-history.com/#timoncool/Bulka&type=date&legend=top-left)
 
 </div>
 
