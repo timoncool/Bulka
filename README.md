@@ -96,13 +96,7 @@ Bulka основана на проекте [Strudel](https://strudel.cc/) от A
 
 ## ⭐ Поддержи проект
 
-<div align="center">
-
-## Star History
-
 [![Star History Chart](https://api.star-history.com/svg?repos=timoncool/Bulka&type=date&legend=top-left)](https://www.star-history.com/#timoncool/Bulka&type=date&legend=top-left)
-
-</div>
 
 Если тебе нравится Bulka — поставь звезду! Это помогает проекту расти и мотивирует команду развивать его дальше.
 
