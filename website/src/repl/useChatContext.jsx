@@ -459,7 +459,24 @@ export function useChatContext(replContext) {
           // Применяем код
           const codeBlocks = extractCodeBlocks(fullContent);
           if (codeBlocks.length > 0) {
-            const code = codeBlocks[codeBlocks.length - 1];
+            let code = codeBlocks[codeBlocks.length - 1];
+            // Add @model meta tag if not already present
+            if (!code.includes('// @model')) {
+              const modelTag = `// @model ${aiProvider}/${aiModel}`;
+              const lines = code.split('\n');
+              let lastMetaIdx = -1;
+              for (let i = 0; i < lines.length; i++) {
+                if (/^\s*\/\/\s*@\w+/.test(lines[i])) {
+                  lastMetaIdx = i;
+                } else if (lines[i].trim() !== '' && lastMetaIdx >= 0) {
+                  break;
+                }
+              }
+              if (lastMetaIdx >= 0) {
+                lines.splice(lastMetaIdx + 1, 0, modelTag);
+                code = lines.join('\n');
+              }
+            }
             editor.setCode(code);
             actionsExecuted.push('Код установлен');
             setLastAction('✓ Код применён в редактор');
@@ -625,7 +642,26 @@ export function useChatContext(replContext) {
 
           // setFullCode - полная замена кода
           if (name === 'setFullCode' && args?.code) {
-            editor.setCode(args.code);
+            let code = args.code;
+            // Add @model meta tag if not already present
+            if (!code.includes('// @model')) {
+              const modelTag = `// @model ${aiProvider}/${aiModel}`;
+              // Insert after last meta comment line (// @...)
+              const lines = code.split('\n');
+              let lastMetaIdx = -1;
+              for (let i = 0; i < lines.length; i++) {
+                if (/^\s*\/\/\s*@\w+/.test(lines[i])) {
+                  lastMetaIdx = i;
+                } else if (lines[i].trim() !== '' && lastMetaIdx >= 0) {
+                  break;
+                }
+              }
+              if (lastMetaIdx >= 0) {
+                lines.splice(lastMetaIdx + 1, 0, modelTag);
+                code = lines.join('\n');
+              }
+            }
+            editor.setCode(code);
             setLastAction('✓ Код установлен в редактор');
             actionsExecuted.push('Код установлен');
           }
