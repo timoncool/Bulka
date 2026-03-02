@@ -2816,30 +2816,27 @@ async function runOpenAICompatibleAgent(
 }
 
 /**
- * Truncate messages to avoid rate limits
- * More aggressive truncation to stay within 30k tokens/min for Anthropic
- * Keep only last N messages
+ * Truncate messages to keep conversation within reasonable context window.
+ * Keep last N messages to preserve recent context.
  */
-function truncateMessages(messages: any[], maxMessages: number = 6): any[] {
+function truncateMessages(messages: any[], maxMessages: number = 30): any[] {
   if (messages.length <= maxMessages) return messages;
-  // Keep only last N messages - more aggressive to avoid rate limits
   return messages.slice(-maxMessages);
 }
 
 /**
- * Truncate code to avoid token overflow
- * More aggressive for rate limit compliance
- * Russian text is ~2-3x more tokens per character
+ * Truncate code to fit within model context window.
+ * 50k chars ≈ ~15-20k tokens — fits well within modern 128k+ context models.
  */
-function truncateCode(code: string, maxChars: number = 2000): string {
+function truncateCode(code: string, maxChars: number = 50000): string {
   if (!code || code.length <= maxChars) return code;
-  return code.slice(0, maxChars) + '\n// ... (код сокращён)';
+  return code.slice(0, maxChars) + '\n// ... (код сокращён, показаны первые ' + maxChars + ' символов)';
 }
 
 /**
- * Truncate message content for very long messages
+ * Truncate very long individual message content.
  */
-function truncateMessageContent(content: string, maxChars: number = 1500): string {
+function truncateMessageContent(content: string, maxChars: number = 30000): string {
   if (!content || content.length <= maxChars) return content;
   return content.slice(0, maxChars) + '\n... (сокращено)';
 }
@@ -2856,20 +2853,15 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
-    // Truncate to avoid rate limits (more aggressive for Anthropic)
-    const isAnthropic = provider === 'anthropic';
-    const maxMessages = isAnthropic ? 4 : 6;  // Fewer messages for Anthropic
-    const maxCodeChars = isAnthropic ? 1500 : 2000;
-
-    messages = truncateMessages(messages, maxMessages);
-    // Also truncate individual message content
+    // Soft truncation — only for extremely large inputs to prevent context overflow
+    messages = truncateMessages(messages, 30);
     messages = messages.map((m: any) => ({
       ...m,
-      content: truncateMessageContent(m.content, 1000),
+      content: truncateMessageContent(m.content, 30000),
     }));
-    currentCode = truncateCode(currentCode || '', maxCodeChars);
+    currentCode = truncateCode(currentCode || '', 50000);
     if (selectedCode) {
-      selectedCode = truncateCode(selectedCode, 1000);
+      selectedCode = truncateCode(selectedCode, 20000);
     }
 
     if (!model) {
