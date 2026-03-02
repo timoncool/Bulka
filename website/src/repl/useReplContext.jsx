@@ -131,9 +131,27 @@ export function useReplContext() {
     window.strudelMirror = editor;
 
     // init settings
+    const urlParams = new URLSearchParams(window.location.search);
+    const isNewSession = urlParams.has('new');
+    if (isNewSession) {
+      // clear persisted session state
+      localStorage.removeItem('bulka-chat-messages');
+      localStorage.removeItem('bulka-chat-draft');
+      sessionStorage.removeItem('viewingPatternData');
+      sessionStorage.removeItem('activePattern');
+      // clean up ?new from URL without reload
+      urlParams.delete('new');
+      const cleanUrl = urlParams.toString()
+        ? `${window.location.pathname}?${urlParams.toString()}`
+        : window.location.pathname;
+      window.history.replaceState(null, '', cleanUrl);
+    }
     initCode().then(async (decoded) => {
       let code, msg;
-      if (decoded) {
+      if (isNewSession) {
+        code = '';
+        msg = `Новая сессия!`;
+      } else if (decoded) {
         code = decoded;
         msg = `I have loaded the code from the URL.`;
       } else if (latestCode) {
