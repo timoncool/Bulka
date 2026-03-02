@@ -378,6 +378,15 @@ export function Header({ context, embedded = false }) {
           )}
           {!isEmbedded && (
             <a
+              title="начать новый трек"
+              href={`${baseNoTrailing}/`}
+              className={cx('hover:opacity-50 flex items-center space-x-1', !isEmbedded ? 'p-2' : 'px-2')}
+            >
+              <span>новый</span>
+            </a>
+          )}
+          {!isEmbedded && (
+            <a
               title="лента"
               href={`${baseNoTrailing}/feed`}
               className={cx('hover:opacity-50 flex items-center space-x-1', !isEmbedded ? 'p-2' : 'px-2')}
