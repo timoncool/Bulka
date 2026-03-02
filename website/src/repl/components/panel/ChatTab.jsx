@@ -14,6 +14,16 @@ const inputClass = 'w-full p-2 bg-background rounded-md text-foreground border b
 const selectClass = 'w-full p-2 bg-background rounded-md text-foreground border border-foreground/30';
 const buttonClass = 'px-4 py-2 rounded-md bg-background text-foreground border border-foreground/30 hover:bg-lineBackground disabled:opacity-50';
 
+// Provider display names for the chat header
+const PROVIDER_LABELS = {
+  openai: 'OpenAI',
+  anthropic: 'Anthropic',
+  gemini: 'Gemini',
+  zai: 'Z.AI',
+  openrouter: 'OpenRouter',
+  gpt4free: 'GPT4Free',
+};
+
 // Empty defaults - all models are fetched dynamically from provider APIs
 const EMPTY_MODELS = {
   openai: [],
@@ -774,7 +784,7 @@ export function ChatTab({ context, isBottomPanel }) {
       <div className="flex items-center justify-between p-2 border-b border-foreground/20">
         <div className="flex items-center gap-2">
           <span>🤖</span>
-          <span className="text-sm font-medium">Bulka AI</span>
+          <span className="text-sm font-medium">Bulka AI {PROVIDER_LABELS[chat.provider] || chat.provider}</span>
           <span className="text-xs opacity-50">({chat.model})</span>
         </div>
         <div className="flex gap-2">
