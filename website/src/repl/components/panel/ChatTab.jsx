@@ -267,10 +267,17 @@ function SettingsPanel({ onClose, isBottomPanel }) {
     }
   }, []);
 
-  // Load gpt4free models on mount if gpt4free is selected
+  // Load models on mount for current provider
   useEffect(() => {
-    if (provider === 'gpt4free' && models.gpt4free.length === 0) {
-      loadGpt4freeModels(gpt4freeSubProvider);
+    if (provider === 'gpt4free') {
+      if (models.gpt4free.length === 0) {
+        loadGpt4freeModels(gpt4freeSubProvider);
+      }
+    } else {
+      const key = getKeyForProvider(provider);
+      if (key && key.length >= 10 && (!models[provider] || models[provider].length === 0)) {
+        loadModelsForProvider(provider, key);
+      }
     }
   }, []); // Only on mount
 
@@ -348,14 +355,19 @@ function SettingsPanel({ onClose, isBottomPanel }) {
             const newProvider = e.target.value;
             setProvider(newProvider);
 
-            // For gpt4free - load models dynamically
+            // Always fetch models dynamically when provider changes
             if (newProvider === 'gpt4free') {
               loadGpt4freeModels(gpt4freeSubProvider);
             } else {
-              // For other providers - use cached models
-              const newModels = models[newProvider] || EMPTY_MODELS[newProvider];
-              if (newModels.length > 0) {
-                setModel(newModels[0].value);
+              const key = getKeyForProvider(newProvider);
+              if (key && key.length >= 10) {
+                loadModelsForProvider(newProvider, key);
+              } else {
+                // Use cached models if no key yet
+                const cachedModels = models[newProvider] || [];
+                if (cachedModels.length > 0) {
+                  setModel(cachedModels[0].value);
+                }
               }
             }
           }}
