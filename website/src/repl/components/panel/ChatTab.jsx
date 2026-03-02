@@ -6,7 +6,7 @@ import { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import cx from '@src/cx.mjs';
 import ReactMarkdown from 'react-markdown';
 import { useChatContext } from '../../useChatContext';
-import { useSettings, setOpenaiApiKey, setAnthropicApiKey, setGeminiApiKey, setAiProvider, setAiModel, setGpt4freeSubProvider, getApiKeyForProvider } from '../../../settings.mjs';
+import { useSettings, setOpenaiApiKey, setAnthropicApiKey, setGeminiApiKey, setZaiApiKey, setOpenrouterApiKey, setAiProvider, setAiModel, setGpt4freeSubProvider, getApiKeyForProvider } from '../../../settings.mjs';
 import { getRandomSuggestions } from '../../data/suggestions.js';
 
 // Common input styles matching SettingsTab
@@ -19,6 +19,8 @@ const FALLBACK_MODELS = {
   openai: [{ value: 'gpt-4o', label: 'gpt-4o' }],
   anthropic: [{ value: 'claude-sonnet-4-5-20250929', label: 'Claude Sonnet 4.5' }],
   gemini: [{ value: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash' }],
+  zai: [{ value: 'glm-4.7', label: 'glm-4.7' }, { value: 'glm-4.7-flash', label: 'glm-4.7-flash (быстрый)' }],
+  openrouter: [{ value: 'anthropic/claude-sonnet-4', label: 'Claude Sonnet 4' }, { value: 'openai/gpt-4o', label: 'GPT-4o' }],
   gpt4free: [], // Загружается динамически через client.models.list()
 };
 
@@ -36,6 +38,8 @@ function loadCachedModels() {
         openai: parsed.openai || FALLBACK_MODELS.openai,
         anthropic: parsed.anthropic || FALLBACK_MODELS.anthropic,
         gemini: parsed.gemini || FALLBACK_MODELS.gemini,
+        zai: parsed.zai || FALLBACK_MODELS.zai,
+        openrouter: parsed.openrouter || FALLBACK_MODELS.openrouter,
         gpt4free: FALLBACK_MODELS.gpt4free, // Always hardcoded
       };
     }
@@ -47,6 +51,8 @@ function loadCachedModels() {
     openai: FALLBACK_MODELS.openai,
     anthropic: FALLBACK_MODELS.anthropic,
     gemini: FALLBACK_MODELS.gemini,
+    zai: FALLBACK_MODELS.zai,
+    openrouter: FALLBACK_MODELS.openrouter,
     gpt4free: FALLBACK_MODELS.gpt4free,
   };
 }
@@ -165,6 +171,8 @@ function SettingsPanel({ onClose, isBottomPanel }) {
   const [openaiKey, setOpenaiKey] = useState(settings.openaiApiKey || '');
   const [anthropicKey, setAnthropicKey] = useState(settings.anthropicApiKey || '');
   const [geminiKey, setGeminiKey] = useState(settings.geminiApiKey || '');
+  const [zaiKey, setZaiKey] = useState(settings.zaiApiKey || '');
+  const [openrouterKey, setOpenrouterKey] = useState(settings.openrouterApiKey || '');
   const [provider, setProvider] = useState(settings.aiProvider || 'openai');
 
   // GPT4Free sub-provider state
@@ -186,6 +194,8 @@ function SettingsPanel({ onClose, isBottomPanel }) {
     openai: false,
     anthropic: false,
     gemini: false,
+    zai: false,
+    openrouter: false,
     gpt4free: false,
   });
 
@@ -195,9 +205,11 @@ function SettingsPanel({ onClose, isBottomPanel }) {
       case 'openai': return openaiKey;
       case 'anthropic': return anthropicKey;
       case 'gemini': return geminiKey;
+      case 'zai': return zaiKey;
+      case 'openrouter': return openrouterKey;
       default: return '';
     }
-  }, [openaiKey, anthropicKey, geminiKey]);
+  }, [openaiKey, anthropicKey, geminiKey, zaiKey, openrouterKey]);
 
   // Fetch models when API key changes (or for gpt4free without key)
   const loadModelsForProvider = useCallback(async (p, key, subProvider = 'default') => {
@@ -271,7 +283,7 @@ function SettingsPanel({ onClose, isBottomPanel }) {
   }, []); // Only on mount
 
   // Track previous key values to detect changes
-  const prevKeysRef = useRef({ openai: openaiKey, anthropic: anthropicKey, gemini: geminiKey });
+  const prevKeysRef = useRef({ openai: openaiKey, anthropic: anthropicKey, gemini: geminiKey, zai: zaiKey, openrouter: openrouterKey });
 
   // Load models when key is first added (changes from empty to non-empty)
   useEffect(() => {
@@ -287,14 +299,22 @@ function SettingsPanel({ onClose, isBottomPanel }) {
     if (!prev.gemini && geminiKey && geminiKey.length >= 10) {
       loadModelsForProvider('gemini', geminiKey);
     }
+    if (!prev.zai && zaiKey && zaiKey.length >= 10) {
+      loadModelsForProvider('zai', zaiKey);
+    }
+    if (!prev.openrouter && openrouterKey && openrouterKey.length >= 10) {
+      loadModelsForProvider('openrouter', openrouterKey);
+    }
 
-    prevKeysRef.current = { openai: openaiKey, anthropic: anthropicKey, gemini: geminiKey };
-  }, [openaiKey, anthropicKey, geminiKey, loadModelsForProvider]);
+    prevKeysRef.current = { openai: openaiKey, anthropic: anthropicKey, gemini: geminiKey, zai: zaiKey, openrouter: openrouterKey };
+  }, [openaiKey, anthropicKey, geminiKey, zaiKey, openrouterKey, loadModelsForProvider]);
 
   const handleSave = () => {
     setOpenaiApiKey(openaiKey);
     setAnthropicApiKey(anthropicKey);
     setGeminiApiKey(geminiKey);
+    setZaiApiKey(zaiKey);
+    setOpenrouterApiKey(openrouterKey);
     setAiProvider(provider);
     setAiModel(model);
     if (provider === 'gpt4free') {
@@ -310,6 +330,8 @@ function SettingsPanel({ onClose, isBottomPanel }) {
       case 'openai': return openaiKey.trim().length > 0;
       case 'anthropic': return anthropicKey.trim().length > 0;
       case 'gemini': return geminiKey.trim().length > 0;
+      case 'zai': return zaiKey.trim().length > 0;
+      case 'openrouter': return openrouterKey.trim().length > 0;
       default: return false;
     }
   };
@@ -351,6 +373,8 @@ function SettingsPanel({ onClose, isBottomPanel }) {
           <option value="openai">OpenAI {openaiKey ? '✓' : ''}</option>
           <option value="anthropic">Anthropic {anthropicKey ? '✓' : ''}</option>
           <option value="gemini">Gemini {geminiKey ? '✓' : ''}</option>
+          <option value="zai">Z.AI (GLM) {zaiKey ? '✓' : ''}</option>
+          <option value="openrouter">OpenRouter {openrouterKey ? '✓' : ''}</option>
         </select>
       </div>
 
@@ -471,6 +495,30 @@ function SettingsPanel({ onClose, isBottomPanel }) {
                 className={cx(inputClass, 'text-sm py-1')}
               />
             </div>
+            <div className={cx('grid gap-1', isBottomPanel && 'min-w-[120px] flex-1')}>
+              <label className="text-xs flex items-center gap-1">
+                Z.AI {zaiKey && <span className="text-green-400">✓</span>}
+              </label>
+              <input
+                type="password"
+                value={zaiKey}
+                onChange={(e) => setZaiKey(e.target.value)}
+                placeholder="z.ai ключ..."
+                className={cx(inputClass, 'text-sm py-1')}
+              />
+            </div>
+            <div className={cx('grid gap-1', isBottomPanel && 'min-w-[120px] flex-1')}>
+              <label className="text-xs flex items-center gap-1">
+                OpenRouter {openrouterKey && <span className="text-green-400">✓</span>}
+              </label>
+              <input
+                type="password"
+                value={openrouterKey}
+                onChange={(e) => setOpenrouterKey(e.target.value)}
+                placeholder="sk-or-..."
+                className={cx(inputClass, 'text-sm py-1')}
+              />
+            </div>
           </div>
           <p className="text-xs opacity-50">Ключи хранятся локально</p>
         </div>
@@ -491,6 +539,8 @@ function SettingsPanel({ onClose, isBottomPanel }) {
             <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener" className="underline hover:opacity-50">OpenAI</a>
             <a href="https://console.anthropic.com/" target="_blank" rel="noopener" className="underline hover:opacity-50">Anthropic</a>
             <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" className="underline hover:opacity-50">Gemini</a>
+            <a href="https://z.ai/manage-apikey/apikey-list" target="_blank" rel="noopener" className="underline hover:opacity-50">Z.AI</a>
+            <a href="https://openrouter.ai/keys" target="_blank" rel="noopener" className="underline hover:opacity-50">OpenRouter</a>
           </div>
         )}
       </div>

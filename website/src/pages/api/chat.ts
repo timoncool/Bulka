@@ -2613,6 +2613,491 @@ async function runGeminiAgent(
 }
 
 /**
+ * Z.AI agent loop (OpenAI-compatible with GLM models)
+ * Supports tool calling, streaming, and thinking (GLM-5, GLM-4.7)
+ */
+async function runZaiAgent(
+  apiKey: string,
+  model: string,
+  messages: any[],
+  currentCode: string,
+  selectedCode: string | null
+): Promise<ReadableStream> {
+  let codeContext = '';
+  if (selectedCode) {
+    codeContext = `## Выделенный код (пользователь выделил этот фрагмент):\n\`\`\`\n${selectedCode}\n\`\`\`\n## Полный код:\n\`\`\`\n${currentCode}\n\`\`\`\n\n`;
+  } else if (currentCode) {
+    codeContext = `## Текущий код:\n\`\`\`\n${currentCode}\n\`\`\`\n\n`;
+  }
+
+  const encoder = new TextEncoder();
+
+  // GLM-5 and GLM-4.7 support thinking mode
+  const supportsThinking = model.includes('glm-5') || model.includes('glm-4.7');
+
+  return new ReadableStream({
+    async start(controller) {
+      let userMessages = [...messages];
+      if (codeContext && userMessages.length > 0) {
+        const firstMessage = userMessages[0];
+        if (firstMessage.role === 'user') {
+          userMessages[0] = {
+            ...firstMessage,
+            content: codeContext + firstMessage.content
+          };
+        }
+      }
+
+      let conversationMessages = [
+        { role: 'system', content: SYSTEM_PROMPT },
+        ...userMessages,
+      ];
+
+      let maxIterations = 5;
+
+      while (maxIterations > 0) {
+        maxIterations--;
+
+        const requestBody: any = {
+          model,
+          messages: conversationMessages,
+          stream: true,
+          tools: TOOLS_OPENAI,
+          tool_choice: 'auto',
+          temperature: 0.7,
+        };
+
+        const response = await fetchWithRetry(
+          'https://api.z.ai/api/paas/v4/chat/completions',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${apiKey}`,
+            },
+            body: JSON.stringify(requestBody),
+          },
+          3
+        );
+
+        if (!response.ok) {
+          const errText = await response.text();
+          let errMsg = errText;
+          try {
+            const errJson = JSON.parse(errText);
+            errMsg = errJson.error?.message || errJson.error || errText;
+          } catch (e) { }
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'error', error: `Z.AI: ${errMsg}` })}\n\n`));
+          controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+          controller.close();
+          return;
+        }
+
+        if (!response.body) {
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'error', error: 'No response body from Z.AI' })}\n\n`));
+          controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+          controller.close();
+          return;
+        }
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        const toolCallsMap: Map<number, { id: string; name: string; arguments: string }> = new Map();
+        let textContent = '';
+        let finishReason = '';
+        let thinkingStarted = false;
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || '';
+
+          for (const line of lines) {
+            if (!line.startsWith('data: ')) continue;
+            const data = line.slice(6);
+            if (data === '[DONE]') continue;
+
+            try {
+              const parsed = JSON.parse(data);
+              const choice = parsed.choices?.[0];
+              if (!choice) continue;
+
+              finishReason = choice.finish_reason || finishReason;
+              const delta = choice.delta;
+              if (!delta) continue;
+
+              // Handle thinking/reasoning content (GLM-5, GLM-4.7)
+              if (delta.reasoning_content) {
+                if (!thinkingStarted) {
+                  thinkingStarted = true;
+                  controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'thinking_start' })}\n\n`));
+                }
+                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'thinking', content: delta.reasoning_content })}\n\n`));
+              }
+
+              // Stream text content
+              if (delta.content) {
+                if (thinkingStarted) {
+                  thinkingStarted = false;
+                  controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'thinking_end' })}\n\n`));
+                }
+                textContent += delta.content;
+                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'text', content: delta.content })}\n\n`));
+              }
+
+              // Accumulate tool calls
+              if (delta.tool_calls) {
+                for (const tc of delta.tool_calls) {
+                  const idx = tc.index;
+                  if (!toolCallsMap.has(idx)) {
+                    toolCallsMap.set(idx, { id: tc.id || '', name: '', arguments: '' });
+                  }
+                  const existing = toolCallsMap.get(idx)!;
+                  if (tc.id) existing.id = tc.id;
+                  if (tc.function?.name) existing.name = tc.function.name;
+                  if (tc.function?.arguments) existing.arguments += tc.function.arguments;
+                }
+              }
+            } catch (e) { }
+          }
+        }
+
+        // Close thinking if still open
+        if (thinkingStarted) {
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'thinking_end' })}\n\n`));
+        }
+
+        // Process tool calls
+        if (toolCallsMap.size > 0 && finishReason === 'tool_calls') {
+          const toolCalls = Array.from(toolCallsMap.values());
+
+          const assistantMessage: any = {
+            role: 'assistant',
+            content: textContent || null,
+            tool_calls: toolCalls.map((tc) => ({
+              id: tc.id,
+              type: 'function',
+              function: { name: tc.name, arguments: tc.arguments },
+            })),
+          };
+          conversationMessages.push(assistantMessage);
+
+          for (const tc of toolCalls) {
+            const toolName = tc.name;
+            let toolArgs: any = {};
+            try {
+              toolArgs = JSON.parse(tc.arguments || '{}');
+            } catch (e) { }
+
+            if (toolName === 'readCode') {
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: '📖 Читаю код...' })}\n\n`));
+              conversationMessages.push({
+                role: 'tool',
+                tool_call_id: tc.id,
+                content: currentCode || '// Редактор пуст',
+              });
+            }
+            else if (toolName === 'searchDocs') {
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: `🔍 Ищу в документации: "${toolArgs.query}"...` })}\n\n`));
+              const docs = searchAllDocs(toolArgs.query || '', 3);
+              conversationMessages.push({
+                role: 'tool',
+                tool_call_id: tc.id,
+                content: docs.join('\n\n---\n\n') || 'Ничего не найдено',
+              });
+            }
+            else if (toolName === 'getExamples') {
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: '📝 Получаю примеры кода...' })}\n\n`));
+              const examples = getCodeExamples(toolArgs.category);
+              conversationMessages.push({
+                role: 'tool',
+                tool_call_id: tc.id,
+                content: examples,
+              });
+            }
+            else {
+              let statusMessage = '';
+              if (toolName === 'setFullCode') statusMessage = '✏️ Устанавливаю код...';
+              else if (toolName === 'editCode') statusMessage = '✏️ Редактирую код...';
+              else if (toolName === 'appendCode') statusMessage = '➕ Добавляю код...';
+              else if (toolName === 'playMusic') statusMessage = '▶️ Запускаю воспроизведение...';
+              else if (toolName === 'stopMusic') statusMessage = '⏹️ Останавливаю...';
+              else if (toolName === 'highlightCode') statusMessage = '🔍 Выделяю код...';
+              else if (toolName === 'getAvailablePacks') statusMessage = '📦 Получаю список паков...';
+              else if (toolName === 'getBankSamples') statusMessage = '🎵 Получаю содержимое банка...';
+
+              if (statusMessage) {
+                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: statusMessage })}\n\n`));
+              }
+
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'tool_call', name: toolName, args: toolArgs })}\n\n`));
+
+              conversationMessages.push({
+                role: 'tool',
+                tool_call_id: tc.id,
+                content: `OK: ${toolName} выполнено`,
+              });
+            }
+          }
+
+          continue;
+        }
+
+        // No tool calls - done
+        controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+        controller.close();
+        return;
+      }
+
+      controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+      controller.close();
+    },
+  });
+}
+
+/**
+ * OpenRouter agent loop (OpenAI-compatible, multi-model router)
+ * Supports tool calling, streaming, provider routing
+ */
+async function runOpenRouterAgent(
+  apiKey: string,
+  model: string,
+  messages: any[],
+  currentCode: string,
+  selectedCode: string | null
+): Promise<ReadableStream> {
+  let codeContext = '';
+  if (selectedCode) {
+    codeContext = `## Выделенный код (пользователь выделил этот фрагмент):\n\`\`\`\n${selectedCode}\n\`\`\`\n## Полный код:\n\`\`\`\n${currentCode}\n\`\`\`\n\n`;
+  } else if (currentCode) {
+    codeContext = `## Текущий код:\n\`\`\`\n${currentCode}\n\`\`\`\n\n`;
+  }
+
+  const encoder = new TextEncoder();
+
+  return new ReadableStream({
+    async start(controller) {
+      let userMessages = [...messages];
+      if (codeContext && userMessages.length > 0) {
+        const firstMessage = userMessages[0];
+        if (firstMessage.role === 'user') {
+          userMessages[0] = {
+            ...firstMessage,
+            content: codeContext + firstMessage.content
+          };
+        }
+      }
+
+      let conversationMessages = [
+        { role: 'system', content: SYSTEM_PROMPT },
+        ...userMessages,
+      ];
+
+      let maxIterations = 5;
+
+      while (maxIterations > 0) {
+        maxIterations--;
+
+        const requestBody: any = {
+          model,
+          messages: conversationMessages,
+          stream: true,
+          tools: TOOLS_OPENAI,
+          tool_choice: 'auto',
+          temperature: 0.7,
+        };
+
+        const response = await fetchWithRetry(
+          'https://openrouter.ai/api/v1/chat/completions',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${apiKey}`,
+              'HTTP-Referer': 'https://bulka.app',
+              'X-Title': 'Bulka AI',
+            },
+            body: JSON.stringify(requestBody),
+          },
+          3
+        );
+
+        if (!response.ok) {
+          const errText = await response.text();
+          let errMsg = errText;
+          try {
+            const errJson = JSON.parse(errText);
+            errMsg = errJson.error?.message || errJson.error || errText;
+          } catch (e) { }
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'error', error: `OpenRouter: ${errMsg}` })}\n\n`));
+          controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+          controller.close();
+          return;
+        }
+
+        if (!response.body) {
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'error', error: 'No response body from OpenRouter' })}\n\n`));
+          controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+          controller.close();
+          return;
+        }
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        const toolCallsMap: Map<number, { id: string; name: string; arguments: string }> = new Map();
+        let textContent = '';
+        let finishReason = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || '';
+
+          for (const line of lines) {
+            // Skip OpenRouter keep-alive comments
+            if (line.startsWith(':')) continue;
+            if (!line.startsWith('data: ')) continue;
+            const data = line.slice(6);
+            if (data === '[DONE]') continue;
+
+            try {
+              const parsed = JSON.parse(data);
+
+              // Handle mid-stream errors from OpenRouter
+              if (parsed.error) {
+                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'error', error: `OpenRouter: ${parsed.error.message || parsed.error}` })}\n\n`));
+                continue;
+              }
+
+              const choice = parsed.choices?.[0];
+              if (!choice) continue;
+
+              finishReason = choice.finish_reason || finishReason;
+              const delta = choice.delta;
+              if (!delta) continue;
+
+              // Stream text content
+              if (delta.content) {
+                textContent += delta.content;
+                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'text', content: delta.content })}\n\n`));
+              }
+
+              // Accumulate tool calls
+              if (delta.tool_calls) {
+                for (const tc of delta.tool_calls) {
+                  const idx = tc.index;
+                  if (!toolCallsMap.has(idx)) {
+                    toolCallsMap.set(idx, { id: tc.id || '', name: '', arguments: '' });
+                  }
+                  const existing = toolCallsMap.get(idx)!;
+                  if (tc.id) existing.id = tc.id;
+                  if (tc.function?.name) existing.name = tc.function.name;
+                  if (tc.function?.arguments) existing.arguments += tc.function.arguments;
+                }
+              }
+            } catch (e) { }
+          }
+        }
+
+        // Process tool calls
+        if (toolCallsMap.size > 0 && finishReason === 'tool_calls') {
+          const toolCalls = Array.from(toolCallsMap.values());
+
+          const assistantMessage: any = {
+            role: 'assistant',
+            content: textContent || null,
+            tool_calls: toolCalls.map((tc) => ({
+              id: tc.id,
+              type: 'function',
+              function: { name: tc.name, arguments: tc.arguments },
+            })),
+          };
+          conversationMessages.push(assistantMessage);
+
+          for (const tc of toolCalls) {
+            const toolName = tc.name;
+            let toolArgs: any = {};
+            try {
+              toolArgs = JSON.parse(tc.arguments || '{}');
+            } catch (e) { }
+
+            if (toolName === 'readCode') {
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: '📖 Читаю код...' })}\n\n`));
+              conversationMessages.push({
+                role: 'tool',
+                tool_call_id: tc.id,
+                content: currentCode || '// Редактор пуст',
+              });
+            }
+            else if (toolName === 'searchDocs') {
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: `🔍 Ищу в документации: "${toolArgs.query}"...` })}\n\n`));
+              const docs = searchAllDocs(toolArgs.query || '', 3);
+              conversationMessages.push({
+                role: 'tool',
+                tool_call_id: tc.id,
+                content: docs.join('\n\n---\n\n') || 'Ничего не найдено',
+              });
+            }
+            else if (toolName === 'getExamples') {
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: '📝 Получаю примеры кода...' })}\n\n`));
+              const examples = getCodeExamples(toolArgs.category);
+              conversationMessages.push({
+                role: 'tool',
+                tool_call_id: tc.id,
+                content: examples,
+              });
+            }
+            else {
+              let statusMessage = '';
+              if (toolName === 'setFullCode') statusMessage = '✏️ Устанавливаю код...';
+              else if (toolName === 'editCode') statusMessage = '✏️ Редактирую код...';
+              else if (toolName === 'appendCode') statusMessage = '➕ Добавляю код...';
+              else if (toolName === 'playMusic') statusMessage = '▶️ Запускаю воспроизведение...';
+              else if (toolName === 'stopMusic') statusMessage = '⏹️ Останавливаю...';
+              else if (toolName === 'highlightCode') statusMessage = '🔍 Выделяю код...';
+              else if (toolName === 'getAvailablePacks') statusMessage = '📦 Получаю список паков...';
+              else if (toolName === 'getBankSamples') statusMessage = '🎵 Получаю содержимое банка...';
+
+              if (statusMessage) {
+                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: statusMessage })}\n\n`));
+              }
+
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'tool_call', name: toolName, args: toolArgs })}\n\n`));
+
+              conversationMessages.push({
+                role: 'tool',
+                tool_call_id: tc.id,
+                content: `OK: ${toolName} выполнено`,
+              });
+            }
+          }
+
+          continue;
+        }
+
+        // No tool calls - done
+        controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+        controller.close();
+        return;
+      }
+
+      controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+      controller.close();
+    },
+  });
+}
+
+/**
  * Truncate messages to avoid rate limits
  * More aggressive truncation to stay within 30k tokens/min for Anthropic
  * Keep only last N messages
@@ -2682,6 +3167,10 @@ export const POST: APIRoute = async ({ request }) => {
       stream = await runAnthropicAgent(apiKey, model, messages, currentCode || '', selectedCode || null);
     } else if (provider === 'gemini') {
       stream = await runGeminiAgent(apiKey, model, messages, currentCode || '', selectedCode || null);
+    } else if (provider === 'zai') {
+      stream = await runZaiAgent(apiKey, model, messages, currentCode || '', selectedCode || null);
+    } else if (provider === 'openrouter') {
+      stream = await runOpenRouterAgent(apiKey, model, messages, currentCode || '', selectedCode || null);
     } else {
       stream = await runOpenAIAgent(apiKey, model, messages, currentCode || '', selectedCode || null);
     }

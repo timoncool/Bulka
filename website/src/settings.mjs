@@ -21,6 +21,8 @@ export const aiProviders = {
   openai: 'openai',
   anthropic: 'anthropic',
   gemini: 'gemini',
+  zai: 'zai',
+  openrouter: 'openrouter',
   gpt4free: 'gpt4free',
 };
 
@@ -31,6 +33,8 @@ export const defaultSettings = {
   openaiApiKey: '',
   anthropicApiKey: '',
   geminiApiKey: '',
+  zaiApiKey: '',
+  openrouterApiKey: '',
   aiProvider: aiProviders.openai,
   aiModel: '', // Loaded dynamically from provider API
   gpt4freeSubProvider: 'default', // gpt4free sub-provider (default, nectar, pollinations, etc.)
@@ -170,6 +174,8 @@ export const settingPatterns = { theme, fontFamily, fontSize };
 export const setOpenaiApiKey = (key) => settingsMap.setKey('openaiApiKey', key);
 export const setAnthropicApiKey = (key) => settingsMap.setKey('anthropicApiKey', key);
 export const setGeminiApiKey = (key) => settingsMap.setKey('geminiApiKey', key);
+export const setZaiApiKey = (key) => settingsMap.setKey('zaiApiKey', key);
+export const setOpenrouterApiKey = (key) => settingsMap.setKey('openrouterApiKey', key);
 export const setAiProvider = (provider) => settingsMap.setKey('aiProvider', provider);
 export const setAiModel = (model) => settingsMap.setKey('aiModel', model);
 export const setGpt4freeSubProvider = (provider) => settingsMap.setKey('gpt4freeSubProvider', provider);
@@ -180,6 +186,8 @@ export const getApiKeyForProvider = (provider, settings) => {
     case 'openai': return settings.openaiApiKey;
     case 'anthropic': return settings.anthropicApiKey;
     case 'gemini': return settings.geminiApiKey;
+    case 'zai': return settings.zaiApiKey;
+    case 'openrouter': return settings.openrouterApiKey;
     case 'gpt4free': return null; // GPT4Free is free, no key needed
     default: return '';
   }
