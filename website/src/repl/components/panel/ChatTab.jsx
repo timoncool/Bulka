@@ -14,14 +14,14 @@ const inputClass = 'w-full p-2 bg-background rounded-md text-foreground border b
 const selectClass = 'w-full p-2 bg-background rounded-md text-foreground border border-foreground/30';
 const buttonClass = 'px-4 py-2 rounded-md bg-background text-foreground border border-foreground/30 hover:bg-lineBackground disabled:opacity-50';
 
-// Fallback models (used if API fetch fails)
-const FALLBACK_MODELS = {
-  openai: [{ value: 'gpt-4o', label: 'gpt-4o' }],
-  anthropic: [{ value: 'claude-sonnet-4-5-20250929', label: 'Claude Sonnet 4.5' }],
-  gemini: [{ value: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash' }],
-  zai: [{ value: 'glm-4.7', label: 'glm-4.7' }, { value: 'glm-4.7-flash', label: 'glm-4.7-flash (быстрый)' }],
-  openrouter: [{ value: 'anthropic/claude-sonnet-4', label: 'Claude Sonnet 4' }, { value: 'openai/gpt-4o', label: 'GPT-4o' }],
-  gpt4free: [], // Загружается динамически через client.models.list()
+// Empty defaults - all models are fetched dynamically from provider APIs
+const EMPTY_MODELS = {
+  openai: [],
+  anthropic: [],
+  gemini: [],
+  zai: [],
+  openrouter: [],
+  gpt4free: [],
 };
 
 const MODELS_STORAGE_KEY = 'bulka_cached_models';
@@ -35,26 +35,18 @@ function loadCachedModels() {
     if (cached) {
       const parsed = JSON.parse(cached);
       return {
-        openai: parsed.openai || FALLBACK_MODELS.openai,
-        anthropic: parsed.anthropic || FALLBACK_MODELS.anthropic,
-        gemini: parsed.gemini || FALLBACK_MODELS.gemini,
-        zai: parsed.zai || FALLBACK_MODELS.zai,
-        openrouter: parsed.openrouter || FALLBACK_MODELS.openrouter,
-        gpt4free: FALLBACK_MODELS.gpt4free, // Always hardcoded
+        openai: parsed.openai || [],
+        anthropic: parsed.anthropic || [],
+        gemini: parsed.gemini || [],
+        zai: parsed.zai || [],
+        openrouter: parsed.openrouter || [],
+        gpt4free: [],
       };
     }
   } catch (e) {
     console.error('Error loading cached models:', e);
   }
-  // Return default with gpt4free models
-  return {
-    openai: FALLBACK_MODELS.openai,
-    anthropic: FALLBACK_MODELS.anthropic,
-    gemini: FALLBACK_MODELS.gemini,
-    zai: FALLBACK_MODELS.zai,
-    openrouter: FALLBACK_MODELS.openrouter,
-    gpt4free: FALLBACK_MODELS.gpt4free,
-  };
+  return { ...EMPTY_MODELS };
 }
 
 /**
@@ -187,7 +179,7 @@ function SettingsPanel({ onClose, isBottomPanel }) {
   // Initialize model from settings or first available
   const [model, setModel] = useState(() => {
     if (settings.aiModel) return settings.aiModel;
-    const providerModels = initialModels?.[settings.aiProvider || 'openai'] || FALLBACK_MODELS[settings.aiProvider || 'openai'];
+    const providerModels = initialModels?.[settings.aiProvider || 'openai'] || EMPTY_MODELS[settings.aiProvider || 'openai'];
     return providerModels[0]?.value || '';
   });
   const [loadingModels, setLoadingModels] = useState({
@@ -275,10 +267,17 @@ function SettingsPanel({ onClose, isBottomPanel }) {
     }
   }, []);
 
-  // Load gpt4free models on mount if gpt4free is selected
+  // Load models on mount for current provider
   useEffect(() => {
-    if (provider === 'gpt4free' && models.gpt4free.length === 0) {
-      loadGpt4freeModels(gpt4freeSubProvider);
+    if (provider === 'gpt4free') {
+      if (models.gpt4free.length === 0) {
+        loadGpt4freeModels(gpt4freeSubProvider);
+      }
+    } else {
+      const key = getKeyForProvider(provider);
+      if (key && key.length >= 10 && (!models[provider] || models[provider].length === 0)) {
+        loadModelsForProvider(provider, key);
+      }
     }
   }, []); // Only on mount
 
@@ -340,7 +339,7 @@ function SettingsPanel({ onClose, isBottomPanel }) {
   const isGpt4free = provider === 'gpt4free';
 
   // Get current models for selected provider
-  const currentModels = models[provider] || FALLBACK_MODELS[provider];
+  const currentModels = models[provider] || EMPTY_MODELS[provider];
   const isLoadingCurrentModels = loadingModels[provider];
 
   return (
@@ -356,14 +355,19 @@ function SettingsPanel({ onClose, isBottomPanel }) {
             const newProvider = e.target.value;
             setProvider(newProvider);
 
-            // For gpt4free - load models dynamically
+            // Always fetch models dynamically when provider changes
             if (newProvider === 'gpt4free') {
               loadGpt4freeModels(gpt4freeSubProvider);
             } else {
-              // For other providers - use cached models
-              const newModels = models[newProvider] || FALLBACK_MODELS[newProvider];
-              if (newModels.length > 0) {
-                setModel(newModels[0].value);
+              const key = getKeyForProvider(newProvider);
+              if (key && key.length >= 10) {
+                loadModelsForProvider(newProvider, key);
+              } else {
+                // Use cached models if no key yet
+                const cachedModels = models[newProvider] || [];
+                if (cachedModels.length > 0) {
+                  setModel(cachedModels[0].value);
+                }
               }
             }
           }}
