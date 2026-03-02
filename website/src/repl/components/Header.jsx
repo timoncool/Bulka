@@ -5,7 +5,7 @@ import SpeakerXMarkIcon from '@heroicons/react/20/solid/SpeakerXMarkIcon';
 import ArrowUturnLeftIcon from '@heroicons/react/20/solid/ArrowUturnLeftIcon';
 import ArrowUturnRightIcon from '@heroicons/react/20/solid/ArrowUturnRightIcon';
 import cx from '@src/cx.mjs';
-import { useSettings, setIsZen, setMasterVolumeSettings } from '../../settings.mjs';
+import { useSettings, setIsZen, setMasterVolumeSettings, settingsMap } from '../../settings.mjs';
 import { setMasterVolume } from '@strudel/webaudio';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { GIT_COMMIT } from '../../version';
@@ -377,13 +377,20 @@ export function Header({ context, embedded = false }) {
             </div>
           )}
           {!isEmbedded && (
-            <a
+            <button
               title="начать новый трек"
-              href={`${baseNoTrailing}/`}
-              className={cx('hover:opacity-50 flex items-center space-x-1', !isEmbedded ? 'p-2' : 'px-2')}
+              className={cx('hover:opacity-50 flex items-center space-x-1', 'p-2')}
+              onClick={() => {
+                settingsMap.setKey('latestCode', '');
+                localStorage.removeItem('bulka-chat-messages');
+                localStorage.removeItem('bulka-chat-draft');
+                sessionStorage.removeItem('viewingPatternData');
+                sessionStorage.removeItem('activePattern');
+                window.location.href = `${baseNoTrailing}/`;
+              }}
             >
               <span>новый</span>
-            </a>
+            </button>
           )}
           {!isEmbedded && (
             <a
