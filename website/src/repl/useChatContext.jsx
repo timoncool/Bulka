@@ -368,7 +368,9 @@ export function useChatContext(replContext) {
     const aiApiKey = isGpt4free ? null :
                      aiProvider === 'openai' ? openaiApiKey :
                      aiProvider === 'anthropic' ? anthropicApiKey :
-                     aiProvider === 'gemini' ? geminiApiKey : '';
+                     aiProvider === 'gemini' ? geminiApiKey :
+                     aiProvider === 'zai' ? settings.zaiApiKey :
+                     aiProvider === 'openrouter' ? settings.openrouterApiKey : '';
 
     if (!isGpt4free && !aiApiKey) {
       setError(`API ключ для ${aiProvider} не установлен. Откройте настройки и добавьте ключ.`);
@@ -881,7 +883,9 @@ export function useChatContext(replContext) {
     hasApiKey: settings.aiProvider === 'gpt4free' ? true :
                !!(settings.aiProvider === 'openai' ? settings.openaiApiKey :
                   settings.aiProvider === 'anthropic' ? settings.anthropicApiKey :
-                  settings.aiProvider === 'gemini' ? settings.geminiApiKey : ''),
+                  settings.aiProvider === 'gemini' ? settings.geminiApiKey :
+                  settings.aiProvider === 'zai' ? settings.zaiApiKey :
+                  settings.aiProvider === 'openrouter' ? settings.openrouterApiKey : ''),
     provider: settings.aiProvider,
     model: settings.aiModel,
     // Error handling

@@ -191,6 +191,137 @@ async function fetchGeminiModels(apiKey: string): Promise<ModelInfo[]> {
   }
 }
 
+/**
+ * Fetch Z.AI models (OpenAI-compatible API)
+ */
+async function fetchZaiModels(apiKey: string): Promise<ModelInfo[]> {
+  try {
+    const response = await fetch('https://api.z.ai/api/paas/v4/models', {
+      headers: { 'Authorization': `Bearer ${apiKey}` },
+    });
+
+    if (!response.ok) return [];
+
+    const data = await response.json();
+    const models: ModelInfo[] = [];
+
+    // Filter chat-capable GLM models
+    const validModels = (data.data || [])
+      .filter((m: any) => {
+        const id = m.id.toLowerCase();
+        // Include GLM text models, exclude vision/image/video/audio
+        if (id.includes('glm-') && !id.includes('v') && !id.includes('image') &&
+            !id.includes('video') && !id.includes('cog') && !id.includes('asr')) {
+          return true;
+        }
+        return false;
+      })
+      .sort((a: any, b: any) => {
+        const priority = (id: string) => {
+          if (id.includes('glm-5')) return 1;
+          if (id.includes('glm-4.7') && !id.includes('flash')) return 2;
+          if (id.includes('glm-4.7-flash') && !id.includes('flashx')) return 3;
+          if (id.includes('glm-4.7-flashx')) return 4;
+          if (id.includes('glm-4.6')) return 5;
+          if (id.includes('glm-4.5') && !id.includes('flash') && !id.includes('air')) return 6;
+          if (id.includes('glm-4.5-flash')) return 7;
+          if (id.includes('glm-4.5-air')) return 8;
+          return 10;
+        };
+        return priority(a.id) - priority(b.id);
+      });
+
+    for (const m of validModels.slice(0, 10)) {
+      let label = m.id;
+      if (m.id.includes('glm-5')) label += ' (топ)';
+      else if (m.id.includes('flash')) label += ' (быстрый)';
+      else if (m.id.includes('air')) label += ' (легкий)';
+      models.push({ value: m.id, label });
+    }
+
+    return models.length > 0 ? models : [
+      { value: 'glm-4.7', label: 'glm-4.7' },
+      { value: 'glm-4.7-flash', label: 'glm-4.7-flash (быстрый)' },
+    ];
+  } catch (e) {
+    console.error('Error fetching Z.AI models:', e);
+    return [
+      { value: 'glm-4.7', label: 'glm-4.7' },
+      { value: 'glm-4.7-flash', label: 'glm-4.7-flash (быстрый)' },
+    ];
+  }
+}
+
+/**
+ * Fetch OpenRouter models
+ */
+async function fetchOpenRouterModels(apiKey: string): Promise<ModelInfo[]> {
+  try {
+    const response = await fetch('https://openrouter.ai/api/v1/models', {
+      headers: { 'Authorization': `Bearer ${apiKey}` },
+    });
+
+    if (!response.ok) return [];
+
+    const data = await response.json();
+    const models: ModelInfo[] = [];
+
+    // Filter and sort models - prioritize popular chat models
+    const validModels = (data.data || [])
+      .filter((m: any) => {
+        const id = m.id.toLowerCase();
+        // Exclude image/audio/embedding models
+        if (id.includes('image') || id.includes('vision-only') ||
+            id.includes('embed') || id.includes('whisper') ||
+            id.includes('tts') || id.includes('dall-e')) {
+          return false;
+        }
+        // Include popular providers
+        if (id.includes('anthropic/') || id.includes('openai/') ||
+            id.includes('google/') || id.includes('meta-llama/') ||
+            id.includes('mistralai/') || id.includes('deepseek/') ||
+            id.includes('z-ai/') || id.includes('qwen/')) {
+          return true;
+        }
+        return false;
+      })
+      .sort((a: any, b: any) => {
+        // Sort by pricing (free first), then by context length
+        const priority = (id: string) => {
+          if (id.includes('anthropic/claude')) return 1;
+          if (id.includes('openai/gpt-4o')) return 2;
+          if (id.includes('openai/gpt-5')) return 2;
+          if (id.includes('google/gemini')) return 3;
+          if (id.includes('deepseek/')) return 4;
+          if (id.includes('z-ai/glm')) return 5;
+          if (id.includes('meta-llama/')) return 6;
+          if (id.includes('mistralai/')) return 7;
+          if (id.includes('qwen/')) return 8;
+          return 10;
+        };
+        return priority(a.id) - priority(b.id);
+      });
+
+    for (const m of validModels.slice(0, 20)) {
+      const label = m.name || m.id;
+      models.push({ value: m.id, label });
+    }
+
+    return models.length > 0 ? models : [
+      { value: 'anthropic/claude-sonnet-4', label: 'Claude Sonnet 4' },
+      { value: 'openai/gpt-4o', label: 'GPT-4o' },
+      { value: 'google/gemini-2.5-flash', label: 'Gemini 2.5 Flash' },
+    ];
+  } catch (e) {
+    console.error('Error fetching OpenRouter models:', e);
+    return [
+      { value: 'anthropic/claude-sonnet-4', label: 'Claude Sonnet 4' },
+      { value: 'openai/gpt-4o', label: 'GPT-4o' },
+      { value: 'google/gemini-2.5-flash', label: 'Gemini 2.5 Flash' },
+    ];
+  }
+}
+
 export const POST: APIRoute = async ({ request }) => {
   try {
     const { provider, apiKey } = await request.json();
@@ -221,6 +352,12 @@ export const POST: APIRoute = async ({ request }) => {
         break;
       case 'gemini':
         models = await fetchGeminiModels(apiKey);
+        break;
+      case 'zai':
+        models = await fetchZaiModels(apiKey);
+        break;
+      case 'openrouter':
+        models = await fetchOpenRouterModels(apiKey);
         break;
       default:
         return new Response(
