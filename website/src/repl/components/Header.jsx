@@ -381,7 +381,7 @@ export function Header({ context, embedded = false }) {
               title="начать новый трек"
               className={cx('hover:opacity-50 flex items-center space-x-1', 'p-2')}
               onClick={() => {
-                settingsMap.setKey('latestCode', '');
+                settingsMap.setKey('latestCode', '// новый трек\n');
                 localStorage.removeItem('bulka-chat-messages');
                 localStorage.removeItem('bulka-chat-draft');
                 sessionStorage.removeItem('viewingPatternData');
