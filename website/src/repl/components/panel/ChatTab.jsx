@@ -180,14 +180,14 @@ function SettingsPanel({ onClose, isBottomPanel }) {
   const [gpt4freeProviders, setGpt4freeProviders] = useState([]); // Loaded dynamically
   const [loadingProviders, setLoadingProviders] = useState(false);
 
-  // Dynamic models state - load from cache
-  const [models, setModels] = useState(() => loadCachedModels());
+  // Dynamic models state - load from cache (single parse)
+  const initialModels = useMemo(() => loadCachedModels(), []);
+  const [models, setModels] = useState(initialModels);
 
   // Initialize model from settings or first available
   const [model, setModel] = useState(() => {
     if (settings.aiModel) return settings.aiModel;
-    const cached = loadCachedModels();
-    const providerModels = cached?.[settings.aiProvider || 'openai'] || FALLBACK_MODELS[settings.aiProvider || 'openai'];
+    const providerModels = initialModels?.[settings.aiProvider || 'openai'] || FALLBACK_MODELS[settings.aiProvider || 'openai'];
     return providerModels[0]?.value || '';
   });
   const [loadingModels, setLoadingModels] = useState({
