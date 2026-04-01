@@ -139,7 +139,11 @@ export const { transpose, trans } = register(['transpose', 'trans'], function tr
       : String(intervalOrSemitones);
 
     let n = Note.get(note);
-    n.oct = Interval.num(interval) < 8 ? n.oct : (n.oct ?? 3);
+    if (n.oct == undefined) {
+      n.oct = 3;
+      let n1 = Note.get(Note.transpose(n, interval));
+      n.oct = n1.oct == 3 ? undefined : 3;
+    }
     const targetNote = Note.transpose(n, interval);
     if (typeof hap.value === 'object') {
       return hap.withValue(() => ({ ...hap.value, note: targetNote }));
