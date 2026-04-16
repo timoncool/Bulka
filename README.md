@@ -96,6 +96,17 @@ Bulka основана на проекте [Strudel](https://strudel.cc/) от A
 
 ## ⭐ Поддержи проект
 
+## Поддержать автора
+
+Я создаю опенсорс софт и занимаюсь исследованиями в области ИИ. Большая часть всего, что я делаю, находится в открытом доступе. Ваши пожертвования позволяют мне создавать и исследовать больше, не отвлекаясь на поиск еды для продолжения существования =)
+
+**[Все способы поддержки](https://github.com/timoncool/ACE-Step-Studio/blob/master/DONATE.md)** | **[dalink.to/nerual_dreming](https://dalink.to/nerual_dreming)** | **[boosty.to/neuro_art](https://boosty.to/neuro_art)**
+
+| BTC | ETH (ERC20) | USDT (TRC20) |
+|:---:|:---:|:---:|
+| `1E7dHL22RpyhJGVpcvKdbyZgksSYkYeEBC` | `0xb5db65adf478983186d4897ba92fe2c25c594a0c` | `TQST9Lp2TjK6FiVkn4fwfGUee7NmkxEE7C` |
+
+
 ## Star History
 
 <a href="https://www.star-history.com/#timoncool/Bulka&type=date&legend=top-left">
