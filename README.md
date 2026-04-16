@@ -1,11 +1,18 @@
-# 🍞 Bulka
-
 <div align="center">
-  <img src="screens/1.png" alt="Bulka REPL" width="800"/>
 
-  **Платформа для лайв-кодинга музыки с AI-агентом**
+# Bulka
 
-  🌐 [bulka.app](https://bulka.app/) • 💬 [Telegram](https://t.me/bulka_app) • 📸 [Скриншоты](SCREENSHOTS.md)
+**Платформа для лайв-кодинга музыки с AI-агентом — пиши код, создавай музыку в реальном времени.**
+
+[![Stars](https://img.shields.io/github/stars/timoncool/Bulka?style=flat-square)](https://github.com/timoncool/Bulka/stargazers)
+[![License](https://img.shields.io/github/license/timoncool/Bulka?style=flat-square)](LICENSE)
+[![Last Commit](https://img.shields.io/github/last-commit/timoncool/Bulka?style=flat-square)](https://github.com/timoncool/Bulka/commits)
+[![Demo](https://img.shields.io/badge/demo-bulka.app-brightgreen?style=flat-square)](https://bulka.app/)
+
+[bulka.app](https://bulka.app/) · [Telegram](https://t.me/bulka_app) · [Скриншоты](SCREENSHOTS.md)
+
+<img src="screens/1.png" alt="Bulka REPL" width="800"/>
+
 </div>
 
 ---
@@ -94,7 +101,16 @@ Bulka основана на проекте [Strudel](https://strudel.cc/) от A
 - **Discord**: [#strudel](https://discord.com/invite/HGEdXmRkzT) — 7000+ участников
 - **Форум**: [club.tidalcycles.org](https://club.tidalcycles.org/) — обсуждения и вопросы
 
-## ⭐ Поддержи проект
+## Другие проекты [@timoncool](https://github.com/timoncool)
+
+| Проект | Описание |
+|--------|----------|
+| [ACE-Step Studio](https://github.com/timoncool/ACE-Step-Studio) | AI-студия музыки — песни, вокал, каверы, клипы |
+| [VideoSOS](https://github.com/timoncool/videosos) | AI-видеопродакшн в браузере |
+| [Foundation Music Lab](https://github.com/timoncool/Foundation-Music-Lab) | Генерация музыки + редактор таймлайна |
+| [GitLife](https://github.com/timoncool/gitlife) | Жизнь в неделях — интерактивный календарь |
+| [telegram-api-mcp](https://github.com/timoncool/telegram-api-mcp) | Telegram Bot API как MCP-сервер |
+| [tg-challenge-bot](https://github.com/timoncool/tg-challenge-bot) | AI антиспам-бот для Telegram |
 
 ## Поддержать автора
 
@@ -116,16 +132,6 @@ Bulka основана на проекте [Strudel](https://strudel.cc/) от A
    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=timoncool/Bulka&type=date&legend=top-left" />
  </picture>
 </a>
-
-Если тебе нравится Bulka — поставь звезду! Это помогает проекту расти и мотивирует команду развивать его дальше.
-
-**Как ещё можно помочь:**
-- 🐛 Нашёл баг? Создай [issue](https://github.com/timoncool/Bulka/issues)
-- 💡 Есть идея? Предложи в [Telegram](https://t.me/bulka_app) или [issues](https://github.com/timoncool/Bulka/issues)
-- 🛠️ Хочешь контрибьютить? Форкай репозиторий и присылай pull request
-- 📢 Расскажи друзьям — музыкантам, программистам, всем кто любит творить
-
-Присоединяйся к сообществу в [Telegram](https://t.me/bulka_app) — там мы обсуждаем идеи, помогаем новичкам и делимся своими треками!
 
 ## Лицензия
 
