@@ -1,4 +1,4 @@
-import { isNote, isNoteWithOctave, _mod, noteToMidi, tokenizeNote } from '@strudel/core';
+import { isNote, isNoteWithOctave, _mod, noteToMidi, tokenizeNote, undegrade } from '@strudel/core';
 import { Interval, Scale } from '@tonaljs/tonal';
 
 // https://codesandbox.io/s/stateless-voicings-g2tmz0?file=/src/lib.js:0-2515
@@ -135,6 +135,12 @@ let modeTarget = {
   above: (v) => v[0],
   root: (v) => v[0],
 };
+let modeMult = {
+  below: 1,
+  duck: 1,
+  above: -1,
+  root: -1,
+};
 
 export function renderVoicing({ chord, dictionary, offset = 0, n, mode = 'below', anchor = 'c5', octaves = 1 }) {
   const [root, symbol] = tokenizeChord(chord);
@@ -144,17 +150,18 @@ export function renderVoicing({ chord, dictionary, offset = 0, n, mode = 'below'
   const voicings = dictionary[symbol].map((voicing) =>
     (typeof voicing === 'string' ? voicing.split(' ') : voicing).map(step2semitones),
   );
+  const mult = modeMult[mode];
 
   let minDistance, bestIndex;
   // calculate distances up from voicing top notes
   let chromaDiffs = voicings.map((v, i) => {
     const targetStep = modeTarget[mode](v);
-    const diff = _mod(anchorChroma - targetStep - rootChroma, 12);
+    const diff = _mod((anchorChroma - targetStep - rootChroma) * mult, 12);
     if (minDistance === undefined || diff < minDistance) {
       minDistance = diff;
       bestIndex = i;
     }
-    return diff;
+    return diff * mult;
   });
   if (mode === 'root') {
     bestIndex = 0;
