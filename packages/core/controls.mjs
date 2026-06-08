@@ -2352,11 +2352,18 @@ export const { offset } = registerControl('offset');
  **/
 export const { octaves } = registerControl('octaves');
 /**
- * Remove anchor note from the voicing. Useful for melody harmonization
+ *  How the voicing is aligned to the anchor
+ *   - `below`: top note <= anchor
+ *   - `duck`: top note <= anchor, anchor excluded
+ *   - `above`: bottom note >= anchor
+ *   - `root`: bottom note is the lowest root of the chord >= anchor
+ *
+ *   - `oldabove` : old (buggy) behavior of above, kept for legacy reason
+ *   - `oldroot` : old (buggy) behavior of root, kept for legacy reason
  *
  * @name mode
  * @tags tonal
- * @param {string | Pattern} modeName one of {below | above | duck | root}
+ * @param {string | Pattern} modeName one of {below | above | duck | root | oldabove | oldroot}
  * @example
  * mode("<below above duck root>").chord("C").voicing()
  *

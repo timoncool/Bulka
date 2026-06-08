@@ -134,12 +134,16 @@ let modeTarget = {
   duck: (v) => v.slice(-1)[0],
   above: (v) => v[0],
   root: (v) => v[0],
+  oldabove: (v) => v[0],
+  oldroot: (v) => v[0],
 };
 let modeMult = {
   below: 1,
   duck: 1,
   above: -1,
   root: -1,
+  oldabove: 1,
+  oldroot: 1,
 };
 
 export function renderVoicing({ chord, dictionary, offset = 0, n, mode = 'below', anchor = 'c5', octaves = 1 }) {
@@ -163,7 +167,7 @@ export function renderVoicing({ chord, dictionary, offset = 0, n, mode = 'below'
     }
     return diff * mult;
   });
-  if (mode === 'root') {
+  if (mode === 'root' || mode === 'oldroot') {
     bestIndex = 0;
   }
 
