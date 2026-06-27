@@ -45,7 +45,6 @@ export function parseControlsFromHap(hap, cps) {
       controls.midinote = parseNumeral(controls.note);
     }
   }
-  controls.bank && (controls.s = controls.bank + controls.s);
   controls.roomsize && (controls.size = parseNumeral(controls.roomsize));
   // speed adjustment for CPS is handled on the DSP side in superdirt and pattern side in Strudel,
   // so we need to undo the adjustment before sending the message to superdirt.
