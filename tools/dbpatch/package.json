@@ -1,9 +1,0 @@
-{
-  "name": "dbpatch",
-  "dependencies": {
-    "csv": "^6.3.11"
-  },
-  "engines": {
-    "node": ">=18.0.0"
-  }
-}
