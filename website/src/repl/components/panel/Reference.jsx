@@ -214,7 +214,10 @@ export const Reference = memo(function Reference() {
                 </p>
               )}
 
-              <p dangerouslySetInnerHTML={{ __html: entry.description }}></p>
+              <p dangerouslySetInnerHTML={{
+                // If we have an external url make sure it opens in another tab to not interrupt the player
+                __html: entry.description.replaceAll(/<a href="https:\/\//g, `<a target="_blank" href="https://`)
+              }}></p>
               <ul>
                 {entry.params?.map(({ name, type, description }, i) => (
                   <li key={i}>
