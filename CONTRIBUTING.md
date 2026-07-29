@@ -54,6 +54,16 @@ If you have used LLMs (so called 'AI'), please detail that in the pull request. 
 
 There are #llm-chat and #llm-share channels on our discord. Please do not discuss or share LLM-related things outside of those channels.
 
+## Creating and sharing a new project using strudel
+
+Strudel is free/open source software, and we are also happy to see people making use of it within the following terms. 
+
+Please don't use 'strudel' in the name of your project, so people know it's not an official strudel project. (If you'd like it to be an official strudel project, please check in with the community, e.g. on the discord.)
+
+Please respect our AGPL license, which e.g. requires you to share/link to the source code of strudel, any modifications you've made to it, and the source code for the rest of your project if it integrates with strudel. You are also required to maintain Strudel's copyright notices in the source code, and include Strudel's copyright notice in your user interface. This is an ad-hoc summary - please [refer to the license](https://codeberg.org/uzu/strudel/src/branch/main/LICENSE) for full details.
+
+You are also encouraged to connect with the community and align with our aims and values.
+
 ## Report a Bug
 
 If you've found a bug, or some behaviour that does not seem right, you are welcome to file an [issue](https://codeberg.org/uzu/strudel/issues).
