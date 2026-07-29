@@ -36,8 +36,9 @@ export function WelcomeTab({ context }) {
         <a href="https://tidalcycles.org/" target="_blank">
           tidalcycles
         </a>
-        , which is a popular live coding language for music, written in Haskell. Strudel is free/open source software, with copyright owned by its [contributors](https://codeberg.org/uzu/strudel/activity/contributors).
-        You can redistribute and/or modify it under the terms of the{' '}
+        , which is a popular live coding language for music, written in Haskell. Strudel is free/open source software,
+        with copyright owned by its [contributors](https://codeberg.org/uzu/strudel/activity/contributors). You can
+        redistribute and/or modify it under the terms of the{' '}
         <a href="https://codeberg.org/uzu/strudel/src/branch/main/LICENSE" target="_blank">
           GNU Affero General Public License
         </a>
