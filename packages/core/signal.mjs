@@ -6,6 +6,7 @@ This program is free software: you can redistribute it and/or modify it under th
 
 import { Hap } from './hap.mjs';
 import { Pattern, fastcat, pure, register, reify, silence, stack, sequenceP } from './pattern.mjs';
+import { _mod } from './util.mjs';
 import Fraction from './fraction.mjs';
 
 import { id, keyAlias, getCurrentKeyboardState } from './util.mjs';
@@ -33,7 +34,7 @@ export const signal = (func) => {
  * .scale('C major')
  *
  */
-export const saw = signal((t) => t % 1);
+export const saw = signal((t) => _mod(t, 1));
 
 /**
  *  A sawtooth signal between -1 and 1 (like `saw`, but bipolar).
@@ -56,7 +57,7 @@ export const saw2 = saw.toBipolar();
  * .scale('C major')
  *
  */
-export const isaw = signal((t) => 1 - (t % 1));
+export const isaw = signal((t) => 1 - _mod(t, 1));
 
 /**
  *  A sawtooth signal between 1 and -1 (like `saw2`, but flipped).
