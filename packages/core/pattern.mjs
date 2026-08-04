@@ -1557,11 +1557,14 @@ export function slowcat(...pats) {
  * @return {Pattern}
  */
 export function slowcatPrime(...pats) {
+  if (!pats.length) {
+    return silence;
+  }
   pats = pats.map(reify);
   const query = function (state) {
     const pat_n = _mod(Math.floor(state.span.begin), pats.length);
-    const pat = pats[pat_n]; // can be undefined for same cases e.g. /#cHVyZSg0MikKICAuZXZlcnkoMyxhZGQoNykpCiAgLmxhdGUoLjUp
-    return pat?.query(state) || [];
+    const pat = pats[pat_n];
+    return pat.query(state);
   };
   return new Pattern(query).splitQueries();
 }
