@@ -1002,7 +1002,7 @@ export const arpWith = register('arpWith', (func, pat) => {
  * */
 export const arp = register(
   'arp',
-  (indices, pat) => pat.arpWith((haps) => reify(indices).fmap((i) => haps[i % haps.length])),
+  (indices, pat) => pat.arpWith((haps) => reify(indices).fmap((i) => haps[_mod(i, haps.length)])),
   false,
 );
 
@@ -1559,7 +1559,7 @@ export function slowcat(...pats) {
 export function slowcatPrime(...pats) {
   pats = pats.map(reify);
   const query = function (state) {
-    const pat_n = Math.floor(state.span.begin) % pats.length;
+    const pat_n = _mod(Math.floor(state.span.begin), pats.length);
     const pat = pats[pat_n]; // can be undefined for same cases e.g. /#cHVyZSg0MikKICAuZXZlcnkoMyxhZGQoNykpCiAgLmxhdGUoLjUp
     return pat?.query(state) || [];
   };
