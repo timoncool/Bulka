@@ -114,7 +114,7 @@ export const cosine2 = sine2._early(Fraction(1).div(4));
  * n(square.segment(4).range(0,7)).scale("C:minor")
  *
  */
-export const square = signal((t) => Math.floor(_mod((t * 2), 2)));
+export const square = signal((t) => Math.floor(_mod(t * 2, 2)));
 
 /**
  *  A square signal between -1 and 1 (like `square`, but bipolar).
