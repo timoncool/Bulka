@@ -8,7 +8,23 @@ import Fraction from 'fraction.js';
 
 import { describe, it, expect, vi } from 'vitest';
 
-import { saw, saw2, isaw, isaw2, per, perx, cyclesPer } from '../signal.mjs';
+import {
+  saw,
+  saw2,
+  isaw,
+  isaw2,
+  tri,
+  tri2,
+  itri,
+  itri2,
+  square,
+  square2,
+  isquare,
+  isquare2,
+  per,
+  perx,
+  cyclesPer,
+} from '../signal.mjs';
 import { fastcat, sequence, State, TimeSpan, Hap, note } from '../index.mjs';
 
 const st = (begin, end) => new State(ts(begin, end));
@@ -24,16 +40,60 @@ const sameFirst = (a, b) => {
 
 describe('signal()', () => {
   it('Can make saw/saw2', () => {
-    expect(saw.struct(true, true, true, true).firstCycle()).toStrictEqual(
-      sequence(0, 1 / 4, 1 / 2, 3 / 4).firstCycle(),
-    );
-
+    expect(saw.struct(true, true, true, true).firstCycle()).toStrictEqual(sequence(0, 0.25, 0.5, 0.75).firstCycle());
     expect(saw2.struct(true, true, true, true).firstCycle()).toStrictEqual(sequence(-1, -0.5, 0, 0.5).firstCycle());
   });
   it('Can make isaw/isaw2', () => {
     expect(isaw.struct(true, true, true, true).firstCycle()).toStrictEqual(sequence(1, 0.75, 0.5, 0.25).firstCycle());
-
     expect(isaw2.struct(true, true, true, true).firstCycle()).toStrictEqual(sequence(1, 0.5, 0, -0.5).firstCycle());
+  });
+  it('Can make tri/tri2', () => {
+    expect(tri.struct(true, true, true, true).firstCycle()).toStrictEqual(sequence(0, 0.5, 1, 0.5).firstCycle());
+    expect(tri2.struct(true, true, true, true).firstCycle()).toStrictEqual(sequence(-1, 0, 1, 0).firstCycle());
+  });
+  it('Can make itri/itri2', () => {
+    expect(itri.struct(true, true, true, true).firstCycle()).toStrictEqual(sequence(1, 0.5, 0, 0.5).firstCycle());
+    expect(itri2.struct(true, true, true, true).firstCycle()).toStrictEqual(sequence(1, 0, -1, 0).firstCycle());
+  });
+  it('Can make square/square2', () => {
+    expect(square.struct(true, true, true, true).firstCycle()).toStrictEqual(sequence(0, 0, 1, 1).firstCycle());
+    expect(square2.struct(true, true, true, true).firstCycle()).toStrictEqual(sequence(-1, -1, 1, 1).firstCycle());
+  });
+  it('Can make isquare/isquare2', () => {
+    expect(isquare.struct(true, true, true, true).firstCycle()).toStrictEqual(sequence(1, 1, 0, 0).firstCycle());
+    expect(isquare2.struct(true, true, true, true).firstCycle()).toStrictEqual(sequence(1, 1, -1, -1).firstCycle());
+  });
+  it('Can go into negative time', () => {
+    expect(saw.late(1).struct(true, true, true, true).firstCycle()).toStrictEqual(
+      sequence(0, 0.25, 0.5, 0.75).firstCycle(),
+    );
+    expect(saw2.late(1).struct(true, true, true, true).firstCycle()).toStrictEqual(
+      sequence(-1, -0.5, 0, 0.5).firstCycle(),
+    );
+    expect(isaw.late(1).struct(true, true, true, true).firstCycle()).toStrictEqual(
+      sequence(1, 0.75, 0.5, 0.25).firstCycle(),
+    );
+    expect(isaw2.late(1).struct(true, true, true, true).firstCycle()).toStrictEqual(
+      sequence(1, 0.5, 0, -0.5).firstCycle(),
+    );
+    expect(tri.late(1).struct(true, true, true, true).firstCycle()).toStrictEqual(
+      sequence(0, 0.5, 1, 0.5).firstCycle(),
+    );
+    expect(tri2.late(1).struct(true, true, true, true).firstCycle()).toStrictEqual(sequence(-1, 0, 1, 0).firstCycle());
+    expect(itri.late(1).struct(true, true, true, true).firstCycle()).toStrictEqual(
+      sequence(1, 0.5, 0, 0.5).firstCycle(),
+    );
+    expect(itri2.late(1).struct(true, true, true, true).firstCycle()).toStrictEqual(sequence(1, 0, -1, 0).firstCycle());
+    expect(square.late(1).struct(true, true, true, true).firstCycle()).toStrictEqual(sequence(0, 0, 1, 1).firstCycle());
+    expect(square2.late(1).struct(true, true, true, true).firstCycle()).toStrictEqual(
+      sequence(-1, -1, 1, 1).firstCycle(),
+    );
+    expect(isquare.late(1).struct(true, true, true, true).firstCycle()).toStrictEqual(
+      sequence(1, 1, 0, 0).firstCycle(),
+    );
+    expect(isquare2.late(1).struct(true, true, true, true).firstCycle()).toStrictEqual(
+      sequence(1, 1, -1, -1).firstCycle(),
+    );
   });
 });
 
