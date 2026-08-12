@@ -1529,7 +1529,9 @@ export function slowcat(...pats) {
   // Array test here is to avoid infinite recursions..
   pats = pats.map((pat) => (Array.isArray(pat) ? fastcat(...pat) : reify(pat)));
 
-  if (pats.length == 1) {
+  if (!pats.length) {
+    return silence;
+  } else if (pats.length == 1) {
     return pats[0];
   }
 
@@ -1537,10 +1539,6 @@ export function slowcat(...pats) {
     const span = state.span;
     const pat_n = _mod(span.begin.sam(), pats.length);
     const pat = pats[pat_n];
-    if (!pat) {
-      // pat_n can be negative, if the span is in the past..
-      return [];
-    }
     // A bit of maths to make sure that cycles from constituent patterns aren't skipped.
     // For example if three patterns are slowcat-ed, the fourth cycle of the result should
     // be the second (rather than fourth) cycle from the first pattern.
