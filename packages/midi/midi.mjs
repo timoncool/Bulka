@@ -171,6 +171,21 @@ function normalize(value = 0, min = 0, max = 1, exp = 1) {
   return Math.pow(normalized, exp);
 }
 
+const isFirefox = navigator?.userAgent?.includes('Firefox');
+// call fn either directly with given time (non-firefox) or after scheduleAtTime with undefined (firefox)
+// the scheduleAtTime approach is still jittery, but the best we can be on firefox
+// firefox bug: https://bugzilla.mozilla.org/show_bug.cgi?id=2062997
+function timedSend(timeMs, fn) {
+  if (isFirefox) {
+    const audioTime = getAudioContext().currentTime + (timeMs - performance.now()) / 1000;
+    scheduleAtTime(() => {
+      fn(undefined);
+    }, audioTime);
+  } else {
+    fn(timeMs);
+  }
+}
+
 function mapCC(mapping, value) {
   return Object.keys(value)
     .filter((key) => !!mapping[getControlName(key)])
@@ -182,7 +197,7 @@ function mapCC(mapping, value) {
 }
 
 // sends a cc message to the given device on the given channel
-function sendCC(ccn, ccv, device, midichan, targetTime) {
+function sendCC(ccn, ccv, device, midichan, timeMs) {
   if (typeof ccv !== 'number' || ccv < 0 || ccv > 1) {
     throw new Error('expected ccv to be a number between 0 and 1');
   }
@@ -190,23 +205,19 @@ function sendCC(ccn, ccv, device, midichan, targetTime) {
     throw new Error('expected ccn to be a number or a string');
   }
   const scaled = Math.round(ccv * 127);
-  scheduleAtTime(() => {
-    device.sendControlChange(ccn, scaled, midichan);
-  }, targetTime);
+  timedSend(timeMs, (timeMs) => device.sendControlChange(ccn, scaled, { channels: midichan, time: timeMs }));
 }
 
 // sends a program change message to the given device on the given channel
-function sendProgramChange(progNum, device, midichan, targetTime) {
+function sendProgramChange(progNum, device, midichan, timeMs) {
   if (typeof progNum !== 'number' || progNum < 0 || progNum > 127) {
     throw new Error('expected progNum (program change) to be a number between 0 and 127');
   }
-  scheduleAtTime(() => {
-    device.sendProgramChange(progNum, midichan);
-  }, targetTime);
+  timedSend(timeMs, (timeMs) => device.sendProgramChange(progNum, { channels: midichan, time: timeMs }));
 }
 
 // sends a sysex message to the given device on the given channel
-function sendSysex(sysexid, sysexdata, device, targetTime) {
+function sendSysex(sysexid, sysexdata, device, timeMs) {
   if (Array.isArray(sysexid)) {
     if (!sysexid.every((byte) => Number.isInteger(byte) && byte >= 0 && byte <= 255)) {
       throw new Error('all sysexid bytes must be integers between 0 and 255');
@@ -221,13 +232,11 @@ function sendSysex(sysexid, sysexdata, device, targetTime) {
   if (!sysexdata.every((byte) => Number.isInteger(byte) && byte >= 0 && byte <= 255)) {
     throw new Error('all sysex bytes must be integers between 0 and 255');
   }
-  scheduleAtTime(() => {
-    device.sendSysex(sysexid, sysexdata);
-  }, targetTime);
+  timedSend(timeMs, (timeMs) => device.sendSysex(sysexid, sysexdata, { time: timeMs }));
 }
 
 // sends a NRPN message to the given device on the given channel
-function sendNRPN(nrpnn, nrpv, device, midichan, targetTime) {
+function sendNRPN(nrpnn, nrpv, device, midichan, timeMs) {
   if (Array.isArray(nrpnn)) {
     if (!nrpnn.every((byte) => Number.isInteger(byte) && byte >= 0 && byte <= 255)) {
       throw new Error('all nrpnn bytes must be integers between 0 and 255');
@@ -235,34 +244,29 @@ function sendNRPN(nrpnn, nrpv, device, midichan, targetTime) {
   } else if (!Number.isInteger(nrpv) || nrpv < 0 || nrpv > 255) {
     throw new Error('A:sysexid must be an number between 0 and 255 or an array of such integers');
   }
-  scheduleAtTime(() => {
-    device.sendNRPN(nrpnn, nrpv, midichan);
-  }, targetTime);
+
+  timedSend(timeMs, (timeMs) => device.sendNrpnValue(nrpnn, nrpv, { channels: midichan, time: timeMs }));
 }
 
 // sends a pitch bend message to the given device on the given channel
-function sendPitchBend(midibend, device, midichan, targetTime) {
+function sendPitchBend(midibend, device, midichan, timeMs) {
   if (typeof midibend !== 'number' || midibend < -1 || midibend > 1) {
     throw new Error('expected midibend to be a number between -1 and 1');
   }
-  scheduleAtTime(() => {
-    device.sendPitchBend(midibend, midichan);
-  }, targetTime);
+  timedSend(timeMs, (timeMs) => device.sendPitchBend(midibend, { channels: midichan, time: timeMs }));
 }
 
 // sends a channel aftertouch message to the given device on the given channel
-function sendAftertouch(miditouch, device, midichan, targetTime) {
+function sendAftertouch(miditouch, device, midichan, timeMs) {
   if (typeof miditouch !== 'number' || miditouch < 0 || miditouch > 1) {
     throw new Error('expected miditouch to be a number between 0 and 1');
   }
 
-  scheduleAtTime(() => {
-    device.sendChannelAftertouch(miditouch, midichan);
-  }, targetTime);
+  timedSend(timeMs, (timeMs) => device.sendChannelAftertouch(miditouch, { channels: midichan, time: timeMs }));
 }
 
 // sends a note message to the given device on the given channel
-function sendNote(note, velocity, duration, device, midichan, targetTime) {
+function sendNote(note, velocity, duration, device, midichan, timeMs) {
   if (note == null || note === '') {
     throw new Error('note cannot be null or empty');
   }
@@ -273,11 +277,10 @@ function sendNote(note, velocity, duration, device, midichan, targetTime) {
     throw new Error('duration must be a positive number');
   }
   const midiNumber = typeof note === 'number' ? note : noteToMidi(note);
-  const midiNote = new Note(midiNumber, { attack: velocity, duration });
+  const midiNote = new Note(midiNumber, { attack: velocity });
 
-  scheduleAtTime(() => {
-    device.playNote(midiNote, midichan);
-  }, targetTime);
+  timedSend(timeMs, (timeMs) => device.sendNoteOn(midiNote, { channels: midichan, time: timeMs }));
+  timedSend(timeMs + duration, (timeMs) => device.sendNoteOff(midiNote, { channels: midichan, time: timeMs }));
 }
 
 /**
@@ -287,8 +290,6 @@ function sendNote(note, velocity, duration, device, midichan, targetTime) {
  * @param {object} options Additional MIDI configuration options
  * @example
  * note("c4").midichan(1).midi('IAC Driver Bus 1')
- * @example
- * note("c4").midichan(1).midi('IAC Driver Bus 1', { controller: true, latency: 50 })
  */
 
 Pattern.prototype.midi = function (midiport, options = {}) {
@@ -337,11 +338,28 @@ Pattern.prototype.midi = function (midiport, options = {}) {
       logger(`Midi device disconnected! Available: ${getMidiDeviceNamesString(outputs)}`),
   });
 
-  return this.onTrigger((hap, _currentTime, cps, targetTime) => {
+  let p; // filtered clock offset
+  let lastOffset;
+
+  return this.sortHapsByPart().onTrigger((hap, _currentTime, cps, targetTime) => {
     if (!WebMidi.enabled) {
       logger('Midi not enabled');
       return;
     }
+    const { contextTime, performanceTime } = getAudioContext().getOutputTimestamp();
+    if (!contextTime || !performanceTime) {
+      logger('[midi] skip midi event: not ready yet?');
+      return;
+    }
+    const cutoff = 0.01;
+    const offset = performanceTime - contextTime * 1000;
+    p ??= offset; // first input is initial offset
+    if (offset !== lastOffset) {
+      // update filter only when offset changes
+      p = offset * cutoff + p * (1 - cutoff); // onepole iir filter to smooth drift :)
+    }
+    lastOffset = offset;
+    const timeMs = targetTime * 1000 + p; // this is now correct in performance time
     hap.ensureObjectValue();
 
     // midi event values from hap with configurable defaults
@@ -379,7 +397,7 @@ Pattern.prototype.midi = function (midiport, options = {}) {
     // if midimap is set, send a cc messages from defined controls
     if (midicontrolMap.has(midimap)) {
       const ccs = mapCC(midicontrolMap.get(midimap), hap.value);
-      ccs.forEach(({ ccn, ccv }) => sendCC(ccn, ccv, device, midichan, targetTime));
+      ccs.forEach(({ ccn, ccv }) => sendCC(ccn, ccv, device, midichan, timeMs));
     } else if (midimap !== 'default') {
       // Add warning when a non-existent midimap is specified
       logger(`[midi] midimap "${midimap}" not found! Available maps: ${[...midicontrolMap.keys()].join(', ')}`);
@@ -388,15 +406,17 @@ Pattern.prototype.midi = function (midiport, options = {}) {
     // Handle note
     if (note !== undefined && !midiConfig.isController) {
       // note off messages will often a few ms arrive late,
-      // try to prevent glitching by subtracting noteOffsetMs from the duration length
-      const duration = (hap.duration.valueOf() / cps) * 1000 - midiConfig.noteOffsetMs;
+      // try to prevent glitching by subtracting at max noteOffsetMs from the duration length
+      const hapDuration = (hap.duration.valueOf() / cps) * 1000;
+      const offset = Math.min(midiConfig.noteOffsetMs, hapDuration / 2);
+      const duration = hapDuration - offset;
 
-      sendNote(note, velocity, duration, device, midichan, targetTime);
+      sendNote(note, velocity, duration, device, midichan, timeMs);
     }
 
     // Handle program change
     if (progNum !== undefined) {
-      sendProgramChange(progNum, device, midichan, targetTime);
+      sendProgramChange(progNum, device, midichan, timeMs);
     }
 
     // Handle sysex
@@ -406,63 +426,53 @@ Pattern.prototype.midi = function (midiport, options = {}) {
     // if sysexid is an array the first byte is 0x00
 
     if (sysexid !== undefined && sysexdata !== undefined) {
-      sendSysex(sysexid, sysexdata, device, targetTime);
+      sendSysex(sysexid, sysexdata, device, timeMs);
     }
 
     // Handle control change
     if (ccv !== undefined && ccn !== undefined) {
-      sendCC(ccn, ccv, device, midichan, targetTime);
+      sendCC(ccn, ccv, device, midichan, timeMs);
     }
 
     // Handle NRPN non-registered parameter number
     if (nrpnn !== undefined && nrpv !== undefined) {
-      sendNRPN(nrpnn, nrpv, device, midichan, targetTime);
+      sendNRPN(nrpnn, nrpv, device, midichan, timeMs);
     }
 
     // Handle midibend
     if (midibend !== undefined) {
-      sendPitchBend(midibend, device, midichan, targetTime);
+      sendPitchBend(midibend, device, midichan, timeMs);
     }
 
     // Handle miditouch
     if (miditouch !== undefined) {
-      sendAftertouch(miditouch, device, midichan, targetTime);
+      sendAftertouch(miditouch, device, midichan, timeMs);
     }
 
     // Handle midicmd
     if (hap.whole.begin + 0 === 0) {
       // we need to start here because we have the timing info
-      scheduleAtTime(() => {
-        device.sendStart();
-      }, targetTime);
+      timedSend(timeMs, (timeMs) => device.sendStart({ time: timeMs }));
     }
     if (['clock', 'midiClock'].includes(midicmd)) {
-      scheduleAtTime(() => {
-        device.sendClock();
-      }, targetTime);
+      timedSend(timeMs, (timeMs) => device.sendClock({ time: timeMs }));
     } else if (['start'].includes(midicmd)) {
-      scheduleAtTime(() => {
-        device.sendStart();
-      }, targetTime);
+      timedSend(timeMs, (timeMs) => device.sendStart({ time: timeMs }));
     } else if (['stop'].includes(midicmd)) {
-      scheduleAtTime(() => {
-        device.sendStop();
-      }, targetTime);
+      timedSend(timeMs, (timeMs) => device.sendStop({ time: timeMs }));
     } else if (['continue'].includes(midicmd)) {
-      scheduleAtTime(() => {
-        device.sendContinue();
-      }, targetTime);
+      timedSend(timeMs, (timeMs) => device.sendContinue({ time: timeMs }));
     } else if (Array.isArray(midicmd)) {
       if (midicmd[0] === 'progNum') {
-        sendProgramChange(midicmd[1], device, midichan, targetTime);
+        sendProgramChange(midicmd[1], device, midichan, timeMs);
       } else if (midicmd[0] === 'cc') {
         if (midicmd.length === 2) {
-          sendCC(midicmd[0], midicmd[1] / 127, device, midichan, targetTime);
+          sendCC(midicmd[0], midicmd[1] / 127, device, midichan, timeMs);
         }
       } else if (midicmd[0] === 'sysex') {
         if (midicmd.length === 3) {
           const [_, id, data] = midicmd;
-          sendSysex(id, data, device, targetTime);
+          sendSysex(id, data, device, timeMs);
         }
       }
     }
