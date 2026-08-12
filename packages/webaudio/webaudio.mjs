@@ -56,32 +56,8 @@ export async function renderPatternAudio(
     maxPolyphony,
     multiChannelOrbits,
   });
-  logger('[webaudio] preloading');
 
-  // Calling superdough(...) in ascending onset time order is important
-  // for controls that depend on the audio graph state like `cut`
-  let haps = pattern
-    .queryArc(begin, end, { _cps: cps })
-    .sort((a, b) => a.whole.begin.valueOf() - b.whole.begin.valueOf());
-  for (const hap of haps) {
-    if (hap.hasOnset()) {
-      try {
-        await superdough(
-          hap2value(hap),
-          (hap.whole.begin.valueOf() - begin) / cps,
-          hap.duration / cps,
-          cps,
-          (hap.whole?.begin.valueOf() - begin) / cps,
-        );
-      } catch (err) {
-        errorLogger(err, 'webaudio');
-      }
-    }
-  }
-  logger('[webaudio] start rendering');
-
-  return audioContext
-    .startRendering()
+  return renderPatternAudioInChunks(audioContext, pattern, cps, begin, end, 1)
     .then((renderedBuffer) => {
       const wavBuffer = audioBufferToWav(renderedBuffer);
       const blob = new Blob([wavBuffer], { type: 'audio/wav' });
@@ -100,6 +76,70 @@ export async function renderPatternAudio(
       setSuperdoughAudioController(null);
       resetGlobalEffects();
     });
+}
+
+async function renderPatternAudioInChunks(audioContext, pattern, cps, begin, end, chunkSizeInCycles) {
+  let currentCycle = begin;
+  let renderPromise = null;
+
+  logger('[webaudio] start rendering');
+
+  while (currentCycle <= end) {
+    const chunkStart = currentCycle;
+    const chunkEnd = Math.min(currentCycle + chunkSizeInCycles, end);
+
+    logger(`[webaudio] preloading cycles ${chunkStart} - ${chunkEnd}`);
+
+    // Calling superdough(...) in ascending onset time order is important
+    // for controls that depend on the audio graph state like `cut`
+    let haps = pattern
+      .queryArc(chunkStart, chunkEnd, { _cps: cps })
+      .sort((a, b) => a.whole.begin.valueOf() - b.whole.begin.valueOf());
+
+    for (const hap of haps) {
+      if (hap.hasOnset()) {
+        try {
+          await superdough(
+            hap2value(hap),
+            (hap.whole.begin.valueOf() - begin) / cps,
+            hap.duration / cps,
+            cps,
+            (hap.whole?.begin.valueOf() - begin) / cps,
+          );
+        } catch (err) {
+          errorLogger(err, 'webaudio');
+        }
+      }
+    }
+
+    logger(`[webaudio] rendering cycles ${chunkStart} - ${chunkEnd}`);
+
+    currentCycle += chunkSizeInCycles;
+
+    // According to the MDN docs, suspends should be scheduled while
+    // the audioContext is not currently running for better precision.
+    // So we schedule the suspend first, and await after resuming.
+    var suspendPromise;
+    if (currentCycle < end) {
+      // Make sure to suspend one cycle before the next currentCycle
+      // so the next haps can be scheduled on time.
+      suspendPromise = audioContext.suspend((currentCycle - begin - 1) / cps);
+    }
+
+    if (renderPromise === null) {
+      renderPromise = audioContext.startRendering();
+    } else {
+      await audioContext.resume();
+    }
+
+    if (currentCycle < end) {
+      await suspendPromise;
+    }
+  }
+
+  logger('[webaudio] finish rendering');
+
+  return renderPromise;
 }
 
 export function webaudioRepl(options = {}) {
