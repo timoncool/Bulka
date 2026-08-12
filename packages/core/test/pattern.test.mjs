@@ -18,6 +18,7 @@ import {
   fastcat,
   firstOf,
   slowcat,
+  slowcatPrime,
   cat,
   sequence,
   palindrome,
@@ -53,6 +54,7 @@ import {
   stepcat,
   sometimes,
   expand,
+  arp,
 } from '../index.mjs';
 
 import { log, logValues } from '../pattern.mjs';
@@ -544,6 +546,9 @@ describe('Pattern', () => {
     });
   });
   describe('slowcat()', () => {
+    it('Can be empty', () => {
+      expect(slowcat().firstCycle()).toStrictEqual([]);
+    });
     it('Can concatenate things slowly', () => {
       expect(
         slowcat('a', 'b')
@@ -574,6 +579,38 @@ describe('Pattern', () => {
     });
     it('Can cat subpatterns', () => {
       sameFirst(slowcat('a', ['b', 'c']).fast(4), sequence('a', ['b', 'c']).fast(2));
+    });
+  });
+  describe('slowcatPrime()', () => {
+    it('Can be empty', () => {
+      expect(slowcatPrime().firstCycle()).toStrictEqual([]);
+    });
+    it('Can slowcat patterns swapping back and forth skipping the expected notes', () => {
+      expect(
+        slowcatPrime(fastcat(0, 1, 2, 3).slow(2), fastcat(4, 5, 6, 7).slow(2))
+          .fast(4)
+          .firstCycle()
+          .map((a) => a.value),
+      ).toStrictEqual([0, 1, 6, 7, 0, 1, 6, 7]);
+    });
+    it('Can go into negative time', () => {
+      expect(
+        slowcatPrime(fastcat(0, 1, 2, 3).slow(2), fastcat(4, 5, 6, 7).slow(2))
+          .fast(4)
+          .late(8)
+          .firstCycle()
+          .map((a) => a.value),
+      ).toStrictEqual([0, 1, 6, 7, 0, 1, 6, 7]);
+    });
+  });
+  describe('arp()', () => {
+    it('It wraps around with both positive and negative indices', () => {
+      expect(
+        stack('a', 'b', 'c')
+          .arp(fastcat(-3, -2, -1, 0, 1, 2, 3, 4))
+          .firstCycle()
+          .map((a) => a.value),
+      ).toStrictEqual(['a', 'b', 'c', 'a', 'b', 'c', 'a', 'b']);
     });
   });
   describe('rev()', () => {
