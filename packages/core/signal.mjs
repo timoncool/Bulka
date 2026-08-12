@@ -125,6 +125,22 @@ export const square = signal((t) => Math.floor(_mod(t * 2, 2)));
 export const square2 = square.toBipolar();
 
 /**
+ *  A square signal between 1 and 0 (like `square` but flipped).
+ *
+ * @return {Pattern}
+ * @tags generators
+ */
+export const isquare = signal((t) => 1 - Math.floor(_mod(t * 2, 2)));
+
+/**
+ *  A square signal between 1 and -1 (like `isquare`, but bipolar).
+ *
+ * @return {Pattern}
+ * @tags generators
+ */
+export const isquare2 = isquare.toBipolar();
+
+/**
  *  A triangle signal between 0 and 1.
  *
  * @return {Pattern}
