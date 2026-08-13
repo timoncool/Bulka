@@ -1242,6 +1242,35 @@ exports[`runs examples > example "bank" example index 0 1`] = `
 ]
 `;
 
+exports[`runs examples > example "base" example index 0 1`] = `
+[
+  "[ 0/1 → 1/6 | note:D3 s:saw ]",
+  "[ 1/6 → 1/3 | note:C4 s:saw ]",
+  "[ 1/3 → 1/2 | note:A3 s:saw ]",
+  "[ 1/2 → 2/3 | note:A3 s:saw ]",
+  "[ 2/3 → 5/6 | note:G3 s:saw ]",
+  "[ 5/6 → 1/1 | note:F3 s:saw ]",
+  "[ 1/1 → 7/6 | note:D3 s:saw ]",
+  "[ 7/6 → 4/3 | note:C4 s:saw ]",
+  "[ 4/3 → 3/2 | note:A3 s:saw ]",
+  "[ 3/2 → 5/3 | note:A3 s:saw ]",
+  "[ 5/3 → 11/6 | note:G3 s:saw ]",
+  "[ 11/6 → 2/1 | note:F3 s:saw ]",
+  "[ 2/1 → 13/6 | note:D3 s:saw ]",
+  "[ 13/6 → 7/3 | note:C4 s:saw ]",
+  "[ 7/3 → 5/2 | note:A3 s:saw ]",
+  "[ 5/2 → 8/3 | note:A3 s:saw ]",
+  "[ 8/3 → 17/6 | note:G3 s:saw ]",
+  "[ 17/6 → 3/1 | note:F3 s:saw ]",
+  "[ 3/1 → 19/6 | note:D3 s:saw ]",
+  "[ 19/6 → 10/3 | note:C4 s:saw ]",
+  "[ 10/3 → 7/2 | note:A3 s:saw ]",
+  "[ 7/2 → 11/3 | note:A3 s:saw ]",
+  "[ 11/3 → 23/6 | note:G3 s:saw ]",
+  "[ 23/6 → 4/1 | note:F3 s:saw ]",
+]
+`;
+
 exports[`runs examples > example "beat" example index 0 1`] = `
 [
   "[ 0/1 → 1/16 | s:bd ]",
@@ -7926,6 +7955,8 @@ exports[`runs examples > example "midicmd" example index 0 1`] = `
 exports[`runs examples > example "midikeys" example index 0 1`] = `[]`;
 
 exports[`runs examples > example "midikeys" example index 1 1`] = `[]`;
+
+exports[`runs examples > example "midikeys" example index 2 1`] = `[]`;
 
 exports[`runs examples > example "midin" example index 0 1`] = `
 [

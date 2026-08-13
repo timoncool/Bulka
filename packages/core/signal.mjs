@@ -6,6 +6,7 @@ This program is free software: you can redistribute it and/or modify it under th
 
 import { Hap } from './hap.mjs';
 import { Pattern, fastcat, pure, register, reify, silence, stack, sequenceP } from './pattern.mjs';
+import { _mod } from './util.mjs';
 import Fraction from './fraction.mjs';
 
 import { id, keyAlias, getCurrentKeyboardState } from './util.mjs';
@@ -33,7 +34,7 @@ export const signal = (func) => {
  * .scale('C major')
  *
  */
-export const saw = signal((t) => t % 1);
+export const saw = signal((t) => _mod(t, 1));
 
 /**
  *  A sawtooth signal between -1 and 1 (like `saw`, but bipolar).
@@ -56,7 +57,7 @@ export const saw2 = saw.toBipolar();
  * .scale('C major')
  *
  */
-export const isaw = signal((t) => 1 - (t % 1));
+export const isaw = signal((t) => 1 - _mod(t, 1));
 
 /**
  *  A sawtooth signal between 1 and -1 (like `saw2`, but flipped).
@@ -113,7 +114,7 @@ export const cosine2 = sine2._early(Fraction(1).div(4));
  * n(square.segment(4).range(0,7)).scale("C:minor")
  *
  */
-export const square = signal((t) => Math.floor((t * 2) % 2));
+export const square = signal((t) => Math.floor(_mod(t * 2, 2)));
 
 /**
  *  A square signal between -1 and 1 (like `square`, but bipolar).
@@ -122,6 +123,22 @@ export const square = signal((t) => Math.floor((t * 2) % 2));
  * @tags generators
  */
 export const square2 = square.toBipolar();
+
+/**
+ *  A square signal between 1 and 0 (like `square` but flipped).
+ *
+ * @return {Pattern}
+ * @tags generators
+ */
+export const isquare = signal((t) => 1 - Math.floor(_mod(t * 2, 2)));
+
+/**
+ *  A square signal between 1 and -1 (like `isquare`, but bipolar).
+ *
+ * @return {Pattern}
+ * @tags generators
+ */
+export const isquare2 = isquare.toBipolar();
 
 /**
  *  A triangle signal between 0 and 1.
@@ -396,7 +413,7 @@ export const randrun = (n) => {
       .map((n, i) => [n, i])
       .sort((a, b) => (a[0] > b[0]) - (a[0] < b[0]))
       .map((x) => x[1]);
-    const i = t.cyclePos().mul(n).floor() % n;
+    const i = _mod(t.cyclePos().mul(n).floor(), n);
     return nums[i];
   })._segment(n);
 };

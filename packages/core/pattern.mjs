@@ -1002,7 +1002,7 @@ export const arpWith = register('arpWith', (func, pat) => {
  * */
 export const arp = register(
   'arp',
-  (indices, pat) => pat.arpWith((haps) => reify(indices).fmap((i) => haps[i % haps.length])),
+  (indices, pat) => pat.arpWith((haps) => reify(indices).fmap((i) => haps[_mod(i, haps.length)])),
   false,
 );
 
@@ -1529,7 +1529,9 @@ export function slowcat(...pats) {
   // Array test here is to avoid infinite recursions..
   pats = pats.map((pat) => (Array.isArray(pat) ? fastcat(...pat) : reify(pat)));
 
-  if (pats.length == 1) {
+  if (!pats.length) {
+    return silence;
+  } else if (pats.length == 1) {
     return pats[0];
   }
 
@@ -1537,10 +1539,6 @@ export function slowcat(...pats) {
     const span = state.span;
     const pat_n = _mod(span.begin.sam(), pats.length);
     const pat = pats[pat_n];
-    if (!pat) {
-      // pat_n can be negative, if the span is in the past..
-      return [];
-    }
     // A bit of maths to make sure that cycles from constituent patterns aren't skipped.
     // For example if three patterns are slowcat-ed, the fourth cycle of the result should
     // be the second (rather than fourth) cycle from the first pattern.
@@ -1557,11 +1555,14 @@ export function slowcat(...pats) {
  * @return {Pattern}
  */
 export function slowcatPrime(...pats) {
+  if (!pats.length) {
+    return silence;
+  }
   pats = pats.map(reify);
   const query = function (state) {
-    const pat_n = Math.floor(state.span.begin) % pats.length;
-    const pat = pats[pat_n]; // can be undefined for same cases e.g. /#cHVyZSg0MikKICAuZXZlcnkoMyxhZGQoNykpCiAgLmxhdGUoLjUp
-    return pat?.query(state) || [];
+    const pat_n = _mod(Math.floor(state.span.begin), pats.length);
+    const pat = pats[pat_n];
+    return pat.query(state);
   };
   return new Pattern(query).splitQueries();
 }
@@ -3359,6 +3360,11 @@ Pattern.prototype.shrinklist = function (amount) {
 
 export const shrinklist = (amount, pat) => pat.shrinklist(amount);
 
+Pattern.prototype.growlist = function (amount) {
+  return this.shrinklist(amount).reverse();
+};
+export const growlist = (amount, pat) => pat.growlist(amount);
+
 /**
  * *Experimental*
  *
@@ -4127,3 +4133,59 @@ Pattern.prototype.worklet = function (src, ...inputs) {
 };
 
 export const worklet = (...args) => pure({}).worklet(...args);
+
+/**
+ * Creates a pattern of numbers in base b from a number or pattern of numbers
+ * limited to d digits long from the right
+ *
+ * @name base
+ * @tags generators
+ * @param {number} n - number to convert (can be a pattern or array)
+ * @param {number} b - base to convert to (defaults to 10) (can be a pattern)
+ * @param {number} d - max number of digits to produce for each n (defaults to 0 for all) (can be a pattern)
+ * @example
+ * $: note(base("7175 543", 10, 3)).scale("c:major").s("saw")
+ * // $: note("1 7 5 5 4 3").scale("c:major").s("saw")
+ */
+export const base = (n, b = 10, d = 0) => {
+  if (Array.isArray(n)) {
+    n = sequence(n);
+  }
+  n = reify(n);
+  b = reify(b);
+  d = reify(d);
+
+  return d
+    .withValue((e) => {
+      return b
+        .withValue((c) => {
+          return n
+            .withValue((v) => {
+              let digits = [];
+              let value = v;
+              while (value > 0) {
+                digits.unshift(value % c);
+                value = Math.floor(value / c);
+              }
+              if (e) {
+                const l = digits.length;
+                if (l > e) {
+                  digits = digits.slice(-1 * e);
+                }
+                /* 
+          if (l < e){
+            for (let i = l; i < e; i++) {
+              digits.unshift("~");//0); //Would like to be padding this but ~- doesn't work
+            }
+            console.log("digits", digits);
+          }
+          */
+              }
+              return sequence(digits);
+            })
+            .squeezeJoin();
+        })
+        .squeezeJoin();
+    })
+    .squeezeJoin();
+};

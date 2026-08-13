@@ -78,6 +78,7 @@ export default defineConfig({
             urlPattern: ({ url }) =>
               [
                 /^https:\/\/raw\.githubusercontent\.com\/.*/i,
+                /^https:\/\/strudel\.b-cdn\.net\/.*/i,
                 /^https:\/\/freesound\.org\/.*/i,
                 /^https:\/\/cdn\.freesound\.org\/.*/i,
                 /^https:\/\/shabda\.ndre\.gr\/.*/i,

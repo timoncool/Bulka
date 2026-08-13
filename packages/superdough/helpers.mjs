@@ -6,8 +6,8 @@ import { clamp, nanFallback, midiToFreq, noteToMidi } from './util.mjs';
 
 export const noises = ['pink', 'white', 'brown', 'crackle'];
 
-export function gainNode(value) {
-  const node = getAudioContext().createGain();
+export function gainNode(value, audioContext = getAudioContext()) {
+  const node = audioContext.createGain();
   node.gain.value = value;
   return node;
 }
@@ -374,7 +374,7 @@ export function webAudioTimeout(audioContext, onComplete, startTime, stopTime) {
 
   // Certain browsers requires audio nodes to be connected in order for their onended events
   // to fire, so we _mute it_ and then connect it to the destination
-  const zeroGain = gainNode(0);
+  const zeroGain = gainNode(0, audioContext);
   zeroGain.connect(audioContext.destination);
   constantNode.connect(zeroGain);
 
