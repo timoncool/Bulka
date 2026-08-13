@@ -287,7 +287,10 @@ The modes are:
 - `below`: the top note of the voicing is lower than or equal to the anchor (default)
 - `above`: the bottom note of the voicing is higher than or equal to the anchor
 - `duck`: the top note of the voicing is lower than the anchor
-- `root`: the bottom note of the voicing is always the root note closest to the anchor
+- `root`: the bottom note of the voicing is always the lowest root note higher than or equal to the anchor
+
+- `oldabove` : old (buggy) behavior of above, kept for legacy reasons
+- `oldroot` : old (buggy) behavior of root, kept for legacy reasons
 
 The `anchor` can also be set from within the `mode` function:
 

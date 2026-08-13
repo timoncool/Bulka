@@ -185,6 +185,9 @@ export const rootNotes = register('rootNotes', function (octave, pat) {
  *   - `below`: top note <= anchor
  *   - `duck`: top note <= anchor, anchor excluded
  *   - `above`: bottom note >= anchor
+ *   - `root`: bottom note is the lowest root of the chord >= anchor
+ *   - `oldabove` : old (buggy) behavior of above, kept for legacy reason
+ *   - `oldroot` : old (buggy) behavior of root, kept for legacy reason
  * - `offset`: whole number that shifts the voicing up or down to the next voicing
  * - `n`: if set, the voicing is played like a scale. Overshooting numbers will be octaved
  *
