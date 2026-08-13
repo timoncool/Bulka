@@ -57,7 +57,13 @@ export async function renderPatternAudio(
     multiChannelOrbits,
   });
 
-  return renderPatternAudioInChunks(audioContext, pattern, cps, begin, end, 1)
+  // Firefox currently doesn't support suspending an OfflineAudioContext,
+  // so no chunked rendering. Bad performance, but at least it works.
+  return (
+    audioContext.suspend === undefined
+      ? renderPatternAudioWhole(audioContext, pattern, cps, begin, end)
+      : renderPatternAudioInChunks(audioContext, pattern, cps, begin, end, 1)
+  )
     .then((renderedBuffer) => {
       const wavBuffer = audioBufferToWav(renderedBuffer);
       const blob = new Blob([wavBuffer], { type: 'audio/wav' });
@@ -78,6 +84,16 @@ export async function renderPatternAudio(
     });
 }
 
+async function renderPatternAudioWhole(audioContext, pattern, cps, begin, end) {
+  logger(`[webaudio] preloading`);
+
+  await scheduleHapsChunk(pattern, cps, begin, begin, end);
+
+  logger('[webaudio] start rendering');
+
+  return audioContext.startRendering();
+}
+
 async function renderPatternAudioInChunks(audioContext, pattern, cps, begin, end, chunkSizeInCycles) {
   let currentCycle = begin;
   let renderPromise = null;
@@ -90,27 +106,7 @@ async function renderPatternAudioInChunks(audioContext, pattern, cps, begin, end
 
     logger(`[webaudio] preloading cycles ${chunkStart} - ${chunkEnd}`);
 
-    // Calling superdough(...) in ascending onset time order is important
-    // for controls that depend on the audio graph state like `cut`
-    let haps = pattern
-      .queryArc(chunkStart, chunkEnd, { _cps: cps })
-      .sort((a, b) => a.whole.begin.valueOf() - b.whole.begin.valueOf());
-
-    for (const hap of haps) {
-      if (hap.hasOnset()) {
-        try {
-          await superdough(
-            hap2value(hap),
-            (hap.whole.begin.valueOf() - begin) / cps,
-            hap.duration / cps,
-            cps,
-            (hap.whole?.begin.valueOf() - begin) / cps,
-          );
-        } catch (err) {
-          errorLogger(err, 'webaudio');
-        }
-      }
-    }
+    await scheduleHapsChunk(pattern, cps, begin, chunkStart, chunkEnd);
 
     logger(`[webaudio] rendering cycles ${chunkStart} - ${chunkEnd}`);
 
@@ -140,6 +136,30 @@ async function renderPatternAudioInChunks(audioContext, pattern, cps, begin, end
   logger('[webaudio] finish rendering');
 
   return renderPromise;
+}
+
+async function scheduleHapsChunk(pattern, cps, begin, chunkStart, chunkEnd) {
+  // Calling superdough(...) in ascending onset time order is important
+  // for controls that depend on the audio graph state like `cut`
+  let haps = pattern
+    .queryArc(chunkStart, chunkEnd, { _cps: cps })
+    .sort((a, b) => a.whole.begin.valueOf() - b.whole.begin.valueOf());
+
+  for (const hap of haps) {
+    if (hap.hasOnset()) {
+      try {
+        await superdough(
+          hap2value(hap),
+          (hap.whole.begin.valueOf() - begin) / cps,
+          hap.duration / cps,
+          cps,
+          (hap.whole?.begin.valueOf() - begin) / cps,
+        );
+      } catch (err) {
+        errorLogger(err, 'webaudio');
+      }
+    }
+  }
 }
 
 export function webaudioRepl(options = {}) {
