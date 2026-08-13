@@ -98,6 +98,7 @@ if (args.includes('--json')) {
   }
   writeFileSync(outFile, json, 'utf8');
   console.log(`Wrote json to ${outFile}`);
+  process.exit(0);
 }
 
 console.log(
