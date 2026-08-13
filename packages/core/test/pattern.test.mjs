@@ -46,6 +46,7 @@ import {
   rev,
   time,
   run,
+  randrun,
   binaryN,
   pick,
   stackLeft,
@@ -981,6 +982,17 @@ describe('Pattern', () => {
   describe('run', () => {
     it('Can run', () => {
       expect(run(4).firstCycle()).toStrictEqual(sequence(0, 1, 2, 3).firstCycle());
+    });
+    it('Can go into negative time', () => {
+      expect(run(4).late(1).firstCycle()).toStrictEqual(sequence(0, 1, 2, 3).firstCycle());
+    });
+  });
+  describe('randrun', () => {
+    it('Can randrun', () => {
+      expect(randrun(4).firstCycle()).toStrictEqual(sequence(2, 1, 3, 0).firstCycle());
+    });
+    it('Can go into negative time', () => {
+      expect(randrun(4).late(1).firstCycle()).toStrictEqual(sequence(1, 2, 0, 3).firstCycle());
     });
   });
   describe('binaryN', () => {
