@@ -12,6 +12,21 @@ export function gainNode(value) {
   return node;
 }
 
+// this helper makes sure the audio context is "used", meaning it outputs something
+// this prevents the browser from throttling timing accuracy
+// it happened when only midi was running, the clock got more drifty without this
+let constantNode, constantNodeAudioContext;
+export function ensureMinimalOutput() {
+  if (constantNode && constantNodeAudioContext === getAudioContext()) {
+    return;
+  }
+  constantNodeAudioContext = getAudioContext();
+  constantNode = new ConstantSourceNode(constantNodeAudioContext);
+  constantNode.offset.value = 1e-7;
+  constantNode.connect(constantNodeAudioContext.destination);
+  constantNode.start();
+}
+
 export function effectSend(input, effect, wet) {
   const send = gainNode(wet);
   input.connect(send);

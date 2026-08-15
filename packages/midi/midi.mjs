@@ -22,7 +22,7 @@ import {
 import { noteToMidi, getControlName } from '@strudel/core';
 import { Note } from 'webmidi';
 import { getAudioContext } from '@strudel/webaudio';
-import { scheduleAtTime } from '../superdough/helpers.mjs';
+import { scheduleAtTime, ensureMinimalOutput } from '../superdough/helpers.mjs';
 import { getMidiDeviceNamesString, getDevice } from './util.mjs';
 import { MidiInput } from './input.mjs';
 
@@ -337,6 +337,8 @@ Pattern.prototype.midi = function (midiport, options = {}) {
     onDisconnected: ({ outputs }) =>
       logger(`Midi device disconnected! Available: ${getMidiDeviceNamesString(outputs)}`),
   });
+
+  ensureMinimalOutput();
 
   let p; // filtered clock offset
   let lastOffset;
