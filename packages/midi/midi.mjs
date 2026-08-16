@@ -283,6 +283,11 @@ function sendNote(note, velocity, duration, device, midichan, timeMs) {
   timedSend(timeMs + duration, (timeMs) => device.sendNoteOff(midiNote, { channels: midichan, time: timeMs }));
 }
 
+// thanks freya https://youtu.be/LSNQuFEDOyQ?si=ukZI2IGgWV_NDZzP&t=2979
+function expDecay(a, b, decay, dt) {
+  return b + (a - b) * Math.exp(-decay * dt);
+}
+
 /**
  * MIDI output: Opens a MIDI output port.
  * @tags external_io
@@ -341,7 +346,7 @@ Pattern.prototype.midi = function (midiport, options = {}) {
   ensureMinimalOutput();
 
   let p; // filtered clock offset
-  let lastOffset;
+  let lastTime;
 
   return this.sortHapsByPart().onTrigger((hap, _currentTime, cps, targetTime) => {
     if (!WebMidi.enabled) {
@@ -353,15 +358,14 @@ Pattern.prototype.midi = function (midiport, options = {}) {
       logger('[midi] skip midi event: not ready yet?');
       return;
     }
-    const cutoff = 0.01;
-    const offset = performanceTime - contextTime * 1000;
-    p ??= offset; // first input is initial offset
-    if (offset !== lastOffset) {
-      // update filter only when offset changes
-      p = offset * cutoff + p * (1 - cutoff); // onepole iir filter to smooth drift :)
-    }
-    lastOffset = offset;
+    // time conversion from audio context time (targetTime) to performance time (what midi needs)
+    const offset = performanceTime - contextTime * 1000; // clock offset in ms
+    const dt = performanceTime - (lastTime ?? performanceTime); // delta time since last midi hap
+    const decay = 1 / 10000; // how fast offset changes have an effect
+    p = expDecay(p ?? offset, offset, decay, dt); // smooth clock offset
+    lastTime = performanceTime;
     const timeMs = targetTime * 1000 + p; // this is now correct in performance time
+
     hap.ensureObjectValue();
 
     // midi event values from hap with configurable defaults
