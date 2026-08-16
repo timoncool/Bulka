@@ -21,7 +21,7 @@ import {
 } from '@strudel/core';
 import { noteToMidi, getControlName } from '@strudel/core';
 import { Note } from 'webmidi';
-import { getAudioContext } from '@strudel/webaudio';
+import { getAudioContext, getClockBridge } from '@strudel/webaudio';
 import { scheduleAtTime, ensureMinimalOutput } from '../superdough/helpers.mjs';
 import { getMidiDeviceNamesString, getDevice } from './util.mjs';
 import { MidiInput } from './input.mjs';
@@ -177,7 +177,11 @@ const isFirefox = navigator?.userAgent?.includes('Firefox');
 // firefox bug: https://bugzilla.mozilla.org/show_bug.cgi?id=2062997
 function timedSend(timeMs, fn) {
   if (isFirefox) {
-    const audioTime = getAudioContext().currentTime + (timeMs - performance.now()) / 1000;
+    const audioTime = getClockBridge().getAudioContextTime(timeMs);
+    if (!audioTime) {
+      logger('[midi]: skip event, not ready');
+      return;
+    }
     scheduleAtTime(() => fn(undefined), audioTime);
   } else {
     fn(timeMs);
@@ -281,11 +285,6 @@ function sendNote(note, velocity, duration, device, midichan, timeMs) {
   timedSend(timeMs + duration, (timeMs) => device.sendNoteOff(midiNote, { channels: midichan, time: timeMs }));
 }
 
-// thanks freya https://youtu.be/LSNQuFEDOyQ?si=ukZI2IGgWV_NDZzP&t=2979
-function expDecay(a, b, decay, dt) {
-  return b + (a - b) * Math.exp(-decay * dt);
-}
-
 /**
  * MIDI output: Opens a MIDI output port.
  * @tags external_io
@@ -343,26 +342,16 @@ Pattern.prototype.midi = function (midiport, options = {}) {
 
   ensureMinimalOutput();
 
-  let p; // filtered clock offset
-  let lastTime;
-
   return this.sortHapsByPart().onTrigger((hap, _currentTime, cps, targetTime) => {
     if (!WebMidi.enabled) {
       logger('Midi not enabled');
       return;
     }
-    const { contextTime, performanceTime } = getAudioContext().getOutputTimestamp();
-    if (!contextTime || !performanceTime) {
-      logger('[midi] skip midi event: not ready yet?');
+    const timeMs = getClockBridge().getPerformanceTime(targetTime);
+    if (!timeMs) {
+      logger('[midi] clockbridge not ready');
       return;
     }
-    // time conversion from audio context time (targetTime) to performance time (what midi needs)
-    const offset = performanceTime - contextTime * 1000; // clock offset in ms
-    const dt = performanceTime - (lastTime ?? performanceTime); // delta time since last midi hap
-    const decay = 1 / 10000; // how fast offset changes have an effect
-    p = expDecay(p ?? offset, offset, decay, dt); // smooth clock offset
-    lastTime = performanceTime;
-    const timeMs = targetTime * 1000 + p; // this is now correct in performance time
 
     hap.ensureObjectValue();
 

@@ -8,8 +8,9 @@ This program is free software: you can redistribute it and/or modify it under th
 */
 
 import { clearNodePool } from './nodePools.mjs';
+import { ClockBridge } from './clockbridge.mjs';
 
-let audioContext;
+let audioContext, clockBridge;
 
 export const setDefaultAudioContext = () => {
   return setAudioContext(new AudioContext());
@@ -23,6 +24,7 @@ export const setAudioContext = (context) => {
     audioContext.close();
   }
   audioContext = context;
+  clockBridge = new ClockBridge(audioContext);
   return audioContext;
 };
 
@@ -33,6 +35,13 @@ export const getAudioContext = () => {
 
   return audioContext;
 };
+
+export function getClockBridge() {
+  if (!clockBridge) {
+    getAudioContext(); // creates clockBridge
+  }
+  return clockBridge;
+}
 
 export function getAudioContextCurrentTime() {
   return getAudioContext().currentTime;
