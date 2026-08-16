@@ -318,7 +318,7 @@ Pattern.prototype.midi = function (midiport, options = {}) {
   let midiConfig = {
     // Default configuration values
     isController: false, // Disable sending notes for midi controllers
-    noteOffsetMs: 10, // Default note-off offset to prevent glitching in ms
+    noteOffsetMs: isFirefox ? 10 : 1, // Default note-off offset to prevent glitching in ms. firefox needs more slack
     midichannel: 1, // Default MIDI channel
     velocity: 0.9, // Default velocity
     gain: 1, // Default gain
@@ -409,8 +409,10 @@ Pattern.prototype.midi = function (midiport, options = {}) {
 
     // Handle note
     if (note !== undefined && !midiConfig.isController) {
-      // note off messages will often a few ms arrive late,
-      // try to prevent glitching by subtracting at max noteOffsetMs from the duration length
+      // note off time is calculated early, together with note on time
+      // when the note off is due, the clock might have drifted, and the next note on message might happen before the note off
+      // this would lead to the next note being cut off
+      // this is why we make notes shorter by noteOffsetMs, so note offs happen earlier than the note ons after
       const hapDuration = (hap.duration.valueOf() / cps) * 1000;
       const offset = Math.min(midiConfig.noteOffsetMs, hapDuration / 2);
       const duration = hapDuration - offset;
