@@ -178,9 +178,7 @@ const isFirefox = navigator?.userAgent?.includes('Firefox');
 function timedSend(timeMs, fn) {
   if (isFirefox) {
     const audioTime = getAudioContext().currentTime + (timeMs - performance.now()) / 1000;
-    scheduleAtTime(() => {
-      fn(undefined);
-    }, audioTime);
+    scheduleAtTime(() => fn(undefined), audioTime);
   } else {
     fn(timeMs);
   }
