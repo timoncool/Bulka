@@ -9,7 +9,7 @@ import {
   superdough,
   getAudioContext,
   setLogger,
-  doughTrigger,
+  rawdspTrigger,
   registerWorklet,
   setAudioContext,
   initAudio,
@@ -173,8 +173,8 @@ export function webaudioRepl(options = {}) {
   return repl(options);
 }
 
-Pattern.prototype.dough = function () {
-  return this.onTrigger(doughTrigger, 1);
+Pattern.prototype.rawdsp = function () {
+  return this.onTrigger(rawdspTrigger, 1);
 };
 
 function audioBufferToWav(buffer, opt) {
