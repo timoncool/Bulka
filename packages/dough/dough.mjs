@@ -6,7 +6,7 @@ This program is free software: you can redistribute it and/or modify it under th
 
 import { register, noteToMidi } from '@strudel/core';
 import { Dough, doughsamples } from 'dough-synth';
-import { getAudioContext } from '@strudel/webaudio';
+import { getAudioContext, ensureMinimalOutput } from '@strudel/webaudio';
 import wasm from 'dough-synth/dough.wasm?url';
 import workletCode from 'dough-synth/dough.js?raw';
 

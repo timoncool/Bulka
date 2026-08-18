@@ -174,6 +174,7 @@ evalScope(
     getDuration,
     setcps: id,
     setcpm: id,
+    initDough: id,
     Clock: {}, // whatever
   },
 );
