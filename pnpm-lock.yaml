@@ -470,6 +470,9 @@ importers:
       '@strudel/core':
         specifier: workspace:*
         version: link:../core
+      '@strudel/webaudio':
+        specifier: workspace:*
+        version: link:../webaudio
       osc:
         specifier: ^2.4.5
         version: 2.4.5
