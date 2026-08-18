@@ -145,4 +145,13 @@ export default defineConfig({
       // external: ['fraction.js'], // https://github.com/infusion/Fraction.js/issues/51
     },
   },
+  server: {
+    // these are needed for dough, which uses shared memory
+    // see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer#security_requirements
+    // this is only for the dev server, so the server strudel runs on, also needs those
+    headers: {
+      'Cross-Origin-Opener-Policy': 'same-origin',
+      'Cross-Origin-Embedder-Policy': 'credentialless',
+    },
+  },
 });

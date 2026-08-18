@@ -85,6 +85,7 @@ export function loadModules() {
     import('@strudel/motion'),
     import('@strudel/mqtt'),
     import('@strudel/mondo'),
+    import('@strudel/dough'),
   ];
   if (isTauri()) {
     modules = modules.concat([
