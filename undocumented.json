@@ -597,8 +597,8 @@
   ],
   "/packages/superdough/dspworklet.mjs": [
     "dspWorklet",
-    "dough",
-    "doughTrigger"
+    "rawdsp",
+    "rawdspTrigger"
   ],
   "/packages/superdough/index.mjs": [],
   "/packages/tonal/tonleiter.mjs": [

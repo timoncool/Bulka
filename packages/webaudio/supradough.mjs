@@ -114,11 +114,11 @@ async function fetchSample(url) {
   return { channels, sampleRate: buffer.sampleRate };
 }
 
-export async function doughsamples(sampleMap, baseUrl) {
+export async function supradoughsamples(sampleMap, baseUrl) {
   if (typeof sampleMap === 'string') {
     const [json, base] = await fetchSampleMap(sampleMap);
     // console.log('json', json, 'base', base);
-    return doughsamples(json, base);
+    return supradoughsamples(json, base);
   }
   Object.entries(sampleMap).map(async ([key, urls]) => {
     if (key !== '_base') {

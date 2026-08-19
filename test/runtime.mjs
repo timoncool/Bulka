@@ -99,6 +99,7 @@ const toneHelpersMocked = {
   '_spectrum',
   'markcss',
   'p',
+  'dough',
 ].forEach((mock) => {
   strudel.Pattern.prototype[mock] = function () {
     return this;
@@ -174,6 +175,7 @@ evalScope(
     getDuration,
     setcps: id,
     setcpm: id,
+    initDough: id,
     Clock: {}, // whatever
   },
 );
