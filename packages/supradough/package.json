@@ -1,6 +1,6 @@
 {
   "name": "supradough",
-  "version": "1.2.5",
+  "version": "1.2.4",
   "description": "platform agnostic synth and sampler intended for live coding. a reimplementation of superdough.",
   "main": "index.mjs",
   "type": "module",

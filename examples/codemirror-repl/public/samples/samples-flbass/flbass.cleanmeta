@@ -1,0 +1,113 @@
+{
+  "copyright": "(c) 2021 Bernard Gray",
+  "description": "Fretless bass samples tuned to C with various attacks styles, releases, plucking hand positions and harmonics",
+  "email": "bernard.gray@gmail.com",
+  "license": "CC0",
+  "maintainer": "Bernard Gray",
+  "metadata-format": "clean-0.1",
+  "provenance": "Fretless bass samples tuned to C with various attacks styles, releases, plucking hand positions and harmonics",
+  "sounds": [
+    {
+      "description": "",
+      "filename": "./00_c2_finger_long_neck.wav",
+      "shortname": "00_c2_finger_long_neck",
+      "type": "sample"
+    },
+    {
+      "description": "",
+      "filename": "./01_c2_finger_short_neck.wav",
+      "shortname": "01_c2_finger_short_neck",
+      "type": "sample"
+    },
+    {
+      "description": "",
+      "filename": "./02_c2_finger_long_bridge.wav",
+      "shortname": "02_c2_finger_long_bridge",
+      "type": "sample"
+    },
+    {
+      "description": "",
+      "filename": "./03_c2_finger_short_bridge.wav",
+      "shortname": "03_c2_finger_short_bridge",
+      "type": "sample"
+    },
+    {
+      "description": "",
+      "filename": "./04_c2_pick_long.wav",
+      "shortname": "04_c2_pick_long",
+      "type": "sample"
+    },
+    {
+      "description": "",
+      "filename": "./05_c2_pick_short.wav",
+      "shortname": "05_c2_pick_short",
+      "type": "sample"
+    },
+    {
+      "description": "",
+      "filename": "./06_c2_palm_mute.wav",
+      "shortname": "06_c2_palm_mute",
+      "type": "sample"
+    },
+    {
+      "description": "",
+      "filename": "./07_c3_finger_long_neck.wav",
+      "shortname": "07_c3_finger_long_neck",
+      "type": "sample"
+    },
+    {
+      "description": "",
+      "filename": "./08_c3_finger_short_neck.wav",
+      "shortname": "08_c3_finger_short_neck",
+      "type": "sample"
+    },
+    {
+      "description": "",
+      "filename": "./09_c3_finger_long_bridge.wav",
+      "shortname": "09_c3_finger_long_bridge",
+      "type": "sample"
+    },
+    {
+      "description": "",
+      "filename": "./10_c3_finger_short_bridge.wav",
+      "shortname": "10_c3_finger_short_bridge",
+      "type": "sample"
+    },
+    {
+      "description": "",
+      "filename": "./11_c3_pick_long.wav",
+      "shortname": "11_c3_pick_long",
+      "type": "sample"
+    },
+    {
+      "description": "",
+      "filename": "./12_c3_pick_short.wav",
+      "shortname": "12_c3_pick_short",
+      "type": "sample"
+    },
+    {
+      "description": "",
+      "filename": "./13_c3_palm_mute.wav",
+      "shortname": "13_c3_palm_mute",
+      "type": "sample"
+    },
+    {
+      "description": "",
+      "filename": "./14_c4_harmonic.wav",
+      "shortname": "14_c4_harmonic",
+      "type": "sample"
+    },
+    {
+      "description": "",
+      "filename": "./15_c6_harmonic.wav",
+      "shortname": "15_c6_harmonic",
+      "type": "sample"
+    },
+    {
+      "description": "",
+      "filename": "./16_ghost.wav",
+      "shortname": "16_ghost",
+      "type": "sample"
+    }
+  ]
+}

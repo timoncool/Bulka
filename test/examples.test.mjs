@@ -20,7 +20,6 @@ const skippedExamples = [
   'accelerationX',
   'defaultmidimap',
   'midimaps',
-  'bmod',
 ];
 
 describe('runs examples', () => {

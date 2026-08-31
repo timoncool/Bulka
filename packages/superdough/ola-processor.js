@@ -3,7 +3,7 @@
 // sourced from https://github.com/olvb/phaze/tree/master?tab=readme-ov-file
 const WEBAUDIO_BLOCK_SIZE = 128;
 
-/** Overlap-Add Node */
+/** Overlap-Add нода */
 class OLAProcessor extends AudioWorkletProcessor {
   constructor(options) {
     super(options);
@@ -34,8 +34,8 @@ class OLAProcessor extends AudioWorkletProcessor {
     }
   }
 
-  /** Handles dynamic reallocation of input/output channels buffer
-     (channel numbers may lety during lifecycle) **/
+  /** Обрабатывает динамическую реаллокацию буферов входных/выходных каналов
+     (количество каналов может изменяться в течение жизненного цикла) **/
   reallocateChannelsIfNeeded(inputs, outputs) {
     for (let i = 0; i < this.nbInputs; i++) {
       let nbChannels = inputs[i].length;
@@ -88,7 +88,7 @@ class OLAProcessor extends AudioWorkletProcessor {
     }
   }
 
-  /** Read next web audio block to input buffers **/
+  /** Читает следующий блок web audio в входные буферы **/
   readInputs(inputs) {
     // when playback is paused, we may stop receiving new samples
     if (inputs[0].length && inputs[0][0].length == 0) {
@@ -108,7 +108,7 @@ class OLAProcessor extends AudioWorkletProcessor {
     }
   }
 
-  /** Write next web audio block from output buffers **/
+  /** Записывает следующий блок web audio из выходных буферов **/
   writeOutputs(outputs) {
     for (let i = 0; i < this.nbInputs; i++) {
       for (let j = 0; j < this.inputBuffers[i].length; j++) {
@@ -118,7 +118,7 @@ class OLAProcessor extends AudioWorkletProcessor {
     }
   }
 
-  /** Shift left content of input buffers to receive new web audio block **/
+  /** Сдвигает содержимое входных буферов влево для получения нового блока web audio **/
   shiftInputBuffers() {
     for (let i = 0; i < this.nbInputs; i++) {
       for (let j = 0; j < this.inputBuffers[i].length; j++) {
@@ -127,7 +127,7 @@ class OLAProcessor extends AudioWorkletProcessor {
     }
   }
 
-  /** Shift left content of output buffers to receive new web audio block **/
+  /** Сдвигает содержимое выходных буферов влево для получения нового блока web audio **/
   shiftOutputBuffers() {
     for (let i = 0; i < this.nbOutputs; i++) {
       for (let j = 0; j < this.outputBuffers[i].length; j++) {
@@ -137,7 +137,7 @@ class OLAProcessor extends AudioWorkletProcessor {
     }
   }
 
-  /** Copy contents of input buffers to buffer actually sent to process **/
+  /** Копирует содержимое входных буферов в буфер, фактически отправляемый на обработку **/
   prepareInputBuffersToSend() {
     for (let i = 0; i < this.nbInputs; i++) {
       for (let j = 0; j < this.inputBuffers[i].length; j++) {
@@ -146,7 +146,7 @@ class OLAProcessor extends AudioWorkletProcessor {
     }
   }
 
-  /** Add contents of output buffers just processed to output buffers **/
+  /** Добавляет содержимое только что обработанных выходных буферов к выходным буферам **/
   handleOutputBuffersToRetrieve() {
     for (let i = 0; i < this.nbOutputs; i++) {
       for (let j = 0; j < this.outputBuffers[i].length; j++) {

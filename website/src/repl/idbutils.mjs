@@ -76,7 +76,7 @@ export function registerSamplesFromDB(config = userSamplesDBConfig, onComplete =
               })
               .map((title) => titlePathMap.get(title));
 
-            registerSampleSource(key, value, { prebake: false });
+            registerSampleSource(key, value, { prebake: false, pack: 'User Samples' });
           });
 
           logger('imported sounds registered!', 'success');

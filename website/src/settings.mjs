@@ -17,9 +17,27 @@ export const soundFilterType = {
   ALL: 'all',
 };
 
+export const aiProviders = {
+  openai: 'openai',
+  anthropic: 'anthropic',
+  gemini: 'gemini',
+  zai: 'zai',
+  openrouter: 'openrouter',
+  gpt4free: 'gpt4free',
+};
+
 export const defaultSettings = {
   activeFooter: 'intro',
   keybindings: 'codemirror',
+  // AI Agent settings - separate keys for each provider
+  openaiApiKey: '',
+  anthropicApiKey: '',
+  geminiApiKey: '',
+  zaiApiKey: '',
+  openrouterApiKey: '',
+  aiProvider: aiProviders.openai,
+  aiModel: '', // Loaded dynamically from provider API
+  gpt4freeSubProvider: 'default', // gpt4free sub-provider (default, nectar, pollinations, etc.)
   isBracketMatchingEnabled: true,
   isBracketClosingEnabled: true,
   isLineNumbersDisplayed: true,
@@ -44,6 +62,9 @@ export const defaultSettings = {
   isPanelPinned: false,
   isPanelOpen: true,
   togglePanelTrigger: 'click', //click | hover
+  // Panel sizes (in percentage for react-resizable-panels)
+  panelSizeBottom: 35, // % of height for bottom panel
+  panelSizeRight: 30, // % of width for right panel
   userPatterns: '{}',
   prebakeScript: '',
   audioEngineTarget: audioEngineTargets.webaudio,
@@ -52,6 +73,8 @@ export const defaultSettings = {
   maxPolyphony: 128,
   multiChannelOrbits: false,
   includePrebakeScriptInShare: true,
+  enabledPacks: 'all', // 'all' или JSON строка с массивом названий паков
+  masterVolume: 1, // Master volume (0-1), default 100%
 };
 
 let search = null;
@@ -75,6 +98,17 @@ export function useSettings() {
     data.id = data.id ?? key;
     userPatterns[key] = data;
   });
+
+  // Парсим enabledPacks
+  let enabledPacks = state.enabledPacks;
+  if (enabledPacks !== 'all' && typeof enabledPacks === 'string') {
+    try {
+      enabledPacks = JSON.parse(enabledPacks);
+    } catch (e) {
+      enabledPacks = 'all';
+    }
+  }
+
   return {
     ...state,
     isZen: parseBoolean(state.isZen),
@@ -99,11 +133,15 @@ export function useSettings() {
     userPatterns: userPatterns,
     multiChannelOrbits: parseBoolean(state.multiChannelOrbits),
     includePrebakeScriptInShare: parseBoolean(state.includePrebakeScriptInShare),
+    enabledPacks: enabledPacks,
     patternAutoStart: isUdels()
       ? false
       : state.patternAutoStart === undefined
         ? true
         : parseBoolean(state.patternAutoStart),
+    masterVolume: Number(state.masterVolume) ?? 1,
+    panelSizeBottom: Number(state.panelSizeBottom) || 35,
+    panelSizeRight: Number(state.panelSizeRight) || 30,
   };
 }
 
@@ -131,3 +169,29 @@ export const fontFamily = patternSetting('fontFamily');
 export const fontSize = patternSetting('fontSize');
 
 export const settingPatterns = { theme, fontFamily, fontSize };
+
+// AI Agent settings - separate keys for each provider
+export const setOpenaiApiKey = (key) => settingsMap.setKey('openaiApiKey', key);
+export const setAnthropicApiKey = (key) => settingsMap.setKey('anthropicApiKey', key);
+export const setGeminiApiKey = (key) => settingsMap.setKey('geminiApiKey', key);
+export const setZaiApiKey = (key) => settingsMap.setKey('zaiApiKey', key);
+export const setOpenrouterApiKey = (key) => settingsMap.setKey('openrouterApiKey', key);
+export const setAiProvider = (provider) => settingsMap.setKey('aiProvider', provider);
+export const setAiModel = (model) => settingsMap.setKey('aiModel', model);
+export const setGpt4freeSubProvider = (provider) => settingsMap.setKey('gpt4freeSubProvider', provider);
+
+// Helper to get API key for current provider (gpt4free doesn't need a key)
+export const getApiKeyForProvider = (provider, settings) => {
+  switch (provider) {
+    case 'openai': return settings.openaiApiKey;
+    case 'anthropic': return settings.anthropicApiKey;
+    case 'gemini': return settings.geminiApiKey;
+    case 'zai': return settings.zaiApiKey;
+    case 'openrouter': return settings.openrouterApiKey;
+    case 'gpt4free': return null; // GPT4Free is free, no key needed
+    default: return '';
+  }
+};
+
+// Volume settings
+export const setMasterVolumeSettings = (volume) => settingsMap.setKey('masterVolume', volume);

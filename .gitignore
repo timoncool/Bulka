@@ -25,6 +25,8 @@ cabal.project.local~
 .ghc.environment.*
 node_modules/
 .DS_Store
+desktop.ini
+Thumbs.db
 repl-parcel
 mytunes.ts
 doc
@@ -32,7 +34,7 @@ out
 .parcel-cache
 repl_old
 tutorial.rendered.mdx
-doc.json
+# doc.json - now committed for Vercel builds
 talk/public/EmuSP12
 talk/public/samples
 server/samples/old
@@ -145,3 +147,4 @@ fabric.properties
 samples/*
 !samples/README.md
 .idea/
+.vercel

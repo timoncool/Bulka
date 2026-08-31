@@ -65,22 +65,21 @@ export const getSampleBufferSource = async (hapValue, bank, resolveUrl) => {
   bufferSource.playbackRate.value = playbackRate;
 
   const { loopBegin = 0, loopEnd = 1, begin = 0, end = 1 } = hapValue;
-  const bufferDuration = bufferSource.buffer.duration;
 
-  // The computation of the offset into the sound is performed using the sound buffer's natural duration,
-  // rather than the playback duration, so that even if the sound is playing at twice its normal speed,
-  // the midway point through a 10-second audio buffer is still 5.
-  const offset = begin * bufferDuration;
+  // "The computation of the offset into the sound is performed using the sound buffer's natural sample rate,
+  // rather than the current playback rate, so even if the sound is playing at twice its normal speed,
+  // the midway point through a 10-second audio buffer is still 5."
+  const offset = begin * bufferSource.buffer.duration;
 
   const loop = hapValue.loop;
   if (loop) {
     bufferSource.loop = true;
-    bufferSource.loopStart = loopBegin * bufferDuration;
-    bufferSource.loopEnd = loopEnd * bufferDuration;
+    bufferSource.loopStart = loopBegin * bufferSource.buffer.duration - offset;
+    bufferSource.loopEnd = loopEnd * bufferSource.buffer.duration - offset;
   }
-  const playbackDuration = bufferDuration / bufferSource.playbackRate.value;
-  const sliceDuration = (end - begin) * playbackDuration;
-  return { bufferSource, offset, bufferDuration, playbackDuration, sliceDuration };
+  const bufferDuration = bufferSource.buffer.duration / bufferSource.playbackRate.value;
+  const sliceDuration = (end - begin) * bufferDuration;
+  return { bufferSource, offset, bufferDuration, sliceDuration };
 };
 
 export const loadBuffer = (url, ac, s, n = 0) => {
@@ -234,7 +233,7 @@ export async function fetchSampleMap(url) {
 }
 
 /**
- * Loads a collection of samples to use with `s`
+ * Загружает коллекцию sample для использования с `s`
  * @example
  * samples('github:tidalcycles/dirt-samples');
  * s("[bd ~]*2, [~ hh]*2, ~ sd")
@@ -244,6 +243,12 @@ export async function fetchSampleMap(url) {
  *  sd: '808sd/SD0010.WAV'
  *  }, 'https://raw.githubusercontent.com/tidalcycles/Dirt-Samples/master/');
  * s("[bd ~]*2, [~ hh]*2, ~ sd")
+ * @example
+ * samples('shabda:noise,chimp:2')
+ * s("noise <chimp:0*2 chimp:1>")
+ * @example
+ * samples('shabda/speech/fr-FR/f:chocolat')
+ * s("chocolat*4")
  */
 
 export const samples = async (sampleMap, baseUrl = sampleMap._base || '', options = {}) => {
@@ -251,12 +256,12 @@ export const samples = async (sampleMap, baseUrl = sampleMap._base || '', option
     const [json, base] = await fetchSampleMap(sampleMap);
     return samples(json, baseUrl || base, options);
   }
-  const { prebake, tag } = options;
+  const { prebake, tag, pack } = options;
 
   processSampleMap(
     sampleMap,
     (key, bank) => {
-      registerSampleSource(key, bank, { baseUrl, prebake, tag });
+      registerSampleSource(key, bank, { baseUrl, prebake, tag, pack });
     },
     baseUrl,
   );
@@ -302,7 +307,7 @@ export async function onTriggerSample(t, value, onended, bank, resolveUrl) {
   }
 
   // vibrato
-  const vibratoHandle = getVibratoOscillator(bufferSource.detune, value, t);
+  let vibratoOscillator = getVibratoOscillator(bufferSource.detune, value, t);
 
   const time = t + nudge;
   bufferSource.start(time, offset);
@@ -324,10 +329,10 @@ export async function onTriggerSample(t, value, onended, bank, resolveUrl) {
   const out = ac.createGain(); // we need a separate gain for the cutgroups because firefox...
   node.connect(out);
   onceEnded(bufferSource, function () {
-    releaseAudioNode(bufferSource);
-    vibratoHandle?.stop();
-    releaseAudioNode(node);
-    releaseAudioNode(out);
+    bufferSource.disconnect();
+    vibratoOscillator?.stop();
+    node.disconnect();
+    out.disconnect();
     onended();
   });
   let envEnd = holdEnd + release + 0.01;
@@ -335,7 +340,7 @@ export async function onTriggerSample(t, value, onended, bank, resolveUrl) {
   const stop = (endTime) => {
     bufferSource.stop(endTime);
   };
-  const handle = { node: out, nodes: { source: [bufferSource], ...vibratoHandle?.nodes }, stop };
+  const handle = { node: out, bufferSource, stop };
 
   // cut groups
   if (cut !== undefined) {

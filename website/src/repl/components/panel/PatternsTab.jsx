@@ -18,7 +18,6 @@ import { Pagination } from '../pagination/Pagination.jsx';
 import { useState } from 'react';
 import { useDebounce } from '../usedebounce.jsx';
 import cx from '@src/cx.mjs';
-import { Textbox } from '../textbox/Textbox.jsx';
 
 export function PatternLabel({ pattern } /* : { pattern: Tables<'code'> } */) {
   const meta = useMemo(() => getMetadata(pattern.code), [pattern]);
@@ -29,12 +28,12 @@ export function PatternLabel({ pattern } /* : { pattern: Tables<'code'> } */) {
     if (!isNaN(date)) {
       title = date.toLocaleDateString();
     } else {
-      title = pattern.id || 'unnamed';
+      title = 'без названия';
     }
   }
 
-  const author = Array.isArray(meta.by) ? meta.by.join(',') : 'Anonymous';
-  return <>{`${title} by ${author.slice(0, 100)}`.slice(0, 60)}</>;
+  const author = Array.isArray(meta.by) ? meta.by.join(',') : 'Аноним';
+  return <>{`${pattern.id}: ${title} by ${author.slice(0, 100)}`.slice(0, 60)}</>;
 }
 
 function PatternButton({ showOutline, onClick, pattern, showHiglight }) {
@@ -80,115 +79,73 @@ const updateCodeWindow = (context, patternData, reset = false) => {
   context.handleUpdate(patternData, reset);
 };
 
-export function PatternsTab({ context }) {
-  const [search, setSearch] = useState('');
+function UserPatterns({ context }) {
   const activePattern = useActivePattern();
   const viewingPatternStore = useViewingPatternData();
   const viewingPatternData = parseJSON(viewingPatternStore);
-  const { userPatterns, patternAutoStart } = useSettings();
+  const { userPatterns, patternFilter, patternAutoStart } = useSettings();
   const viewingPatternID = viewingPatternData?.id;
-
-  const visiblePatterns = useMemo(() => {
-    if (!search) {
-      return userPatterns;
-    }
-    return Object.fromEntries(
-      Object.entries(userPatterns).filter(([_key, pattern]) => {
-        const meta = getMetadata(pattern.code);
-
-        // Search for specific meta keys
-        const searchLowercaseTrimmed = search.trim().toLowerCase();
-        if (searchLowercaseTrimmed.includes(':')) {
-          const [metaKey, metaSearch] = searchLowercaseTrimmed.split(/:\s*/);
-          if (metaKey !== undefined && metaSearch !== undefined && metaKey in meta) {
-            const metaValues = meta[metaKey];
-            if (Array.isArray(metaValues)) {
-              return metaValues.some((metaValue) => metaValue.toLowerCase().includes(metaSearch));
-            } else if (typeof metaValues === 'string') {
-              return metaValues.toLowerCase().includes(metaSearch);
-            } else {
-              return false;
-            }
-          }
-        }
-        const title = meta.title ? meta.title : 'unnamed';
-        const authors = meta.by ? meta.by : ['anonymous'];
-        const tags = meta.tag ? meta.tag : [];
-        return (
-          title.toLowerCase().includes(searchLowercaseTrimmed) ||
-          authors.some((author) => author.toLowerCase().includes(searchLowercaseTrimmed)) ||
-          tags.some((tag) => tag.toLowerCase().includes(searchLowercaseTrimmed))
-        );
-      }),
-    );
-  }, [search, viewingPatternStore]);
-
   return (
-    <div className="px-4 w-full text-foreground  space-y-2  flex flex-col overflow-hidden max-h-full h-full">
-      <div className="w-full flex">
-        <Textbox className="w-full" placeholder="Search" value={search} onChange={setSearch} />
+    <div className="flex flex-col gap-2 flex-grow overflow-hidden h-full pb-2 ">
+      <div className="pr-4 space-x-4  flex max-w-full overflow-x-auto">
+        <ActionButton
+          label="новый"
+          onClick={() => {
+            const { data } = userPattern.createAndAddToDB();
+            updateCodeWindow(context, data);
+          }}
+        />
+        <ActionButton
+          label="копировать"
+          onClick={() => {
+            const { data } = userPattern.duplicate(viewingPatternData);
+            updateCodeWindow(context, data);
+          }}
+        />
+        <ActionButton
+          label="удалить"
+          onClick={() => {
+            const { data } = userPattern.delete(viewingPatternID);
+            updateCodeWindow(context, { ...data, collection: userPattern.collection });
+          }}
+        />
+        <label className="hover:opacity-50 cursor-pointer">
+          <input
+            style={{ display: 'none' }}
+            type="file"
+            multiple
+            accept="text/plain,text/x-markdown,application/json"
+            onChange={(e) => importPatterns(e.target.files)}
+          />
+          импорт
+        </label>
+        <ActionButton label="экспорт" onClick={exportPatterns} />
+
+        <ActionButton
+          label="удалить все"
+          onClick={() => {
+            const { data } = userPattern.clearAll();
+            updateCodeWindow(context, data);
+          }}
+        />
       </div>
-      <div className="flex flex-col gap-2 flex-grow overflow-hidden h-full pb-2 ">
-        <div className="pr-4 space-x-4  flex max-w-full overflow-x-auto">
-          <ActionButton
-            label="new"
-            onClick={() => {
-              const { data } = userPattern.createAndAddToDB();
-              updateCodeWindow(context, data);
-            }}
-          />
-          <ActionButton
-            label="duplicate"
-            onClick={() => {
-              const { data } = userPattern.duplicate(viewingPatternData);
-              updateCodeWindow(context, data);
-            }}
-          />
-          <ActionButton
-            label="delete"
-            onClick={() => {
-              const { data } = userPattern.delete(viewingPatternID);
-              updateCodeWindow(context, { ...data, collection: userPattern.collection });
-            }}
-          />
-          <label className="hover:opacity-50 cursor-pointer">
-            <input
-              style={{ display: 'none' }}
-              type="file"
-              multiple
-              accept="text/plain,text/x-markdown,application/json"
-              onChange={(e) => importPatterns(e.target.files)}
-            />
-            import
-          </label>
-          <ActionButton label="export" onClick={exportPatterns} />
 
-          <ActionButton
-            label="delete-all"
-            onClick={() => {
-              const { data } = userPattern.clearAll();
-              updateCodeWindow(context, data);
-            }}
-          />
-        </div>
+      <div className="overflow-auto h-full bg-background p-2 rounded-md">
+        {/* {patternFilter === patternFilterName.user && ( */}
+        <PatternButtons
+          onClick={(id) => {
+            updateCodeWindow(context, { ...userPatterns[id], collection: userPattern.collection }, patternAutoStart);
 
-        <div className="overflow-auto h-full bg-background p-2 rounded-md">
-          {/* {patternFilter === patternFilterName.user && ( */}
-          <PatternButtons
-            onClick={(id) => {
-              updateCodeWindow(context, { ...userPatterns[id], collection: userPattern.collection }, patternAutoStart);
-
-              if (context.started && activePattern === id) {
-                context.handleEvaluate();
-              }
-            }}
-            patterns={visiblePatterns}
-            started={context.started}
-            activePattern={activePattern}
-            viewingPatternID={viewingPatternID}
-          />
-          {/* )} */}
-        </div>
+            if (context.started && activePattern === id) {
+              context.handleEvaluate();
+            }
+          }}
+          patterns={userPatterns}
+          started={context.started}
+          activePattern={activePattern}
+          viewingPatternID={viewingPatternID}
+        />
+        {/* )} */}
       </div>
     </div>
   );
@@ -217,7 +174,7 @@ function PatternPageWithPagination({ patterns, patternOnClick, context, paginati
         />
       </div>
       <div className="flex items-center gap-2 py-2">
-        <label htmlFor="pattern pagination">Page</label>
+        <label htmlFor="pattern pagination">Страница</label>
         <Pagination id="pattern pagination" currPage={page} onPageChange={onPageChange} />
       </div>
     </div>
@@ -274,4 +231,29 @@ function PublicPatterns({ context }) {
     return <FeaturedPatterns context={context} />;
   }
   return <LatestPatterns context={context} />;
+}
+
+export function PatternsTab({ context }) {
+  const { patternFilter } = useSettings();
+
+  return (
+    <div className="px-4 w-full text-foreground  space-y-2  flex flex-col overflow-hidden max-h-full h-full">
+      <UserPatterns context={context} />
+    </div>
+  );
+  /* return (
+    <div className="px-4 w-full text-foreground  space-y-2  flex flex-col overflow-hidden max-h-full h-full">
+      <ButtonGroup
+        value={patternFilter}
+        onChange={(value) => settingsMap.setKey('patternFilter', value)}
+        items={patternFilterName}
+      ></ButtonGroup>
+
+      {patternFilter === patternFilterName.user ? (
+        <UserPatterns context={context} />
+      ) : (
+        <PublicPatterns context={context} />
+      )}
+    </div>
+  ); */
 }

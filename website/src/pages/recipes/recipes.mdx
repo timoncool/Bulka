@@ -1,20 +1,20 @@
 ---
-title: Recipes
+title: Рецепты
 layout: ../../layouts/MainLayout.astro
 ---
 
 import { MiniRepl } from '../../docs/MiniRepl';
 
-# Recipes
+# Рецепты
 
-This page shows possible ways to achieve common (or not so common) musical goals.
-There are often many ways to do a thing and there is no right or wrong.
-The fun part is that each representation will give you different impulses when improvising.
+Эта страница показывает возможные способы достижения распространённых (или не очень) музыкальных целей.
+Часто есть много способов сделать что-то, и нет правильного или неправильного.
+Интересная часть в том, что каждое представление даёт вам разные импульсы при импровизации.
 
 ## Arpeggios
 
-An arpeggio is when the notes of a chord are played in sequence.
-We can either write the notes by hand:
+Arpeggio - это когда ноты аккорда играются последовательно.
+Мы можем либо написать ноты вручную:
 
 <MiniRepl
   client:visible
@@ -23,7 +23,7 @@ We can either write the notes by hand:
   punchcard
 />
 
-...or use scales:
+...или использовать гаммы:
 
 <MiniRepl
   client:visible
@@ -32,7 +32,7 @@ We can either write the notes by hand:
   punchcard
 />
 
-...or chord symbols:
+...или символы аккордов:
 
 <MiniRepl
   client:visible
@@ -41,7 +41,7 @@ We can either write the notes by hand:
   punchcard
 />
 
-...using off:
+...используя off:
 
 <MiniRepl
   client:visible
@@ -54,9 +54,9 @@ We can either write the notes by hand:
   punchcard
 />
 
-## Chopping Breaks
+## Нарезка брейков
 
-A sample can be looped and chopped like this:
+Sample можно зациклить и нарезать вот так:
 
 <MiniRepl
   client:visible
@@ -65,9 +65,9 @@ s("amen/4").fit().chop(32)`}
   punchcard
 />
 
-This fits the break into 8 cycles + chops it in 16 pieces.
-The chops are not audible yet, because we're not doing any manipulation.
-Let's add randmized doubling + reversing:
+Это подгоняет брейк под 8 cycles + нарезает его на 16 кусочков.
+Нарезка пока не слышна, потому что мы не делаем никаких манипуляций.
+Давайте добавим рандомизированное удвоение + реверсирование:
 
 <MiniRepl
   client:visible
@@ -78,7 +78,7 @@ s("amen/4").fit().chop(16).cut(1)
   punchcard
 />
 
-If we want to specify the order of samples, we can replace `chop` with `slice`:
+Если мы хотим указать порядок samples, можем заменить `chop` на `slice`:
 
 <MiniRepl
   client:visible
@@ -89,7 +89,7 @@ s("amen/4").fit()
   punchcard
 />
 
-If we use `splice` instead of `slice`, the speed adjusts to the duration of the event:
+Если использовать `splice` вместо `slice`, скорость подстраивается под длительность события:
 
 <MiniRepl
   client:visible
@@ -100,11 +100,11 @@ s("amen")
   punchcard
 />
 
-Note that we don't need `fit`, because `splice` will do that by itself.
+Обратите внимание, что нам не нужен `fit`, потому что `splice` сделает это сам.
 
-## Filter Envelopes
+## Огибающие фильтра
 
-Using `lpenv`, we can make the filter move:
+Используя `lpenv`, мы можем заставить фильтр двигаться:
 
 <MiniRepl
   client:visible
@@ -114,7 +114,7 @@ Using `lpenv`, we can make the filter move:
   .scope()`}
 />
 
-The type of envelope depends on the methods you're setting. Let's set `lpa`:
+Тип огибающей зависит от методов, которые вы устанавливаете. Давайте установим `lpa`:
 
 <MiniRepl
   client:visible
@@ -124,7 +124,7 @@ The type of envelope depends on the methods you're setting. Let's set `lpa`:
   .scope()`}
 />
 
-Now the filter is attacking, rather than decaying as before (decay is the default). We can also do both
+Теперь фильтр атакует, а не затухает как раньше (затухание - это по умолчанию). Мы также можем сделать и то, и другое:
 
 <MiniRepl
   client:visible
@@ -134,11 +134,11 @@ Now the filter is attacking, rather than decaying as before (decay is the defaul
   .scope()`}
 />
 
-You can play around with `lpa` | `lpd` | `lps` | `lpd` to see what the filter envelope will do.
+Вы можете поэкспериментировать с `lpa` | `lpd` | `lps` | `lpd`, чтобы увидеть, что будет делать огибающая фильтра.
 
-## Layering Sounds
+## Наложение звуков
 
-We can layer sounds by separating them with ",":
+Мы можем накладывать звуки, разделяя их запятой ",":
 
 <MiniRepl
   client:visible
@@ -147,7 +147,7 @@ We can layer sounds by separating them with ",":
 .scope()`}
 />
 
-We can control the gain of individual sounds like this:
+Мы можем контролировать громкость отдельных звуков вот так:
 
 <MiniRepl
   client:visible
@@ -156,7 +156,7 @@ We can control the gain of individual sounds like this:
 .scope()`}
 />
 
-For more control over each voice, we can use `layer`:
+Для большего контроля над каждым голосом можем использовать `layer`:
 
 <MiniRepl
   client:visible
@@ -166,12 +166,12 @@ For more control over each voice, we can use `layer`:
 ).scope()`}
 />
 
-Here, we give the sawtooth a vibrato and the square is moved an octave up.
-With `layer`, you can use any pattern method available on each voice, so sky is the limit..
+Здесь мы придаём sawtooth вибрато, а square перемещаем на октаву вверх.
+С `layer` вы можете использовать любой доступный метод pattern на каждом голосе, так что небо - предел..
 
-## Oscillator Detune
+## Расстройка осциллятора
 
-We can fatten a sound by adding a detuned version to itself:
+Мы можем сделать звук толще, добавив к нему расстроенную версию:
 
 <MiniRepl
   client:visible
@@ -181,35 +181,35 @@ We can fatten a sound by adding a detuned version to itself:
   punchcard
 />
 
-Try out different values, or add another voice!
+Попробуйте разные значения или добавьте ещё один голос!
 
 ## Polyrhythms
 
-Here is a simple example of a polyrhythm:
+Вот простой пример polyrhythm:
 
 <MiniRepl client:visible tune={`s("bd*2,hh*3")`} punchcard />
 
-A polyrhythm is when 2 different tempos happen at the same time.
+Polyrhythm - это когда два разных темпа происходят одновременно.
 
 ## Polymeter
 
-This is a polymeter:
+Это polymeter:
 
 <MiniRepl client:visible tune={`s("<bd rim, hh hh oh>*4")`} punchcard />
 
-A polymeter is when 2 different bar lengths play at the same tempo.
+Polymeter - это когда два разных размера такта играют в одном темпе.
 
 ## Phasing
 
-This is a phasing:
+Это phasing:
 
 <MiniRepl client:visible tune={`note("<C D G A Bb D C A G D Bb A>*[6,6.1]").piano()`} punchcard />
 
-Phasing happens when the same sequence plays at slightly different tempos.
+Phasing происходит, когда одна и та же последовательность играет в слегка разных темпах.
 
-## Running through samples
+## Пробежка по samples
 
-Using `run` with `n`, we can rush through a sample bank:
+Используя `run` с `n`, мы можем пробежаться по банку samples:
 
 <MiniRepl
   client:visible
@@ -218,9 +218,9 @@ n(run(8)).s("ftabla")`}
   punchcard
 />
 
-This works great with sample banks that contain similar sounds, like in this case different recordings of a tabla.
-Often times, you'll hear the beginning of the phrase not where the pattern begins.
-In this case, I hear the beginning at the third sample, which can be accounted for with `early`.
+Это отлично работает с банками samples, содержащими похожие звуки, как в этом случае разные записи табла.
+Часто вы будете слышать начало фразы не там, где начинается pattern.
+В этом случае я слышу начало на третьем sample, что можно учесть с помощью `early`.
 
 <MiniRepl
   client:visible
@@ -228,7 +228,7 @@ In this case, I hear the beginning at the third sample, which can be accounted f
 n(run(8)).s("ftabla").early(2/8)`}
 />
 
-Let's add some randomness:
+Давайте добавим немного случайности:
 
 <MiniRepl
   client:visible
@@ -237,9 +237,9 @@ n(run(8)).s("ftabla").early(2/8)
 .sometimes(mul(speed("1.5")))`}
 />
 
-## Tape Warble
+## Дрожание ленты
 
-We can emulate a pitch warbling effect like this:
+Мы можем эмулировать эффект дрожания высоты звука вот так:
 
 <MiniRepl
   client:visible
@@ -248,9 +248,9 @@ We can emulate a pitch warbling effect like this:
 .clip(2).s("gm_electric_guitar_clean")`}
 />
 
-## Sound Duration
+## Длительность звука
 
-There are a number of ways to change the sound duration. Using clip:
+Есть несколько способов изменить длительность звука. Используя clip:
 
 <MiniRepl
   client:visible
@@ -258,8 +258,8 @@ There are a number of ways to change the sound duration. Using clip:
 .clip("<2 1 .5 .25>")`}
 />
 
-The value of clip is relative to the duration of each event.
-We can also create overlaps using release:
+Значение clip относительно длительности каждого события.
+Мы также можем создать перекрытия, используя release:
 
 <MiniRepl
   client:visible
@@ -267,8 +267,8 @@ We can also create overlaps using release:
 .release("<2 1 .5 .25>")`}
 />
 
-This will smoothly fade out each sound for the given number of seconds.
-We could also make the notes shorter by using a decay envelope:
+Это плавно затухнет каждый звук в течение заданного количества секунд.
+Мы также можем сделать ноты короче, используя огибающую затухания:
 
 <MiniRepl
   client:visible
@@ -276,26 +276,26 @@ We could also make the notes shorter by using a decay envelope:
 .decay("<2 1 .5 .25>")`}
 />
 
-When using samples, we also have `.end` to cut relative to the sample length:
+При использовании samples у нас также есть `.end` для обрезки относительно длины sample:
 
 <MiniRepl client:visible tune={`s("oh*4").end("<1 .5 .25 .1>")`} />
 
-Compare that to clip:
+Сравните это с clip:
 
 <MiniRepl client:visible tune={`s("oh*4").clip("<1 .5 .25 .1>")`} />
 
-or decay:
+или decay:
 
 <MiniRepl client:visible tune={`s("oh*4").decay("<1 .5 .25 .1>")`} />
 
-## Wavetable Synthesis
+## Волновой синтез
 
-You can loop a sample with `loop` / `loopEnd`:
+Вы можете зациклить sample с помощью `loop` / `loopEnd`:
 
 <MiniRepl client:visible tune={`note("<c eb g f>").s("bd").loop(1).loopEnd(.05).gain(.2)`} />
 
-This allows us to play the first 5% of the bass drum as a synth!
-To simplify loading wavetables, any sample that starts with `wt_` will be looped automatically:
+Это позволяет нам проигрывать первые 5% бочки как синтезатор!
+Для упрощения загрузки волновых таблиц любой sample, начинающийся с `wt_`, будет зациклен автоматически:
 
 <MiniRepl
   client:visible
@@ -303,7 +303,7 @@ To simplify loading wavetables, any sample that starts with `wt_` will be looped
 note("c eb g bb").s("wt_dbass").clip(2)`}
 />
 
-Running through different wavetables can also give interesting variations:
+Пробежка по разным волновым таблицам также может дать интересные вариации:
 
 <MiniRepl
   client:visible
@@ -311,7 +311,7 @@ Running through different wavetables can also give interesting variations:
 note("c2*8").s("wt_dbass").n(run(8)).fast(2)`}
 />
 
-...adding a filter envelope + reverb:
+...добавляя огибающую фильтра + reverb:
 
 <MiniRepl
   client:visible

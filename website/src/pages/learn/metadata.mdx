@@ -1,113 +1,92 @@
 ---
-title: Music metadata
+title: Метаданные музыки
 layout: ../../layouts/MainLayout.astro
 ---
 
 import { MiniRepl } from '../../docs/MiniRepl';
 import { JsDoc } from '../../docs/JsDoc';
 
-# Music metadata
+# Метаданные музыки
 
-You can optionally add some music metadata in your Strudel code, by using tags in code comments:
+Вы можете опционально добавить некоторые метаданные музыки в свой код Strudel, используя теги в комментариях:
 
 ```js
-// @title My Cool Song
-// @by John Doe
-// @license CC-BY-SA-4.0
+// @title Hey Hoo
+// @by Sam Tagada
+// @license CC BY-NC-SA
 ```
 
-Like other comments, those are ignored by Strudel, but it can be used by other tools to retrieve some information about the music.
+Как и другие комментарии, они игнорируются Strudel, но могут использоваться другими инструментами для получения информации о музыке.
 
-## Alternative syntax
+## Альтернативный синтаксис
 
-You can also use comment blocks:
+Вы также можете использовать блоки комментариев:
 
 ```js
 /*
-@title My Cool Song
-@by John Doe
-@license CC-BY-SA-4.0
+@title Hey Hoo
+@by Sam Tagada
+@license CC BY-NC-SA
 */
 ```
 
-Or define multiple tags in one line:
+Или определить несколько тегов в одной строке:
 
 ```js
-// @title My Cool Song @by John Doe @license CC-BY-SA-4.0
+// @title Hey Hoo @by Sam Tagada @license CC BY-NC-SA
 ```
 
-The `title` tag has an alternative syntax using quotes (must be defined at the very begining):
+Тег `title` имеет альтернативный синтаксис с использованием кавычек (должен быть определен в самом начале):
 
 ```js
-// "My Cool Song" @by John Doe
+// "Hey Hoo" @by Sam Tagada
 ```
 
-## Tags list
+## Список тегов
 
-Available tags are:
+Доступные теги:
 
-- `@title`: music title
-- `@by`: music author(s), separated by comma, eventually followed with a link in `<>` (ex: `@by John Doe <https://example.com>`)
-- `@license`: music license(s), separated by comma. Each license should be specified by using the correct identifier in the [https://spdx.org/licenses/](SPDX License List). Example: CC-BY-SA-4.0. Unsure? [Choose a Creative Commons license here](https://creativecommons.org/choose/).
-- `@details`: some additional information about the music
-- `@url`: web page(s) related to the music (git repository, Soundcloud link, etc.)
-- `@genre`: music genre(s) (pop, jazz, etc.)
-- `@album`: music album name
-- `@tag`: custom tag
+- `@title`: название музыки
+- `@by`: автор(ы) музыки, разделенные запятой, опционально с ссылкой в `<>` (например: `@by John Doe <https://example.com>`)
+- `@license`: лицензия(и) музыки, например CC BY-NC-SA. Не уверены? [Выберите creative commons лицензию здесь](https://creativecommons.org/choose/)
+- `@details`: дополнительная информация о музыке
+- `@url`: веб-страница(ы), связанные с музыкой (git репозиторий, ссылка soundcloud и т.д.)
+- `@genre`: жанр(ы) музыки (pop, jazz и т.д.)
+- `@album`: название музыкального альбома
 
-Note to tool authors: _Never_ trust that a song has filled those fields with syntactically correct values; make sure your software is robust enough it doesn't break if it encounters bad values
+## Несколько значений
 
-## Multiple values
-
-Some of them accepts several values, using the comma or new line separator, or duplicating the tag:
+Некоторые из них принимают несколько значений, используя разделитель запятой или новой строки, или дублируя тег:
 
 ```js
 /*
-@by John Doe
-    Jane Doe
+@by Sam Tagada
+    Jimmy
 @genre pop, jazz
 @url https://example.com
 @url https://example.org
 */
 ```
 
-You can also add optional prefixes and use tags where you want:
+Вы также можете добавлять опциональные префиксы и использовать теги где угодно:
 
 ```js
 /*
-song @by John Doe
-samples @by Jane Doe
+song @by Sam Tagada
+samples @by Jimmy
 */
 ...
-note("a3 c#4 e4 a4") // @by Sandy Sue
+note("a3 c#4 e4 a4") // @by Sandy
 ```
 
-## Multiline
+## Многострочные
 
-If a tag doesn't accept a list, it can take multi-line values:
+Если тег не принимает список, он может принимать многострочные значения:
 
 ```js
 /*
-@details I wrote this song in February 19th, 2023.
-         It was around midnight and I was lying on
-         the sofa in the living room.
+@details Я написал эту песню 19 февраля 2023 года.
+         Было около полуночи, и я лежал на
+         диване в гостиной.
 */
 ```
-
-# Searching meta-data in the online repl
-
-Meta-data can be used in the search field of the patterns tab in the online repl.
-
-For example to search for all patterns by a specific author use the search term
-
-```
-by: Ada L
-```
-
-or search for patterns with a specific genre like
-
-```
-genre: unicorns
-```
-
-Hint: If no meta-data property is provided in the search all patterns with a `@title`, `@by` or `@tag` matching the search term will be shown.

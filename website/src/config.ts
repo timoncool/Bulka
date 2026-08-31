@@ -1,13 +1,13 @@
 export const SITE = {
-  title: 'Strudel',
-  description: 'Strudel is a music live coding editor that brings TidalCycles to the browser.',
+  title: 'Bulka',
+  description: 'Bulka — платформа для лайв-кодинга музыки в браузере.',
   defaultLanguage: 'en',
 };
 
 export const OPEN_GRAPH = {
   image: {
-    src: 'https://strudel.cc/icon.png',
-    alt: 'Strudel Logo',
+    src: '/icon.png',
+    alt: 'Bulka Logo',
   },
 };
 
@@ -28,95 +28,95 @@ export const KNOWN_LANGUAGES = {
 } as const;
 export const KNOWN_LANGUAGE_CODES = Object.values(KNOWN_LANGUAGES);
 
-export const GITHUB_EDIT_URL = `https://codeberg.org/uzu/strudel/src/branch/main/website`;
+export const GITHUB_EDIT_URL = `https://github.com/timoncool/Bulka/tree/main/website`;
 
-export const COMMUNITY_INVITE_URL = `https://discord.com/invite/HGEdXmRkzT`;
-
-// See "Algolia" section of the README for more information.
-export const ALGOLIA = {
-  indexName: 'strudel-tidalcycles',
-  appId: 'SAZ71S8CLS',
-  apiKey: 'd5044f9d21b80e7721e5b0067a8730b1',
-};
+export const COMMUNITY_INVITE_URL = `https://t.me/bulka_app`;
 
 export type SidebarLang = Record<string, { text: string; link: string }[]>;
 export type Sidebar = Record<(typeof KNOWN_LANGUAGE_CODES)[number], SidebarLang>;
 export const SIDEBAR: Sidebar = {
-  de: {
-    Workshop: [
-      { text: 'Intro', link: 'de/workshop/getting-started' },
-      { text: 'Erste Sounds', link: 'de/workshop/first-sounds' },
-      { text: 'Erste Töne', link: 'de/workshop/first-notes' },
-      { text: 'Erste Effekte', link: 'de/workshop/first-effects' },
-      { text: 'Pattern Effekte', link: 'de/workshop/pattern-effects' },
-      { text: 'Rückblick', link: 'de/workshop/recap' },
-      { text: 'Mehr Seiten auf Englisch', link: 'workshop/getting-started' },
-    ],
-  },
+  de: {},
   en: {
-    Presentation: [
-      { text: 'What is Strudel?', link: 'workshop/getting-started' },
-      { text: 'Showcase', link: 'intro/showcase' },
-      { text: 'Blog', link: 'blog' },
-      /* { text: 'Community Bakery', link: 'bakery' }, */
+    'Презентация': [
+      { text: 'Что такое Bulka?', link: 'workshop/getting-started' },
+      { text: 'Лента', link: 'feed' },
+      { text: 'Галерея треков', link: 'intro/gallery' },
+      { text: 'Витрина', link: 'intro/showcase' },
+      { text: 'Блог', link: 'blog' },
+      { text: 'Что нового', link: 'whatsnew' },
     ],
-    Workshop: [
-      // { text: 'Getting Started', link: 'workshop/getting-started' },
-      { text: 'First Sounds', link: 'workshop/first-sounds' },
-      { text: 'First Notes', link: 'workshop/first-notes' },
-      { text: 'First Effects', link: 'workshop/first-effects' },
-      { text: 'Pattern Effects', link: 'workshop/pattern-effects' },
-      { text: 'Recap', link: 'workshop/recap' },
-      { text: 'Workshop in German', link: 'de/workshop/getting-started' },
+    'Воркшоп': [
+      // { text: 'Начало работы', link: 'workshop/getting-started' },
+      { text: 'Первые звуки', link: 'workshop/first-sounds' },
+      { text: 'Первые ноты', link: 'workshop/first-notes' },
+      { text: 'Первые эффекты', link: 'workshop/first-effects' },
+      { text: 'Эффекты паттернов', link: 'workshop/pattern-effects' },
+      { text: 'Итоги', link: 'workshop/recap' },
     ],
-    'Making Sound': [
+    'Создание звука': [
       { text: 'Samples', link: 'learn/samples' },
-      { text: 'Synths', link: 'learn/synths' },
-      { text: 'Audio Effects', link: 'learn/effects' },
-      { text: 'MIDI & OSC', link: 'learn/input-output' },
+      { text: 'Синтезаторы', link: 'learn/synths' },
+      { text: 'Аудио эффекты', link: 'learn/effects' },
+      { text: 'MIDI и OSC', link: 'learn/input-output' },
     ],
-    More: [
-      { text: 'FAQ', link: 'learn/faq' },
-      { text: 'Recipes', link: 'recipes/recipes' },
+    'Hydra — Визуализации': [
+      { text: 'Введение в Hydra', link: 'hydra/intro' },
+      { text: 'Интерактивный туториал', link: 'hydra/tutorial' },
+      { text: 'Источники (Sources)', link: 'hydra/sources' },
+      { text: 'Внешние источники', link: 'hydra/external-sources' },
+      { text: 'Трансформации', link: 'hydra/transforms' },
+      { text: 'Смешивание (Blending)', link: 'hydra/blending' },
+      { text: 'Модуляция', link: 'hydra/modulation' },
+      { text: 'Аудио-реактивность', link: 'hydra/audio' },
+      { text: 'Feedback эффекты', link: 'hydra/feedback' },
+      { text: 'Галерея примеров', link: 'hydra/examples' },
+      { text: 'Hydra в Strudel', link: 'learn/hydra' },
+    ],
+    'Ещё': [
+      { text: 'Bulka AI Agent', link: 'learn/ai-agent' },
+      { text: 'GPT4Free (бесплатно)', link: 'learn/gpt4free' },
+      { text: 'Рецепты', link: 'recipes/recipes' },
       { text: 'Mini-Notation', link: 'learn/mini-notation' },
-      { text: 'Visual Feedback', link: 'learn/visual-feedback' },
-      { text: 'Offline', link: 'learn/pwa' },
+      { text: 'Визуальная обратная связь', link: 'learn/visual-feedback' },
+      { text: 'Темы редактора', link: 'learn/themes' },
+      { text: 'Оффлайн', link: 'learn/pwa' },
       { text: 'Patterns', link: 'technical-manual/patterns' },
       { text: 'Mondo Notation', link: 'learn/mondo-notation' },
-      { text: 'Music metadata', link: 'learn/metadata' },
+      { text: 'Метаданные музыки', link: 'learn/metadata' },
       { text: 'CSound', link: 'learn/csound' },
-      { text: 'Hydra', link: 'learn/hydra' },
-      { text: 'Input Devices', link: 'learn/input-devices' },
-      { text: 'Device Motion', link: 'learn/devicemotion' },
+      { text: 'Устройства ввода', link: 'learn/input-devices' },
+      { text: 'Движение устройства', link: 'learn/devicemotion' },
+      { text: 'Продвинутые интеграции', link: 'learn/advanced-integrations' },
+      { text: 'Сообщество и ресурсы', link: 'learn/community' },
     ],
-    'Pattern Functions': [
-      { text: 'Introduction', link: 'functions/intro' },
-      { text: 'Creating Patterns', link: 'learn/factories' },
-      { text: 'Time Modifiers', link: 'learn/time-modifiers' },
-      { text: 'Control Parameters', link: 'functions/value-modifiers' },
-      { text: 'Signals', link: 'learn/signals' },
-      { text: 'Random Modifiers', link: 'learn/random-modifiers' },
-      { text: 'Conditional Modifiers', link: 'learn/conditional-modifiers' },
-      { text: 'Accumulation', link: 'learn/accumulation' },
-      { text: 'Tonal Functions', link: 'learn/tonal' },
-      { text: 'Stepwise Functions', link: 'learn/stepwise' },
+    'Функции паттернов': [
+      { text: 'Введение', link: 'functions/intro' },
+      { text: 'Создание Patterns', link: 'learn/factories' },
+      { text: 'Модификаторы времени', link: 'learn/time-modifiers' },
+      { text: 'Параметры управления', link: 'functions/value-modifiers' },
+      { text: 'Сигналы', link: 'learn/signals' },
+      { text: 'Случайные модификаторы', link: 'learn/random-modifiers' },
+      { text: 'Условные модификаторы', link: 'learn/conditional-modifiers' },
+      { text: 'Накопление', link: 'learn/accumulation' },
+      { text: 'Тональные функции', link: 'learn/tonal' },
+      { text: 'Пошаговые функции', link: 'learn/stepwise' },
     ],
-    Understand: [
-      { text: 'Coding syntax', link: 'learn/code' },
+    'Понимание': [
+      { text: 'Синтаксис кода', link: 'learn/code' },
       { text: 'Pitch', link: 'understand/pitch' },
-      { text: 'Xen Harmonic Functions', link: 'learn/xen' },
+      { text: 'Ксеногармонические функции', link: 'learn/xen' },
       { text: 'Cycles', link: 'understand/cycles' },
       { text: 'Voicings', link: 'understand/voicings' },
-      { text: 'Pattern Alignment', link: 'technical-manual/alignment' },
-      { text: 'Strudel vs Tidal', link: 'learn/strudel-vs-tidal' },
+      { text: 'Выравнивание паттернов', link: 'technical-manual/alignment' },
+      { text: 'Bulka vs Tidal', link: 'learn/strudel-vs-tidal' },
     ],
-    Development: [
-      { text: 'Strudel in your Project', link: 'technical-manual/project-start' },
-      { text: 'Packages', link: 'technical-manual/packages' },
+    'Разработка': [
+      { text: 'Bulka в вашем проекте', link: 'technical-manual/project-start' },
+      { text: 'Пакеты', link: 'technical-manual/packages' },
       { text: 'REPL', link: 'technical-manual/repl' },
-      { text: 'Sounds', link: 'technical-manual/sounds' },
-      { text: 'Docs', link: 'technical-manual/docs' },
-      { text: 'Testing', link: 'technical-manual/testing' },
+      { text: 'Звуки', link: 'technical-manual/sounds' },
+      { text: 'Документация', link: 'technical-manual/docs' },
+      { text: 'Тестирование', link: 'technical-manual/testing' },
       // { text: 'Internals', link: 'technical-manual/internals' },
     ],
   },

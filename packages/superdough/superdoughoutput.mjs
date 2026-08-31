@@ -1,20 +1,8 @@
-/*
-superdoughoutput.mjs - Output controller for superdough
-
-Handles setting up and mixing to the outputs as well as all global (orbit) effects
-
-Copyright (C) 2025 Strudel contributors - see <https://codeberg.org/uzu/strudel/src/branch/main/packages/superdough/superdoughoutput.mjs>
-This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more details. You should have received a copy of the GNU Affero General Public License along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
-
 import { effectSend, getWorklet, webAudioTimeout } from './helpers.mjs';
 import { errorLogger } from './logger.mjs';
 import { clamp } from './util.mjs';
 
-const hasChanged = (now, before) => now !== undefined && now !== before;
-// Node with fixed stereo channel count to prevent clicking when the input signal
-// switches from mono to stereo
-const getStereoNode = (ac) => new GainNode(ac, { gain: 1, channelCount: 2, channelCountMode: 'explicit' });
+let hasChanged = (now, before) => now !== undefined && now !== before;
 
 export class Orbit {
   reverbNode;
@@ -23,11 +11,10 @@ export class Orbit {
   summingNode;
   djfNode;
   audioContext;
-
   constructor(audioContext) {
     this.audioContext = audioContext;
-    this.output = getStereoNode(audioContext);
-    this.summingNode = getStereoNode(audioContext);
+    this.output = new GainNode(audioContext, { gain: 1, channelCount: 2, channelCountMode: 'explicit' });
+    this.summingNode = new GainNode(audioContext, { gain: 1, channelCount: 2, channelCountMode: 'explicit' });
     this.summingNode.connect(this.output);
   }
 
@@ -47,7 +34,6 @@ export class Orbit {
     }
     const val = this.djfNode.parameters.get('value');
     val.setValueAtTime(value, t);
-    return this.djfNode;
   }
 
   getDelay(delaytime = 0, feedback = 0.5, t) {
@@ -129,9 +115,57 @@ export class Orbit {
   }
 }
 
+// WAV encoder - converts PCM data to WAV format (lossless)
+function encodeWAV(samples, sampleRate, numChannels) {
+  const bytesPerSample = 2; // 16-bit
+  const blockAlign = numChannels * bytesPerSample;
+  const byteRate = sampleRate * blockAlign;
+  const dataSize = samples.length * bytesPerSample;
+  const buffer = new ArrayBuffer(44 + dataSize);
+  const view = new DataView(buffer);
+
+  // WAV header
+  const writeString = (offset, str) => {
+    for (let i = 0; i < str.length; i++) {
+      view.setUint8(offset + i, str.charCodeAt(i));
+    }
+  };
+
+  writeString(0, 'RIFF');
+  view.setUint32(4, 36 + dataSize, true);
+  writeString(8, 'WAVE');
+  writeString(12, 'fmt ');
+  view.setUint32(16, 16, true); // PCM chunk size
+  view.setUint16(20, 1, true); // PCM format
+  view.setUint16(22, numChannels, true);
+  view.setUint32(24, sampleRate, true);
+  view.setUint32(28, byteRate, true);
+  view.setUint16(32, blockAlign, true);
+  view.setUint16(34, 16, true); // bits per sample
+  writeString(36, 'data');
+  view.setUint32(40, dataSize, true);
+
+  // Write PCM samples (16-bit)
+  let offset = 44;
+  for (let i = 0; i < samples.length; i++) {
+    const s = Math.max(-1, Math.min(1, samples[i]));
+    view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+    offset += 2;
+  }
+
+  return new Blob([buffer], { type: 'audio/wav' });
+}
+
 export class SuperdoughOutput {
   channelMerger;
   destinationGain;
+  // Recording
+  recorderNode;
+  recordedBuffers = [];
+  isRecording = false;
+  recordingStartTime = 0;
+  recordingTimerInterval = null;
+  pendingFilename = null;
 
   constructor(audioContext) {
     this.audioContext = audioContext;
@@ -148,10 +182,106 @@ export class SuperdoughOutput {
     this.destinationGain.connect(audioContext.destination);
   }
 
+  startRecording(onTimeUpdate) {
+    if (this.isRecording) return;
+
+    this.recordedBuffers = [];
+    const bufferSize = 4096;
+
+    // Create ScriptProcessorNode for recording (captures raw PCM)
+    this.recorderNode = this.audioContext.createScriptProcessor(bufferSize, 2, 2);
+    this.recorderNode.onaudioprocess = (e) => {
+      if (!this.isRecording) return;
+      // Capture stereo interleaved
+      const left = e.inputBuffer.getChannelData(0);
+      const right = e.inputBuffer.getChannelData(1);
+      const interleaved = new Float32Array(left.length * 2);
+      for (let i = 0; i < left.length; i++) {
+        interleaved[i * 2] = left[i];
+        interleaved[i * 2 + 1] = right[i];
+      }
+      this.recordedBuffers.push(interleaved);
+    };
+
+    // Connect recorder node
+    this.destinationGain.connect(this.recorderNode);
+    this.recorderNode.connect(this.audioContext.destination); // Required for processing
+
+    this.isRecording = true;
+    this.recordingStartTime = Date.now();
+
+    // Timer for UI updates
+    if (onTimeUpdate) {
+      this.recordingTimerInterval = setInterval(() => {
+        const elapsed = Date.now() - this.recordingStartTime;
+        onTimeUpdate(elapsed);
+      }, 100);
+    }
+  }
+
+  stopRecording(filename) {
+    if (!this.isRecording) return;
+
+    this.pendingFilename = filename;
+
+    if (this.recordingTimerInterval) {
+      clearInterval(this.recordingTimerInterval);
+      this.recordingTimerInterval = null;
+    }
+
+    this.isRecording = false;
+
+    // Disconnect recorder
+    if (this.recorderNode) {
+      this.recorderNode.disconnect();
+      this.destinationGain.disconnect(this.recorderNode);
+      this.recorderNode = null;
+    }
+
+    this._exportRecording();
+  }
+
+  _exportRecording() {
+    if (this.recordedBuffers.length === 0) return;
+
+    // Merge all buffers
+    const totalLength = this.recordedBuffers.reduce((acc, buf) => acc + buf.length, 0);
+    const samples = new Float32Array(totalLength);
+    let offset = 0;
+    for (const buffer of this.recordedBuffers) {
+      samples.set(buffer, offset);
+      offset += buffer.length;
+    }
+
+    // Encode to WAV (lossless)
+    const blob = encodeWAV(samples, this.audioContext.sampleRate, 2);
+
+    // Create download
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+
+    // Use provided filename or generate one
+    const basename = this.pendingFilename || `bulka_${new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)}`;
+    a.download = `${basename}.wav`;
+
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    this.recordedBuffers = [];
+    this.pendingFilename = null;
+  }
+
   reset() {
+    if (this.isRecording) {
+      this.stopRecording();
+    }
     this.disconnect();
     this.initializeAudio();
   }
+
   disconnect() {
     this.channelMerger.disconnect();
     this.destinationGain.disconnect();
@@ -178,7 +308,6 @@ export class SuperdoughAudioController {
   audioContext;
   output;
   nodes = {};
-  buses = {};
 
   constructor(audioContext) {
     this.audioContext = audioContext;
@@ -186,14 +315,10 @@ export class SuperdoughAudioController {
   }
 
   reset() {
-    Object.values(this.nodes).forEach((node) => {
+    Array.from(this.nodes).forEach((node) => {
       node.disconnect();
     });
-    Object.values(this.buses).forEach((bus) => {
-      bus.disconnect();
-    });
     this.nodes = {};
-    this.buses = {};
     this.output.reset();
   }
 
@@ -224,12 +349,5 @@ export class SuperdoughAudioController {
       this.output.connectToDestination(this.nodes[orbitNum].output, channels);
     }
     return this.nodes[orbitNum];
-  }
-
-  getBus(busNum) {
-    if (this.buses[busNum] == null) {
-      this.buses[busNum] = getStereoNode(this.audioContext);
-    }
-    return this.buses[busNum];
   }
 }

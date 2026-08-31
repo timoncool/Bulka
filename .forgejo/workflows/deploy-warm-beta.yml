@@ -1,9 +1,6 @@
 name: Build and Deploy to beta (warm.strudel.cc)
 
-on:
-  push:
-    branches:
-      - main
+on: [workflow_dispatch]
 
 # Allow one concurrent deployment
 concurrency:

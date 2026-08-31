@@ -203,16 +203,80 @@
   border: 1px solid var(--foreground, #3a3a3a);
 }
 
-.autocomplete-info-tooltip::-webkit-scrollbar {
-  width: 4px;
+/* ===== Scrollbar Theming ===== */
+
+/* Main editor scrollbar */
+#code .cm-scroller::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
 
-.autocomplete-info-tooltip::-webkit-scrollbar-track {
+#code .cm-scroller::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-.autocomplete-info-tooltip::-webkit-scrollbar-thumb {
-  border-radius: 2px;
+#code .cm-scroller::-webkit-scrollbar-thumb {
+  background: var(--gutterForeground);
+  border-radius: 4px;
 }
 
-.autocomplete-info-tooltip::-webkit-scrollbar-thumb:hover {
+#code .cm-scroller::-webkit-scrollbar-thumb:hover {
+  background: var(--foreground);
+}
+
+#code .cm-scroller::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Autocomplete tooltip scrollbar */
+.autocomplete-info-tooltip::-webkit-scrollbar,
+.cm-tooltip.cm-completionInfo::-webkit-scrollbar {
+  width: 6px;
+}
+
+.autocomplete-info-tooltip::-webkit-scrollbar-track,
+.cm-tooltip.cm-completionInfo::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.autocomplete-info-tooltip::-webkit-scrollbar-thumb,
+.cm-tooltip.cm-completionInfo::-webkit-scrollbar-thumb {
+  background: var(--gutterForeground);
+  border-radius: 3px;
+}
+
+.autocomplete-info-tooltip::-webkit-scrollbar-thumb:hover,
+.cm-tooltip.cm-completionInfo::-webkit-scrollbar-thumb:hover {
+  background: var(--foreground);
+}
+
+/* Autocomplete list scrollbar */
+.cm-tooltip-autocomplete::-webkit-scrollbar {
+  width: 6px;
+}
+
+.cm-tooltip-autocomplete::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.cm-tooltip-autocomplete::-webkit-scrollbar-thumb {
+  background: var(--gutterForeground);
+  border-radius: 3px;
+}
+
+.cm-tooltip-autocomplete::-webkit-scrollbar-thumb:hover {
+  background: var(--foreground);
+}
+
+/* Firefox scrollbar support */
+#code .cm-scroller {
+  scrollbar-width: thin;
+  scrollbar-color: var(--gutterForeground) transparent;
+}
+
+.autocomplete-info-tooltip,
+.cm-tooltip.cm-completionInfo,
+.cm-tooltip-autocomplete {
+  scrollbar-width: thin;
+  scrollbar-color: var(--gutterForeground) transparent;
 }

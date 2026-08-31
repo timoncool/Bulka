@@ -1,20 +1,20 @@
 ---
-title: First Effects
+title: Первые эффекты
 layout: ../../layouts/MainLayout.astro
 ---
 
 import { MiniRepl } from '../../docs/MiniRepl';
 import QA from '@components/QA';
 
-# First Effects
+# Первые эффекты
 
 import Box from '@components/Box.astro';
 
-We have sounds, we have notes, now let's look at effects!
+У нас есть звуки, у нас есть ноты, теперь давайте посмотрим на эффекты!
 
-## Some basic effects
+## Некоторые базовые эффекты
 
-**low-pass filter**
+**фильтр низких частот**
 
 <MiniRepl
   client:visible
@@ -24,14 +24,14 @@ We have sounds, we have notes, now let's look at effects!
 
 <Box>
 
-lpf = **l**ow **p**ass **f**ilter
+lpf = **l**ow **p**ass **f**ilter (фильтр низких частот)
 
-- Change lpf to 200. Notice how it gets muffled. Think of it as standing in front of the club with the door closed 🚪.
-- Now let's open the door... change it to 5000. Notice how it gets brighter ✨🪩
+- Измените lpf на 200. Обратите внимание, как звук становится приглушенным. Представьте себя стоящим перед клубом с закрытой дверью 🚪.
+- Теперь давайте откроем дверь... измените значение на 5000. Обратите внимание, как звук становится ярче ✨🪩
 
 </Box>
 
-**pattern the filter**
+**паттерн фильтра**
 
 <MiniRepl
   client:visible
@@ -41,10 +41,10 @@ lpf = **l**ow **p**ass **f**ilter
 
 <Box>
 
-- Try adding more values
-- Notice how the pattern in lpf does not change the overall rhythm
+- Попробуйте добавить больше значений
+- Обратите внимание, что pattern в lpf не изменяет общий ритм
 
-We will learn how to automate with waves later...
+Мы узнаем, как автоматизировать с помощью волн позже...
 
 </Box>
 
@@ -68,14 +68,14 @@ punchcard
 
 <Box>
 
-Rhythm is all about dynamics!
+Ритм — это всё о динамике!
 
-- Remove `.gain(...)` and notice how flat it sounds.
-- Bring it back by undoing (ctrl+z)
+- Уберите `.gain(...)` и обратите внимание, как плоско это звучит.
+- Верните его, отменив действие (ctrl+z)
 
 </Box>
 
-Let's combine all of the above into a little tune:
+Давайте объединим всё вышеперечисленное в небольшую мелодию:
 
 <MiniRepl
   client:visible
@@ -90,7 +90,7 @@ $: note("<[c3,g3,e4] [bb2,f3,d4] [a2,f3,c4] [bb2,g3,eb4]>")
 .sound("sawtooth").vowel("<a e i o>")`}
 />
 
-**shape the sound with an adsr envelope**
+**формирование звука с помощью adsr огибающей**
 
 <MiniRepl
   client:visible
@@ -104,29 +104,29 @@ $: note("<[c3,g3,e4] [bb2,f3,d4] [a2,f3,c4] [bb2,g3,eb4]>")
 
 <Box>
 
-Try to find out what the numbers do.. Compare the following
+Попробуйте выяснить, что делают числа.. Сравните следующее
 
 - attack: `.5` vs `0`
 - decay: `.5` vs `0`
 - sustain: `1` vs `.25` vs `0`
 - release: `0` vs `.5` vs `1`
 
-Can you guess what they do?
+Можете ли вы угадать, что они делают?
 
 </Box>
 
-<QA q="Click to see solution" client:visible>
+<QA q="Нажмите, чтобы увидеть решение" client:visible>
 
-- attack: time it takes to fade in
-- decay: time it takes to fade to sustain
-- sustain: level after decay
-- release: time it takes to fade out after note is finished
+- attack: время, необходимое для нарастания
+- decay: время, необходимое для спада до уровня sustain
+- sustain: уровень после decay
+- release: время, необходимое для затухания после завершения ноты
 
 ![ADSR](https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/ADSR_parameter.svg/1920px-ADSR_parameter.svg.png)
 
 </QA>
 
-**adsr short notation**
+**короткая нотация adsr**
 
 <MiniRepl
   client:visible
@@ -148,21 +148,21 @@ $: sound("bd rim").bank("RolandTR707").delay(".5")`}
 
 <Box>
 
-Try some `delay` values between 0 and 1. Btw, `.5` is short for `0.5`
+Попробуйте несколько значений `delay` между 0 и 1. Кстати, `.5` — это сокращение от `0.5`
 
-What happens if you use `.delay(".8:.125")` ? Can you guess what the second number does?
+Что произойдет, если вы используете `.delay(".8:.125")`? Можете ли вы угадать, что делает второе число?
 
-What happens if you use `.delay(".8:.06:.8")` ? Can you guess what the third number does?
+Что произойдет, если вы используете `.delay(".8:.06:.8")`? Можете ли вы угадать, что делает третье число?
 
 </Box>
 
-<QA q="Click to see solution" client:visible>
+<QA q="Нажмите, чтобы увидеть решение" client:visible>
 
 `delay("a:b:c")`:
 
-- a: delay volume
-- b: delay time
-- c: feedback (smaller number = quicker fade)
+- a: громкость delay
+- b: время delay
+- c: обратная связь (меньшее число = более быстрое затухание)
 
 </QA>
 
@@ -177,13 +177,13 @@ What happens if you use `.delay(".8:.06:.8")` ? Can you guess what the third num
 
 <Box>
 
-Try different values!
+Попробуйте разные значения!
 
-Add a delay too!
+Добавьте также delay!
 
 </Box>
 
-**little dub tune**
+**небольшая даб-мелодия**
 
 <MiniRepl
   client:visible
@@ -197,7 +197,7 @@ $: n("<4 [3@3 4] [<2 0> ~@16] ~>")
 .room(2).gain(.5)`}
 />
 
-Let's add a bass to make this complete:
+Давайте добавим бас, чтобы завершить это:
 
 <MiniRepl
   client:visible
@@ -217,7 +217,7 @@ $: n("[0 [~ 0] 4 [3 2] [0 ~] [0 ~] <0 2> ~]/2")
 
 <Box>
 
-Try adding `.hush()` at the end of one of the patterns in the stack...
+Попробуйте добавить `.hush()` в конце одного из паттернов в стеке...
 
 </Box>
 
@@ -233,53 +233,53 @@ Try adding `.hush()` at the end of one of the patterns in the stack...
 
 <MiniRepl client:visible tune={`sound("bd rim [~ bd] rim").speed("<1 2 -1 -2>").room(.2)`} />
 
-**fast and slow**
+**fast и slow**
 
-We can use `fast` and `slow` to change the tempo of a pattern outside of Mini-Notation:
+Мы можем использовать `fast` и `slow` для изменения темпа pattern вне Mini-Notation:
 
 <MiniRepl client:visible tune={`sound("bd*4,~ rim ~ cp").slow(2)`} />
 
 <Box>
 
-Change the `slow` value. Try replacing it with `fast`.
+Измените значение `slow`. Попробуйте заменить его на `fast`.
 
-What happens if you use a pattern like `.fast("<1 [2 4]>")`?
+Что произойдет, если вы используете pattern вроде `.fast("<1 [2 4]>")`?
 
 </Box>
 
-By the way, inside Mini-Notation, `fast` is `*` and `slow` is `/`.
+Кстати, внутри Mini-Notation `fast` — это `*`, а `slow` — это `/`.
 
 <MiniRepl client:visible tune={`sound("[bd*4,~ rim ~ cp]*<1 [2 4]>")`} />
 
-## modulation with signals
+## модуляция с помощью сигналов
 
-Instead of changing values stepwise, we can also control them with signals:
+Вместо пошагового изменения значений мы также можем управлять ими с помощью сигналов:
 
 <MiniRepl client:visible tune={`sound("hh*16").gain(sine)`} punchcard punchcardLabels={false} />
 
 <Box>
 
-The basic waveforms for signals are `sine`, `saw`, `square`, `tri` 🌊
+Базовые формы волн для сигналов — это `sine`, `saw`, `square`, `tri` 🌊
 
-Try also random signals `rand` and `perlin`!
+Попробуйте также случайные сигналы `rand` и `perlin`!
 
-The gain is visualized as transparency in the pianoroll.
+Громкость gain визуализируется как прозрачность на пиано-ролле.
 
 </Box>
 
-**setting a range**
+**установка диапазона**
 
-By default, waves oscillate between 0 to 1. We can change that with `range`:
+По умолчанию волны колеблются от 0 до 1. Мы можем изменить это с помощью `range`:
 
 <MiniRepl client:visible tune={`sound("hh*16").lpf(saw.range(500, 2000))`} />
 
 <Box>
 
-What happens if you flip the range values?
+Что произойдет, если вы поменяете местами значения range?
 
 </Box>
 
-We can change the modulation speed with slow / fast:
+Мы можем изменить скорость модуляции с помощью slow / fast:
 
 <MiniRepl
   client:visible
@@ -290,22 +290,22 @@ We can change the modulation speed with slow / fast:
 
 <Box>
 
-The whole modulation will now take 8 cycles to repeat.
+Теперь вся модуляция займет 8 циклов для повторения.
 
 </Box>
 
-## Recap
+## Итоги
 
-| name    | example                                                                                                          |
-| ------- | ---------------------------------------------------------------------------------------------------------------- |
-| lpf     | <MiniRepl client:visible tune={`note("c2 c3 c2 c3").s("sawtooth").lpf("<400 2000>")`} />                         |
-| vowel   | <MiniRepl client:visible tune={`note("c3 eb3 g3").s("sawtooth").vowel("<a e i o>")`} />                          |
-| gain    | <MiniRepl client:visible tune={`s("hh*16").gain("[.25 1]*2")`} />                                                |
-| delay   | <MiniRepl client:visible tune={`s("bd rim bd cp").delay(.5)`} />                                                 |
-| room    | <MiniRepl client:visible tune={`s("bd rim bd cp").room(.5)`} />                                                  |
-| pan     | <MiniRepl client:visible tune={`s("bd rim bd cp").pan("0 1")`} />                                                |
-| speed   | <MiniRepl client:visible tune={`s("bd rim bd cp").speed("<1 2 -1 -2>")`} />                                      |
-| signals | `sine`, `saw`, `square`, `tri`, `rand`, `perlin`<br/><MiniRepl client:visible tune={`s("hh*16").gain  (saw)`} /> |
-| range   | <MiniRepl client:visible tune={`s("hh*16").lpf(saw.range(200,4000))`} />                                         |
+| название | пример                                                                                                           |
+| -------- | ---------------------------------------------------------------------------------------------------------------- |
+| lpf      | <MiniRepl client:visible tune={`note("c2 c3 c2 c3").s("sawtooth").lpf("<400 2000>")`} />                        |
+| vowel    | <MiniRepl client:visible tune={`note("c3 eb3 g3").s("sawtooth").vowel("<a e i o>")`} />                         |
+| gain     | <MiniRepl client:visible tune={`s("hh*16").gain("[.25 1]*2")`} />                                               |
+| delay    | <MiniRepl client:visible tune={`s("bd rim bd cp").delay(.5)`} />                                                |
+| room     | <MiniRepl client:visible tune={`s("bd rim bd cp").room(.5)`} />                                                 |
+| pan      | <MiniRepl client:visible tune={`s("bd rim bd cp").pan("0 1")`} />                                               |
+| speed    | <MiniRepl client:visible tune={`s("bd rim bd cp").speed("<1 2 -1 -2>")`} />                                     |
+| сигналы  | `sine`, `saw`, `square`, `tri`, `rand`, `perlin`<br/><MiniRepl client:visible tune={`s("hh*16").gain  (saw)`} /> |
+| range    | <MiniRepl client:visible tune={`s("hh*16").lpf(saw.range(200,4000))`} />                                        |
 
-Let us now take a look at some of Tidal's typical [pattern effects](/workshop/pattern-effects).
+Теперь давайте взглянем на некоторые типичные для Tidal [эффекты pattern](/workshop/pattern-effects).

@@ -1,5 +1,5 @@
 ---
-title: Pattern Effects
+title: Эффекты паттернов
 layout: ../../layouts/MainLayout.astro
 ---
 
@@ -7,21 +7,21 @@ import { MiniRepl } from '@src/docs/MiniRepl';
 import Box from '@components/Box.astro';
 import QA from '@components/QA';
 
-# Pattern Effects
+# Эффекты паттернов
 
-Up until now, most of the functions we've seen are what other music programs are typically capable of: sequencing sounds, playing notes, controlling effects.
+До сих пор большинство функций, которые мы видели, — это то, на что обычно способны другие музыкальные программы: секвенсирование звуков, воспроизведение нот, управление эффектами.
 
-In this chapter, we are going to look at functions that are more unique to tidal.
+В этой главе мы рассмотрим функции, которые более уникальны для tidal.
 
-**reverse patterns with rev**
+**обратные паттерны с помощью rev**
 
 <MiniRepl client:visible tune={`n("0 1 [4 3] 2 0 2 [~ 3] 4").sound("jazz").rev()`} />
 
-**play pattern left and modify it right with jux**
+**воспроизведение pattern слева и его модификация справа с помощью jux**
 
 <MiniRepl client:visible tune={`n("0 1 [4 3] 2 0 2 [~ 3] 4").sound("jazz").jux(rev)`} />
 
-This is the same as:
+Это то же самое, что:
 
 <MiniRepl
   client:visible
@@ -29,7 +29,7 @@ This is the same as:
 $: n("0 1 [4 3] 2 0 2 [~ 3] 4").sound("jazz").pan(1).rev()`}
 />
 
-Let's visualize what happens here:
+Давайте визуализируем, что здесь происходит:
 
 <MiniRepl
   client:visible
@@ -40,15 +40,15 @@ $: n("0 1 [4 3] 2 0 2 [~ 3] 4").sound("jazz").pan(1).color("magenta").rev()`}
 
 <Box>
 
-Try commenting out one of the two by adding `//` before a line
+Попробуйте закомментировать одну из двух строк, добавив `//` перед строкой
 
 </Box>
 
-**multiple tempos**
+**несколько темпов**
 
 <MiniRepl client:visible tune={`note("c2, eb3 g3 [bb3 c4]").sound("piano").slow("0.5,1,1.5")`} />
 
-This is like doing
+Это как если бы мы делали
 
 <MiniRepl
   client:visible
@@ -60,7 +60,7 @@ $: note("c2, eb3 g3 [bb3 c4]").s("piano").slow(1.5).color('yellow')`}
 
 <Box>
 
-Try commenting out one or more by adding `//` before a line
+Попробуйте закомментировать одну или несколько строк, добавив `//` перед строкой
 
 </Box>
 
@@ -77,11 +77,11 @@ note("c2 [eb3,g3] ".add("<0 <1 -1>>"))
 
 <Box>
 
-If you add a number to a note, the note will be treated as if it was a number
+Если вы добавляете число к ноте, нота будет обрабатываться как число
 
 </Box>
 
-We can add as often as we like:
+Мы можем добавлять столько раз, сколько захотим:
 
 <MiniRepl
   client:visible
@@ -92,7 +92,7 @@ note("c2 [eb3,g3]".add("<0 <1 -1>>").add("0,7"))
   punchcard
 />
 
-**add with scale**
+**add с scale**
 
 <MiniRepl
   client:visible
@@ -102,7 +102,7 @@ note("c2 [eb3,g3]".add("<0 <1 -1>>").add("0,7"))
   punchcard
 />
 
-**time to stack**
+**время складывать**
 
 <MiniRepl
   client:visible
@@ -121,13 +121,13 @@ $: n("0 1 [2 3] 2").sound("jazz").jux(rev)`}
 
 <MiniRepl client:visible tune={`sound("hh hh, bd rim [~ cp] rim").bank("RolandTR707").ply(2)`} punchcard />
 
-this is like writing:
+это как написать:
 
 <MiniRepl client:visible tune={`sound("hh*2 hh*2, bd*2 rim*2 [~ cp*2] rim*2").bank("RolandTR707")`} punchcard />
 
 <Box>
 
-Try patterning the `ply` function, for example using `"<1 2 1 3>"`
+Попробуйте использовать pattern для функции `ply`, например `"<1 2 1 3>"`
 
 </Box>
 
@@ -145,15 +145,15 @@ Try patterning the `ply` function, for example using `"<1 2 1 3>"`
 
 <Box>
 
-In the notation `.off(1/16, x=>x.add(4))`, says:
+В нотации `.off(1/16, x=>x.add(4))` говорится:
 
-- take the original pattern named as `x`
-- modify `x` with `.add(4)`, and
-- play it offset to the original pattern by `1/16` of a cycle.
+- взять исходный pattern с именем `x`
+- модифицировать `x` с помощью `.add(4)`, и
+- воспроизвести его со сдвигом относительно исходного pattern на `1/16` cycle.
 
 </Box>
 
-off is also useful for modifying other sounds, and can even be nested:
+off также полезен для модификации других звуков и может быть даже вложенным:
 
 <MiniRepl
   client:visible
@@ -162,10 +162,10 @@ off is also useful for modifying other sounds, and can even be nested:
   .off(3/16, y=>y.vowel("<a e i o>*8")))`}
 />
 
-| name | description                    | example                                                                                     |
-| ---- | ------------------------------ | ------------------------------------------------------------------------------------------- |
-| rev  | reverse                        | <MiniRepl client:visible tune={`n("0 2 4 6 ~ 7 9 5").scale("C:minor").rev()`} />            |
-| jux  | split left/right, modify right | <MiniRepl client:visible tune={`n("0 2 4 6 ~ 7 9 5").scale("C:minor").jux(rev)`} />         |
-| add  | add numbers / notes            | <MiniRepl client:visible tune={`n("0 2 4 6 ~ 7 9 5".add("<0 1 2 1>")).scale("C:minor")`} /> |
-| ply  | speed up each event n times    | <MiniRepl client:visible tune={`s("bd sd [~ bd] sd").ply("<1 2 3>")`} />                    |
-| off  | copy, shift time & modify      | <MiniRepl client:visible tune={`s("bd sd [~ bd] sd, hh*8").off(1/16, x=>x.speed(2))`} />    |
+| название | описание                              | пример                                                                              |
+| -------- | ------------------------------------- | ----------------------------------------------------------------------------------- |
+| rev      | обратить порядок                      | <MiniRepl client:visible tune={`n("0 2 4 6 ~ 7 9 5").scale("C:minor").rev()`} />   |
+| jux      | разделить лево/право, модифицировать право | <MiniRepl client:visible tune={`n("0 2 4 6 ~ 7 9 5").scale("C:minor").jux(rev)`} /> |
+| add      | добавить числа / ноты                 | <MiniRepl client:visible tune={`n("0 2 4 6 ~ 7 9 5".add("<0 1 2 1>")).scale("C:minor")`} /> |
+| ply      | ускорить каждое событие n раз         | <MiniRepl client:visible tune={`s("bd sd [~ bd] sd").ply("<1 2 3>")`} />           |
+| off      | копировать, сдвигать время и модифицировать | <MiniRepl client:visible tune={`s("bd sd [~ bd] sd, hh*8").off(1/16, x=>x.speed(2))`} /> |

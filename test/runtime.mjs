@@ -131,10 +131,6 @@ const midin = () => {
   return (ccNum) => strudel.ref(() => 0); // returns ref with default value 0
 };
 
-const midikeys = async () => {
-  return () => strudel.silence;
-};
-
 const sysex = ([id, data]) => {};
 
 // TODO: refactor to evalScope
@@ -154,7 +150,6 @@ evalScope(
   */
   {
     midin,
-    midikeys,
     sysex,
     // gist,
     // euclid,

@@ -8,70 +8,69 @@ import { JsDoc } from '../../docs/JsDoc';
 
 # Audio Effects
 
-Whether you're using a synth or a sample, you can apply any of the following built-in audio effects.
-As you might suspect, the effects can be chained together, and they accept a pattern string as their argument.
+Независимо от того, используете ли вы synth или sample, вы можете применить любой из следующих встроенных audio effects.
+Как вы могли догадаться, effects могут быть объединены в цепочку, и они принимают строку pattern в качестве аргумента.
 
 # Signal chain
 
 <img src="/img/strudel-signal-flow.png"></img>
 
-The signal chain in Strudel is as follows:
+Signal chain в Strudel выглядит следующим образом:
 
-- An sound-generating event is triggered by a pattern
-  - This has a start time and a duration, which is usually
-    controlled by the note length and ADSR parameters
-  - If we exceed the max polyphony, old sounds begin to die off
-  - Muted sounds (one whose `s` value is `-`, `~`, or `_`) are skipped
-- A sound is produced (through, say, a sample or an oscillator)
-  - This is where detune-based effects (like `detune`, `penv`, etc. occur)
-- The following will occur _in order_ and only if they've been called in the pattern. Note that all of these are
-  single use effects, meaning that multiple occurrences of them in a pattern will simply override the values
-  (e.g. you can't do `s("bd").lpf(100).distort(2).lpf(800)` to lowpass, distort, and then lowpass
-  again)
+- Звукогенерирующий event запускается pattern
+  - У него есть время начала и продолжительность, которые обычно
+    контролируются длиной ноты и параметрами ADSR
+  - Если мы превышаем максимальную полифонию, старые звуки начинают исчезать
+  - Заглушенные звуки (те, чье значение `s` равно `-`, `~` или `_`) пропускаются
+- Производится звук (через, скажем, sample или oscillator)
+  - Здесь происходят effects на основе detune (такие как `detune`, `penv` и т.д.)
+- Следующее произойдет _по порядку_ и только если они были вызваны в pattern. Обратите внимание, что все это
+  effects одноразового использования, что означает, что множественные вхождения их в pattern просто переопределят значения
+  (например, вы не можете сделать `s("bd").lpf(100).distort(2).lpf(800)` для lowpass, distort, а затем снова lowpass)
   - Phase vocoder (`stretch`)
-  - Gain is applied (`gain`)
-    - This is where the main (volume) ADSR happens
-  - A lowpass filter (`lpf`)
-  - A highpass filter (`hpf`)
-  - A bandpass filter (`bandpass`)
-  - A vowel filter (`vowel`)
-  - Sample rate reduction (`coarse`)
+  - Применяется Gain (`gain`)
+    - Здесь происходит основной ADSR (громкости)
+  - Lowpass filter (`lpf`)
+  - Highpass filter (`hpf`)
+  - Bandpass filter (`bandpass`)
+  - Vowel filter (`vowel`)
+  - Уменьшение частоты дискретизации (`coarse`)
   - Bit crushing (`crush`)
   - Waveshape distortion (`shape`)
-  - Normal distortion (`distort`)
+  - Обычный distortion (`distort`)
   - Tremolo (`tremolo`)
   - Compressor (`compressor`)
   - Panning (`pan`)
   - Phaser (`phaser`)
   - Postgain (`post`)
-- The sound is then split into multiple destinations
-  - Dry output (amount controlled by `dry` parameter)
+- Затем звук разделяется на несколько назначений
+  - Dry output (количество контролируется параметром `dry`)
   - The sends
     - Analyzers
-      - These are used for tooling like `scope` and `spectrum` and their setup usually happens behind the scenes
-    - Delay (amount controlled by `delay` parameter)
-    - Reverb (amount controlled by `room` parameter)
-- The dry output, delay, and reverb are joined into what is called the "orbit" of the pattern (see more in the section below)
-  - The `duck` effect affects the volume of all signals in the orbit
-  - The orbit is then sent to the mixer
+      - Они используются для инструментов типа `scope` и `spectrum`, и их настройка обычно происходит за кулисами
+    - Delay (количество контролируется параметром `delay`)
+    - Reverb (количество контролируется параметром `room`)
+- Dry output, delay и reverb объединяются в так называемый "orbit" pattern (подробнее см. в разделе ниже)
+  - Effect `duck` влияет на громкость всех сигналов в orbit
+  - Затем orbit отправляется в микшер
 
 ## Orbits
 
-Orbits are the way in which outputs are handled in Strudel. They also prescribe which delay and reverb to associate with the dry signal.
-By default, all orbits are mixed down to channels `1` and `2` in stereo, however with the "Multi Channel Orbits" setting
-(under Settings at the right) you can use them as individual 2 channel stereo outs (orbit `i` will be mapped to
-to channels `2i` and `2i + 1`). You can then use routers like Blackhole 16 to retrieve and record all of the channels in a DAW for later processing.
+Orbits — это способ обработки выходов в Strudel. Они также предписывают, какие delay и reverb связать с dry signal.
+По умолчанию все orbits смешиваются в каналы `1` и `2` в стерео, однако с настройкой "Multi Channel Orbits"
+(в разделе Настройки справа) вы можете использовать их как отдельные 2-канальные стерео выходы (orbit `i` будет отображен на
+каналы `2i` и `2i + 1`). Затем вы можете использовать маршрутизаторы типа Blackhole 16 для получения и записи всех каналов в DAW для последующей обработки.
 
-The default orbit is `1` and it is set with `orbit`. You may send a sound to multiple orbits via mininotation
+Orbit по умолчанию — `1`, и он устанавливается с помощью `orbit`. Вы можете отправить звук на несколько orbits через mininotation
 
 <MiniRepl client:visible tune={`s("white").orbit("2,3,4").gain(0.2)`} />
 
-but please be careful as this will create three copies of the sound behind the scenes, meaning that if they are mixed
-down to a single output, they will triple the volume. We've reduced the gain here to save your ears.
+но будьте осторожны, так как это создаст три копии звука за кулисами, что означает, что если они будут смешаны
+в один выход, они утроят громкость. Мы уменьшили gain здесь, чтобы сберечь ваши уши.
 
-⚠️ There is only one delay and reverb per orbit, so please be aware that if you attempt to change the parameters on two
-patterns pointing to the same orbit, it can lead to unpredictable results. Compare, for example, this pretty pluck
-with a large reverb:
+⚠️ На каждый orbit приходится только один delay и один reverb, поэтому имейте в виду, что если вы попытаетесь изменить параметры на двух
+patterns, указывающих на один и тот же orbit, это может привести к непредсказуемым результатам. Сравните, например, этот красивый pluck
+с большим reverb:
 
 <MiniRepl
   client:visible
@@ -80,7 +79,7 @@ $: s("triangle*4").decay(0.5).n(irand(12)).scale('C minor')
   .room(1).roomsize(10)`}
 />
 
-versus the same pluck with a muted kick drum coming in and overwriting the `roomsize` value:
+против того же pluck с заглушенным kick drum, который переопределяет значение `roomsize`:
 
 <MiniRepl
   client:visible
@@ -91,8 +90,8 @@ $: s("triangle*4").decay(0.5).n(irand(12)).scale('C minor')
 $: s("bd\*4").room(0.01).roomsize(0.01).postgain(0)`}
 />
 
-This is due to them sharing the same orbit: the default of `1`. It can be corrected simply by updating the orbits to be
-distinct:
+Это происходит из-за того, что они используют один и тот же orbit: по умолчанию `1`. Это можно исправить, просто обновив orbits, чтобы они были
+различными:
 
 <MiniRepl
   client:visible
@@ -103,10 +102,10 @@ $: s("triangle*4").decay(0.5).n(irand(12)).scale('C minor')
 $: s("bd\*4").room(0.01).roomsize(0.01).postgain(0)`}
 />
 
-## Continuous changes
+## Непрерывные изменения
 
-As all of the above is triggered by a _sound occurring_, it is often the case that parameters may not be
-modified continuously in time. For example,
+Поскольку все вышеперечисленное запускается _при возникновении звука_, часто бывает так, что параметры могут не
+изменяться непрерывно во времени. Например,
 
 <MiniRepl
   client:visible
@@ -114,8 +113,8 @@ modified continuously in time. For example,
 s("supersaw").lpf(tri.range(100, 5000).slow(2))`}
 />
 
-Will not produce a continually LFO'd low-pass filter due to the `tri` only being sampled every time the note hits
-(in this case the default of once per cycle). You can fake it by introducing more sound-generating events, e.g.:
+Не будет производить непрерывно модулированный LFO low-pass filter из-за того, что `tri` семплируется только каждый раз, когда звучит нота
+(в данном случае по умолчанию один раз за cycle). Вы можете имитировать это, введя больше звукогенерирующих events, например:
 
 <MiniRepl
   client:visible
@@ -123,12 +122,12 @@ Will not produce a continually LFO'd low-pass filter due to the `tri` only being
 s("supersaw").seg(16).lpf(tri.range(100, 5000).slow(2))`}
 />
 
-Some parameters _do_ induce continuous variations in time, though:
+Некоторые параметры _действительно_ вызывают непрерывные изменения во времени, хотя:
 
-- The ADSR curve (governed by `attack`, `sustain`, `decay`, `release`)
-- The pitch envelope curve (governed by `penv` and its associated ADSR)
-- The FM curve (`fmenv`)
-- The filter envelopes (`lpenv`, `hpenv`, `bpenv`)
+- Кривая ADSR (управляется `attack`, `sustain`, `decay`, `release`)
+- Кривая pitch envelope (управляется `penv` и связанными ADSR)
+- Кривая FM (`fmenv`)
+- Filter envelopes (`lpenv`, `hpenv`, `bpenv`)
 - Tremolo (`tremolo`)
 - Phaser (`phaser`)
 - Vibrato (`vib`)
@@ -136,17 +135,17 @@ Some parameters _do_ induce continuous variations in time, though:
 
 # Filters
 
-Filters are an essential building block of [subtractive synthesis](https://en.wikipedia.org/wiki/Subtractive_synthesis).
-Strudel comes with 3 types of filters:
+Filters являются важным строительным блоком [subtractive synthesis](https://en.wikipedia.org/wiki/Subtractive_synthesis).
+Strudel поставляется с 3 типами filters:
 
-- low-pass filter: low frequencies may _pass_, high frequencies are cut off
-- high-pass filter: high frequencies may _pass_, low frequencies are cut off
-- band-pass filters: only a frequency band may _pass_, low and high frequencies around are cut off
+- low-pass filter: низкие частоты могут _пройти_, высокие частоты обрезаются
+- high-pass filter: высокие частоты могут _пройти_, низкие частоты обрезаются
+- band-pass filters: может _пройти_ только частотная полоса, низкие и высокие частоты вокруг обрезаются
 
-Each filter has 2 parameters:
+Каждый filter имеет 2 параметра:
 
-- cutoff: the frequency at which the filter starts to work. e.g. a low-pass filter with a cutoff of 1000Hz allows frequencies below 1000Hz to pass.
-- q-value: Controls the resonance of the filter. Higher values sound more aggressive. Also see [Q-Factor](https://en.wikipedia.org/wiki/Q_factor)
+- cutoff: частота, на которой filter начинает работать. например, low-pass filter с cutoff 1000Hz позволяет частотам ниже 1000Hz проходить.
+- q-value: Контролирует резонанс filter. Более высокие значения звучат более агрессивно. См. также [Q-Factor](https://en.wikipedia.org/wiki/Q_factor)
 
 ## lpf
 
@@ -182,7 +181,7 @@ Each filter has 2 parameters:
 
 # Amplitude Modulation
 
-Amplitude modulation changes the amplitude (gain) periodically over time.
+Amplitude modulation периодически изменяет амплитуду (gain) во времени.
 
 ## am
 
@@ -210,12 +209,12 @@ Amplitude modulation changes the amplitude (gain) periodically over time.
 
 # Amplitude Envelope
 
-The amplitude [envelope](<https://en.wikipedia.org/wiki/Envelope_(music)>) controls the dynamic contour of a sound.
-Strudel uses ADSR envelopes, which are probably the most common way to describe an envelope:
+Amplitude [envelope](<https://en.wikipedia.org/wiki/Envelope_(music)>) контролирует динамический контур звука.
+Strudel использует ADSR envelopes, которые, вероятно, являются наиболее распространенным способом описания envelope:
 
 ![ADSR](https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/ADSR_parameter.svg/1920px-ADSR_parameter.svg.png)
 
-[image link](https://commons.wikimedia.org/wiki/File:ADSR_parameter.svg)
+[ссылка на изображение](https://commons.wikimedia.org/wiki/File:ADSR_parameter.svg)
 
 ## attack
 
@@ -239,7 +238,7 @@ Strudel uses ADSR envelopes, which are probably the most common way to describe 
 
 # Filter Envelope
 
-Each filter can receive an additional filter envelope controlling the cutoff value dynamically. It uses an ADSR envelope similar to the one used for amplitude. There is an additional parameter to control the depth of the filter modulation: `lpenv`|`hpenv`|`bpenv`. This allows you to play subtle or huge filter modulations just the same by only increasing or decreasing the depth.
+Каждый filter может получить дополнительный filter envelope, динамически контролирующий значение cutoff. Он использует ADSR envelope, аналогичный используемому для амплитуды. Есть дополнительный параметр для контроля глубины модуляции filter: `lpenv`|`hpenv`|`bpenv`. Это позволяет вам воспроизводить тонкие или огромные модуляции filter просто увеличивая или уменьшая глубину.
 
 <MiniRepl
   client:idle
@@ -260,14 +259,14 @@ Each filter can receive an additional filter envelope controlling the cutoff val
   .gain(.5).fast(2)`}
 />
 
-There is one filter envelope for each filter type and thus one set of envelope filter parameters preceded either by `lp`, `hp` or `bp`:
+Есть один filter envelope для каждого типа filter и, следовательно, один набор параметров envelope filter с префиксом `lp`, `hp` или `bp`:
 
-- `lpattack`, `lpdecay`, `lpsustain`, `lprelease`, `lpenv`: filter envelope for the lowpass filter.
-  - alternatively: `lpa`, `lpd`, `lps`, `lpr` and `lpe`.
-- `hpattack`, `hpdecay`, `hpsustain`, `hprelease`, `hpenv`: filter envelope for the highpass filter.
-  - alternatively: `hpa`, `hpd`, `hps`, `hpr` and `hpe`.
-- `bpattack`, `bpdecay`, `bpsustain`, `bprelease`, `bpenv`: filter envelope for the bandpass filter.
-  - alternatively: `bpa`, `bpd`, `bps`, `bpr` and `bpe`.
+- `lpattack`, `lpdecay`, `lpsustain`, `lprelease`, `lpenv`: filter envelope для lowpass filter.
+  - альтернативно: `lpa`, `lpd`, `lps`, `lpr` и `lpe`.
+- `hpattack`, `hpdecay`, `hpsustain`, `hprelease`, `hpenv`: filter envelope для highpass filter.
+  - альтернативно: `hpa`, `hpd`, `hps`, `hpr` и `hpe`.
+- `bpattack`, `bpdecay`, `bpsustain`, `bprelease`, `bpenv`: filter envelope для bandpass filter.
+  - альтернативно: `bpa`, `bpd`, `bps`, `bpr` и `bpe`.
 
 ## lpattack
 
@@ -291,8 +290,8 @@ There is one filter envelope for each filter type and thus one set of envelope f
 
 # Pitch Envelope
 
-You can also control the pitch with envelopes!
-Pitch envelopes can breathe life into static sounds:
+Вы также можете контролировать высоту тона с помощью envelopes!
+Pitch envelopes могут вдохнуть жизнь в статичные звуки:
 
 <MiniRepl
   client:idle
@@ -304,7 +303,7 @@ Pitch envelopes can breathe life into static sounds:
   .size(4).fast(1.5)`}
 />
 
-You also create some lovely chiptune-style sounds:
+Вы также можете создать прекрасные звуки в стиле chiptune:
 
 <MiniRepl
   client:idle
@@ -317,7 +316,7 @@ You also create some lovely chiptune-style sounds:
 .penv("<0 <2 -2>>").patt(.02).fast(2)`}
 />
 
-Let's break down all pitch envelope controls:
+Давайте разберем все элементы управления pitch envelope:
 
 ## pattack
 
@@ -397,8 +396,8 @@ Let's break down all pitch envelope controls:
 
 ## Local vs Global Effects
 
-While the above listed "local" effects will always create a separate effects chain for each event,
-global effects use the same chain for all events of the same orbit:
+В то время как вышеперечисленные "локальные" effects всегда будут создавать отдельную цепочку effects для каждого event,
+global effects используют одну и ту же цепочку для всех events одного orbit:
 
 ## orbit
 
@@ -476,4 +475,4 @@ global effects use the same chain for all events of the same orbit:
 
 <JsDoc client:idle name="duckdepth" h={0} />
 
-Next, we'll look at input / output via [MIDI, OSC and other methods](/learn/input-output).
+Далее мы рассмотрим ввод/вывод через [MIDI, OSC и другие методы](/learn/input-output).

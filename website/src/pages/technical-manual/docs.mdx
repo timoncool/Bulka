@@ -1,61 +1,61 @@
 ---
-title: Docs
+title: Документация
 layout: ../../layouts/MainLayout.astro
 ---
 
-# Docs
+# Документация
 
-The docs page is built ontop of astro's [docs site](https://github.com/withastro/astro/tree/main/examples/docs).
+Страница документации построена на основе [сайта документации astro](https://github.com/withastro/astro/tree/main/examples/docs).
 
-## Adding a new Docs Page
+## Добавление новой страницы документации
 
-1. add a `.mdx` file in a path under `website/src/pages/`, e.g. [website/src/pages/learn/code.mdx](https://codeberg.org/uzu/strudel/src/branch/main/website/src/pages/learn/code.mdx) will be available under https://strudel.cc/learn/code/ (or locally under `http://localhost:4321/learn/code/`)
-2. make sure to copy the top part of another existing docs page. Adjust the title accordingly
-3. To add a link to the sidebar, add a new entry to `SIDEBAR` to [`config.ts`](https://codeberg.org/uzu/strudel/src/branch/main/website/src/config.ts)
+1. добавьте `.mdx` файл в путь под `website/src/pages/`, например [website/src/pages/learn/code.mdx](https://codeberg.org/uzu/strudel/src/branch/main/website/src/pages/learn/code.mdx) будет доступен по адресу https://strudel.cc/learn/code/ (или локально по адресу `http://localhost:4321/learn/code/`)
+2. убедитесь, что скопировали верхнюю часть другой существующей страницы документации. Настройте заголовок соответственно
+3. Чтобы добавить ссылку на боковую панель, добавьте новую запись в `SIDEBAR` в [`config.ts`](https://codeberg.org/uzu/strudel/src/branch/main/website/src/config.ts)
 
-## Using the Mini REPL
+## Использование Mini REPL
 
-To add a Mini REPL, make sure to import:
+Чтобы добавить Mini REPL, убедитесь, что импортировали:
 
 ```js
 import { MiniRepl } from '../../docs/MiniRepl';
 ```
 
-add a mini repl with
+добавьте mini repl с помощью
 
 ```jsx
 <MiniRepl client:idle tune={`note("a3 c#4 e4 a4")`} />
 ```
 
-- `client:idle` is required to tell astro that the repl should be interactive, see [Client Directive](https://docs.astro.build/en/reference/directives-reference/#client-directives)
-- `tune`: be any valid pattern code
-- `punchcard`: if added, a punchcard / pianoroll visualization is renderd
-- `drawTime`: time window for drawing, defaults to `[0, 4]`
-- `canvasHeight`: height of the canvas, defaults to 100px
+- `client:idle` требуется, чтобы сообщить astro, что repl должен быть интерактивным, см. [Client Directive](https://docs.astro.build/en/reference/directives-reference/#client-directives)
+- `tune`: любой валидный код pattern
+- `punchcard`: если добавлено, отображается визуализация punchcard / pianoroll
+- `drawTime`: временное окно для отрисовки, по умолчанию `[0, 4]`
+- `canvasHeight`: высота canvas, по умолчанию 100px
 
-See `mini-notation.mdx` for usage examples
+См. `mini-notation.mdx` для примеров использования
 
-## In-Source Documentation
+## Внутренняя документация
 
-You can add the in-source documentation for a function by using the `JsDoc` component. Import:
+Вы можете добавить внутреннюю документацию для функции, используя компонент `JsDoc`. Импорт:
 
 ```js
 import { JsDoc } from '../../docs/JsDoc';
 ```
 
-Usage:
+Использование:
 
 ```jsx
 <JsDoc client:idle name="bandf" h={0} />
 ```
 
-- `name`: function name, as named with `@name` in jsdoc
-- `h`: level of heading. `0` will hide the heading. Hiding it allows using a manual heading which results in a nav link being generated in the right sidebar.
-- `hideDescription`: if set, the description will be hidden
+- `name`: имя функции, как названо с помощью `@name` в jsdoc
+- `h`: уровень заголовка. `0` скроет заголовок. Скрытие позволяет использовать ручной заголовок, что приводит к генерации навигационной ссылки в правой боковой панели.
+- `hideDescription`: если установлено, описание будет скрыто
 
-### Writing jsdoc
+### Написание jsdoc
 
-Documentation is written with [jsdoc](https://jsdoc.app/) comments. Example:
+Документация написана с помощью комментариев [jsdoc](https://jsdoc.app/). Пример:
 
 ```js
 /**
@@ -70,9 +70,9 @@ Documentation is written with [jsdoc](https://jsdoc.app/) comments. Example:
 // implementation of s function
 ```
 
-- Before each build, these comments will be rendered into `doc.json` using [jsdoc-json](https://www.npmjs.com/package/jsdoc-json) as a template
-- To regenerate the `doc.json` file manually, run `npm run jsdoc-json`
-- The file is used by the `JsDoc` component to find the documentation by name
-- Also, it is used for the `examples.test.mjs` snapshot test
+- Перед каждой сборкой эти комментарии будут отрендерены в `doc.json` с использованием [jsdoc-json](https://www.npmjs.com/package/jsdoc-json) в качестве шаблона
+- Чтобы вручную перегенерировать файл `doc.json`, выполните `npm run jsdoc-json`
+- Файл используется компонентом `JsDoc` для поиска документации по имени
+- Также он используется для snapshot теста `examples.test.mjs`
 
-How does Strudel do its [Testing](/technical-manual/testing)?
+Как Strudel выполняет [тестирование](/technical-manual/testing)?

@@ -11,21 +11,29 @@ const baseNoTrailing = BASE_URL.endsWith('/') ? BASE_URL.slice(0, -1) : BASE_URL
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width" />
 <meta name="generator" content={Astro.generator} />
-<link rel="alternate" type="application/rss+xml" title={`RSS Feed for strudel.cc`} href="/rss.xml" />
-<link rel="icon" type="image/svg+xml" href={`${baseNoTrailing}/favicon.ico`} />
+<link rel="alternate" type="application/rss+xml" title={`RSS Feed for Bulka`} href="/rss.xml" />
+<link rel="icon" type="image/svg+xml" href={`${baseNoTrailing}/favicon.svg`} />
+
+<!-- Fredoka Font for Bulka branding -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&display=swap" rel="stylesheet" />
+
+<!-- Iconify for noto:bread icon -->
+<script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
 
 <meta
   name="description"
-  content="Strudel is a music live coding environment for the browser, porting the TidalCycles pattern language to JavaScript."
+  content="Bulka — платформа для лайв-кодинга музыки в браузере."
 />
-<link rel="icon" href={`${baseNoTrailing}/favicon.ico`} />
+<link rel="icon" href={`${baseNoTrailing}/favicon.svg`} />
 <link rel="apple-touch-icon" href={`${baseNoTrailing}/icons/apple-icon-180.png`} sizes="180x180" />
 <meta name="theme-color" content="#222222" />
 
 <base href={BASE_URL} />
 
 <!-- Scrollable a11y code helper -->
-<script src={`${baseNoTrailing}/make-scrollable-code-focusable.js`} is:inline></script>
+<script {`${baseNoTrailing}/make-scrollable-code-focusable.js`} is:inline></script>
 
 <script src="/src/pwa.ts"></script>
 <!-- this does not work for some reason: -->
@@ -61,3 +69,17 @@ const baseNoTrailing = BASE_URL.endsWith('/') ? BASE_URL.slice(0, -1) : BASE_URL
     appHeight();
   }
 </script>
+
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=105793195', 'ym');
+
+    ym(105793195, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/105793195" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->

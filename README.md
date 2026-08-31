@@ -1,52 +1,138 @@
-# strudel
+<div align="center">
 
-Live coding patterns on the web
+# Bulka
+
+**Платформа для лайв-кодинга музыки с AI-агентом — пиши код, создавай музыку в реальном времени.**
+
+[![Stars](https://img.shields.io/github/stars/timoncool/Bulka?style=flat-square)](https://github.com/timoncool/Bulka/stargazers)
+[![License](https://img.shields.io/github/license/timoncool/Bulka?style=flat-square)](LICENSE)
+[![Last Commit](https://img.shields.io/github/last-commit/timoncool/Bulka?style=flat-square)](https://github.com/timoncool/Bulka/commits)
+[![Demo](https://img.shields.io/badge/demo-bulka.app-brightgreen?style=flat-square)](https://bulka.app/)
+
+[bulka.app](https://bulka.app/) · [Telegram](https://t.me/bulka_app) · [Скриншоты](SCREENSHOTS.md)
+
+<img src="screens/1.png" alt="Bulka REPL" width="800"/>
+
+</div>
+
+---
+
+## Что это?
+
+**Bulka** — это браузерный редактор для создания музыки кодом в реальном времени. Открываешь сайт, пишешь пару строчек — музыка играет мгновенно. Никаких установок, DAW или плагинов.
+
+Это русскоязычный форк [Strudel](https://strudel.cc/) с встроенным AI-агентом, который помогает писать код, объясняет как что работает и ищет по документации. Идеально подходит как для музыкантов, которые хотят попробовать программирование, так и для программистов, которые хотят делать музыку.
+
+**Для кого:**
+- Музыканты и продюсеры — новый инструмент для live-выступлений и экспериментов
+- Программисты — творчество через код, generative-музыка и algorave
+- Новички — самый простой способ начать программировать (через музыку это весело)
+- VJ и визуальщики — встроенная Hydra для live-визуалов синхронно с музыкой
+
+## Ключевые возможности
+
+**🤖 AI-агент (теперь бесплатно!)**
+Встроенный ассистент на базе GPT-5.2, Claude Opus 4.5 или Gemini 3 Pro. Пишешь "сделай техно-бит" — получаешь готовый код. Агент умеет редактировать твой код, искать по документации и объяснять как всё работает. Для продвинутых моделей видно процесс рассуждения в реальном времени.
+
+**🆓 Бесплатный режим через GPT4Free**
+Благодаря интеграции с [GPT4Free](https://github.com/xtekky/gpt4free) агент доступен бесплатно — без API ключей. Мы сделали симуляцию инструментов: код автоматически вставляется в редактор и музыка запускается. Это не идеально (нет поиска по документации, возможны лимиты провайдеров), но работает и лучше чем ничего. Для максимального опыта используй Claude Opus 4.5 со своим ключом.
+
+**🎵 Мгновенное воспроизведение**
+Изменил код → нажал Ctrl+Enter → музыка обновилась. Никаких рендеров и экспортов. Всё происходит в браузере через Web Audio API. Сотни готовых сэмплов и синтезаторов уже встроены. Можно загружать свои звуки.
+
+**🎙️ Запись треков**
+Одна кнопка — и всё что играет записывается в WAV. Сразу можешь скачать готовый трек или продолжить дорабатывать в DAW.
+
+**🎨 Live-визуалы**
+Встроенная Hydra синхронизируется с музыкой. Пишешь код для звука и визуалов в одном окне. Идеально для VJ-сетов и live-выступлений.
+
+**📚 Интерактивная документация**
+Не нужно гуглить — вся документация встроена в редактор с live-примерами. Кликнул на функцию → увидел что она делает → скопировал себе. Полностью на русском языке.
+
+## Быстрый старт
+
+Открой [bulka.app](https://bulka.app/) и вставь этот код:
+
+```javascript
+// Простой drum-паттерн
+s("bd sd bd sd, hh*8")
+
+// Добавь басовую линию
+note("c2 e2 g2 a2").s("sawtooth").lpf(800)
+```
+
+Нажми **Play** или **Ctrl+Enter** — всё, музыка играет!
+
+Дальше можешь:
+- Спросить у AI-агента: "добавь кислотный бас"
+- Изменить код и нажать **Update** (Ctrl+Enter снова)
+- Нажать **Record** чтобы записать трек в WAV
+- Открыть панель **Sounds** и выбрать другие сэмплы
+- Нажать `/` и начать вводить название функции для поиска по документации
+
+## Разработка
+
+Хочешь запустить локально или доработать проект:
+
+```bash
+git clone https://github.com/timoncool/Bulka.git
+cd Bulka
+pnpm i      # нужен Node.js 18+ и pnpm
+pnpm dev    # сайт откроется на localhost:4321
+```
+
+Пакеты Bulka доступны на npm под неймспейсом `@strudel` — можешь встроить редактор в свой проект. Подробности в [документации](https://strudel.cc/technical-manual/project-start).
+
+## Автор
+
+Проект развивается [Nerual Dreming](https://t.me/nerual_dreming) — основателем [ArtGeneration.me](https://artgeneration.me/), [техноблогером](https://www.youtube.com/@nerual_dreming) и нейро-евангелистом.
+
+## Благодарности
+
+Bulka основана на проекте [Strudel](https://strudel.cc/) от Alex McLean и сообщества. Спасибо всем контрибьюторам оригинального проекта.
+
+## 🌍 Сообщество
+
+### Bulka (русскоязычное)
+- **Telegram**: [t.me/bulka_app](https://t.me/bulka_app) — обсуждения, помощь, новости проекта
+- **GitHub**: [github.com/timoncool/Bulka](https://github.com/timoncool/Bulka) — код, issues, pull requests
+
+### Strudel/TidalCycles (международное)
+- **Discord**: [#strudel](https://discord.com/invite/HGEdXmRkzT) — 7000+ участников
+- **Форум**: [club.tidalcycles.org](https://club.tidalcycles.org/) — обсуждения и вопросы
+
+## Другие проекты [@timoncool](https://github.com/timoncool)
+
+| Проект | Описание |
+|--------|----------|
+| [ACE-Step Studio](https://github.com/timoncool/ACE-Step-Studio) | AI-студия музыки — песни, вокал, каверы, клипы |
+| [VideoSOS](https://github.com/timoncool/videosos) | AI-видеопродакшн в браузере |
+| [Foundation Music Lab](https://github.com/timoncool/Foundation-Music-Lab) | Генерация музыки + редактор таймлайна |
+| [GitLife](https://github.com/timoncool/gitlife) | Жизнь в неделях — интерактивный календарь |
+| [telegram-api-mcp](https://github.com/timoncool/telegram-api-mcp) | Telegram Bot API как MCP-сервер |
+| [tg-challenge-bot](https://github.com/timoncool/tg-challenge-bot) | AI антиспам-бот для Telegram |
+
+## Поддержать автора
+
+Я создаю опенсорс софт и занимаюсь исследованиями в области ИИ. Большая часть всего, что я делаю, находится в открытом доступе. Ваши пожертвования позволяют мне создавать и исследовать больше, не отвлекаясь на поиск еды для продолжения существования =)
+
+**[Все способы поддержки](https://github.com/timoncool/ACE-Step-Studio/blob/master/DONATE.md)** | **[dalink.to/nerual_dreming](https://dalink.to/nerual_dreming)** | **[boosty.to/neuro_art](https://boosty.to/neuro_art)**
+
+- **BTC:** `1E7dHL22RpyhJGVpcvKdbyZgksSYkYeEBC`
+- **ETH (ERC20):** `0xb5db65adf478983186d4897ba92fe2c25c594a0c`
+- **USDT (TRC20):** `TQST9Lp2TjK6FiVkn4fwfGUee7NmkxEE7C`
 
 
-- Try it here: <https://strudel.cc>
-- Docs: <https://strudel.cc/learn>
-- Source: https://codeberg.org/uzu/strudel/
-  * Along with many other live coding projects, we have moved from Microsoft's Github platform to Codeberg for ethical reasons. **Please don't fork the project back to github**.
-- Technical Blog Post: <https://loophole-letters.vercel.app/strudel>
-- 1 Year of Strudel Blog Post: <https://loophole-letters.vercel.app/strudel1year>
-- 2 Years of Strudel Blog Post: <https://strudel.cc/blog/#year-2>
+## Star History
 
+<a href="https://github.com/timoncool/Bulka/stargazers">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="docs/stars-dark.svg" />
+   <source media="(prefers-color-scheme: light)" srcset="docs/stars-light.svg" />
+   <img alt="Star History Chart" src="docs/stars-light.svg" />
+ </picture>
+</a>
 
-## Running Locally
+## Лицензия
 
-After cloning the project, you can run the REPL locally:
-
-1. Install [Node.js](https://nodejs.org/) 18 or newer
-2. Install [pnpm](https://pnpm.io/installation)
-3. Install dependencies by running the following command:
-   ```bash
-   pnpm i
-   ```
-4. Run the development server:
-   ```bash
-   pnpm dev
-   ```
-
-## Using Strudel In Your Project
-
-This project is organized into many [packages](./packages), which are also available on [npm](https://www.npmjs.com/search?q=%40strudel).
-
-Read more about how to use these in your own project [here](https://strudel.cc/technical-manual/project-start).
-
-You will need to abide by the terms of the [GNU Affero Public Licence v3](LICENSE). As such, Strudel code can only be shared within free/open source projects under the same license -- see the license for details.
-
-Licensing info for the default sound banks can be found over on the [dough-samples](https://github.com/felixroos/dough-samples/blob/main/README.md) repository.
-
-## Contributing
-
-There are many ways to contribute to this project! See [contribution guide](./CONTRIBUTING.md). You can find the full list of contributors [here](https://codeberg.org/uzu/strudel/activity/contributors).
-
-## Community
-
-There is a #strudel channel on the TidalCycles discord: <https://discord.com/invite/HGEdXmRkzT>
-
-You can also ask questions and find related discussions on the tidal club forum: <https://club.tidalcycles.org/>
-
-The discord and forum is shared with the haskell (tidal) and python (vortex) siblings of this project.
-
-We also have a mastodon account: <a rel="me" href="https://social.toplap.org/@strudel">social.toplap.org/@strudel</a>
+[GNU Affero General Public License v3.0](LICENSE)

@@ -2,17 +2,9 @@ import { NeoCyclist } from './neocyclist.mjs';
 import { Cyclist } from './cyclist.mjs';
 import { evaluate as _evaluate } from './evaluate.mjs';
 import { errorLogger, logger } from './logger.mjs';
-import {
-  setCpsFunc,
-  setIsStarted,
-  setPattern as exposeSchedulerPattern,
-  setTime,
-  setTriggerFunc,
-} from './schedulerState.mjs';
+import { setTime } from './time.mjs';
 import { evalScope } from './evaluate.mjs';
 import { register, Pattern, isPattern, silence, stack } from './pattern.mjs';
-import { reset_state } from './impure.mjs';
-import { SalatRepl } from '@kabelsalat/web';
 
 export function repl({
   defaultOutput,
@@ -31,7 +23,6 @@ export function repl({
   id,
   mondo = false,
 }) {
-  const kabel = new SalatRepl({ localScope: true });
   const state = {
     schedulerError: undefined,
     evalError: undefined,
@@ -60,11 +51,7 @@ export function repl({
     getTime,
     onToggle: (started) => {
       updateState({ started });
-      setIsStarted(started);
       onToggle?.(started);
-      if (!started) {
-        reset_state();
-      }
     },
     setInterval,
     clearInterval,
@@ -74,8 +61,6 @@ export function repl({
   // NeoCyclist uses a shared worker to communicate between instances, which is not supported on mobile chrome
   const scheduler =
     sync && typeof SharedWorker != 'undefined' ? new NeoCyclist(schedulerOptions) : new Cyclist(schedulerOptions);
-  setTriggerFunc(schedulerOptions.onTrigger);
-  setCpsFunc(() => scheduler.cps);
   let pPatterns = {};
   let anonymousIndex = 0;
   let allTransform;
@@ -89,11 +74,6 @@ export function repl({
     return silence;
   };
 
-  const compileKabel = (code) => {
-    const node = kabel.evaluate(code);
-    return node.compile({ log: false });
-  };
-
   // helper to get a patternified pure value out
   function unpure(pat) {
     if (pat._Pattern) {
@@ -105,7 +85,6 @@ export function repl({
   const setPattern = async (pattern, autostart = true) => {
     pattern = editPattern?.(pattern) || pattern;
     await scheduler.setPattern(pattern, autostart);
-    exposeSchedulerPattern(pattern);
     return pattern;
   };
   setTime(() => scheduler.now()); // TODO: refactor?
@@ -120,13 +99,13 @@ export function repl({
   };
 
   /**
-   * Changes the global tempo to the given cycles per minute
+   * Изменяет глобальный темп на указанное количество cycles в минуту
    *
    * @name setcpm
    * @alias setCpm
-   * @param {number} cpm cycles per minute
+   * @param {number} cpm cycles в минуту
    * @example
-   * setcpm(140/4) // =140 bpm in 4/4
+   * setcpm(140/4) // =140 bpm в 4/4
    * $: s("bd*4,[- sd]*2").bank('tr707')
    */
   const setCpm = (cpm) => {
@@ -215,7 +194,6 @@ export function repl({
       setcps: setCps,
       setCpm,
       setcpm: setCpm,
-      compileKabel,
     });
   };
 

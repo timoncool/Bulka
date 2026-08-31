@@ -26,20 +26,6 @@ describe('transpiler', () => {
   it('adds await to bare samples call', () => {
     expect(transpiler("samples('xxx');", simple).output).toEqual("await samples('xxx');");
   });
-  it('handles mini strings in K(...)', () => {
-    expect(transpiler('K("bd sd")', simple).output).toEqual("worklet('pat[0]', m('bd sd', 2));");
-  });
-  it('treats K(...) as kabelsalat', () => {
-    expect(transpiler('K(1+2)', simple).output).toEqual("worklet('1 + 2');");
-  });
-  it('automatically calls functions in K(...)', () => {
-    expect(transpiler('K(() => { return 1 + 2 })', simple).output).toEqual(
-      "worklet('(() => {\\n    return 1 + 2\\n})()');",
-    );
-  });
-  it('handles strudel S(...) inside kabelsalat K(...)', () => {
-    expect(transpiler('K(S("bd".fast(4)))', simple).output).toEqual("worklet('pat[0]', m('bd', 4).fast(4));");
-  });
   /*   it('parses dynamic imports', () => {
     expect(
       transpiler("const { default: foo } = await import('https://bar.com/foo.js');", {
@@ -56,18 +42,18 @@ describe('transpiler', () => {
       [12, 14],
     ]);
   });
-  it('allows disabling mini', () => {
-    const code = `/* mini-off */
-      const randPrefix = Math.random() > 0.5 ? "b" : "s";
-      const drumPat = \`\${randPrefix}d\`;
-      // mini-on
-      s(drumPat).lpf("5000 10000") // make sure mini still runs;
-    `;
-    const { output, miniLocations } = transpiler(code, { ...simple, emitMiniLocations: true });
-    expect(output).not.toContain("m('b'");
-    expect(output).not.toContain("m('s'");
-    const cutoffIdx = code.indexOf('5000 10000');
-    expect(miniLocations).toHaveLength(2);
-    expect(miniLocations[0][0]).toEqual(cutoffIdx);
+  it('does not parse URL strings in Hydra source functions as mini-notation', () => {
+    // initImage, initVideo, loadScript should preserve URLs without mini-notation parsing
+    expect(transpiler('s0.initImage("https://example.com/image.jpg")', simple).output).toEqual(
+      "s0.initImage('https://example.com/image.jpg');",
+    );
+    expect(transpiler('s0.initVideo("https://example.com/video.mp4")', simple).output).toEqual(
+      "s0.initVideo('https://example.com/video.mp4');",
+    );
+    expect(transpiler('loadScript("https://cdn.example.com/lib.js")', simple).output).toEqual(
+      "loadScript('https://cdn.example.com/lib.js');",
+    );
+    // But regular strings should still be parsed as mini-notation
+    expect(transpiler('s("bd sd")', simple).output).toEqual("s(m('bd sd', 2));");
   });
 });

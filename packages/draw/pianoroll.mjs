@@ -37,36 +37,36 @@ const getValue = (e) => {
 };
 
 /**
- * Visualises a pattern as a scrolling 'pianoroll', displayed in the background of the editor. To show a pianoroll for all running patterns, use `all(pianoroll)`. To have a pianoroll appear below
- * a pattern instead, prefix with `_`, e.g.: `sound("bd sd")._pianoroll()`.
+ * Визуализирует pattern в виде прокручивающегося 'pianoroll', отображаемого на фоне редактора. Чтобы показать pianoroll для всех выполняющихся pattern, используйте `all(pianoroll)`. Чтобы pianoroll появился под
+ * pattern вместо этого, добавьте префикс `_`, например: `sound("bd sd")._pianoroll()`.
  *
  * @name pianoroll
  * @synonyms punchcard
- * @param {Object} options Object containing all the optional following parameters as key value pairs:
- * @param {integer} cycles number of cycles to be displayed at the same time - defaults to 4
- * @param {number} playhead location of the active notes on the time axis - 0 to 1, defaults to 0.5
- * @param {boolean} vertical displays the roll vertically - 0 by default
- * @param {boolean} labels displays labels on individual notes (see the label function) - 0 by default
- * @param {boolean} flipTime reverse the direction of the roll - 0 by default
- * @param {boolean} flipValues reverse the relative location of notes on the value axis - 0 by default
- * @param {number} overscan lookup X cycles outside of the cycles window to display notes in advance - 1 by default
- * @param {boolean} hideNegative hide notes with negative time (before starting playing the pattern) - 0 by default
- * @param {boolean} smear notes leave a solid trace - 0 by default
- * @param {boolean} fold notes takes the full value axis width - 0 by default
- * @param {string} active hexadecimal or CSS color of the active notes - defaults to #FFCA28
- * @param {string} inactive hexadecimal or CSS color of the inactive notes - defaults to #7491D2
- * @param {string} background hexadecimal or CSS color of the background - defaults to transparent
- * @param {string} playheadColor hexadecimal or CSS color of the line representing the play head - defaults to white
- * @param {boolean} fill notes are filled with color (otherwise only the label is displayed) - 0 by default
- * @param {boolean} fillActive active notes are filled with color - 0 by default
- * @param {boolean} stroke notes are shown with colored borders - 0 by default
- * @param {boolean} strokeActive active notes are shown with colored borders - 0 by default
- * @param {boolean} hideInactive only active notes are shown - 0 by default
- * @param {boolean} colorizeInactive use note color for inactive notes - 1 by default
- * @param {string} fontFamily define the font used by notes labels - defaults to 'monospace'
- * @param {integer} minMidi minimum note value to display on the value axis - defaults to 10
- * @param {integer} maxMidi maximum note value to display on the value axis - defaults to 90
- * @param {boolean} autorange automatically calculate the minMidi and maxMidi parameters - 0 by default
+ * @param {Object} options Объект, содержащий все следующие необязательные параметры в виде пар ключ-значение:
+ * @param {integer} cycles количество циклов для одновременного отображения - по умолчанию 4
+ * @param {number} playhead позиция активных нот на оси времени - от 0 до 1, по умолчанию 0.5
+ * @param {boolean} vertical отображает roll вертикально - по умолчанию 0
+ * @param {boolean} labels отображает метки на отдельных нотах (см. функцию label) - по умолчанию 0
+ * @param {boolean} flipTime меняет направление roll - по умолчанию 0
+ * @param {boolean} flipValues меняет относительное расположение нот на оси значений - по умолчанию 0
+ * @param {number} overscan просматривает X циклов за пределами окна циклов для предварительного отображения нот - по умолчанию 1
+ * @param {boolean} hideNegative скрывает ноты с отрицательным временем (до начала воспроизведения pattern) - по умолчанию 0
+ * @param {boolean} smear ноты оставляют сплошной след - по умолчанию 0
+ * @param {boolean} fold ноты занимают полную ширину оси значений - по умолчанию 0
+ * @param {string} active шестнадцатеричный или CSS цвет активных нот - по умолчанию #FFCA28
+ * @param {string} inactive шестнадцатеричный или CSS цвет неактивных нот - по умолчанию #7491D2
+ * @param {string} background шестнадцатеричный или CSS цвет фона - по умолчанию transparent
+ * @param {string} playheadColor шестнадцатеричный или CSS цвет линии, представляющей playhead - по умолчанию white
+ * @param {boolean} fill ноты заполнены цветом (иначе отображается только метка) - по умолчанию 0
+ * @param {boolean} fillActive активные ноты заполнены цветом - по умолчанию 0
+ * @param {boolean} stroke ноты отображаются с цветными границами - по умолчанию 0
+ * @param {boolean} strokeActive активные ноты отображаются с цветными границами - по умолчанию 0
+ * @param {boolean} hideInactive отображаются только активные ноты - по умолчанию 0
+ * @param {boolean} colorizeInactive использовать цвет ноты для неактивных нот - по умолчанию 1
+ * @param {string} fontFamily определяет шрифт, используемый для меток нот - по умолчанию 'monospace'
+ * @param {integer} minMidi минимальное значение ноты для отображения на оси значений - по умолчанию 10
+ * @param {integer} maxMidi максимальное значение ноты для отображения на оси значений - по умолчанию 90
+ * @param {boolean} autorange автоматически вычисляет параметры minMidi и maxMidi - по умолчанию 0
  * @see _pianoroll
  * @example
  * note("c2 a2 eb2")
@@ -295,8 +295,8 @@ Pattern.prototype.punchcard = function (options) {
 };
 
 /**
- * Displays a vertical pianoroll with event labels.
- * Supports all the same options as pianoroll.
+ * Отображает вертикальный pianoroll с метками событий.
+ * Поддерживает все те же опции, что и pianoroll.
  *
  * @name wordfall
  */

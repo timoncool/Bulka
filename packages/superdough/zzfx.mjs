@@ -90,11 +90,10 @@ export function registerZZFXSounds() {
         });
         return {
           node: o,
-          nodes: { source: [o] },
           stop: () => {},
         };
       },
-      { type: 'synth', prebake: true },
+      { type: 'synth', prebake: true, pack: 'Synths' },
     );
   });
 }

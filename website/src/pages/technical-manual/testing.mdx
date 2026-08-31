@@ -1,27 +1,27 @@
 ---
-title: Testing
+title: Тестирование
 layout: ../../layouts/MainLayout.astro
 ---
 
-# Testing
+# Тестирование
 
-Strudel uses [vitest](https://vitest.dev/) for testing, with 2 types of testing strategies:
+Strudel использует [vitest](https://vitest.dev/) для тестирования с 2 типами стратегий тестирования:
 
-- unit tests for fine grained testing
-- automated snapshot tests for broader testing
+- модульные тесты для детального тестирования
+- автоматизированные snapshot тесты для более широкого тестирования
 
-## Unit Tests
+## Модульные тесты
 
-Each package has a `test` folder where tests are written on a file by file basis, e.g. `util.test.mjs` implements all tests for `util.mjs`.
+Каждый package имеет папку `test`, где тесты написаны на основе файла за файлом, например `util.test.mjs` реализует все тесты для `util.mjs`.
 
-## Snapshot Tests
+## Snapshot тесты
 
-Snapshot tests allow testing larger chunks of data. Strudel uses snapshot tests for:
+Snapshot тесты позволяют тестировать большие фрагменты данных. Strudel использует snapshot тесты для:
 
-- Example Snippets: `examples.test.mjs`, using snippets under `@example` inside jsdoc comments
-- Example Tunes: `tunes.test.mjs`, using all patterns in `tunes.mjs`
+- Примеров фрагментов: `examples.test.mjs`, используя фрагменты под `@example` внутри jsdoc комментариев
+- Примеров мелодий: `tunes.test.mjs`, используя все patterns в `tunes.mjs`
 
-The snapshot (`.snap`) files contain all haps within a certain number of cycles for each tested pattern.
-They allow testing for breaking changes on a larger scale.
-If breaking changes are intentional, the snapshots can be updated with `npm run snapshot`.
-Just make sure to verify that all affected patterns behave as expected.
+Файлы snapshot (`.snap`) содержат все haps в пределах определенного количества cycles для каждого тестируемого pattern.
+Они позволяют тестировать критические изменения в более широком масштабе.
+Если критические изменения преднамеренны, snapshots можно обновить с помощью `npm run snapshot`.
+Просто убедитесь, что проверили, что все затронутые patterns ведут себя как ожидалось.

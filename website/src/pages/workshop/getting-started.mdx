@@ -1,44 +1,49 @@
 ---
-title: Getting Started
+title: Начало работы
 layout: ../../layouts/MainLayout.astro
 ---
 
 import { MiniRepl } from '../../docs/MiniRepl';
 import { examples } from '../../examples.mjs';
 
-# Welcome
+# Добро пожаловать
 
-<div className="w-32 animate-pulse md:float-right ml-8">![Strudel Icon](/icons/strudel_icon.png)</div>
+<div className="w-32 animate-pulse md:float-right ml-8 text-6xl">🍞</div>
 
-Welcome to the Strudel documentation pages!
-You've come to the right place if you want to learn how to make music with code.
+Добро пожаловать в документацию Bulka!
+Вы попали в нужное место, если хотите научиться создавать музыку с помощью кода.
 
-## What is Strudel?
+## Что такое Bulka?
 
-With Strudel, you can expressively write dynamic music pieces.<br/>
-It is an official port of the [Tidal Cycles](https://tidalcycles.org/) pattern language to JavaScript.<br/>
-You don't need to know JavaScript or Tidal Cycles to make music with Strudel.
-This interactive tutorial will guide you through the basics of Strudel.<br/>
-The best place to actually make music with Strudel is the [Strudel REPL](https://strudel.cc/)
+С Bulka вы можете выразительно писать динамические музыкальные произведения.<br/>
+Это порт языка паттернов [Tidal Cycles](https://tidalcycles.org/) на JavaScript.<br/>
+Вам не нужно знать JavaScript или Tidal Cycles, чтобы создавать музыку с Bulka.
+Этот интерактивный туториал проведёт вас через основы.<br/>
+Лучшее место для создания музыки — [Bulka REPL](/)
 
 <div className="clear-both" />
 
-## What can you do with Strudel?
+## Что можно делать с Bulka?
 
-- live code music: make music with code in real time
-- algorithmic composition: compose music using tidal's unique approach to pattern manipulation
-- teaching: focussing on a low barrier of entry, Strudel is a good fit for teaching music and code at the same time.
-- integrate into your existing music setup: either via MIDI or OSC, you can use Strudel as a really flexible sequencer
+- **лайв-кодинг музыки**: создавайте музыку кодом в реальном времени — никаких установок, работает прямо в браузере
+- **алгоритмическая композиция**: бесконечные вариации из нескольких строк кода благодаря уникальному подходу Tidal к паттернам
+- **тысячи звуков из коробки**: драм-машины 808/909, синтезаторы, оркестровые инструменты, фолк со всего мира — всё уже готово к использованию
+- **AI-ассистент**: не знаешь с чего начать? Встроенный агент напишет трек по твоему описанию (OpenAI, Anthropic, Google — на выбор)
+- **визуализация Hydra**: аудио-реактивные визуалы прямо в редакторе — твоя музыка оживает на экране
+- **шеринг одной ссылкой**: скинул ссылку — друг слышит твой трек, без регистрации и скачивания
+- **обучение**: низкий порог входа делает Bulka идеальным для обучения музыке и программированию одновременно
+- **интеграция**: MIDI, OSC — используй Bulka как секвенсор в своём сетапе с железом и DAW
 
-## Examples
+## Примеры
 
-Here are some examples of how strudel can sound:
+Вот несколько примеров того, как может звучать Bulka:
 
 <MiniRepl client:idle tunes={examples} />
 
-These examples cannot fully encompass the variety of things you can do, so [check out the showcase](/intro/showcase/) for some videos of how people use Strudel.
+Эти примеры не могут полностью охватить всё разнообразие возможностей. Посмотрите [showcase](/intro/showcase/) с видео от пользователей Strudel.
 
-## Getting Started
+## Начинаем
 
-The best way to start learning Strudel is the workshop.
-If you're ready to dive in, let's start with your [first sounds](/workshop/first-sounds)
+Лучший способ начать изучение — пройти воркшоп.
+Если вы готовы погрузиться, начните с ваших [первых звуков](/workshop/first-sounds)
+

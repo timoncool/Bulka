@@ -9,13 +9,11 @@ import { getDrawContext } from '@strudel/draw';
 import { evaluate, transpiler } from '@strudel/transpiler';
 import {
   getAudioContextCurrentTime,
-  renderPatternAudio,
   webaudioOutput,
   resetGlobalEffects,
   resetLoadedSounds,
   initAudioOnFirstClick,
   resetDefaults,
-  initAudio,
 } from '@strudel/webaudio';
 import { setVersionDefaultsFrom } from './util.mjs';
 import { StrudelMirror, defaultSettings } from '@strudel/codemirror';
@@ -38,7 +36,6 @@ import { getRandomTune, initCode, loadModules, shareCode } from './util.mjs';
 import './Repl.css';
 import { setInterval, clearInterval } from 'worker-timers';
 import { getMetadata } from '../metadata_parser';
-import { debugAudiograph } from './audiograph';
 
 const { latestCode, maxPolyphony, audioDeviceName, multiChannelOrbits } = settingsMap.get();
 let modulesLoading, presets, drawContext, clearCanvas, audioReady;
@@ -132,12 +129,29 @@ export function useReplContext() {
       bgFill: false,
     });
     window.strudelMirror = editor;
-    window.debugAudiograph = debugAudiograph;
 
     // init settings
+    const urlParams = new URLSearchParams(window.location.search);
+    const isNewSession = urlParams.has('new');
+    if (isNewSession) {
+      // clear persisted session state
+      localStorage.removeItem('bulka-chat-messages');
+      localStorage.removeItem('bulka-chat-draft');
+      sessionStorage.removeItem('viewingPatternData');
+      sessionStorage.removeItem('activePattern');
+      // clean up ?new from URL without reload
+      urlParams.delete('new');
+      const cleanUrl = urlParams.toString()
+        ? `${window.location.pathname}?${urlParams.toString()}`
+        : window.location.pathname;
+      window.history.replaceState(null, '', cleanUrl);
+    }
     initCode().then(async (decoded) => {
       let code, msg;
-      if (decoded) {
+      if (isNewSession) {
+        code = '';
+        msg = `Новая сессия!`;
+      } else if (decoded) {
         code = decoded;
         msg = `I have loaded the code from the URL.`;
       } else if (latestCode) {
@@ -146,12 +160,112 @@ export function useReplContext() {
       } else {
         /* const { code: randomTune, name } = await getRandomTune();
         code = randomTune; */
-        code = '$: s("[bd <hh oh>]*2").bank("tr909").dec(.4)';
+        code = `// @title Pixel Sunrise
+// @by Nerual Dreming
+
+cpm(180/2);
+
+stack(
+  arrange(
+    // === БЛОК 1: ВСТУПЛЕНИЕ ===
+    [4,
+      stack(
+        s("bd sd bd [sd sd*2]").crush(6).gain(0.1).bank("RolandTR808"),
+        s("hh*16").gain(0.08).bank("RolandTR808").bpf(sine.range(500, 4000).slow(6)).bpq(4).pan(sine.slow(5))
+      )
+      ._scope()
+    ],
+
+    // === БЛОК 2: ОСНОВНАЯ ЧАСТЬ ===
+    [16,
+      stack(
+        stack(
+          s("bd sd bd [sd sd*2]").crush(6).gain(0.1).bank("RolandTR808"),
+          s("hh*16").gain(0.08).bank("RolandTR808").bpf(sine.range(500, 4000).slow(6)).bpq(4).pan(sine.slow(5))
+        )._scope(),
+
+        n("0").chord("<Am F C G>").voicing()
+          .s("square").decay(0.1).sustain(0).lpf(400).gain(0.12)
+          .pan(sine.slow(8))
+          ._scope(),
+
+        n("0").chord("<Am F C G>").mode("root:c1").voicing()
+          .s("triangle").lpf(sine.range(150, 500).slow(16)).lpq(3).room(0.5).gain(0.08)
+          .pan(sine.slow(12))
+          ._scope(),
+
+        n("<0 2 4 5 7 5 4 2 7 5 9 7 11 9 7 5>").chord("<Am F C G>").voicing()
+          .s("square").decay(0.15).sustain(0).gain(0.1)
+          .phaser(sine.slow(6).range(2, 6))
+          .jux(x => x.gain(0.5).speed(0.99))
+          ._scope(),
+
+        n("~ 4 ~ 3 ~ 2 ~ 0")
+          .chord("<Am F C G>")
+          .voicing()
+          .s("triangle").decay(0.3).sustain(0).gain(0.08).room(0.4)
+          .phaser(sine.slow(9).range(1, 5))
+          .jux(x => x.gain(0.6).speed(1.01))
+          ._scope()
+      )
+    ],
+
+    // === БЛОК 3: БРЕЙКДАУН ===
+    [8,
+      stack(
+        chord("<Am F C G>").voicing().s("sawtooth").attack(1).release(1.5).lpf(800).gain(0.07)
+          .phaser(1)
+          .pan(sine.slow(10))
+          ._scope(),
+        n("4 3 2 0 2 3 4 5")
+          .chord("<Am F C G>").voicing()
+          .s("triangle").decay(0.4).sustain(0).gain(0.1)
+          .phaser(4)
+          .delay(0.25).delayfeedback(0.5)
+          .pan(sine.slow(4))
+          ._scope()
+      )
+    ],
+
+    // === БЛОК 4: КОНЦОВКА ===
+    [8,
+      stack(
+        stack(
+          s("bd sd bd [sd sd*2]").crush(6).gain(0.1).bank("RolandTR808"),
+          s("hh*16").gain(0.08).bank("RolandTR808").bpf(sine.range(500, 4000).slow(6)).bpq(4).pan(sine.slow(5))
+        )._scope(),
+
+        n("0").chord("<Am F C G>").voicing()
+          .s("square").decay(0.1).sustain(0).lpf(400).gain(0.12)
+          .pan(sine.slow(8))
+          ._scope(),
+        n("0").chord("<Am F C G>").mode("root:c1").voicing()
+          .s("triangle").lpf(sine.range(150, 500).slow(16)).lpq(3).room(0.5).gain(0.08)
+          .pan(sine.slow(12))
+          ._scope(),
+
+        n("<0 2 4 5 7 5 4 2 7 5 9 7 11 9 7 5>").chord("<Am F C G>").voicing()
+          .s("square").decay(0.15).sustain(0).gain(0.1)
+          .phaser(sine.slow(6).range(2, 6))
+          .jux(x => x.gain(0.5).speed(0.99))
+          ._scope(),
+
+        n("~ 4 ~ 3 ~ 2 ~ 0")
+          .chord("<Am F C G>")
+          .voicing()
+          .s("triangle").decay(0.3).sustain(0).gain(0.08).room(0.4)
+          .phaser(sine.slow(9).range(1, 5))
+          .jux(x => x.gain(0.6).speed(1.01))
+          ._scope()
+      )
+    ]
+  )
+).gain(0.15);`;
         msg = `Default code has been loaded`;
       }
       editor.setCode(code);
       setDocumentTitle(code);
-      logger(`Welcome to Strudel! ${msg} Press play or hit ctrl+enter to run it!`, 'highlight');
+      logger(`Добро пожаловать в Bulka! ${msg} Нажми играть или ctrl+enter чтобы запустить!`, 'highlight');
     });
 
     editorRef.current = editor;
@@ -181,7 +295,7 @@ export function useReplContext() {
 
   const setDocumentTitle = (code) => {
     const meta = getMetadata(code);
-    document.title = (meta.title ? `${meta.title} - ` : '') + 'Strudel REPL';
+    document.title = (meta.title ? `${meta.title} - ` : '') + 'Bulka редактор';
   };
 
   const handleTogglePlay = async () => {
@@ -211,30 +325,6 @@ export function useReplContext() {
   const handleEvaluate = () => {
     editorRef.current.evaluate();
   };
-
-  const handleExport = async (begin, end, sampleRate, maxPolyphony, multiChannelOrbits, downloadName = undefined) => {
-    await editorRef.current.evaluate(false);
-    editorRef.current.repl.scheduler.stop();
-    await renderPatternAudio(
-      editorRef.current.repl.state.pattern,
-      editorRef.current.repl.scheduler.cps,
-      begin,
-      end,
-      sampleRate,
-      maxPolyphony,
-      multiChannelOrbits,
-      downloadName,
-    ).finally(async () => {
-      const { latestCode, maxPolyphony, audioDeviceName, multiChannelOrbits } = settingsMap.get();
-      await initAudio({
-        latestCode,
-        maxPolyphony,
-        audioDeviceName,
-        multiChannelOrbits,
-      });
-      editorRef.current.repl.scheduler.stop();
-    });
-  };
   const handleShuffle = async () => {
     const patternData = await getRandomTune();
     const code = patternData.code;
@@ -263,7 +353,6 @@ export function useReplContext() {
     handleShuffle,
     handleShare,
     handleEvaluate,
-    handleExport,
     init,
     error,
     editorRef,

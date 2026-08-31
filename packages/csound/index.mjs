@@ -125,16 +125,16 @@ export async function loadOrc(url) {
 }
 
 /**
- * Sends notes to Csound for rendering with MIDI semantics. The hap value is
- * translated to these Csound pfields:
+ * Отправляет ноты в Csound для рендеринга с семантикой MIDI. Значение hap
+ * транслируется в следующие поля Csound (pfields):
  *
- *  p1 -- Csound instrument either as a number (1-based, can be a fraction),
- *        or as a string name.
- *  p2 -- time in beats (usually seconds) from start of performance.
- *  p3 -- duration in beats (usually seconds).
- *  p4 -- MIDI key number (as a real number, not an integer but in [0, 127].
- *  p5 -- MIDI velocity (as a real number, not an integer but in [0, 127].
- *  p6 -- Strudel controls, as a string.
+ *  p1 -- Инструмент Csound в виде числа (начиная с 1, может быть дробным),
+ *        или в виде строкового имени.
+ *  p2 -- Время в beats (обычно секунды) от начала исполнения.
+ *  p3 -- Длительность в beats (обычно секунды).
+ *  p4 -- Номер MIDI клавиши (вещественное число, не целое, в диапазоне [0, 127].
+ *  p5 -- MIDI velocity (вещественное число, не целое, в диапазоне [0, 127].
+ *  p6 -- Strudel controls, в виде строки.
  */
 export const csoundm = register('csoundm', (instrument, pat) => {
   let p1 = instrument;

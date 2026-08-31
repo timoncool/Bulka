@@ -1,0 +1,7 @@
+(
+	\name: 			"samples-flbass",
+	\summary:		"Fretless bass samples tuned to C with various attacks styles, releases, plucking hand positions and harmonics",
+	\author: 		"Bernard Gray, maintained by Bernard Gray",
+	\since: 		"2021",
+	\dependencies:  []
+)

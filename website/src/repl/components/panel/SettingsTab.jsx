@@ -1,13 +1,13 @@
 import { defaultSettings, settingsMap, useSettings } from '../../../settings.mjs';
 import { themes } from '@strudel/codemirror';
 import { Textbox } from '../textbox/Textbox.jsx';
-import { confirmAndReloadPage, isUdels } from '../../util.mjs';
+import { isUdels } from '../../util.mjs';
 import { ButtonGroup } from './Forms.jsx';
 import { AudioDeviceSelector } from './AudioDeviceSelector.jsx';
 import { AudioEngineTargetSelector } from './AudioEngineTargetSelector.jsx';
 import { confirmDialog } from '../../util.mjs';
 import { DEFAULT_MAX_POLYPHONY, setMaxPolyphony, setMultiChannelOrbits } from '@strudel/webaudio';
-import { SpecialActionButton } from '../button/action-button.jsx';
+import { ActionButton, SpecialActionButton } from '../button/action-button.jsx';
 import { ImportPrebakeScriptButton } from './ImportPrebakeScriptButton.jsx';
 
 function Checkbox({ label, value, onChange, disabled = false }) {
@@ -86,6 +86,8 @@ const fontFamilyOptions = {
   galactico: 'galactico',
 };
 
+const RELOAD_MSG = 'Для применения этой настройки требуется перезагрузка страницы. ОК?';
+
 export function SettingsTab({ started }) {
   const {
     theme,
@@ -120,30 +122,36 @@ export function SettingsTab({ started }) {
   return (
     <div className="text-foreground p-4 space-y-4 w-full" style={{ fontFamily }}>
       {canChangeAudioDevice && (
-        <FormItem label="Audio Output Device">
+        <FormItem label="Аудио устройство">
           <AudioDeviceSelector
             isDisabled={started}
             audioDeviceName={audioDeviceName}
             onChange={(audioDeviceName) => {
-              confirmAndReloadPage(() => {
-                settingsMap.setKey('audioDeviceName', audioDeviceName);
+              confirmDialog(RELOAD_MSG).then((r) => {
+                if (r == true) {
+                  settingsMap.setKey('audioDeviceName', audioDeviceName);
+                  return window.location.reload();
+                }
               });
             }}
           />
         </FormItem>
       )}
-      <FormItem label="Audio Engine Target">
+      <FormItem label="Цель аудио движка">
         <AudioEngineTargetSelector
           target={audioEngineTarget}
           onChange={(target) => {
-            confirmAndReloadPage(() => {
-              settingsMap.setKey('audioEngineTarget', target);
+            confirmDialog(RELOAD_MSG).then((r) => {
+              if (r == true) {
+                settingsMap.setKey('audioEngineTarget', target);
+                return window.location.reload();
+              }
             });
           }}
         />
       </FormItem>
 
-      <FormItem label="Maximum Polyphony">
+      <FormItem label="Максимальная полифония">
         <Textbox
           min={1}
           max={Infinity}
@@ -164,29 +172,32 @@ export function SettingsTab({ started }) {
       </FormItem>
       <FormItem>
         <Checkbox
-          label="Multi Channel Orbits"
+          label="Многоканальные орбиты"
           onChange={(cbEvent) => {
             const val = cbEvent.target.checked;
-            confirmAndReloadPage(() => {
-              settingsMap.setKey('multiChannelOrbits', val);
-              setMultiChannelOrbits(val);
+            confirmDialog(RELOAD_MSG).then((r) => {
+              if (r == true) {
+                settingsMap.setKey('multiChannelOrbits', val);
+                setMultiChannelOrbits(val);
+                return window.location.reload();
+              }
             });
           }}
           value={multiChannelOrbits}
         />
       </FormItem>
-      <FormItem label="Theme">
+      <FormItem label="Тема">
         <SelectInput options={themeOptions} value={theme} onChange={(theme) => settingsMap.setKey('theme', theme)} />
       </FormItem>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 font-sans">
-        <FormItem label="Font Family">
+        <FormItem label="Шрифт">
           <SelectInput
             options={fontFamilyOptions}
             value={fontFamily}
             onChange={(fontFamily) => settingsMap.setKey('fontFamily', fontFamily)}
           />
         </FormItem>
-        <FormItem label="Font Size">
+        <FormItem label="Размер шрифта">
           <NumberSlider
             value={fontSize}
             onChange={(fontSize) => settingsMap.setKey('fontSize', fontSize)}
@@ -196,124 +207,127 @@ export function SettingsTab({ started }) {
           />
         </FormItem>
       </div>
-      <FormItem label="Prebake">
+      <FormItem label="Prebake-скрипт">
         <ImportPrebakeScriptButton />
         <Checkbox
-          label="Include prebake script in share"
+          label="Включать prebake-скрипт в ссылку"
           onChange={(cbEvent) => settingsMap.setKey('includePrebakeScriptInShare', cbEvent.target.checked)}
           value={includePrebakeScriptInShare}
         />
       </FormItem>
 
-      <FormItem label="Keybindings">
+      <FormItem label="Клавиши">
         <ButtonGroup
           value={keybindings}
           onChange={(keybindings) => settingsMap.setKey('keybindings', keybindings)}
           items={{ codemirror: 'Codemirror', vim: 'Vim', emacs: 'Emacs', vscode: 'VSCode' }}
         ></ButtonGroup>
       </FormItem>
-      <FormItem label="Panel Position">
+      <FormItem label="Позиция панели">
         <ButtonGroup
           value={panelPosition}
           onChange={(value) => settingsMap.setKey('panelPosition', value)}
-          items={{ bottom: 'Bottom', right: 'Right' }}
+          items={{ bottom: 'Снизу', right: 'Справа' }}
         ></ButtonGroup>
       </FormItem>
-      <FormItem label="Open Panel on:                       ">
+      <FormItem label="Открывать панель по:">
         <ButtonGroup
           value={togglePanelTrigger}
           onChange={(value) => settingsMap.setKey('togglePanelTrigger', value)}
-          items={{ click: 'Click', hover: 'Hover' }}
+          items={{ click: 'Клик', hover: 'Наведение' }}
         />
       </FormItem>
-      <FormItem label="More Settings">
+      <FormItem label="Дополнительные настройки">
         <Checkbox
-          label="Enable bracket matching"
+          label="Подсветка парных скобок"
           onChange={(cbEvent) => settingsMap.setKey('isBracketMatchingEnabled', cbEvent.target.checked)}
           value={isBracketMatchingEnabled}
         />
         <Checkbox
-          label="Auto close brackets"
+          label="Автозакрытие скобок"
           onChange={(cbEvent) => settingsMap.setKey('isBracketClosingEnabled', cbEvent.target.checked)}
           value={isBracketClosingEnabled}
         />
         <Checkbox
-          label="Display line numbers"
+          label="Показывать номера строк"
           onChange={(cbEvent) => settingsMap.setKey('isLineNumbersDisplayed', cbEvent.target.checked)}
           value={isLineNumbersDisplayed}
         />
         <Checkbox
-          label="Highlight active line"
+          label="Подсветка активной строки"
           onChange={(cbEvent) => settingsMap.setKey('isActiveLineHighlighted', cbEvent.target.checked)}
           value={isActiveLineHighlighted}
         />
         <Checkbox
-          label="Highlight events in code"
+          label="Подсветка событий в коде"
           onChange={(cbEvent) => settingsMap.setKey('isPatternHighlightingEnabled', cbEvent.target.checked)}
           value={isPatternHighlightingEnabled}
         />
         <Checkbox
-          label="Enable auto-completion"
+          label="Автодополнение"
           onChange={(cbEvent) => settingsMap.setKey('isAutoCompletionEnabled', cbEvent.target.checked)}
           value={isAutoCompletionEnabled}
         />
         <Checkbox
-          label="Enable tooltips on Ctrl and hover"
+          label="Подсказки по Ctrl и наведению"
           onChange={(cbEvent) => settingsMap.setKey('isTooltipEnabled', cbEvent.target.checked)}
           value={isTooltipEnabled}
         />
         <Checkbox
-          label="Enable line wrapping"
+          label="Перенос строк"
           onChange={(cbEvent) => settingsMap.setKey('isLineWrappingEnabled', cbEvent.target.checked)}
           value={isLineWrappingEnabled}
         />
         <Checkbox
-          label="Enable Tab indentation"
+          label="Отступы по Tab"
           onChange={(cbEvent) => settingsMap.setKey('isTabIndentationEnabled', cbEvent.target.checked)}
           value={isTabIndentationEnabled}
         />
         <Checkbox
-          label="Enable Multi-Cursor (Cmd/Ctrl+Click)"
+          label="Мульти-курсор (Cmd/Ctrl+Click)"
           onChange={(cbEvent) => settingsMap.setKey('isMultiCursorEnabled', cbEvent.target.checked)}
           value={isMultiCursorEnabled}
         />
         <Checkbox
-          label="Enable flashing on evaluation"
+          label="Вспышка при выполнении"
           onChange={(cbEvent) => settingsMap.setKey('isFlashEnabled', cbEvent.target.checked)}
           value={isFlashEnabled}
         />
         <Checkbox
-          label="Sync across Browser Tabs / Windows"
+          label="Синхронизация между вкладками"
           onChange={(cbEvent) => {
             const newVal = cbEvent.target.checked;
-            confirmAndReloadPage(() => {
-              settingsMap.setKey('isSyncEnabled', newVal);
+            confirmDialog(RELOAD_MSG).then((r) => {
+              if (r) {
+                settingsMap.setKey('isSyncEnabled', newVal);
+                window.location.reload();
+              }
             });
           }}
           disabled={shouldAlwaysSync}
           value={isSyncEnabled}
         />
         <Checkbox
-          label="Hide top buttons"
+          label="Скрыть верхние кнопки"
           onChange={(cbEvent) => settingsMap.setKey('isButtonRowHidden', cbEvent.target.checked)}
           value={isButtonRowHidden}
         />
         <Checkbox
-          label="Disable CSS Animations"
+          label="Отключить CSS-анимации"
           onChange={(cbEvent) => settingsMap.setKey('isCSSAnimationDisabled', cbEvent.target.checked)}
           value={isCSSAnimationDisabled}
         />
         <Checkbox
-          label="Auto-start pattern on pattern change"
+          label="Авто-старт паттерна при изменении"
           onChange={(cbEvent) => settingsMap.setKey('patternAutoStart', cbEvent.target.checked)}
           value={patternAutoStart}
         />
       </FormItem>
-      <FormItem label="Zen Mode">Try clicking the logo in the top left!</FormItem>
-      <FormItem label="Reset Settings">
+      <FormItem label="Дзен-режим">Нажми на логотип слева вверху!</FormItem>
+      <FormItem label="Сброс настроек">
         <SpecialActionButton
           onClick={() => {
-            confirmDialog('Sure?').then((r) => {
+            confirmDialog('Уверены?').then((r) => {
               if (r) {
                 const { userPatterns } = settingsMap.get(); // keep current patterns
                 settingsMap.set({ ...defaultSettings, userPatterns });
@@ -321,7 +335,7 @@ export function SettingsTab({ started }) {
             });
           }}
         >
-          restore default settings
+          восстановить настройки
         </SpecialActionButton>
       </FormItem>
     </div>

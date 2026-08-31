@@ -1,0 +1,216 @@
+---
+title: Модуляция (Modulate)
+layout: ../../layouts/MainLayout.astro
+---
+
+import { MiniRepl } from '../../docs/MiniRepl';
+
+# Модуляция (Modulate)
+
+Модуляция — одна из самых мощных техник в Hydra. Она использует цвета одного источника для **искажения геометрии** другого.
+
+## Как работает модуляция
+
+При модуляции:
+- Красный канал модулятора → смещение по оси X
+- Зелёный канал модулятора → смещение по оси Y
+- Светлые области искажаются сильнее
+
+---
+
+## modulate() — Базовая модуляция
+
+```javascript
+source.modulate(texture, amount)
+```
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10)
+  .modulate(noise(3))
+  .out()
+`}
+/>
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Сильная модуляция
+osc(10)
+  .modulate(noise(3), 0.5)
+  .out()
+`}
+/>
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Модуляция Вороным
+osc(10, 0.1, 0.5)
+  .modulate(voronoi(5, 0.1), 0.3)
+  .out()
+`}
+/>
+
+---
+
+## modulateScale() — Модуляция масштаба
+
+Изменяет масштаб разных частей изображения.
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10)
+  .modulateScale(noise(3), 0.5)
+  .out()
+`}
+/>
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+shape(4)
+  .modulateScale(osc(3), 2, 0.5)
+  .out()
+`}
+/>
+
+---
+
+## modulateRotate() — Модуляция вращения
+
+Применяет разное количество вращения к разным частям изображения.
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10)
+  .modulateRotate(osc(3), 1)
+  .out()
+`}
+/>
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Спиральный эффект
+osc(20, 0.1, 0.5)
+  .modulateRotate(noise(3), 2)
+  .out()
+`}
+/>
+
+---
+
+## modulateHue() — Модуляция оттенка
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10, 0.1, 0.5)
+  .modulateHue(osc(3).saturate(3), 1)
+  .out()
+`}
+/>
+
+---
+
+## modulateKaleid() — Модуляция калейдоскопа
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10)
+  .modulateKaleid(noise(3), 8)
+  .out()
+`}
+/>
+
+---
+
+## modulateRepeat() — Модуляция повторения
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+shape(4)
+  .modulateRepeat(osc(3), 3, 3)
+  .out()
+`}
+/>
+
+---
+
+## modulatePixelate()
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10, 0.1, 0.5)
+  .modulatePixelate(noise(3), 100, 10)
+  .out()
+`}
+/>
+
+---
+
+## Комплексные примеры
+
+### Многослойная модуляция
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10, 0.1, 0.5)
+  .modulate(noise(3), 0.2)
+  .modulateRotate(osc(2), 0.5)
+  .modulateScale(voronoi(5), 0.3)
+  .out()
+`}
+/>
+
+### Самомодуляция (feedback)
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10, 0.1, 0.5)
+  .modulate(o0, 0.1)
+  .out()
+`}
+/>
+
+### Перекрёстная модуляция
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10, 0.1, 0.5).modulate(o1, 0.2).out(o0)
+noise(3).modulate(o0, 0.2).out(o1)
+render(o0)
+`}
+/>
+
+### Комбинация с цветом
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(20, 0.03, 0)
+  .modulate(noise(3), () => Math.sin(time) * 0.3)
+  .color(1, 0.5, 0.2)
+  .kaleid(4)
+  .out()
+`}
+/>
+
+---
+
+## Советы по модуляции
+
+1. **Начинайте с малых значений** (0.1-0.3)
+2. **Используйте noise() как модулятор** — создаёт органичные искажения
+3. **Комбинируйте с цветовыми эффектами**
+4. **Анимируйте интенсивность**: `() => Math.sin(time) * 0.3`

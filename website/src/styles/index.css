@@ -72,3 +72,34 @@
 #console-tab {
   font-family: BigBlueTerminal, monospace;
 }
+
+/* ===== Global Scrollbar Theming ===== */
+
+/* All scrollbars in the app */
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--gutterForeground, #8a919966);
+  border-radius: 4px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--foreground, #fff);
+}
+
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Firefox support */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--gutterForeground, #8a919966) transparent;
+}

@@ -1,85 +1,85 @@
 ---
-title: Offline
+title: Оффлайн
 layout: ../../layouts/MainLayout.astro
 ---
 
-# Using Strudel Offline
+# Использование Strudel в оффлайн режиме
 
-You can use Strudel even without a network! When you first visit the [Strudel REPL](https://strudel.cc/),
-your browser will download the whole web app including documentation.
-When the download is finished (&lt;1MB), you can visit the website even when offline,
-getting the downloaded website instead of the online one.
+Вы можете использовать Strudel даже без сетевого подключения! Когда вы впервые посещаете [Strudel REPL](https://strudel.cc/),
+ваш браузер загрузит все веб-приложение, включая документацию.
+Когда загрузка завершена (&lt;1MB), вы можете посещать веб-сайт даже в оффлайн режиме,
+получая загруженный веб-сайт вместо онлайн версии.
 
-When the site gets updated, your browser will download that update on the next online visit.
-When an update is available, the site will refresh after the download is finished.
+Когда сайт обновляется, ваш браузер загрузит это обновление при следующем онлайн посещении.
+Когда обновление доступно, сайт обновится после завершения загрузки.
 
-This works because Strudel is implemented as progessive web app (using [Vite PWA](https://vite-pwa-org.netlify.app/)).
+Это работает, потому что Strudel реализован как progessive web app (используя [Vite PWA](https://vite-pwa-org.netlify.app/)).
 
 ## Samples
 
-While the browser will download the app itself, samples are only downloaded when you're actively using them.
-So to make sure a specific set of samples is available when offline, just use them.
-Also, only samples from these domains will be cached for offline use:
+Хотя браузер загрузит само приложение, samples загружаются только когда вы их активно используете.
+Поэтому, чтобы убедиться, что конкретный набор samples доступен в оффлайн режиме, просто используйте их.
+Также, только samples с этих доменов будут кешироваться для оффлайн использования:
 
-- `https://raw.githubusercontent.com/*` for samples uploaded to github
-- `https://freesound.org/*` / `https://cdn.freesound.org/*` for freesound
-- `https://shabda.ndre.gr/.*` for shabda
+- `https://raw.githubusercontent.com/*` для samples, загруженных на github
+- `https://freesound.org/*` / `https://cdn.freesound.org/*` для freesound
+- `https://shabda.ndre.gr/.*` для shabda
 
-## Inspecting / Clearing Cache
+## Проверка / Очистка кеша
 
-You can view all cached files in your browser.
+Вы можете просмотреть все кешированные файлы в вашем браузере.
 
 ### Firefox
 
-- Open the Developer Tools (`Tools > Web Developer > Web Developer Tools`)
-- go to `Storage` tab and expand `Cache Storage > https://strudel.cc`.
-- or go to the `Application` tab and view the latest updates in `Service Workers`
+- Откройте Developer Tools (`Tools > Web Developer > Web Developer Tools`)
+- перейдите на вкладку `Storage` и разверните `Cache Storage > https://strudel.cc`.
+- или перейдите на вкладку `Application` и просмотрите последние обновления в `Service Workers`
 
-### Chromium based Browsers
+### Браузеры на основе Chromium
 
-- Open Developer Tools (`Right Click > Inspect`)
-- go to the `Application` tab
-- view downloaded files under `Cache > Cache Storage`
-- view the latest updates in `Service Workers`
+- Откройте Developer Tools (`Правый клик > Inspect`)
+- перейдите на вкладку `Application`
+- просмотрите загруженные файлы в `Cache > Cache Storage`
+- просмотрите последние обновления в `Service Workers`
 
-## Strudel Standalone App
+## Автономное приложение Strudel
 
-You can also install Strudel as a standalone app on most devices.
-A standalone app has its own desktop / homescreen icon and launches in a separate window,
-without the browser ui.
+Вы также можете установить Strudel как автономное приложение на большинстве устройств.
+Автономное приложение имеет свою собственную иконку на рабочем столе / главном экране и запускается в отдельном окне,
+без интерфейса браузера.
 
 <figure>
   ![Strudel on MacOS](/pwa/strudel-macos.png)
-  <figcaption>Strudel on MacOS</figcaption>
+  <figcaption>Strudel на MacOS</figcaption>
 </figure>
 
-### Desktop
+### Рабочий стол
 
-With a chromium based browser:
+С браузером на основе chromium:
 
-1. go to the [Strudel REPL](https://strudel.cc).
-2. on the right of the adress bar, click `install Strudel REPL`
-3. the REPL should now run as a standalone chromium app
+1. перейдите в [Strudel REPL](https://strudel.cc).
+2. справа от адресной строки нажмите `install Strudel REPL`
+3. REPL теперь должен запускаться как автономное chromium приложение
 
-Without a chromium based browser, you can use [nativefier](https://github.com/nativefier/nativefier) to generate a desktop app:
+Без браузера на основе chromium вы можете использовать [nativefier](https://github.com/nativefier/nativefier) для генерации приложения для рабочего стола:
 
-1. make sure you have NodeJS installed
-2. run `npx nativefier strudel.cc`
+1. убедитесь, что у вас установлен NodeJS
+2. запустите `npx nativefier strudel.cc`
 
 <figure>
   ![Strudel on Linux](/pwa/strudel-linux.png)
-  <figcaption>Strudel on Linux</figcaption>
+  <figcaption>Strudel на Linux</figcaption>
 </figure>
 
 ### iOS
 
-1. open to the [Strudel REPL](https://strudel.cc/) in safari
-2. press the share icon and tab `Add to homescreen`
-3. You should now have a strudel app icon that opens the repl in full screen
+1. откройте [Strudel REPL](https://strudel.cc/) в safari
+2. нажмите иконку поделиться и выберите `Add to homescreen`
+3. Теперь у вас должна быть иконка приложения strudel, которая открывает repl в полноэкранном режиме
 
 ### Android
 
-1. open to the [Strudel REPL](https://strudel.cc/)
-2. Tab the install button at the bottom
+1. откройте [Strudel REPL](https://strudel.cc/)
+2. Нажмите кнопку установки внизу
 
-Ok, what are [Patterns](/technical-manual/patterns) all about?
+Итак, что такое [Patterns](/technical-manual/patterns)?

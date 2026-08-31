@@ -114,7 +114,7 @@ export function pitchwheel({
 }
 
 /**
- * Renders a pitch circle to visualize frequencies within one octave
+ * Отрисовывает круг высот для визуализации частот в пределах одной октавы
  * @name pitchwheel
  * @param {number} hapcircles
  * @param {number} circle

@@ -1,5 +1,5 @@
 import { closeBrackets } from '@codemirror/autocomplete';
-import { indentWithTab, toggleLineComment } from '@codemirror/commands';
+import { indentWithTab, toggleLineComment, undo as cmUndo, redo as cmRedo } from '@codemirror/commands';
 import { javascript, javascriptLanguage } from '@codemirror/lang-javascript';
 import { bracketMatching, defaultHighlightStyle, syntaxHighlighting } from '@codemirror/language';
 import { Compartment, EditorState, Prec } from '@codemirror/state';
@@ -24,11 +24,10 @@ import { sliderPlugin, updateSliderWidgets } from './slider.mjs';
 import { activateTheme, initTheme, theme } from './themes.mjs';
 import { isTooltipEnabled } from './tooltip.mjs';
 import { updateWidgets, widgetPlugin } from './widget.mjs';
-import { jumpToCharacter } from './labelJump.mjs';
 
 export { toggleBlockComment, toggleBlockCommentByLine, toggleComment, toggleLineComment } from '@codemirror/commands';
 
-export const extensions = {
+const extensions = {
   isLineWrappingEnabled: (on) => (on ? EditorView.lineWrapping : []),
   isBracketMatchingEnabled: (on) => (on ? bracketMatching({ brackets: '()[]{}<>' }) : []),
   isBracketClosingEnabled: (on) => (on ? closeBrackets() : []),
@@ -49,7 +48,7 @@ export const extensions = {
         ]
       : [],
 };
-export const compartments = Object.fromEntries(Object.keys(extensions).map((key) => [key, new Compartment()]));
+const compartments = Object.fromEntries(Object.keys(extensions).map((key) => [key, new Compartment()]));
 
 export const defaultSettings = {
   keybindings: 'codemirror',
@@ -119,14 +118,6 @@ export function initEditor({ initialCode = '', onChange, onEvaluate, onStop, roo
             key: 'Alt-.',
             preventDefault: true,
             run: () => onStop?.(),
-          },
-          {
-            key: 'Alt-w',
-            run: (view) => jumpToCharacter(view, '$', 1),
-          },
-          {
-            key: 'Alt-q',
-            run: (view) => jumpToCharacter(view, '$', -1),
           },
           /* {
             key: 'Ctrl-Shift-.',
@@ -302,9 +293,9 @@ export class StrudelMirror {
       console.warn('first frame could not be painted');
     }
   }
-  async evaluate(autostart = true) {
+  async evaluate() {
     this.flash();
-    await this.repl.evaluate(this.code, autostart);
+    await this.repl.evaluate(this.code);
   }
   async stop() {
     this.repl.scheduler.stop();
@@ -401,6 +392,31 @@ export class StrudelMirror {
     };
     this.editor.dispatch({ changes });
   }
+  undo() {
+    cmUndo(this.editor);
+  }
+  redo() {
+    cmRedo(this.editor);
+  }
+  getSelection() {
+    const { from, to } = this.editor.state.selection.main;
+    if (from === to) return null; // No selection
+    return this.editor.state.sliceDoc(from, to);
+  }
+  hasSelection() {
+    const { from, to } = this.editor.state.selection.main;
+    return from !== to;
+  }
+  selectText(search) {
+    const code = this.code || '';
+    const index = code.indexOf(search);
+    if (index === -1) return false;
+    this.editor.dispatch({
+      selection: { anchor: index, head: index + search.length },
+      scrollIntoView: true,
+    });
+    return true;
+  }
   clear() {
     this.onStartRepl && document.removeEventListener('start-repl', this.onStartRepl);
     this.onEvaluateRequest && document.removeEventListener('repl-evaluate', this.onEvaluateRequest);
@@ -420,7 +436,7 @@ export class StrudelMirror {
   }
 }
 
-export function parseBooleans(value) {
+function parseBooleans(value) {
   return { true: true, false: false }[value] ?? value;
 }
 
@@ -432,7 +448,7 @@ function s4() {
 }
 
 /**
- * Overrides the css of highlighted events. Make sure to use single quotes!
+ * Переопределяет css для выделенных событий. Обязательно используйте одинарные кавычки!
  * @name markcss
  * @example
  * note("c a f e")

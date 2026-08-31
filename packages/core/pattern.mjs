@@ -26,7 +26,6 @@ import {
 } from './util.mjs';
 import drawLine from './drawLine.mjs';
 import { errorLogger, logger } from './logger.mjs';
-import { strudelScope } from './evaluate.mjs';
 
 let stringParser;
 
@@ -41,12 +40,12 @@ export const calculateSteps = function (x) {
 // intended to use with mini to automatically interpret all strings as mini notation
 export const setStringParser = (parser) => (stringParser = parser);
 
-/** @class Class representing a pattern. */
+/** @class Класс, представляющий pattern. */
 export class Pattern {
   /**
-   * Create a pattern. As an end user, you will most likely not create a Pattern directly.
+   * Создаёт pattern. Как конечный пользователь, вы скорее всего не будете создавать Pattern напрямую.
    *
-   * @param {function} query - The function that maps a `State` to an array of `Hap`.
+   * @param {function} query - Функция, которая отображает `State` в массив `Hap`.
    * @noAutocomplete
    */
   constructor(query, steps = undefined) {
@@ -83,10 +82,10 @@ export class Pattern {
   // Haskell-style functor, applicative and monadic operations
 
   /**
-   * Returns a new pattern, with the function applied to the value of
-   * each hap. It has the alias `fmap`.
+   * Возвращает новый pattern, где функция применена к значению
+   * каждого hap. Имеет синоним `fmap`.
    * @synonyms fmap
-   * @param {Function} func to to apply to the value
+   * @param {Function} func функция для применения к значению
    * @returns Pattern
    * @example
    * "0 1 2".withValue(v => v + 10).log()
@@ -103,7 +102,7 @@ export class Pattern {
   }
 
   /**
-   * see `withValue`
+   * см. `withValue`
    * @noAutocomplete
    */
   fmap(func) {
@@ -111,9 +110,9 @@ export class Pattern {
   }
 
   /**
-   * Assumes 'this' is a pattern of functions, and given a function to
-   * resolve wholes, applies a given pattern of values to that
-   * pattern of functions.
+   * Предполагается, что 'this' является pattern функций, и при наличии функции для
+   * разрешения wholes, применяет заданный pattern значений к этому
+   * pattern функций.
    * @param {Function} whole_func
    * @param {Function} func
    * @noAutocomplete
@@ -144,13 +143,13 @@ export class Pattern {
   }
 
   /**
-   * When this method is called on a pattern of functions, it matches its haps
-   * with those in the given pattern of values.  A new pattern is returned, with
-   * each matching value applied to the corresponding function.
+   * Когда этот метод вызывается на pattern функций, он сопоставляет его haps
+   * с теми, что в заданном pattern значений. Возвращается новый pattern, где
+   * каждое совпадающее значение применяется к соответствующей функции.
    *
-   * In this `_appBoth` variant, where timespans of the function and value haps
-   * are not the same but do intersect, the resulting hap has a timespan of the
-   * intersection. This applies to both the part and the whole timespan.
+   * В этом варианте `_appBoth`, где timespans function и value haps
+   * не совпадают, но пересекаются, результирующий hap имеет timespan
+   * пересечения. Это применяется как к part, так и к whole timespan.
    * @param {Pattern} pat_val
    * @noAutocomplete
    * @returns Pattern
@@ -173,11 +172,11 @@ export class Pattern {
   }
 
   /**
-   * As with `appBoth`, but the `whole` timespan is not the intersection,
-   * but the timespan from the function of patterns that this method is called
-   * on. In practice, this means that the pattern structure, including onsets,
-   * are preserved from the pattern of functions (often referred to as the left
-   * hand or inner pattern).
+   * Как и `appBoth`, но `whole` timespan - это не пересечение,
+   * а timespan из функции patterns, на которой вызывается этот метод.
+   * На практике это означает, что структура pattern, включая onsets,
+   * сохраняется из pattern функций (часто называемого левым
+   * или внутренним pattern).
    * @param {Pattern} pat_val
    * @noAutocomplete
    * @returns Pattern
@@ -208,8 +207,8 @@ export class Pattern {
   }
 
   /**
-   * As with `appLeft`, but `whole` timespans are instead taken from the
-   * pattern of values, i.e. structure is preserved from the right hand/outer
+   * Как и `appLeft`, но `whole` timespans вместо этого берутся из
+   * pattern значений, то есть структура сохраняется из правого/внешнего
    * pattern.
    * @param {Pattern} pat_val
    * @noAutocomplete
@@ -399,10 +398,10 @@ export class Pattern {
   // Utility methods mainly for internal use
 
   /**
-   * Query haps inside the given time span.
+   * Запрашивает haps внутри заданного временного промежутка.
    *
-   * @param {Fraction | number} begin from time
-   * @param {Fraction | number} end to time
+   * @param {Fraction | number} begin время начала
+   * @param {Fraction | number} end время окончания
    * @returns Hap[]
    * @example
    * const pattern = sequence('a', ['b', 'c'])
@@ -421,9 +420,9 @@ export class Pattern {
   }
 
   /**
-   * Returns a new pattern, with queries split at cycle boundaries. This makes
-   * some calculations easier to express, as all haps are then constrained to
-   * happen within a cycle.
+   * Возвращает новый pattern, где запросы разделены на границах циклов. Это делает
+   * некоторые вычисления более простыми для выражения, так как все haps затем ограничены
+   * происходящими внутри цикла.
    * @returns Pattern
    * @noAutocomplete
    */
@@ -436,9 +435,9 @@ export class Pattern {
   }
 
   /**
-   * Returns a new pattern, where the given function is applied to the query
-   * timespan before passing it to the original pattern.
-   * @param {Function} func the function to apply
+   * Возвращает новый pattern, где заданная функция применяется к
+   * timespan запроса перед передачей его в исходный pattern.
+   * @param {Function} func функция для применения
    * @returns Pattern
    * @noAutocomplete
    */
@@ -458,9 +457,9 @@ export class Pattern {
   }
 
   /**
-   * As with `withQuerySpan`, but the function is applied to both the
-   * begin and end time of the query timespan.
-   * @param {Function} func the function to apply
+   * Как и `withQuerySpan`, но функция применяется к времени
+   * начала и окончания timespan запроса.
+   * @param {Function} func функция для применения
    * @returns Pattern
    * @noAutocomplete
    */
@@ -469,9 +468,9 @@ export class Pattern {
   }
 
   /**
-   * Similar to `withQuerySpan`, but the function is applied to the timespans
-   * of all haps returned by pattern queries (both `part` timespans, and where
-   * present, `whole` timespans).
+   * Похоже на `withQuerySpan`, но функция применяется к timespans
+   * всех haps, возвращаемых запросами pattern (как к `part` timespans, так и, при наличии,
+   * к `whole` timespans).
    * @param {Function} func
    * @returns Pattern
    * @noAutocomplete
@@ -481,9 +480,9 @@ export class Pattern {
   }
 
   /**
-   * As with `withHapSpan`, but the function is applied to both the
-   * begin and end time of the hap timespans.
-   * @param {Function} func the function to apply
+   * Как и `withHapSpan`, но функция применяется к времени
+   * начала и окончания timespans hap.
+   * @param {Function} func функция для применения
    * @returns Pattern
    * @noAutocomplete
    */
@@ -492,7 +491,7 @@ export class Pattern {
   }
 
   /**
-   * Returns a new pattern with the given function applied to the list of haps returned by every query.
+   * Возвращает новый pattern с заданной функцией, применённой к списку haps, возвращаемых каждым запросом.
    * @param {Function} func
    * @returns Pattern
    * @noAutocomplete
@@ -504,7 +503,7 @@ export class Pattern {
   }
 
   /**
-   * As with `withHaps`, but applies the function to every hap, rather than every list of haps.
+   * Как и `withHaps`, но применяет функцию к каждому hap, а не к каждому списку haps.
    * @param {Function} func
    * @returns Pattern
    * @noAutocomplete
@@ -514,7 +513,7 @@ export class Pattern {
   }
 
   /**
-   * Returns a new pattern with the context field set to every hap set to the given value.
+   * Возвращает новый pattern с полем context, установленным для каждого hap в заданное значение.
    * @param {*} context
    * @returns Pattern
    * @noAutocomplete
@@ -524,7 +523,7 @@ export class Pattern {
   }
 
   /**
-   * Returns a new pattern with the given function applied to the context field of every hap.
+   * Возвращает новый pattern с заданной функцией, применённой к полю context каждого hap.
    * @param {Function} func
    * @returns Pattern
    * @noAutocomplete
@@ -539,7 +538,7 @@ export class Pattern {
   }
 
   /**
-   * Returns a new pattern with the context field of every hap set to an empty object.
+   * Возвращает новый pattern с полем context каждого hap, установленным в пустой объект.
    * @returns Pattern
    * @noAutocomplete
    */
@@ -548,10 +547,10 @@ export class Pattern {
   }
 
   /**
-   * Returns a new pattern with the given location information added to the
-   * context of every hap.
-   * @param {Number} start start offset
-   * @param {Number} end end offset
+   * Возвращает новый pattern с добавленной заданной информацией о расположении к
+   * context каждого hap.
+   * @param {Number} start начальное смещение
+   * @param {Number} end конечное смещение
    * @returns Pattern
    * @noAutocomplete
    */
@@ -572,34 +571,29 @@ export class Pattern {
   }
 
   /**
-   * Returns a new Pattern, which only returns haps that meet the given test.
-   * @param {Function} hap_test - a function which returns false for haps to be removed from the pattern
+   * Возвращает новый Pattern, который возвращает только те haps, которые соответствуют заданному тесту.
+   * @param {Function} hap_test - функция, которая возвращает false для haps, которые нужно удалить из pattern
    * @returns Pattern
-   * @example
-   * s("bd*8").velocity(rand).filterHaps((h) => (h.whole.begin % 1) < h.value.velocity)
+   * @noAutocomplete
    */
   filterHaps(hap_test) {
     return new Pattern((state) => this.query(state).filter(hap_test));
   }
 
   /**
-   * As with `filterHaps`, but the function is applied to values
-   * inside haps.
+   * Как и `filterHaps`, но функция применяется к значениям
+   * внутри haps.
    * @param {Function} value_test
    * @returns Pattern
-   * @example
-   * const drums = s("bd sd bd sd")
-   * kick: drums.filterValues((v) => v.s === 'bd').duck(2)
-   * snare: drums.filterValues((v) => v.s === 'sd')
-   * bass: s("saw!4").note("G#1").lpf(80).lpenv(4).orbit(2)
+   * @noAutocomplete
    */
   filterValues(value_test) {
     return new Pattern((state) => this.query(state).filter((hap) => value_test(hap.value))).setSteps(this._steps);
   }
 
   /**
-   * Returns a new pattern, with haps containing undefined values removed from
-   * query results.
+   * Возвращает новый pattern с удалёнными из результатов запроса
+   * haps, содержащими undefined значения.
    * @returns Pattern
    * @noAutocomplete
    */
@@ -608,9 +602,9 @@ export class Pattern {
   }
 
   /**
-   * Returns a new pattern, with all haps without onsets filtered out. A hap
-   * with an onset is one with a `whole` timespan that begins at the same time
-   * as its `part` timespan.
+   * Возвращает новый pattern, где отфильтрованы все haps без onsets. Hap
+   * с onset - это тот, у которого `whole` timespan начинается в то же время,
+   * что и его `part` timespan.
    * @returns Pattern
    * @noAutocomplete
    */
@@ -622,8 +616,8 @@ export class Pattern {
   }
 
   /**
-   * Returns a new pattern, with 'continuous' haps (those without 'whole'
-   * timespans) removed from query results.
+   * Возвращает новый pattern с удалёнными из результатов запроса
+   * 'continuous' haps (те, что без 'whole' timespans).
    * @returns Pattern
    * @noAutocomplete
    */
@@ -633,8 +627,8 @@ export class Pattern {
   }
 
   /**
-   * Combines adjacent haps with the same value and whole.  Only
-   * intended for use in tests.
+   * Объединяет смежные haps с одинаковыми значениями и whole. Предназначено
+   * только для использования в тестах.
    * @noAutocomplete
    */
   defragmentHaps() {
@@ -685,10 +679,10 @@ export class Pattern {
   }
 
   /**
-   * Queries the pattern for the first cycle, returning Haps. Mainly of use when
-   * debugging a pattern.
-   * @param {Boolean} with_context - set to true, otherwise the context field
-   * will be stripped from the resulting haps.
+   * Запрашивает pattern для первого цикла, возвращая Haps. В основном используется при
+   * отладке pattern.
+   * @param {Boolean} with_context - установите в true, иначе поле context
+   * будет удалено из результирующих haps.
    * @returns [Hap]
    * @noAutocomplete
    */
@@ -701,7 +695,7 @@ export class Pattern {
   }
 
   /**
-   * Accessor for a list of values returned by querying the first cycle.
+   * Аксессор для списка значений, возвращаемых запросом первого цикла.
    * @noAutocomplete
    */
   get firstCycleValues() {
@@ -709,7 +703,7 @@ export class Pattern {
   }
 
   /**
-   * More human-readable version of the `firstCycleValues` accessor.
+   * Более читаемая версия аксессора `firstCycleValues`.
    * @noAutocomplete
    */
   get showFirstCycle() {
@@ -719,8 +713,8 @@ export class Pattern {
   }
 
   /**
-   * Returns a new pattern, which returns haps sorted in temporal order. Mainly
-   * of use when comparing two patterns for equality, in tests.
+   * Возвращает новый pattern, который возвращает haps, отсортированные во временном порядке. В основном
+   * используется при сравнении двух patterns на равенство в тестах.
    * @returns Pattern
    * @noAutocomplete
    */
@@ -783,7 +777,7 @@ export class Pattern {
   // Methods without corresponding toplevel functions
 
   /**
-   * Layers the result of the given function(s). Like `superimpose`, but without the original pattern:
+   * Накладывает результат заданной функции (функций). Похоже на `superimpose`, но без оригинального pattern:
    * @name layer
    * @memberof Pattern
    * @synonyms apply
@@ -798,7 +792,7 @@ export class Pattern {
   }
 
   /**
-   * Superimposes the result of the given function(s) on top of the original pattern:
+   * Накладывает результат заданной функции (функций) поверх оригинального pattern:
    * @name superimpose
    * @memberof Pattern
    * @returns Pattern
@@ -858,7 +852,7 @@ export class Pattern {
   }
 
   /**
-   * Writes the content of the current event to the console (visible in the side menu).
+   * Записывает содержимое текущего события в консоль (видно в боковом меню).
    * @name log
    * @memberof Pattern
    * @example
@@ -871,8 +865,8 @@ export class Pattern {
   }
 
   /**
-   * A simplified version of `log` which writes all "values" (various configurable parameters)
-   * within the event to the console (visible in the side menu).
+   * Упрощённая версия `log`, которая записывает все "значения" (различные настраиваемые параметры)
+   * внутри события в консоль (видно в боковом меню).
    * @name logValues
    * @memberof Pattern
    * @example
@@ -901,11 +895,11 @@ export class Pattern {
   }
 
   /**
-   * Breaks a pattern into pieces according to the structure of a given pattern.
-   * True values in the given pattern cause the corresponding subcycle of the
-   * source pattern to be looped, and for an (optional) given function to be
-   * applied. False values result in the corresponding part of the source pattern
-   * to be played unchanged.
+   * Разбивает pattern на части в соответствии со структурой заданного pattern.
+   * Истинные значения в заданном pattern заставляют соответствующий подцикл
+   * исходного pattern зацикливаться, и для них применяется (опциональная) заданная функция.
+   * Ложные значения приводят к тому, что соответствующая часть исходного pattern
+   * воспроизводится без изменений.
    * @name into
    * @memberof Pattern
    * @example
@@ -944,7 +938,7 @@ Pattern.prototype.collect = function () {
 };
 
 /**
- * Selects indices in in stacked notes.
+ * Выбирает индексы в наложенных нотах.
  * @example
  * note("<[c,eb,g]!2 [c,f,ab] [d,f,ab]>")
  * .arpWith(haps => haps[2])
@@ -958,7 +952,7 @@ export const arpWith = register('arpWith', (func, pat) => {
 });
 
 /**
- * Selects indices in in stacked notes.
+ * Выбирает индексы в наложенных нотах.
  * @example
  * note("<[c,eb,g]!2 [c,f,ab] [d,f,ab]>")
  * .arp("0 [0,2] 1 [0,2]")
@@ -1028,34 +1022,34 @@ function _composeOp(a, b, func) {
     // numerical functions
     /**
      *
-     * Assumes a pattern of numbers. Adds the given number to each item in the pattern.
+     * Предполагается pattern из чисел. Добавляет заданное число к каждому элементу в pattern.
      * @name add
      * @memberof Pattern
      * @example
-     * // Here, the triad 0, 2, 4 is shifted by different amounts
+     * // Здесь трезвучие 0, 2, 4 смещается на разные величины
      * n("0 2 4".add("<0 3 4 0>")).scale("C:major")
-     * // Without add, the equivalent would be:
+     * // Без add эквивалент был бы:
      * // n("<[0 2 4] [3 5 7] [4 6 8] [0 2 4]>").scale("C:major")
      * @example
-     * // You can also use add with notes:
+     * // Вы также можете использовать add с нотами:
      * note("c3 e3 g3".add("<0 5 7 0>"))
-     * // Behind the scenes, the notes are converted to midi numbers:
+     * // За кулисами ноты преобразуются в midi-номера:
      * // note("48 52 55".add("<0 5 7 0>"))
      */
     add: [numeralArgs((a, b) => a + b)], // support string concatenation
     /**
      *
-     * Like add, but the given numbers are subtracted.
+     * Как add, но заданные числа вычитаются.
      * @name sub
      * @memberof Pattern
      * @example
      * n("0 2 4".sub("<0 1 2 3>")).scale("C4:minor")
-     * // See add for more information.
+     * // См. add для получения дополнительной информации.
      */
     sub: [numeralArgs((a, b) => a - b)],
     /**
      *
-     * Multiplies each number by the given factor.
+     * Умножает каждое число на заданный множитель.
      * @name mul
      * @memberof Pattern
      * @example
@@ -1064,7 +1058,7 @@ function _composeOp(a, b, func) {
     mul: [numeralArgs((a, b) => a * b)],
     /**
      *
-     * Divides each number by the given factor.
+     * Делит каждое число на заданный делитель.
      * @name div
      * @memberof Pattern
      */
@@ -1151,7 +1145,7 @@ function _composeOp(a, b, func) {
 
   // binary composers
   /**
-   * Applies the given structure to the pattern:
+   * Применяет заданную структуру к pattern:
    *
    * @example
    * note("c,eb,g")
@@ -1165,7 +1159,7 @@ function _composeOp(a, b, func) {
     return this.keep.out(...args);
   };
   /**
-   * Returns silence when mask is 0 or "~"
+   * Возвращает silence, когда mask равна 0 или "~"
    *
    * @example
    * note("c [eb,g] d [eb,g]").mask("<1 [0 1]>")
@@ -1177,7 +1171,7 @@ function _composeOp(a, b, func) {
     return this.keep.in(...args);
   };
   /**
-   * Resets the pattern to the start of the cycle for each onset of the reset pattern.
+   * Сбрасывает pattern к началу цикла для каждого onset pattern сброса.
    *
    * @example
    * s("[<bd lt> sd]*2, hh*8").reset("<x@3 x(5,8)>")
@@ -1189,8 +1183,8 @@ function _composeOp(a, b, func) {
     return this.keep.reset(...args);
   };
   /**
-   * Restarts the pattern for each onset of the restart pattern.
-   * While reset will only reset the current cycle, restart will start from cycle 0.
+   * Перезапускает pattern для каждого onset pattern перезапуска.
+   * В то время как reset сбросит только текущий цикл, restart начнёт с цикла 0.
    *
    * @example
    * s("[<bd lt> sd]*2, hh*8").restart("<x@3 x(5,8)>")
@@ -1230,7 +1224,7 @@ export const pm = polymeter;
 // Elemental patterns
 
 /**
- * Does absolutely nothing, but with a given metrical 'steps'
+ * Абсолютно ничего не делает, но с заданными метрическими 'steps'
  * @name gap
  * @param  {number} steps
  * @example
@@ -1239,7 +1233,7 @@ export const pm = polymeter;
 export const gap = (steps) => new Pattern(() => [], steps);
 
 /**
- * Does absolutely nothing..
+ * Абсолютно ничего не делает..
  * @name silence
  * @example
  * silence // "~"
@@ -1250,7 +1244,7 @@ export const silence = gap(1);
 export const nothing = gap(0);
 
 /**
- * A discrete value that repeats once per cycle.
+ * Дискретное значение, которое повторяется один раз за цикл.
  *
  * @returns {Pattern}
  * @example
@@ -1304,7 +1298,7 @@ export function sequenceP(pats) {
 }
 
 /**
- * The given items are played at the same time at the same length.
+ * Заданные элементы воспроизводятся одновременно с одинаковой длительностью.
  *
  * @return {Pattern}
  * @synonyms polyrhythm, pr
@@ -1313,7 +1307,7 @@ export function sequenceP(pats) {
  * // "g3,b3,[e4 d4]".note()
  *
  * @example
- * // As a chained function:
+ * // Как цепная функция:
  * s("hh*4").stack(
  *   note("c4(5,8)")
  * )
@@ -1388,7 +1382,7 @@ export function stackBy(by, ...pats) {
 }
 
 /**
- * Concatenation: combines a list of patterns, switching between them successively, one per cycle.
+ * Конкатенация: объединяет список patterns, последовательно переключаясь между ними, один за цикл.
  *
  * @return {Pattern}
  * @synonyms cat
@@ -1422,8 +1416,8 @@ export function slowcat(...pats) {
   return new Pattern(query).splitQueries().setSteps(steps);
 }
 
-/** Concatenation: combines a list of patterns, switching between them successively, one per cycle. Unlike slowcat, this version will skip cycles.
- * @param {...any} items - The items to concatenate
+/** Конкатенация: объединяет список patterns, последовательно переключаясь между ними, один за цикл. В отличие от slowcat, эта версия пропускает циклы.
+ * @param {...any} items - Элементы для конкатенации
  * @return {Pattern}
  */
 export function slowcatPrime(...pats) {
@@ -1436,9 +1430,9 @@ export function slowcatPrime(...pats) {
   return new Pattern(query).splitQueries();
 }
 
-/** The given items are con**cat**enated, where each one takes one cycle.
+/** Заданные элементы кон**кат**енируются, где каждый занимает один цикл.
  *
- * @param {...any} items - The items to concatenate
+ * @param {...any} items - Элементы для конкатенации
  * @synonyms slowcat
  * @return {Pattern}
  * @example
@@ -1446,7 +1440,7 @@ export function slowcatPrime(...pats) {
  * // "<e5 b4 [d5 c5]>".note()
  *
  * @example
- * // As a chained function:
+ * // Как цепная функция:
  * s("hh*4").cat(
  *    note("c4(5,8)")
  * )
@@ -1456,8 +1450,8 @@ export function cat(...pats) {
 }
 
 /**
- * Allows to arrange multiple patterns together over multiple cycles.
- * Takes a variable number of arrays with two elements specifying the number of cycles and the pattern to use.
+ * Позволяет расположить несколько patterns вместе на протяжении нескольких циклов.
+ * Принимает переменное количество массивов с двумя элементами, указывающими количество циклов и используемый pattern.
  *
  * @return {Pattern}
  * @example
@@ -1473,9 +1467,9 @@ export function arrange(...sections) {
 }
 
 /**
- * Similarly to `arrange`, allows you to arrange multiple patterns together over multiple cycles.
- * Unlike `arrange`, you specify a start and stop time for each pattern rather than duration, which
- * means that patterns can overlap.
+ * Подобно `arrange`, позволяет располагать несколько patterns вместе на протяжении нескольких циклов.
+ * В отличие от `arrange`, вы указываете время начала и остановки для каждого pattern, а не длительность, что
+ * означает, что patterns могут перекрываться.
  * @return {Pattern}
  * @example
 seqPLoop([0, 2, "bd(3,8)"],
@@ -1519,14 +1513,14 @@ export function sequence(...pats) {
   return fastcat(...pats);
 }
 
-/** Like **cat**, but the items are crammed into one cycle.
+/** Как **cat**, но элементы втиснуты в один цикл.
  * @synonyms sequence, fastcat
  * @example
  * seq("e5", "b4", ["d5", "c5"]).note()
  * // "e5 b4 [d5 c5]".note()
  *
  * @example
- * // As a chained function:
+ * // Как цепная функция:
  * s("hh*4").seq(
  *   note("c4(5,8)")
  * )
@@ -1589,17 +1583,11 @@ export const or = curry((a, b) => reify(b).or(a));
 export const func = curry((a, b) => reify(b).func(a));
 
 /**
- * Registers a new pattern method. The method is added to the Pattern class + the standalone function is returned from register.
+ * Регистрирует новый метод pattern. Метод добавляется в класс Pattern + отдельная функция возвращается из register.
  *
- * @param {string | string[]} name name of the function, or an array of names to be used as synonyms
- * @param {function} func function with 1 or more params, where last is the current pattern
- * @param {bool} patternify defaults to true; if set to false, you will have more control over the arguments to `func` as they will be
- *   in their raw form and it will be up to you to patternify them and/or query them for values
- * @example
- * const vlpf = register('vlpf', (freq, pat) => {
- *   return pat.fmap((v) => ({...v, cutoff: freq * (v.velocity ?? 1) }));
- * })
- * s("saw").seg(8).velocity(rand).vlpf(800)
+ * @param {string | string[]} name имя функции или массив имён для использования в качестве синонимов
+ * @param {function} func функция с 1 или более параметрами, где последний - текущий pattern
+ * @noAutocomplete
  *
  */
 export function register(name, func, patternify = true, preserveSteps = false, join = (x) => x.innerJoin()) {
@@ -1684,9 +1672,7 @@ export function register(name, func, patternify = true, preserveSteps = false, j
 
   // toplevel functions get curried as well as patternified
   // because pfunc uses spread args, we need to state the arity explicitly!
-  const curried = curry(pfunc, null, arity);
-  strudelScope[name] = curried;
-  return curried;
+  return curry(pfunc, null, arity);
 }
 
 // Like register, but defaults to stepJoin
@@ -1698,8 +1684,8 @@ function stepRegister(name, func, patternify = true, preserveSteps = false, join
 // Numerical transformations
 
 /**
- * Assumes a numerical pattern. Returns a new pattern with all values rounded
- * to the nearest integer.
+ * Предполагается числовой pattern. Возвращает новый pattern со всеми значениями, округлёнными
+ * до ближайшего целого.
  * @name round
  * @memberof Pattern
  * @returns Pattern
@@ -1711,9 +1697,9 @@ export const round = register('round', function (pat) {
 });
 
 /**
- * Assumes a numerical pattern. Returns a new pattern with all values set to
- * their mathematical floor. E.g. `3.7` replaced with to `3`, and `-4.2`
- * replaced with `-5`.
+ * Предполагается числовой pattern. Возвращает новый pattern со всеми значениями, установленными в
+ * их математический floor. Например, `3.7` заменяется на `3`, а `-4.2`
+ * заменяется на `-5`.
  * @name floor
  * @memberof Pattern
  * @returns Pattern
@@ -1725,9 +1711,9 @@ export const floor = register('floor', function (pat) {
 });
 
 /**
- * Assumes a numerical pattern. Returns a new pattern with all values set to
- * their mathematical ceiling. E.g. `3.2` replaced with `4`, and `-4.2`
- * replaced with `-4`.
+ * Предполагается числовой pattern. Возвращает новый pattern со всеми значениями, установленными в
+ * их математический ceiling. Например, `3.2` заменяется на `4`, а `-4.2`
+ * заменяется на `-4`.
  * @name ceil
  * @memberof Pattern
  * @returns Pattern
@@ -1738,8 +1724,8 @@ export const ceil = register('ceil', function (pat) {
   return pat.asNumber().fmap((v) => Math.ceil(v));
 });
 /**
- * Assumes a numerical pattern, containing unipolar values in the range 0 ..
- * 1. Returns a new pattern with values scaled to the bipolar range -1 .. 1
+ * Предполагается числовой pattern, содержащий униполярные значения в диапазоне 0 ..
+ * 1. Возвращает новый pattern со значениями, масштабированными в биполярный диапазон -1 .. 1
  * @returns Pattern
  * @noAutocomplete
  */
@@ -1748,8 +1734,8 @@ export const toBipolar = register('toBipolar', function (pat) {
 });
 
 /**
- * Assumes a numerical pattern, containing bipolar values in the range -1 .. 1
- * Returns a new pattern with values scaled to the unipolar range 0 .. 1
+ * Предполагается числовой pattern, содержащий биполярные значения в диапазоне -1 .. 1
+ * Возвращает новый pattern со значениями, масштабированными в униполярный диапазон 0 .. 1
  * @returns Pattern
  * @noAutocomplete
  */
@@ -1758,9 +1744,9 @@ export const fromBipolar = register('fromBipolar', function (pat) {
 });
 
 /**
- * Assumes a numerical pattern, containing unipolar values in the range 0 .. 1.
- * Returns a new pattern with values scaled to the given min/max range.
- * Most useful in combination with continuous patterns.
+ * Предполагается числовой pattern, содержащий униполярные значения в диапазоне 0 .. 1.
+ * Возвращает новый pattern со значениями, масштабированными в заданный диапазон min/max.
+ * Наиболее полезно в сочетании с непрерывными patterns.
  * @name range
  * @memberof Pattern
  * @returns Pattern
@@ -1773,9 +1759,9 @@ export const range = register('range', function (min, max, pat) {
 });
 
 /**
- * Assumes a numerical pattern, containing unipolar values in the range 0 .. 1
- * Returns a new pattern with values scaled to the given min/max range,
- * following an exponential curve.
+ * Предполагается числовой pattern, содержащий униполярные значения в диапазоне 0 .. 1
+ * Возвращает новый pattern со значениями, масштабированными в заданный диапазон min/max,
+ * следуя экспоненциальной кривой.
  * @name rangex
  * @memberof Pattern
  * @returns Pattern
@@ -1788,8 +1774,8 @@ export const rangex = register('rangex', function (min, max, pat) {
 });
 
 /**
- * Assumes a numerical pattern, containing bipolar values in the range -1 .. 1
- * Returns a new pattern with values scaled to the given min/max range.
+ * Предполагается числовой pattern, содержащий биполярные значения в диапазоне -1 .. 1
+ * Возвращает новый pattern со значениями, масштабированными в заданный диапазон min/max.
  * @name range2
  * @memberof Pattern
  * @returns Pattern
@@ -1802,8 +1788,8 @@ export const range2 = register('range2', function (min, max, pat) {
 });
 
 /**
- * Allows dividing numbers via list notation using ":".
- * Returns a new pattern with just numbers.
+ * Позволяет делить числа через list-нотацию, используя ":".
+ * Возвращает новый pattern только с числами.
  * @name ratio
  * @memberof Pattern
  * @returns Pattern
@@ -1823,7 +1809,7 @@ export const ratio = register('ratio', (pat) =>
 //////////////////////////////////////////////////////////////////////
 // Structural and temporal transformations
 
-/** Compress each cycle into the given timespan, leaving a gap
+/** Сжимает каждый цикл в заданный timespan, оставляя промежуток
  * @example
  * cat(
  *   s("bd sd").compress(.25,.75),
@@ -1844,7 +1830,7 @@ export const { compressSpan, compressspan } = register(['compressSpan', 'compres
 });
 
 /**
- * speeds up a pattern like fast, but rather than it playing multiple times as fast would it instead leaves a gap in the remaining space of the cycle. For example, the following will play the sound pattern "bd sn" only once but compressed into the first half of the cycle, i.e. twice as fast.
+ * Ускоряет pattern как fast, но вместо того, чтобы воспроизводить его несколько раз, как это делает fast, оставляет промежуток в оставшемся пространстве цикла. Например, следующее воспроизведёт звуковой pattern "bd sn" только один раз, но сжатым в первую половину цикла, то есть вдвое быстрее.
  * @name fastGap
  * @synonyms fastgap
  * @example
@@ -1881,7 +1867,7 @@ export const { fastGap, fastgap } = register(['fastGap', 'fastgap'], function (f
 });
 
 /**
- * Similar to `compress`, but doesn't leave gaps, and the 'focus' can be bigger than a cycle
+ * Похоже на `compress`, но не оставляет промежутков, и 'focus' может быть больше цикла
  * @example
  * s("bd hh sd hh").focus(1/4, 3/4)
  */
@@ -1898,7 +1884,7 @@ export const { focusSpan, focusspan } = register(['focusSpan', 'focusspan'], fun
   return pat._focus(span.begin, span.end);
 });
 
-/** The ply function repeats each event the given number of times.
+/** Функция ply повторяет каждое событие заданное количество раз.
  * @example
  * s("bd ~ sd cp").ply("<1 2 3>")
  */
@@ -1911,12 +1897,12 @@ export const ply = register('ply', function (factor, pat) {
 });
 
 /**
- * Speed up a pattern by the given factor. Used by "*" in mini notation.
+ * Ускоряет pattern в заданное количество раз. Используется "*" в mini-нотации.
  *
  * @name fast
  * @synonyms density
  * @memberof Pattern
- * @param {number | Pattern} factor speed up factor
+ * @param {number | Pattern} factor множитель ускорения
  * @returns Pattern
  * @example
  * s("bd hh sd hh").fast(2) // s("[bd hh sd hh]*2")
@@ -1936,7 +1922,7 @@ export const { fast, density } = register(
 );
 
 /**
- * Both speeds up the pattern (like 'fast') and the sample playback (like 'speed').
+ * Одновременно ускоряет pattern (как 'fast') и воспроизведение sample (как 'speed').
  * @example
  * s("bd sd:2").hurry("<1 2 4 3>").slow(1.5)
  */
@@ -1945,12 +1931,12 @@ export const hurry = register('hurry', function (r, pat) {
 });
 
 /**
- * Slow down a pattern over the given number of cycles. Like the "/" operator in mini notation.
+ * Замедляет pattern на заданное количество циклов. Как оператор "/" в mini-нотации.
  *
  * @name slow
  * @synonyms sparsity
  * @memberof Pattern
- * @param {number | Pattern} factor slow down factor
+ * @param {number | Pattern} factor множитель замедления
  * @returns Pattern
  * @example
  * s("bd hh sd hh").slow(2) // s("[bd hh sd hh]/2")
@@ -1963,7 +1949,7 @@ export const { slow, sparsity } = register(['slow', 'sparsity'], function (facto
 });
 
 /**
- * Carries out an operation 'inside' a cycle.
+ * Выполняет операцию 'внутри' цикла.
  * @example
  * "0 1 2 3 4 3 2 1".inside(4, rev).scale('C major').note()
  * // "0 1 2 3 4 3 2 1".slow(4).rev().fast(4).scale('C major').note()
@@ -1973,7 +1959,7 @@ export const inside = register('inside', function (factor, f, pat) {
 });
 
 /**
- * Carries out an operation 'outside' a cycle.
+ * Выполняет операцию 'снаружи' цикла.
  * @example
  * "<[0 1] 2 [3 4] 5>".outside(4, rev).scale('C major').note()
  * // "<[0 1] 2 [3 4] 5>".fast(4).rev().slow(4).scale('C major').note()
@@ -1983,11 +1969,11 @@ export const outside = register('outside', function (factor, f, pat) {
 });
 
 /**
- * Applies the given function every n cycles, starting from the last cycle.
+ * Применяет заданную функцию каждые n циклов, начиная с последнего цикла.
  * @name lastOf
  * @memberof Pattern
- * @param {number} n how many cycles
- * @param {function} func function to apply
+ * @param {number} n сколько циклов
+ * @param {function} func функция для применения
  * @returns Pattern
  * @example
  * note("c3 d3 e3 g3").lastOf(4, x=>x.rev())
@@ -1999,22 +1985,22 @@ export const lastOf = register('lastOf', function (n, func, pat) {
 });
 
 /**
- * Applies the given function every n cycles, starting from the first cycle.
+ * Применяет заданную функцию каждые n циклов, начиная с первого цикла.
  * @name firstOf
  * @memberof Pattern
- * @param {number} n how many cycles
- * @param {function} func function to apply
+ * @param {number} n сколько циклов
+ * @param {function} func функция для применения
  * @returns Pattern
  * @example
  * note("c3 d3 e3 g3").firstOf(4, x=>x.rev())
  */
 
 /**
- * An alias for `firstOf`
+ * Синоним для `firstOf`
  * @name every
  * @memberof Pattern
- * @param {number} n how many cycles
- * @param {function} func function to apply
+ * @param {number} n сколько циклов
+ * @param {function} func функция для применения
  * @returns Pattern
  * @example
  * note("c3 d3 e3 g3").every(4, x=>x.rev())
@@ -2026,7 +2012,7 @@ export const { firstOf, every } = register(['firstOf', 'every'], function (n, fu
 });
 
 /**
- * Like layer, but with a single function:
+ * Как layer, но с единственной функцией:
  * @name apply
  * @memberof Pattern
  * @example
@@ -2038,7 +2024,7 @@ export const apply = register('apply', function (func, pat) {
 });
 
 /**
- * Plays the pattern at the given cycles per minute.
+ * Воспроизводит pattern с заданными циклами в минуту.
  * @deprecated
  * @example
  * s("<bd sd>,hh*2").cpm(90) // = 90 bpm
@@ -2049,11 +2035,11 @@ export const cpm = register('cpm', function (cpm, pat) {
 });
 
 /**
- * Nudge a pattern to start earlier in time. Equivalent of Tidal's <~ operator
+ * Сдвигает pattern, чтобы начать раньше во времени. Эквивалент оператора <~ из Tidal
  *
  * @name early
  * @memberof Pattern
- * @param {number | Pattern} cycles number of cycles to nudge left
+ * @param {number | Pattern} cycles количество циклов для сдвига влево
  * @returns Pattern
  * @example
  * "bd ~".stack("hh ~".early(.1)).s()
@@ -2069,11 +2055,11 @@ export const early = register(
 );
 
 /**
- * Nudge a pattern to start later in time. Equivalent of Tidal's ~> operator
+ * Сдвигает pattern, чтобы начать позже во времени. Эквивалент оператора ~> из Tidal
  *
  * @name late
  * @memberof Pattern
- * @param {number | Pattern} cycles number of cycles to nudge right
+ * @param {number | Pattern} cycles количество циклов для сдвига вправо
  * @returns Pattern
  * @example
  * "bd ~".stack("hh ~".late(.1)).s()
@@ -2089,11 +2075,11 @@ export const late = register(
 );
 
 /**
- * Plays a portion of a pattern, specified by the beginning and end of a time span. The new resulting pattern is played over the time period of the original pattern:
+ * Воспроизводит часть pattern, указанную началом и окончанием временного промежутка. Новый результирующий pattern воспроизводится за период времени оригинального pattern:
  *
  * @example
  * s("bd*2 hh*3 [sd bd]*2 perc").zoom(0.25, 0.75)
- * // s("hh*3 [sd bd]*2") // equivalent
+ * // s("hh*3 [sd bd]*2") // эквивалент
  */
 export const zoom = register('zoom', function (s, e, pat) {
   e = Fraction(e);
@@ -2115,10 +2101,10 @@ export const { zoomArc, zoomarc } = register(['zoomArc', 'zoomarc'], function (a
 });
 
 /**
- * Splits a pattern into the given number of slices, and plays them according to a pattern of slice numbers.
- * Similar to `slice`, but slices up patterns rather than sound samples.
- * @param {number} number of slices
- * @param {number} slices to play
+ * Разбивает pattern на заданное количество частей и воспроизводит их в соответствии с pattern номеров частей.
+ * Похоже на `slice`, но разрезает patterns, а не звуковые samples.
+ * @param {number} number количество частей
+ * @param {number} slices какие части воспроизводить
  * @example
  * note("0 1 2 3 4 5 6 7".scale('c:mixolydian'))
  *.bite(4, "3 2 1 0")
@@ -2143,8 +2129,8 @@ export const bite = register(
 );
 
 /**
- * Selects the given fraction of the pattern and repeats that part to fill the remainder of the cycle.
- * @param {number} fraction fraction to select
+ * Выбирает заданную часть pattern и повторяет эту часть, чтобы заполнить оставшуюся часть цикла.
+ * @param {number} fraction дробь для выбора
  * @example
  * s("lt ht mt cp, [hh oh]*2").linger("<1 .5 .25 .125>")
  */
@@ -2163,10 +2149,10 @@ export const linger = register(
 );
 
 /**
- * Samples the pattern at a rate of n events per cycle. Useful for turning a continuous pattern into a discrete one.
+ * Семплирует pattern со скоростью n событий за цикл. Полезно для преобразования непрерывного pattern в дискретный.
  * @name segment
  * @synonyms seg
- * @param {number} segments number of segments per cycle
+ * @param {number} segments количество сегментов за цикл
  * @example
  * note(saw.range(40,52).segment(24))
  */
@@ -2175,7 +2161,7 @@ export const { segment, seg } = register(['segment', 'seg'], function (rate, pat
 });
 
 /**
- * The function `swingBy x n` breaks each cycle into `n` slices, and then delays events in the second half of each slice by the amount `x`, which is relative to the size of the (half) slice. So if `x` is 0 it does nothing, `0.5` delays for half the note duration, and 1 will wrap around to doing nothing again. The end result is a shuffle or swing-like rhythm
+ * Функция `swingBy x n` разбивает каждый цикл на `n` частей, а затем задерживает события во второй половине каждой части на величину `x`, которая относительна размеру (половины) части. Так что если `x` равно 0, ничего не происходит, `0.5` задерживает на половину длительности ноты, а 1 снова завернётся и не будет ничего делать. Конечный результат - shuffle или swing-подобный ритм
  * @param {number} subdivision
  * @param {number} offset
  * @example
@@ -2184,7 +2170,7 @@ export const { segment, seg } = register(['segment', 'seg'], function (rate, pat
 export const swingBy = register('swingBy', (swing, n, pat) => pat.inside(n, late(seq(0, swing / 2))));
 
 /**
- * Shorthand for swingBy with 1/3:
+ * Сокращение для swingBy с 1/3:
  * @param {number} subdivision
  * @example
  * s("hh*8").swing(4)
@@ -2193,7 +2179,7 @@ export const swingBy = register('swingBy', (swing, n, pat) => pat.inside(n, late
 export const swing = register('swing', (n, pat) => pat.swingBy(1 / 3, n));
 
 /**
- * Swaps 1s and 0s in a binary pattern.
+ * Меняет местами 1 и 0 в бинарном pattern.
  * @name invert
  * @synonyms inv
  * @example
@@ -2210,7 +2196,7 @@ export const { invert, inv } = register(
 );
 
 /**
- * Applies the given function whenever the given pattern is in a true state.
+ * Применяет заданную функцию всякий раз, когда заданный pattern находится в истинном состоянии.
  * @name when
  * @memberof Pattern
  * @param {Pattern} binary_pat
@@ -2224,11 +2210,11 @@ export const when = register('when', function (on, func, pat) {
 });
 
 /**
- * Superimposes the function result on top of the original pattern, delayed by the given time.
+ * Накладывает результат функции поверх оригинального pattern, задержанный на заданное время.
  * @name off
  * @memberof Pattern
- * @param {Pattern | number} time offset time
- * @param {function} func function to apply
+ * @param {Pattern | number} time время смещения
+ * @param {function} func функция для применения
  * @returns Pattern
  * @example
  * "c3 eb3 g3".off(1/8, x=>x.add(7)).note()
@@ -2238,9 +2224,9 @@ export const off = register('off', function (time_pat, func, pat) {
 });
 
 /**
- * Returns a new pattern where every other cycle is played once, twice as
- * fast, and offset in time by one quarter of a cycle. Creates a kind of
- * breakbeat feel.
+ * Возвращает новый pattern, где каждый второй цикл воспроизводится один раз, вдвое
+ * быстрее и со смещением во времени на четверть цикла. Создаёт своего рода
+ * breakbeat ощущение.
  * @returns Pattern
  */
 export const brak = register('brak', function (pat) {
@@ -2248,7 +2234,7 @@ export const brak = register('brak', function (pat) {
 });
 
 /**
- * Reverse all cycles in a pattern. See also `revv` for reversing a whole pattern.
+ * Реверсирует все циклы в pattern. См. также `revv` для реверсирования всего pattern.
  *
  * @name rev
  * @memberof Pattern
@@ -2281,15 +2267,15 @@ export const rev = register(
 );
 
 /**
- * Reverse a whole pattern. See also `rev` for reversing each cycle.
+ * Реверсирует весь pattern. См. также `rev` для реверсирования каждого цикла.
  *
  * @name revv
  * @memberof Pattern
  * @returns Pattern
  * @example
- * // This is the same as `<[g e] [d c]>`. If `rev()` is used, you get
- * // the same as `<[d c] [g e]>`, where each cycle reverses, but the order of
- * // cycles stays the same.
+ * // Это то же самое, что `<[g e] [d c]>`. Если используется `rev()`, вы получите
+ * // то же, что `<[d c] [g e]>`, где каждый цикл реверсируется, но порядок
+ * // циклов остаётся прежним.
  * note("<[c d] [e g]>").revv()
  */
 export const revv = register('revv', function (pat) {
@@ -2297,9 +2283,9 @@ export const revv = register('revv', function (pat) {
   return pat.withQuerySpan(negateSpan).withHapSpan(negateSpan);
 });
 
-/** Like press, but allows you to specify the amount by which each
- * event is shifted. pressBy(0.5) is the same as press, while
- * pressBy(1/3) shifts each event by a third of its timespan.
+/** Как press, но позволяет указать величину, на которую
+ * смещается каждое событие. pressBy(0.5) - то же, что press, в то время как
+ * pressBy(1/3) смещает каждое событие на треть его timespan.
  * @example
  * stack(s("hh*4"),
  *       s("bd mt sd ht").pressBy("<0 0.5 0.25>")
@@ -2310,7 +2296,7 @@ export const pressBy = register('pressBy', function (r, pat) {
 });
 
 /**
- * Syncopates a rhythm, by shifting each event halfway into its timespan.
+ * Синкопирует ритм, смещая каждое событие на половину его timespan.
  * @example
  * stack(s("hh*4"),
  *       s("bd mt sd ht").every(4, press)
@@ -2321,7 +2307,7 @@ export const press = register('press', function (pat) {
 });
 
 /**
- * Silences a pattern.
+ * Заглушает pattern.
  * @example
  * stack(
  *   s("bd").hush(),
@@ -2333,7 +2319,7 @@ Pattern.prototype.hush = function () {
 };
 
 /**
- * Applies `rev` to a pattern every other cycle, so that the pattern alternates between forwards and backwards.
+ * Применяет `rev` к pattern через цикл, так что pattern чередуется между прямым и обратным.
  * @example
  * note("c d e g").palindrome()
  */
@@ -2347,7 +2333,7 @@ export const palindrome = register(
 );
 
 /**
- * Jux with adjustable stereo width. 0 = mono, 1 = full stereo.
+ * Jux с регулируемой стерео шириной. 0 = моно, 1 = полное стерео.
  * @name juxBy
  * @synonyms juxby
  * @example
@@ -2368,7 +2354,7 @@ export const { juxBy, juxby } = register(['juxBy', 'juxby'], function (by, func,
 });
 
 /**
- * The jux function creates strange stereo effects, by applying a function to a pattern, but only in the right-hand channel.
+ * Функция jux создаёт странные стерео эффекты, применяя функцию к pattern, но только в правом канале.
  * @example
  * s("bd lt [~ ht] mt cp ~ bd hh").jux(rev)
  * @example
@@ -2381,12 +2367,12 @@ export const jux = register('jux', function (func, pat) {
 });
 
 /**
- * Superimpose and offset multiple times, applying the given function each time.
+ * Накладывает и смещает несколько раз, применяя заданную функцию каждый раз.
  * @name echoWith
  * @synonyms echowith, stutWith, stutwith
- * @param {number} times how many times to repeat
- * @param {number} time cycle offset between iterations
- * @param {function} func function to apply, given the pattern and the iteration index
+ * @param {number} times сколько раз повторять
+ * @param {number} time смещение цикла между итерациями
+ * @param {function} func функция для применения, получающая pattern и индекс итерации
  * @example
  * "<0 [2 4]>"
  * .echoWith(4, 1/8, (p,n) => p.add(n*2))
@@ -2400,13 +2386,13 @@ export const { echoWith, echowith, stutWith, stutwith } = register(
 );
 
 /**
- * Superimpose and offset multiple times, gradually decreasing the velocity
+ * Накладывает и смещает несколько раз, постепенно уменьшая громкость
  * @name echo
  * @memberof Pattern
  * @returns Pattern
- * @param {number} times how many times to repeat
- * @param {number} time cycle offset between iterations
- * @param {number} feedback velocity multiplicator for each iteration
+ * @param {number} times сколько раз повторять
+ * @param {number} time смещение цикла между итерациями
+ * @param {number} feedback множитель громкости для каждой итерации
  * @example
  * s("bd sd").echo(3, 1/6, .8)
  */
@@ -2415,11 +2401,11 @@ export const echo = register('echo', function (times, time, feedback, pat) {
 });
 
 /**
- * Deprecated. Like echo, but the last 2 parameters are flipped.
+ * Устарело. Как echo, но последние 2 параметра поменяны местами.
  * @name stut
- * @param {number} times how many times to repeat
- * @param {number} feedback velocity multiplicator for each iteration
- * @param {number} time cycle offset between iterations
+ * @param {number} times сколько раз повторять
+ * @param {number} feedback множитель громкости для каждой итерации
+ * @param {number} time смещение цикла между итерациями
  * @example
  * s("bd sd").stut(3, .8, 1/6)
  */
@@ -2690,13 +2676,8 @@ export const hsl = register('hsl', (h, s, l, pat) => {
 /**
  * Tags each Hap with an identifier. Good for filtering. The function populates Hap.context.tags (Array).
  * @name tag
+ * @noAutocomplete
  * @param {string} tag anything unique
- * @example
- * s("saw!16").note("F1")
- *   .lpf(tri.range(40, 80).slow(4)).lpenv(5).lpq(4).lpd(0.15)
- *   .when(rand.late(0.1).gte(0.5), x => x.transpose("12").tag('altered'))
- *   .when(rand.late(0.2).gte(0.5), x => x.s("square").tag('altered'))
- *   .when("<0 1>", x => x.filter((hap) => hap.hasTag('altered')))
  */
 Pattern.prototype.tag = function (tag) {
   return this.withContext((ctx) => ({ ...ctx, tags: (ctx.tags || []).concat([tag]) }));
@@ -2707,16 +2688,15 @@ Pattern.prototype.tag = function (tag) {
  * @name filter
  * @param {Function} test function to test Hap
  * @example
- * s("hh!7 oh").filter(hap => hap.value.s === 'hh')
+ * s("hh!7 oh").filter(hap => hap.value.s==='hh')
  */
 export const filter = register('filter', (test, pat) => pat.withHaps((haps) => haps.filter(test)));
 
 /**
  * Filters haps by their begin time
  * @name filterWhen
+ * @noAutocomplete
  * @param {Function} test function to test Hap.whole.begin
- * @example
- * oneCycle: s("bd*4").filterWhen((t) => t < 1)
  */
 export const filterWhen = register('filterWhen', (test, pat) => pat.filter((h) => test(h.whole.begin)));
 
@@ -3589,20 +3569,6 @@ export const morph = (frompat, topat, bypat) => {
   return frompat.innerBind((from) => topat.innerBind((to) => bypat.innerBind((by) => _morph(from, to, by))));
 };
 
-const _distortWithAlg = function (name) {
-  const func = function (args, pat) {
-    const argsPat = reify(args).fmap((v) => (Array.isArray(v) ? [...v, name] : [v, 1, name]));
-    if (!pat) {
-      return pure({}).distort(argsPat);
-    }
-    return pat.distort(argsPat);
-  };
-  Pattern.prototype[name] = function (args) {
-    return func(args, this);
-  };
-  return func;
-};
-
 /**
  * Soft-clipping distortion
  *
@@ -3611,8 +3577,6 @@ const _distortWithAlg = function (name) {
  * @param {number | Pattern} volume linear postgain of the distortion
  *
  */
-export const soft = _distortWithAlg('soft');
-
 /**
  * Hard-clipping distortion
  *
@@ -3621,8 +3585,6 @@ export const soft = _distortWithAlg('soft');
  * @param {number | Pattern} volume linear postgain of the distortion
  *
  */
-export const hard = _distortWithAlg('hard');
-
 /**
  * Cubic polynomial distortion
  *
@@ -3631,8 +3593,6 @@ export const hard = _distortWithAlg('hard');
  * @param {number | Pattern} volume linear postgain of the distortion
  *
  */
-export const cubic = _distortWithAlg('cubic');
-
 /**
  * Diode-emulating distortion
  *
@@ -3641,8 +3601,6 @@ export const cubic = _distortWithAlg('cubic');
  * @param {number | Pattern} volume linear postgain of the distortion
  *
  */
-export const diode = _distortWithAlg('diode');
-
 /**
  * Asymmetrical diode distortion
  *
@@ -3651,8 +3609,6 @@ export const diode = _distortWithAlg('diode');
  * @param {number | Pattern} volume linear postgain of the distortion
  *
  */
-export const asym = _distortWithAlg('asym');
-
 /**
  * Wavefolding distortion
  *
@@ -3661,8 +3617,6 @@ export const asym = _distortWithAlg('asym');
  * @param {number | Pattern} volume linear postgain of the distortion
  *
  */
-export const fold = _distortWithAlg('fold');
-
 /**
  * Wavefolding distortion composed with sinusoid
  *
@@ -3671,8 +3625,6 @@ export const fold = _distortWithAlg('fold');
  * @param {number | Pattern} volume linear postgain of the distortion
  *
  */
-export const sinefold = _distortWithAlg('sinefold');
-
 /**
  * Distortion via Chebyshev polynomials
  *
@@ -3681,7 +3633,14 @@ export const sinefold = _distortWithAlg('sinefold');
  * @param {number | Pattern} volume linear postgain of the distortion
  *
  */
-export const chebyshev = _distortWithAlg('chebyshev');
+const distAlgoNames = ['scurve', 'soft', 'hard', 'cubic', 'diode', 'asym', 'fold', 'sinefold', 'chebyshev'];
+for (const name of distAlgoNames) {
+  // Add aliases for distortion algorithms
+  Pattern.prototype[name] = function (args) {
+    const argsPat = reify(args).fmap((v) => (Array.isArray(v) ? [...v, name] : [v, 1, name]));
+    return this.distort(argsPat);
+  };
+}
 
 /**
  * Turns a list of patterns into a single pattern which outputs list-values
@@ -3745,115 +3704,3 @@ Pattern.prototype.phases = function (list) {
 export const phases = (list) => {
   return _ensureListPattern(list).as('phases');
 };
-
-/**
- * Establishes an FX chain. Can be called by chaining .FX(fx1).FX(fx2)..
- * calls and/or in a single .FX(fx1, fx2, ..) call. The fx1, .. are _patterns_ which
- * establish the controls of the given effect. See examples.
- * @name FX
- * @memberof Pattern
- * @returns Pattern
- * @example
- * $: s("[sbd <hh [bd | lt | oh]>]*4").dec(.4)
- *   .FX(
- *     phaser(0.5).gain(2),
- *     bpf(800),
- *     distort(1.3),
- *     room(0.2),
- *     delay(0.5).gain(1.25),
- *     distort(0.3),
- *   ).fxr(1.7) // sets release time of effects (like delay)
- * @example
- * $: s("saw").fm(0.5)
- *   .delay(0.3) // outer effects are applied *last*
- *   .FX(coarse(4)) // first coarse
- *   .FX(lpf(500).lpe(4).lpa(1).lpd(2)) // then lpf
- *   .FX(distort(1)) // then distort
- */
-Pattern.prototype.FX = function (...effects) {
-  effects = effects.map(reify);
-  return this.withValue((v) => (vEff) => {
-    const currFX = v.FX ?? [];
-    return { ...v, FX: currFX.concat(vEff) };
-  }).appLeft(parray(effects));
-};
-
-const _asArrayPattern = (pats) => {
-  const pack = (...xs) => xs;
-  let acc = pure(curry(pack, null, pats.length));
-  for (const p of pats) acc = acc.appLeft(p);
-  return acc;
-};
-
-/**
- * Produces a [Kabelsalat](https://kabel.salat.dev/) modular sound engine.
- * This can be used as either an effect (by including `audioin()` at the beginning
- * of your kabel expression) or as a sound source (via any expression which doesn't
- * start with `audioin()`).
- *
- * Some helpers you have available to you:
- *   * Strudel mini notation works fine in K(..) via "" or ``
- *   * More complex Strudel expressions (like "0 1 2".fast(4) or irand(24)) can be
- *     written by wrapping them in `S(..)` inside your Kabel code
- *   * We expose Strudel's note frequency under `sFreq` and Strudel's gate
- *     information under `sGate`
- *   * You can use more complex multi-line expressions (like `let x = a; let y = b; x.lpf(y);`)
- *     by wrapping them inside a function in K (see example).
- *
- * @name K
- * @param {KabelsalatExpression | Function} expr Kabelsalat graph definition
- * @memberof Pattern
- * @returns Pattern
- *
- * @example
- * note("A c e".fast(4)).transpose("<0 2 4 6 8>")
- *   .scale("F:minor").transpose("12")
- *   .s("saw")
- *   .K(
- *     // audioin().mul(sGate.adsr(0.001, 0.3, 0, 0.2)) // as effect
- *     saw(saw(sFreq / "2!3 16").mul(8).add(sFreq).lag("0!3 0.1")).mul(0.3) // as source
- *     .mul(sGate.adsr(0, 0.15, 0.5, "0.1!3 1"))
- *     .lpf(sGate.adsr(0, 0.2, 0.3, 0.2).mul(1).add(0))
- *     .add(x => x.delay(S("0.3 0.2".fast(2))).mul(0.7))
- *     .add(x => x.delay("0.03 [0.08 0.01] 0.01 0.013").mul(0.77)).mul(0.7)
- *     .add(x => x.delay(.13).mul(0.7))
- *     .out()
- *   )
- *
- * @example
- * n("<0 1 <2 3 2 4>>*16")
- *   .scale("G#2:minor").sometimes(x => x.transpose("12 | 24"))
- *   .K(() => {
- *     const att = S(rand.range(0, 0.05))
- *     const dec = S(rand.range(0.05, 0.2))
- *     let f = n(sFreq);
- *     const mod = sine(f).mul("0.1 | 0.2 | 0.3")
- *       .add("[[1.5 1] | 1 | 2 | 4 | [6 4@3]]*2")
- *     saw(f.mul(mod))
- *     .mul(sGate.ad(att, dec))
- *     .add(x => x.delay(0.4).mul(0.3))
- *     .out()
- *   }).fxr(1).room(0.3)
- */
-/**
- * Creates a worklet effect. Typically derived by writing K(...) in the REPL which will parse
- * Kabelsalat code.
- *
- * @name worklet
- * @param {string} src Source code of the worklet update function
- * @param {...number | ...Pattern} inputs Worklet inputs
- * @memberof Pattern
- * @returns Pattern
- * @noAutocomplete
- */
-Pattern.prototype.worklet = function (src, ...inputs) {
-  inputs = inputs.map(reify);
-  return this.outerBind((v) => {
-    return _asArrayPattern(inputs).withValue((vInput) => {
-      const currInputs = v.workletInputs ?? [];
-      return { ...v, workletSrc: src, workletInputs: currInputs.concat(vInput) };
-    });
-  });
-};
-
-export const worklet = (...args) => pure({}).worklet(...args);

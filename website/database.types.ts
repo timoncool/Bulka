@@ -12,6 +12,7 @@ export interface Database {
           hash: string | null;
           id: number;
           public: boolean | null;
+          like_count: number;
         };
         Insert: {
           code?: string | null;
@@ -20,6 +21,7 @@ export interface Database {
           hash?: string | null;
           id?: number;
           public?: boolean | null;
+          like_count?: number;
         };
         Update: {
           code?: string | null;
@@ -28,6 +30,7 @@ export interface Database {
           hash?: string | null;
           id?: number;
           public?: boolean | null;
+          like_count?: number;
         };
         Relationships: [];
       };

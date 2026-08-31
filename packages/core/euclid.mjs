@@ -52,78 +52,78 @@ export const bjorklund = function (ons, steps) {
 };
 
 /**
- * Changes the structure of the pattern to form an Euclidean rhythm.
- * Euclidean rhythms are rhythms obtained using the greatest common
- * divisor of two numbers.  They were described in 2004 by Godfried
- * Toussaint, a Canadian computer scientist.  Euclidean rhythms are
- * really useful for computer/algorithmic music because they can
- * describe a large number of rhythms with a couple of numbers.
+ * Изменяет структуру pattern для формирования Евклидового ритма.
+ * Евклидовы ритмы - это ритмы, полученные с использованием наибольшего общего
+ * делителя двух чисел. Они были описаны в 2004 году канадским компьютерным
+ * ученым Годфридом Туссеном. Евклидовы ритмы очень полезны для компьютерной/
+ * алгоритмической музыки, потому что они могут описать большое количество ритмов
+ * с помощью пары чисел.
  *
  * @memberof Pattern
  * @name euclid
- * @param {number} pulses the number of onsets/beats
- * @param {number} steps the number of steps to fill
+ * @param {number} pulses количество ударов/beats
+ * @param {number} steps количество шагов для заполнения
  * @returns Pattern
  * @example
- * // The Cuban tresillo pattern.
+ * // Кубинский pattern tresillo.
  * note("c3").euclid(3,8)
  */
 
 /**
- * Like `euclid`, but has an additional parameter for 'rotating' the resulting sequence.
+ * Как `euclid`, но имеет дополнительный параметр для 'вращения' результирующей последовательности.
  * @memberof Pattern
  * @name euclidRot
- * @param {number} pulses the number of onsets/beats
- * @param {number} steps the number of steps to fill
- * @param {number} rotation offset in steps
+ * @param {number} pulses количество ударов/beats
+ * @param {number} steps количество шагов для заполнения
+ * @param {number} rotation смещение в шагах
  * @returns Pattern
  * @example
- * // A Samba rhythm necklace from Brazil
+ * // Бразильский ритм Самбы
  * note("c3").euclidRot(3,16,14)
  */
 
 /**
- * @example // A thirteenth-century Persian rhythm called Khafif-e-ramal.
+ * @example // Персидский ритм XIII века под названием Khafif-e-ramal.
  * note("c3").euclid(2,5)
- * @example // The archetypal pattern of the Cumbia from Colombia, as well as a Calypso rhythm from Trinidad.
+ * @example // Архетипический pattern Кумбии из Колумбии, а также ритм Калипсо из Тринидада.
  * note("c3").euclid(3,4)
- * @example // Another thirteenth century Persian rhythm by the name of Khafif-e-ramal, as well as a Rumanian folk-dance rhythm.
+ * @example // Другой персидский ритм XIII века под названием Khafif-e-ramal, а также румынский народный танцевальный ритм.
  * note("c3").euclidRot(3,5,2)
- * @example // A Ruchenitza rhythm used in a Bulgarian folk dance.
+ * @example // Ритм Рученица, используемый в болгарском народном танце.
  * note("c3").euclid(3,7)
- * @example // The Cuban tresillo pattern.
+ * @example // Кубинский pattern tresillo.
  * note("c3").euclid(3,8)
- * @example // Another Ruchenitza Bulgarian folk-dance rhythm.
+ * @example // Другой болгарский народный танцевальный ритм Рученица.
  * note("c3").euclid(4,7)
- * @example // The Aksak rhythm of Turkey.
+ * @example // Турецкий ритм Аксак.
  * note("c3").euclid(4,9)
- * @example // The metric pattern used by Frank Zappa in his piece titled Outside Now.
+ * @example // Метрический pattern, использованный Фрэнком Заппой в его композиции Outside Now.
  * note("c3").euclid(4,11)
- * @example // Yields the York-Samai pattern, a popular Arab rhythm.
+ * @example // Дает pattern York-Samai, популярный арабский ритм.
  * note("c3").euclid(5,6)
- * @example // The Nawakhat pattern, another popular Arab rhythm.
+ * @example // Pattern Nawakhat, еще один популярный арабский ритм.
  * note("c3").euclid(5,7)
- * @example // The Cuban cinquillo pattern.
+ * @example // Кубинский pattern cinquillo.
  * note("c3").euclid(5,8)
- * @example // A popular Arab rhythm called Agsag-Samai.
+ * @example // Популярный арабский ритм под названием Agsag-Samai.
  * note("c3").euclid(5,9)
- * @example // The metric pattern used by Moussorgsky in Pictures at an Exhibition.
+ * @example // Метрический pattern, использованный Мусоргским в "Картинках с выставки".
  * note("c3").euclid(5,11)
- * @example // The Venda clapping pattern of a South African children’s song.
+ * @example // Хлопающий pattern Венда из южноафриканской детской песни.
  * note("c3").euclid(5,12)
- * @example // The Bossa-Nova rhythm necklace of Brazil.
+ * @example // Бразильский ритм Bossa-Nova.
  * note("c3").euclid(5,16)
- * @example // A typical rhythm played on the Bendir (frame drum).
+ * @example // Типичный ритм, исполняемый на Бендире (рамочный барабан).
  * note("c3").euclid(7,8)
- * @example // A common West African bell pattern.
+ * @example // Распространенный западноафриканский колокольный pattern.
  * note("c3").euclid(7,12)
- * @example // A Samba rhythm necklace from Brazil.
+ * @example // Бразильский ритм Самбы.
  * note("c3").euclidRot(7,16,14)
- * @example // A rhythm necklace used in the Central African Republic.
+ * @example // Ритм, используемый в Центральноафриканской Республике.
  * note("c3").euclid(9,16)
- * @example // A rhythm necklace of the Aka Pygmies of Central Africa.
+ * @example // Ритм пигмеев Ака из Центральной Африки.
  * note("c3").euclidRot(11,24,14)
- * @example // Another rhythm necklace of the Aka Pygmies of the upper Sangha.
+ * @example // Другой ритм пигмеев Ака из верхнего Санга.
  * note("c3").euclidRot(13,24,5)
  */
 
@@ -152,13 +152,13 @@ export const { euclidrot, euclidRot } = register(['euclidrot', 'euclidRot'], fun
 });
 
 /**
- * Similar to `euclid`, but each pulse is held until the next pulse,
- * so there will be no gaps.
+ * Похож на `euclid`, но каждый импульс удерживается до следующего импульса,
+ * поэтому пауз не будет.
  * @name euclidLegato
  * @memberof Pattern
- * @param {number} pulses the number of onsets/beats
- * @param {number} steps the number of steps to fill
- * @param rotation offset in steps
+ * @param {number} pulses количество ударов/beats
+ * @param {number} steps количество шагов для заполнения
+ * @param rotation смещение в шагах
  * @param pat
  * @example
  * note("c3").euclidLegato(3,8)
@@ -182,14 +182,14 @@ export const euclidLegato = register(['euclidLegato'], function (pulses, steps, 
 });
 
 /**
- * Similar to `euclid`, but each pulse is held until the next pulse,
- * so there will be no gaps, and has an additional parameter for 'rotating'
- * the resulting sequence
+ * Похож на `euclid`, но каждый импульс удерживается до следующего импульса,
+ * поэтому пауз не будет, и имеет дополнительный параметр для 'вращения'
+ * результирующей последовательности
  * @name euclidLegatoRot
  * @memberof Pattern
- * @param {number} pulses the number of onsets/beats
- * @param {number} steps the number of steps to fill
- * @param {number} rotation offset in steps
+ * @param {number} pulses количество ударов/beats
+ * @param {number} steps количество шагов для заполнения
+ * @param {number} rotation смещение в шагах
  * @example
  * note("c3").euclidLegatoRot(3,5,2)
  */
@@ -198,19 +198,19 @@ export const euclidLegatoRot = register(['euclidLegatoRot'], function (pulses, s
 });
 
 /**
- * A 'euclid' variant with an additional parameter that morphs the resulting
- * rhythm from 0 (no morphing) to 1 (completely 'even'). For example
- * `sound("bd").euclidish(3,8,0)` would be the same as
- * `sound("bd").euclid(3,8)`, and `sound("bd").euclidish(3,8,1)` would be the
- * same as `sound("bd bd bd")`. `sound("bd").euclidish(3,8,0.5)` would have a
- * groove somewhere between.
- * Inspired by the work of Malcom Braff.
+ * Вариант 'euclid' с дополнительным параметром, который морфирует результирующий
+ * ритм от 0 (без морфинга) до 1 (полностью 'ровный'). Например,
+ * `sound("bd").euclidish(3,8,0)` будет таким же, как
+ * `sound("bd").euclid(3,8)`, а `sound("bd").euclidish(3,8,1)` будет таким же,
+ * как `sound("bd bd bd")`. `sound("bd").euclidish(3,8,0.5)` будет иметь
+ * groove где-то посередине.
+ * Вдохновлено работой Малкома Браффа.
  * @name euclidish
  * @synonyms eish
  * @memberof Pattern
- * @param {number} pulses the number of onsets
- * @param {number} steps the number of steps to fill
- * @param {number} groove exists between the extremes of 0 (straight euclidian) and 1 (straight pulse)
+ * @param {number} pulses количество ударов
+ * @param {number} steps количество шагов для заполнения
+ * @param {number} groove существует между крайностями 0 (строго евклидов) и 1 (строго импульсный)
  * @example
  * sound("hh").euclidish(7,12,sine.slow(8))
  * .pan(sine.slow(8))

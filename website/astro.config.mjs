@@ -6,12 +6,30 @@ import rehypeSlug from 'rehype-slug';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import rehypeUrls from 'rehype-urls';
 import bundleAudioWorkletPlugin from 'vite-plugin-bundle-audioworklet';
+import vercel from '@astrojs/vercel';
+import { execSync } from 'child_process';
 
 import tailwind from '@astrojs/tailwind';
 import AstroPWA from '@vite-pwa/astro';
 
-const site = process.env.STRUDEL_SITE || `https://strudel.cc/`; // root url without a path
-const base = process.env.STRUDEL_BASE || '/'; // base path of the strudel site
+// Get git commit hash
+let GIT_COMMIT = 'dev';
+try {
+  GIT_COMMIT = execSync('git rev-parse --short HEAD').toString().trim();
+} catch (e) {
+  console.warn('Could not get git commit hash');
+}
+
+// Build timestamp
+const BUILD_TIME = new Date().toISOString();
+
+// No versioning - just use git commit
+const APP_VERSION = GIT_COMMIT;
+
+console.log(`📦 Building Bulka ${GIT_COMMIT}`);
+
+const site = `https://strudel.cc/`; // root url without a path
+const base = '/'; // base path of the strudel site
 const baseNoTrailing = base.endsWith('/') ? base.slice(0, -1) : base;
 
 // this rehype plugin fixes relative links
@@ -59,6 +77,8 @@ const options = {
 
 // https://astro.build/config
 export default defineConfig({
+  output: 'server',
+  adapter: vercel(),
   integrations: [
     react(),
     mdx(options),
@@ -136,6 +156,11 @@ export default defineConfig({
   base,
   vite: {
     plugins: [bundleAudioWorkletPlugin()],
+    define: {
+      __APP_VERSION__: JSON.stringify(APP_VERSION),
+      __GIT_COMMIT__: JSON.stringify(GIT_COMMIT),
+      __BUILD_TIME__: JSON.stringify(BUILD_TIME),
+    },
     ssr: {
       // Example: Force a broken package to skip SSR processing, if needed
       // external: ['fraction.js'], // https://github.com/infusion/Fraction.js/issues/51

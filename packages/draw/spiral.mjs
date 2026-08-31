@@ -126,25 +126,25 @@ function drawSpiral(options) {
 }
 
 /**
- * Displays a spiral visual.
+ * Отображает спиральную визуализацию.
  *
  * @name spiral
- * @param {Object} options Object containing all the optional following parameters as key value pairs:
- * @param {number} stretch controls the rotations per cycle ratio, where 1 = 1 cycle / 360 degrees
- * @param {number} size the diameter of the spiral
- * @param {number} thickness line thickness
- * @param {string} cap style of line ends: butt (default), round, square
- * @param {string} inset number of rotations before spiral starts (default 3)
- * @param {string} playheadColor color of playhead, defaults to white
- * @param {number} playheadLength length of playhead in rotations, defaults to 0.02
- * @param {number} playheadThickness thickness of playheadrotations, defaults to thickness
- * @param {number} padding space around spiral
- * @param {number} steady steadyness of spiral vs playhead. 1 = spiral doesn't move, playhead does.
- * @param {number} activeColor color of active segment. defaults to foreground of theme
- * @param {number} inactiveColor color of inactive segments. defaults to gutterForeground of theme
- * @param {boolean} colorizeInactive wether or not to colorize inactive segments, defaults to 0
- * @param {boolean} fade wether or not past and future should fade out. defaults to 1
- * @param {boolean} logSpiral wether or not the spiral should be logarithmic. defaults to 0
+ * @param {Object} options Объект, содержащий все следующие необязательные параметры в виде пар ключ-значение:
+ * @param {number} stretch управляет соотношением вращений за цикл, где 1 = 1 цикл / 360 градусов
+ * @param {number} size диаметр спирали
+ * @param {number} thickness толщина линии
+ * @param {string} cap стиль концов линий: butt (по умолчанию), round, square
+ * @param {string} inset количество вращений до начала спирали (по умолчанию 3)
+ * @param {string} playheadColor цвет playhead, по умолчанию white
+ * @param {number} playheadLength длина playhead во вращениях, по умолчанию 0.02
+ * @param {number} playheadThickness толщина playhead, по умолчанию равна thickness
+ * @param {number} padding пространство вокруг спирали
+ * @param {number} steady устойчивость спирали относительно playhead. 1 = спираль не двигается, двигается playhead.
+ * @param {number} activeColor цвет активного сегмента. по умолчанию foreground темы
+ * @param {number} inactiveColor цвет неактивных сегментов. по умолчанию gutterForeground темы
+ * @param {boolean} colorizeInactive окрашивать ли неактивные сегменты, по умолчанию 0
+ * @param {boolean} fade затухают ли прошлое и будущее. по умолчанию 1
+ * @param {boolean} logSpiral должна ли спираль быть логарифмической. по умолчанию 0
  * @example
  * note("c2 a2 eb2")
  * .euclid(5,8)

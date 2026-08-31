@@ -1,5 +1,3 @@
-import { releaseAudioNode } from './helpers.mjs';
-
 // credits to webdirt: https://github.com/dktr0/WebDirt/blob/41342e81d6ad694a2310d491fef7b7e8b0929efe/js-src/Graph.js#L597
 export var vowelFormant = {
   a: { freqs: [660, 1120, 2750, 3000, 3350], gains: [1, 0.5012, 0.0708, 0.0631, 0.0126], qs: [80, 90, 120, 130, 140] },
@@ -48,8 +46,7 @@ if (typeof GainNode !== 'undefined') {
       }
       const { gains, qs, freqs } = vowelFormant[letter];
       this.makeupGain = ac.createGain();
-      this.filters = [];
-      this.gains = [];
+      this.audioNodes = [];
       for (let i = 0; i < 5; i++) {
         const gain = ac.createGain();
         gain.gain.value = gains[i];
@@ -59,9 +56,9 @@ if (typeof GainNode !== 'undefined') {
         filter.frequency.value = freqs[i];
         super.connect(filter);
         filter.connect(gain);
-        this.filters.push(filter);
+        this.audioNodes.push(filter);
         gain.connect(this.makeupGain);
-        this.gains.push(gain);
+        this.audioNodes.push(gain);
       }
       this.makeupGain.gain.value = 8; // how much makeup gain to add?
       return this;
@@ -70,17 +67,15 @@ if (typeof GainNode !== 'undefined') {
       this.makeupGain.connect(target);
     }
     disconnect() {
-      releaseAudioNode(this.makeupGain);
-      this.filters.forEach(releaseAudioNode);
-      this.gains.forEach(releaseAudioNode);
+      this.makeupGain.disconnect();
+      this.audioNodes.forEach((n) => n.disconnect());
       super.disconnect();
       this.makeupGain = null;
-      this.filters = null;
-      this.gains = null;
+      this.audioNodes = null;
     }
   }
 
-  BaseAudioContext.prototype.createVowelFilter = function (letter) {
+  AudioContext.prototype.createVowelFilter = function (letter) {
     return new VowelNode(this, letter);
   };
 }

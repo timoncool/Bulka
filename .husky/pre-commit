@@ -1,0 +1,7 @@
+#!/bin/sh
+
+# Обновляем changelog
+node scripts/generate-changelog.js
+
+# Добавляем обновлённые файлы в коммит
+git add website/src/data/changelog.json CHANGELOG.md 2>/dev/null || true

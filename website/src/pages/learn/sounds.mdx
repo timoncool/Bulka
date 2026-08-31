@@ -8,20 +8,20 @@ import { JsDoc } from '../../docs/JsDoc';
 
 # Sounds
 
-We can play sounds with `s`, in two different ways:
+Мы можем воспроизводить звуки с помощью `s` двумя разными способами:
 
-- `s` can trigger audio samples, where a sound file is loaded in the background and played back:
+- `s` может запускать audio samples, где звуковой файл загружается в фоновом режиме и воспроизводится:
   <MiniRepl client:idle tune={`s("bd hh sd hh")`} />
-- `s` can trigger audio synthesisers, which are synthesised in real-time using code also running in the background:
+- `s` может запускать audio synthesisers, которые синтезируются в реальном времени с помощью кода, также работающего в фоновом режиме:
   <MiniRepl client:idle tune={`s("sawtooth square triangle sine")`} />
 
-You can learn more about both of these approaches in the pages [Synths](/learn/synths) and [Samples](/learn/samples).
+Вы можете узнать больше об обоих этих подходах на страницах [Synths](/learn/synths) и [Samples](/learn/samples).
 
-# Combining notes and sounds
+# Комбинирование нот и звуков
 
-In both of the above cases, we are no longer directly controlling the `note`/`freq` of the sound heard via `s`, as we were in the [Notes](/workshop/first-notes/) page.
+В обоих вышеприведенных случаях мы больше не контролируем напрямую `note`/`freq` звука, слышимого через `s`, как это было на странице [Notes](/workshop/first-notes/).
 
-So how can we both control the sound and the pitch? We can _combine_ `note`/`freq` with `s` to change the sound of our pitches:
+Так как же мы можем контролировать и звук, и высоту тона? Мы можем _комбинировать_ `note`/`freq` с `s`, чтобы изменить звук наших высот:
 
 <MiniRepl client:idle tune={`note("a3 c#4 e4 a4").s("sawtooth")`} />
 
@@ -29,12 +29,12 @@ So how can we both control the sound and the pitch? We can _combine_ `note`/`fre
 
 <MiniRepl client:idle tune={`freq("220 275 330 440").s("triangle")`} />
 
-The last example will actually sound the same with or without `s`, because `triangle` is the default value for `s`.
+Последний пример на самом деле будет звучать одинаково с `s` или без него, потому что `triangle` — это значение по умолчанию для `s`.
 
-What about combining different notes with different sounds at the same time?
+Что насчет комбинирования разных нот с разными звуками одновременно?
 
 <MiniRepl client:idle tune={`freq("220 275 330 440 550").s("triangle sawtooth sine")`} />
 
-Hmm, something interesting is going on there, related to there being five notes and three sounds.
+Хм, здесь происходит что-то интересное, связанное с тем, что есть пять нот и три звука.
 
-Let's now take a step back and think about the Strudel [Code](/learn/code/) we've been hearing so far.
+Теперь давайте сделаем шаг назад и подумаем о [Code](/learn/code/) Strudel, который мы слышали до сих пор.

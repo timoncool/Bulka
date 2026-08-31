@@ -7,7 +7,6 @@ import {
   getPitchEnvelope,
   getVibratoOscillator,
   onceEnded,
-  releaseAudioNode,
 } from '@strudel/webaudio';
 import gm from './gm.mjs';
 
@@ -166,20 +165,21 @@ export function registerSoundfonts() {
         let envEnd = holdEnd + release + 0.01;
 
         // vibrato
-        const vibratoHandle = getVibratoOscillator(bufferSource.detune, value, time);
+        let vibratoOscillator = getVibratoOscillator(bufferSource.detune, value, time);
         // pitch envelope
         getPitchEnvelope(bufferSource.detune, value, time, holdEnd);
 
         bufferSource.stop(envEnd);
         const stop = (releaseTime) => {};
         onceEnded(bufferSource, () => {
-          releaseAudioNode(bufferSource);
-          vibratoHandle?.stop();
+          bufferSource.disconnect();
+          vibratoOscillator?.stop();
+          node.disconnect();
           onended();
         });
-        return { node, stop, nodes: { source: [bufferSource], ...vibratoHandle?.nodes } };
+        return { node, stop };
       },
-      { type: 'soundfont', prebake: true, fonts },
+      { type: 'soundfont', prebake: true, fonts, pack: 'Soundfonts' },
     );
   });
 }

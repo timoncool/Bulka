@@ -4,13 +4,20 @@ Thanks for wanting to contribute!!! There are many ways you can add value to thi
 
 ## Move to codeberg
 
-Along with many other live coding projects, we have moved from Microsoft's Github platform to Codeberg for ethical reasons. Please don't fork the project back to github.
+We are currently in the process of moving from github to codeberg -- not everything is working, please bear with us.
+
+To update your local clone, you can run this command:
+
+```
+git remote set-url origin git@codeberg.org:uzu/strudel.git
+```
+
 
 ## Communication Channels
 
-To get in touch with the community, either
+To get in touch with the contributors, either
 
-- [join the Uzulang Discord Server](https://discord.com/invite/HGEdXmRkzT) and go to the strudel channels (Uzulangs are a family of live coding languages inspired by each other, including TidalCycles as well as Strudel)
+- [join the Tidal Discord Channel](https://discord.com/invite/HGEdXmRkzT) and go to the #strudel channel
 - Find related discussions on the [tidal club forum](https://club.tidalcycles.org/)
 
 ## Ask a Question
@@ -29,35 +36,22 @@ Use one of the Communication Channels listed above and drop us a line or two!
 ## Share Music
 
 If you made some music with strudel, you can give back some love and share what you've done!
+Your creation could also be part of the random selection in the REPL if you want.
 Use one of the Communication Channels listed above.
-(There used to be a random selection of contributed patterns in the REPL, but that is unfortunately disabled for now due to abuse)
 
 ## Improve the Docs
 
-If you find some weak spots in the [docs](https://strudel.cc/workshop/getting-started/), you can edit each file directly on codeberg. There are "Edit this page" links in the right sidebar that take you to the right place.
+If you find some weak spots in the [docs](https://strudel.cc/workshop/getting-started/),
+you can edit each file directly on codeburg. (we are currently fixing the "Edit this page" links in the right sidebar)
 
 ## Propose a Feature
 
-If you want a specific feature that is not part of strudel yet, feel free to use one of the communication channels above. Please bear in mind that this is a free/open source project, oriented around collaborative discussion. Maybe you even want to help with the implementation of that feature!
-
-## Contribute a feature
-
-Pull requests welcome! Consider starting with discussion or proof-of-concept first, rather than do loads of work on something and then find it doesn't fit the collective goals of the project, or something like that.
-
-At the time of writing we have a PR backlog, and generally prioritise bugfixes and contributions that have arisen through community discussion.
-
-### AI/LLM policy
-
-Strudel is a project handmade by humans, with thought and nuance. 
-
-If you have used LLMs (so called 'AI'), please detail that in the pull request. We are still developing our response to the onslaught of LLM technology, but for practical and legal reasons are currently not accepting wholly LLM-generated code. We are also not accepting PRs that add LLM features to strudel itself.
-
-There are #llm-chat and #llm-share channels on our discord. Please do not discuss or share LLM-related things outside of those channels.
+If you want a specific feature that is not part of strudel yet, feel free to use one of the communication channels above.
+Maybe you even want to help with the implementation of that feature!
 
 ## Report a Bug
 
 If you've found a bug, or some behaviour that does not seem right, you are welcome to file an [issue](https://codeberg.org/uzu/strudel/issues).
-
 Please check that it has not been reported before.
 
 ## Fix a Bug
@@ -124,7 +118,8 @@ There are also eslint extensions / plugins for most editors.
 
 ## Running all CI Checks
 
-When opening a PR, the CI runner will (once approved by a human) check the code style and eslint, as well as run all tests. You can run the same check with `pnpm check`.
+When opening a PR, the CI runner will automatically check the code style and eslint, as well as run all tests.
+You can run the same check with `pnpm check`
 
 ## Package Workflow
 

@@ -1,4 +1,4 @@
-const ALLOW_MANY = ['by', 'url', 'genre', 'license', 'tag'];
+const ALLOW_MANY = ['by', 'url', 'genre', 'license'];
 
 export function getMetadata(raw_code) {
   if (raw_code == null) {

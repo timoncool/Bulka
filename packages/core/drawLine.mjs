@@ -7,16 +7,16 @@ This program is free software: you can redistribute it and/or modify it under th
 import Fraction, { gcd } from './fraction.mjs';
 
 /**
- * Intended for a debugging, drawLine renders the pattern as a string, where each character represents the same time span.
- * Should only be used with single characters as values, otherwise the character slots will be messed up.
- * Character legend:
+ * Предназначена для отладки, drawLine рендерит pattern как строку, где каждый символ представляет одинаковый отрезок времени.
+ * Следует использовать только с одиночными символами в качестве значений, иначе символьные слоты будут испорчены.
+ * Легенда символов:
  *
- * - "|" cycle separator
- * - "-" hold previous value
+ * - "|" разделитель cycle
+ * - "-" удержание предыдущего значения
  * - "." silence
  *
- * @param {Pattern} pattern the pattern to use
- * @param {number} chars max number of characters (approximately)
+ * @param {Pattern} pattern pattern для использования
+ * @param {number} chars максимальное количество символов (приблизительно)
  * @returns string
  * @example
  * const line = drawLine("0 [1 2 3]", 10); // |0--123|0--123
