@@ -1,4 +1,4 @@
-name: Build and Deploy to live (strudel.cc)
+name: Build and Deploy to cold (cold.strudel.cc)
 
 on: [workflow_dispatch]
 
@@ -34,4 +34,4 @@ jobs:
           apt update && apt install -y rsync
           mkdir ~/.ssh
           ssh-keyscan matrix.toplap.org  > ~/.ssh/known_hosts
-          rsync -atv --delete --delete-after --progress ./website/dist/ strudel@matrix.toplap.org:/home/strudel/deploy/strudel.cc
+          rsync -atv --delete --delete-after --progress ./website/dist/ strudel@matrix.toplap.org:/home/strudel/deploy/cold.strudel.cc

@@ -14,7 +14,8 @@ export const flashField = StateField.define({
             const mark = Decoration.mark({
               attributes: { style: `background-color: rgba(255,255,255, .4); filter: invert(10%)` },
             });
-            flash = Decoration.set([mark.range(0, tr.newDoc.length)]);
+            const range = e.value.range || { from: 0, to: tr.newDoc.length };
+            flash = Decoration.set([mark.range(range.from, range.to)]);
           } else {
             flash = Decoration.set([]);
           }
@@ -29,8 +30,9 @@ export const flashField = StateField.define({
   provide: (f) => EditorView.decorations.from(f),
 });
 
-export const flash = (view, ms = 200) => {
-  view.dispatch({ effects: setFlash.of(true) });
+export const flash = (view, ms = 200, range) => {
+  const flashData = range ? { range } : true;
+  view.dispatch({ effects: setFlash.of(flashData) });
   setTimeout(() => {
     view.dispatch({ effects: setFlash.of(false) });
   }, ms);

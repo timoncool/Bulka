@@ -1,0 +1,11 @@
+**/node_modules
+**/.angular
+**/dist
+.astro/
+.forgejo/
+.idea/
+.vscode/
+test/
+.gitignore
+Dockerfile
+.dockerignore

@@ -17,13 +17,15 @@ export const settings = {
   background: 'white',
   lineBackground: 'transparent',
   foreground: deepPurple,
+  muted: deepPurple + '50',
   caret: '#797977',
   selection: yellowPink,
   selectionMatch: '#2B323D',
-  gutterBackground: grey,
+  gutterBackground: pinkAccent,
   gutterForeground: lightGrey,
   gutterBorder: 'transparent',
   lineHighlight: pinkAccent,
+  light: true,
 };
 
 export default createTheme({

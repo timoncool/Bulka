@@ -31,6 +31,7 @@ const palette = palettes['Sour Watermelon B'];
 export const settings = {
   background: palette[3],
   foreground: palette[1],
+  muted: palette[1] + '50',
   caret: palette[0],
   selection: palette[0],
   selectionMatch: palette[1],

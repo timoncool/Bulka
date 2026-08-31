@@ -565,6 +565,178 @@ exports[`runs examples > example "_euclidRot" example index 20 1`] = `
 ]
 `;
 
+exports[`runs examples > example "FX" example index 0 1`] = `
+[
+  "[ 0/1 → 1/8 | s:sbd decay:0.4 FX:[{phaserrate:0.5 gain:2} {bandf:800} {distort:1.3} {room:0.2} {delay:0.5 gain:1.25} {distort:0.3}] FXrelease:1.7 ]",
+  "[ 1/8 → 1/4 | s:hh decay:0.4 FX:[{phaserrate:0.5 gain:2} {bandf:800} {distort:1.3} {room:0.2} {delay:0.5 gain:1.25} {distort:0.3}] FXrelease:1.7 ]",
+  "[ 1/4 → 3/8 | s:sbd decay:0.4 FX:[{phaserrate:0.5 gain:2} {bandf:800} {distort:1.3} {room:0.2} {delay:0.5 gain:1.25} {distort:0.3}] FXrelease:1.7 ]",
+  "[ 3/8 → 1/2 | s:bd decay:0.4 FX:[{phaserrate:0.5 gain:2} {bandf:800} {distort:1.3} {room:0.2} {delay:0.5 gain:1.25} {distort:0.3}] FXrelease:1.7 ]",
+  "[ 1/2 → 5/8 | s:sbd decay:0.4 FX:[{phaserrate:0.5 gain:2} {bandf:800} {distort:1.3} {room:0.2} {delay:0.5 gain:1.25} {distort:0.3}] FXrelease:1.7 ]",
+  "[ 5/8 → 3/4 | s:hh decay:0.4 FX:[{phaserrate:0.5 gain:2} {bandf:800} {distort:1.3} {room:0.2} {delay:0.5 gain:1.25} {distort:0.3}] FXrelease:1.7 ]",
+  "[ 3/4 → 7/8 | s:sbd decay:0.4 FX:[{phaserrate:0.5 gain:2} {bandf:800} {distort:1.3} {room:0.2} {delay:0.5 gain:1.25} {distort:0.3}] FXrelease:1.7 ]",
+  "[ 7/8 → 1/1 | s:lt decay:0.4 FX:[{phaserrate:0.5 gain:2} {bandf:800} {distort:1.3} {room:0.2} {delay:0.5 gain:1.25} {distort:0.3}] FXrelease:1.7 ]",
+  "[ 1/1 → 9/8 | s:sbd decay:0.4 FX:[{phaserrate:0.5 gain:2} {bandf:800} {distort:1.3} {room:0.2} {delay:0.5 gain:1.25} {distort:0.3}] FXrelease:1.7 ]",
+  "[ 9/8 → 5/4 | s:hh decay:0.4 FX:[{phaserrate:0.5 gain:2} {bandf:800} {distort:1.3} {room:0.2} {delay:0.5 gain:1.25} {distort:0.3}] FXrelease:1.7 ]",
+  "[ 5/4 → 11/8 | s:sbd decay:0.4 FX:[{phaserrate:0.5 gain:2} {bandf:800} {distort:1.3} {room:0.2} {delay:0.5 gain:1.25} {distort:0.3}] FXrelease:1.7 ]",
+  "[ 11/8 → 3/2 | s:oh decay:0.4 FX:[{phaserrate:0.5 gain:2} {bandf:800} {distort:1.3} {room:0.2} {delay:0.5 gain:1.25} {distort:0.3}] FXrelease:1.7 ]",
+  "[ 3/2 → 13/8 | s:sbd decay:0.4 FX:[{phaserrate:0.5 gain:2} {bandf:800} {distort:1.3} {room:0.2} {delay:0.5 gain:1.25} {distort:0.3}] FXrelease:1.7 ]",
+  "[ 13/8 → 7/4 | s:hh decay:0.4 FX:[{phaserrate:0.5 gain:2} {bandf:800} {distort:1.3} {room:0.2} {delay:0.5 gain:1.25} {distort:0.3}] FXrelease:1.7 ]",
+  "[ 7/4 → 15/8 | s:sbd decay:0.4 FX:[{phaserrate:0.5 gain:2} {bandf:800} {distort:1.3} {room:0.2} {delay:0.5 gain:1.25} {distort:0.3}] FXrelease:1.7 ]",
+  "[ 15/8 → 2/1 | s:bd decay:0.4 FX:[{phaserrate:0.5 gain:2} {bandf:800} {distort:1.3} {room:0.2} {delay:0.5 gain:1.25} {distort:0.3}] FXrelease:1.7 ]",
+  "[ 2/1 → 17/8 | s:sbd decay:0.4 FX:[{phaserrate:0.5 gain:2} {bandf:800} {distort:1.3} {room:0.2} {delay:0.5 gain:1.25} {distort:0.3}] FXrelease:1.7 ]",
+  "[ 17/8 → 9/4 | s:hh decay:0.4 FX:[{phaserrate:0.5 gain:2} {bandf:800} {distort:1.3} {room:0.2} {delay:0.5 gain:1.25} {distort:0.3}] FXrelease:1.7 ]",
+  "[ 9/4 → 19/8 | s:sbd decay:0.4 FX:[{phaserrate:0.5 gain:2} {bandf:800} {distort:1.3} {room:0.2} {delay:0.5 gain:1.25} {distort:0.3}] FXrelease:1.7 ]",
+  "[ 19/8 → 5/2 | s:bd decay:0.4 FX:[{phaserrate:0.5 gain:2} {bandf:800} {distort:1.3} {room:0.2} {delay:0.5 gain:1.25} {distort:0.3}] FXrelease:1.7 ]",
+  "[ 5/2 → 21/8 | s:sbd decay:0.4 FX:[{phaserrate:0.5 gain:2} {bandf:800} {distort:1.3} {room:0.2} {delay:0.5 gain:1.25} {distort:0.3}] FXrelease:1.7 ]",
+  "[ 21/8 → 11/4 | s:hh decay:0.4 FX:[{phaserrate:0.5 gain:2} {bandf:800} {distort:1.3} {room:0.2} {delay:0.5 gain:1.25} {distort:0.3}] FXrelease:1.7 ]",
+  "[ 11/4 → 23/8 | s:sbd decay:0.4 FX:[{phaserrate:0.5 gain:2} {bandf:800} {distort:1.3} {room:0.2} {delay:0.5 gain:1.25} {distort:0.3}] FXrelease:1.7 ]",
+  "[ 23/8 → 3/1 | s:bd decay:0.4 FX:[{phaserrate:0.5 gain:2} {bandf:800} {distort:1.3} {room:0.2} {delay:0.5 gain:1.25} {distort:0.3}] FXrelease:1.7 ]",
+  "[ 3/1 → 25/8 | s:sbd decay:0.4 FX:[{phaserrate:0.5 gain:2} {bandf:800} {distort:1.3} {room:0.2} {delay:0.5 gain:1.25} {distort:0.3}] FXrelease:1.7 ]",
+  "[ 25/8 → 13/4 | s:hh decay:0.4 FX:[{phaserrate:0.5 gain:2} {bandf:800} {distort:1.3} {room:0.2} {delay:0.5 gain:1.25} {distort:0.3}] FXrelease:1.7 ]",
+  "[ 13/4 → 27/8 | s:sbd decay:0.4 FX:[{phaserrate:0.5 gain:2} {bandf:800} {distort:1.3} {room:0.2} {delay:0.5 gain:1.25} {distort:0.3}] FXrelease:1.7 ]",
+  "[ 27/8 → 7/2 | s:lt decay:0.4 FX:[{phaserrate:0.5 gain:2} {bandf:800} {distort:1.3} {room:0.2} {delay:0.5 gain:1.25} {distort:0.3}] FXrelease:1.7 ]",
+  "[ 7/2 → 29/8 | s:sbd decay:0.4 FX:[{phaserrate:0.5 gain:2} {bandf:800} {distort:1.3} {room:0.2} {delay:0.5 gain:1.25} {distort:0.3}] FXrelease:1.7 ]",
+  "[ 29/8 → 15/4 | s:hh decay:0.4 FX:[{phaserrate:0.5 gain:2} {bandf:800} {distort:1.3} {room:0.2} {delay:0.5 gain:1.25} {distort:0.3}] FXrelease:1.7 ]",
+  "[ 15/4 → 31/8 | s:sbd decay:0.4 FX:[{phaserrate:0.5 gain:2} {bandf:800} {distort:1.3} {room:0.2} {delay:0.5 gain:1.25} {distort:0.3}] FXrelease:1.7 ]",
+  "[ 31/8 → 4/1 | s:bd decay:0.4 FX:[{phaserrate:0.5 gain:2} {bandf:800} {distort:1.3} {room:0.2} {delay:0.5 gain:1.25} {distort:0.3}] FXrelease:1.7 ]",
+]
+`;
+
+exports[`runs examples > example "FX" example index 1 1`] = `
+[
+  "[ 0/1 → 1/1 | s:saw fmi:0.5 delay:0.3 FX:[{coarse:4} {cutoff:500 lpenv:4 lpattack:1 lpdecay:2} {distort:1}] ]",
+  "[ 1/1 → 2/1 | s:saw fmi:0.5 delay:0.3 FX:[{coarse:4} {cutoff:500 lpenv:4 lpattack:1 lpdecay:2} {distort:1}] ]",
+  "[ 2/1 → 3/1 | s:saw fmi:0.5 delay:0.3 FX:[{coarse:4} {cutoff:500 lpenv:4 lpattack:1 lpdecay:2} {distort:1}] ]",
+  "[ 3/1 → 4/1 | s:saw fmi:0.5 delay:0.3 FX:[{coarse:4} {cutoff:500 lpenv:4 lpattack:1 lpdecay:2} {distort:1}] ]",
+]
+`;
+
+exports[`runs examples > example "K" example index 0 1`] = `
+[
+  "[ 0/1 → 1/12 | note:Bb4 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[2 0 0.1 0.3 0.03] ]",
+  "[ 1/12 → 1/6 | note:C4 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[2 0 0.1 0.3 0.03] ]",
+  "[ 1/6 → 1/4 | note:F4 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[2 0 0.1 0.3 0.03] ]",
+  "[ 1/4 → 1/3 | note:Bb4 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[2 0 0.1 0.2 0.08] ]",
+  "[ (1/3 → 3/8) ⇝ 5/12 | note:C4 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[2 0 0.1 0.2 0.08] ]",
+  "[ 1/3 ⇜ (3/8 → 5/12) | note:C4 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[2 0 0.1 0.2 0.01] ]",
+  "[ 5/12 → 1/2 | note:F4 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[2 0 0.1 0.2 0.01] ]",
+  "[ 1/2 → 7/12 | note:Bb4 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[2 0 0.1 0.3 0.01] ]",
+  "[ 7/12 → 2/3 | note:C4 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[2 0 0.1 0.3 0.01] ]",
+  "[ 2/3 → 3/4 | note:F4 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[2 0 0.1 0.3 0.01] ]",
+  "[ 3/4 → 5/6 | note:Bb4 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[16 0.1 1 0.2 0.013] ]",
+  "[ 5/6 → 11/12 | note:C4 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[16 0.1 1 0.2 0.013] ]",
+  "[ 11/12 → 1/1 | note:F4 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[16 0.1 1 0.2 0.013] ]",
+  "[ 1/1 → 13/12 | note:C5 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[2 0 0.1 0.3 0.03] ]",
+  "[ 13/12 → 7/6 | note:Eb4 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[2 0 0.1 0.3 0.03] ]",
+  "[ 7/6 → 5/4 | note:G4 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[2 0 0.1 0.3 0.03] ]",
+  "[ 5/4 → 4/3 | note:C5 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[2 0 0.1 0.2 0.08] ]",
+  "[ (4/3 → 11/8) ⇝ 17/12 | note:Eb4 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[2 0 0.1 0.2 0.08] ]",
+  "[ 4/3 ⇜ (11/8 → 17/12) | note:Eb4 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[2 0 0.1 0.2 0.01] ]",
+  "[ 17/12 → 3/2 | note:G4 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[2 0 0.1 0.2 0.01] ]",
+  "[ 3/2 → 19/12 | note:C5 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[2 0 0.1 0.3 0.01] ]",
+  "[ 19/12 → 5/3 | note:Eb4 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[2 0 0.1 0.3 0.01] ]",
+  "[ 5/3 → 7/4 | note:G4 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[2 0 0.1 0.3 0.01] ]",
+  "[ 7/4 → 11/6 | note:C5 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[16 0.1 1 0.2 0.013] ]",
+  "[ 11/6 → 23/12 | note:Eb4 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[16 0.1 1 0.2 0.013] ]",
+  "[ 23/12 → 2/1 | note:G4 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[16 0.1 1 0.2 0.013] ]",
+  "[ 2/1 → 25/12 | note:Db5 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[2 0 0.1 0.3 0.03] ]",
+  "[ 25/12 → 13/6 | note:F4 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[2 0 0.1 0.3 0.03] ]",
+  "[ 13/6 → 9/4 | note:Ab4 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[2 0 0.1 0.3 0.03] ]",
+  "[ 9/4 → 7/3 | note:Db5 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[2 0 0.1 0.2 0.08] ]",
+  "[ (7/3 → 19/8) ⇝ 29/12 | note:F4 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[2 0 0.1 0.2 0.08] ]",
+  "[ 7/3 ⇜ (19/8 → 29/12) | note:F4 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[2 0 0.1 0.2 0.01] ]",
+  "[ 29/12 → 5/2 | note:Ab4 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[2 0 0.1 0.2 0.01] ]",
+  "[ 5/2 → 31/12 | note:Db5 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[2 0 0.1 0.3 0.01] ]",
+  "[ 31/12 → 8/3 | note:F4 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[2 0 0.1 0.3 0.01] ]",
+  "[ 8/3 → 11/4 | note:Ab4 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[2 0 0.1 0.3 0.01] ]",
+  "[ 11/4 → 17/6 | note:Db5 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[16 0.1 1 0.2 0.013] ]",
+  "[ 17/6 → 35/12 | note:F4 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[16 0.1 1 0.2 0.013] ]",
+  "[ 35/12 → 3/1 | note:Ab4 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[16 0.1 1 0.2 0.013] ]",
+  "[ 3/1 → 37/12 | note:Eb5 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[2 0 0.1 0.3 0.03] ]",
+  "[ 37/12 → 19/6 | note:G4 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[2 0 0.1 0.3 0.03] ]",
+  "[ 19/6 → 13/4 | note:Bb4 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[2 0 0.1 0.3 0.03] ]",
+  "[ 13/4 → 10/3 | note:Eb5 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[2 0 0.1 0.2 0.08] ]",
+  "[ (10/3 → 27/8) ⇝ 41/12 | note:G4 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[2 0 0.1 0.2 0.08] ]",
+  "[ 10/3 ⇜ (27/8 → 41/12) | note:G4 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[2 0 0.1 0.2 0.01] ]",
+  "[ 41/12 → 7/2 | note:Bb4 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[2 0 0.1 0.2 0.01] ]",
+  "[ 7/2 → 43/12 | note:Eb5 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[2 0 0.1 0.3 0.01] ]",
+  "[ 43/12 → 11/3 | note:G4 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[2 0 0.1 0.3 0.01] ]",
+  "[ 11/3 → 15/4 | note:Bb4 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[2 0 0.1 0.3 0.01] ]",
+  "[ 15/4 → 23/6 | note:Eb5 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[16 0.1 1 0.2 0.013] ]",
+  "[ 23/6 → 47/12 | note:G4 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[16 0.1 1 0.2 0.013] ]",
+  "[ 47/12 → 4/1 | note:Bb4 s:saw workletSrc:saw(saw(sFreq / pat[0]).mul(8).add(sFreq).lag(pat[1])).mul(0.3).mul(sGate.adsr(0  0.15  0.5  pat[2])).lpf(sGate.adsr(0  0.2  0.3  0.2).mul(1).add(0)).add(x => x.delay(pat[3]).mul(0.7)).add(x => x.delay(pat[4]).mul(0.77)).mul(0.7).add(x => x.delay(0.13).mul(0.7)).out() workletInputs:[16 0.1 1 0.2 0.013] ]",
+]
+`;
+
+exports[`runs examples > example "K" example index 1 1`] = `
+[
+  "[ 0/1 → 1/16 | note:G#3 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0 0.05 0.1 1.5] FXrelease:1 room:0.3 ]",
+  "[ 1/16 → 1/8 | note:A#2 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0 0.05 0.1 1.5] FXrelease:1 room:0.3 ]",
+  "[ 1/8 → 3/16 | note:B2 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0 0.05 0.1 1.5] FXrelease:1 room:0.3 ]",
+  "[ 3/16 → 1/4 | note:G#3 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0 0.05 0.1 1.5] FXrelease:1 room:0.3 ]",
+  "[ 1/4 → 5/16 | note:A#3 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0 0.05 0.1 1] FXrelease:1 room:0.3 ]",
+  "[ 5/16 → 3/8 | note:C#3 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0 0.05 0.1 1] FXrelease:1 room:0.3 ]",
+  "[ 3/8 → 7/16 | note:G#3 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0 0.05 0.1 1] FXrelease:1 room:0.3 ]",
+  "[ 7/16 → 1/2 | note:A#3 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0 0.05 0.1 1] FXrelease:1 room:0.3 ]",
+  "[ 1/2 → 9/16 | note:B3 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0 0.05 0.1 2] FXrelease:1 room:0.3 ]",
+  "[ 9/16 → 5/8 | note:G#3 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0 0.05 0.1 2] FXrelease:1 room:0.3 ]",
+  "[ 5/8 → 11/16 | note:A#3 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0 0.05 0.1 2] FXrelease:1 room:0.3 ]",
+  "[ 11/16 → 3/4 | note:D#4 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0 0.05 0.1 2] FXrelease:1 room:0.3 ]",
+  "[ 3/4 → 13/16 | note:G#3 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0 0.05 0.1 2] FXrelease:1 room:0.3 ]",
+  "[ 13/16 → 7/8 | note:A#2 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0 0.05 0.1 2] FXrelease:1 room:0.3 ]",
+  "[ 7/8 → 15/16 | note:B3 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0 0.05 0.1 2] FXrelease:1 room:0.3 ]",
+  "[ 15/16 → 1/1 | note:G#2 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0 0.05 0.1 2] FXrelease:1 room:0.3 ]",
+  "[ 1/1 → 17/16 | note:A#2 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0.025977108255028726 0.12793132476508617 0.2 6] FXrelease:1 room:0.3 ]",
+  "[ 17/16 → 9/8 | note:C#3 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0.025977108255028726 0.12793132476508617 0.2 6] FXrelease:1 room:0.3 ]",
+  "[ 9/8 → 19/16 | note:G#2 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0.025977108255028726 0.12793132476508617 0.2 4] FXrelease:1 room:0.3 ]",
+  "[ 19/16 → 5/4 | note:A#4 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0.025977108255028726 0.12793132476508617 0.2 4] FXrelease:1 room:0.3 ]",
+  "[ 5/4 → 21/16 | note:B2 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0.025977108255028726 0.12793132476508617 0.2 4] FXrelease:1 room:0.3 ]",
+  "[ 21/16 → 11/8 | note:G#4 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0.025977108255028726 0.12793132476508617 0.2 4] FXrelease:1 room:0.3 ]",
+  "[ 11/8 → 23/16 | note:A#4 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0.025977108255028726 0.12793132476508617 0.2 4] FXrelease:1 room:0.3 ]",
+  "[ 23/16 → 3/2 | note:D#3 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0.025977108255028726 0.12793132476508617 0.2 4] FXrelease:1 room:0.3 ]",
+  "[ 3/2 → 25/16 | note:G#2 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0.025977108255028726 0.12793132476508617 0.2 1] FXrelease:1 room:0.3 ]",
+  "[ 25/16 → 13/8 | note:A#4 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0.025977108255028726 0.12793132476508617 0.2 1] FXrelease:1 room:0.3 ]",
+  "[ 13/8 → 27/16 | note:B4 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0.025977108255028726 0.12793132476508617 0.2 1] FXrelease:1 room:0.3 ]",
+  "[ 27/16 → 7/4 | note:G#4 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0.025977108255028726 0.12793132476508617 0.2 1] FXrelease:1 room:0.3 ]",
+  "[ 7/4 → 29/16 | note:A#4 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0.025977108255028726 0.12793132476508617 0.2 1] FXrelease:1 room:0.3 ]",
+  "[ 29/16 → 15/8 | note:C#5 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0.025977108255028726 0.12793132476508617 0.2 1] FXrelease:1 room:0.3 ]",
+  "[ 15/8 → 31/16 | note:G#2 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0.025977108255028726 0.12793132476508617 0.2 1] FXrelease:1 room:0.3 ]",
+  "[ 31/16 → 2/1 | note:A#2 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0.025977108255028726 0.12793132476508617 0.2 1] FXrelease:1 room:0.3 ]",
+  "[ 2/1 → 33/16 | note:B2 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0.047976355999708176 0.19392906799912457 0.3 1.5] FXrelease:1 room:0.3 ]",
+  "[ 33/16 → 17/8 | note:G#4 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0.047976355999708176 0.19392906799912457 0.3 1.5] FXrelease:1 room:0.3 ]",
+  "[ 17/8 → 35/16 | note:A#2 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0.047976355999708176 0.19392906799912457 0.3 1.5] FXrelease:1 room:0.3 ]",
+  "[ 35/16 → 9/4 | note:D#5 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0.047976355999708176 0.19392906799912457 0.3 1.5] FXrelease:1 room:0.3 ]",
+  "[ 9/4 → 37/16 | note:G#4 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0.047976355999708176 0.19392906799912457 0.3 1] FXrelease:1 room:0.3 ]",
+  "[ 37/16 → 19/8 | note:A#2 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0.047976355999708176 0.19392906799912457 0.3 1] FXrelease:1 room:0.3 ]",
+  "[ 19/8 → 39/16 | note:B2 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0.047976355999708176 0.19392906799912457 0.3 1] FXrelease:1 room:0.3 ]",
+  "[ 39/16 → 5/2 | note:G#4 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0.047976355999708176 0.19392906799912457 0.3 1] FXrelease:1 room:0.3 ]",
+  "[ 5/2 → 41/16 | note:A#4 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0.047976355999708176 0.19392906799912457 0.3 1.5] FXrelease:1 room:0.3 ]",
+  "[ 41/16 → 21/8 | note:C#3 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0.047976355999708176 0.19392906799912457 0.3 1.5] FXrelease:1 room:0.3 ]",
+  "[ 21/8 → 43/16 | note:G#4 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0.047976355999708176 0.19392906799912457 0.3 1.5] FXrelease:1 room:0.3 ]",
+  "[ 43/16 → 11/4 | note:A#2 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0.047976355999708176 0.19392906799912457 0.3 1.5] FXrelease:1 room:0.3 ]",
+  "[ 11/4 → 45/16 | note:B2 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0.047976355999708176 0.19392906799912457 0.3 1] FXrelease:1 room:0.3 ]",
+  "[ 45/16 → 23/8 | note:G#2 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0.047976355999708176 0.19392906799912457 0.3 1] FXrelease:1 room:0.3 ]",
+  "[ 23/8 → 47/16 | note:A#4 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0.047976355999708176 0.19392906799912457 0.3 1] FXrelease:1 room:0.3 ]",
+  "[ 47/16 → 3/1 | note:D#5 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0.047976355999708176 0.19392906799912457 0.3 1] FXrelease:1 room:0.3 ]",
+  "[ 3/1 → 49/16 | note:G#3 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0.010864455532282592 0.08259336659684778 0.1 2] FXrelease:1 room:0.3 ]",
+  "[ 49/16 → 25/8 | note:A#3 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0.010864455532282592 0.08259336659684778 0.1 2] FXrelease:1 room:0.3 ]",
+  "[ 25/8 → 51/16 | note:B3 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0.010864455532282592 0.08259336659684778 0.1 2] FXrelease:1 room:0.3 ]",
+  "[ 51/16 → 13/4 | note:G#2 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0.010864455532282592 0.08259336659684778 0.1 2] FXrelease:1 room:0.3 ]",
+  "[ 13/4 → 53/16 | note:A#2 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0.010864455532282592 0.08259336659684778 0.1 2] FXrelease:1 room:0.3 ]",
+  "[ 53/16 → 27/8 | note:C#4 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0.010864455532282592 0.08259336659684778 0.1 2] FXrelease:1 room:0.3 ]",
+  "[ 27/8 → 55/16 | note:G#3 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0.010864455532282592 0.08259336659684778 0.1 2] FXrelease:1 room:0.3 ]",
+  "[ 55/16 → 7/2 | note:A#2 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0.010864455532282592 0.08259336659684778 0.1 2] FXrelease:1 room:0.3 ]",
+  "[ 7/2 → 57/16 | note:B3 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0.010864455532282592 0.08259336659684778 0.1 1.5] FXrelease:1 room:0.3 ]",
+  "[ 57/16 → 29/8 | note:G#2 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0.010864455532282592 0.08259336659684778 0.1 1.5] FXrelease:1 room:0.3 ]",
+  "[ 29/8 → 59/16 | note:A#2 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0.010864455532282592 0.08259336659684778 0.1 1.5] FXrelease:1 room:0.3 ]",
+  "[ 59/16 → 15/4 | note:D#3 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0.010864455532282592 0.08259336659684778 0.1 1.5] FXrelease:1 room:0.3 ]",
+  "[ 15/4 → 61/16 | note:G#2 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0.010864455532282592 0.08259336659684778 0.1 1] FXrelease:1 room:0.3 ]",
+  "[ 61/16 → 31/8 | note:A#3 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0.010864455532282592 0.08259336659684778 0.1 1] FXrelease:1 room:0.3 ]",
+  "[ 31/8 → 63/16 | note:B2 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0.010864455532282592 0.08259336659684778 0.1 1] FXrelease:1 room:0.3 ]",
+  "[ 63/16 → 4/1 | note:G#3 workletSrc:(() => {\\n    const att = pat[0];\\n    const dec = pat[1];\\n    let f = n(sFreq);\\n    const mod = sine(f).mul(pat[2]).add(pat[3]);\\n    saw(f.mul(mod)).mul(sGate.ad(att  dec)).add(x => x.delay(0.4).mul(0.3)).out()\\n})() workletInputs:[0.010864455532282592 0.08259336659684778 0.1 1] FXrelease:1 room:0.3 ]",
+]
+`;
+
 exports[`runs examples > example "accelerate" example index 0 1`] = `
 [
   "[ 0/1 → 2/1 | s:sax accelerate:0 ]",
@@ -865,6 +1037,43 @@ exports[`runs examples > example "anchor" example index 0 1`] = `
 ]
 `;
 
+exports[`runs examples > example "anchor" example index 1 1`] = `
+[
+  "[ 0/1 → 1/8 | anchor:c4 note:60 ]",
+  "[ 1/8 → 1/4 | anchor:c4 note:62 ]",
+  "[ 1/4 → 3/8 | anchor:c4 note:64 ]",
+  "[ 3/8 → 1/2 | anchor:c4 note:65 ]",
+  "[ 1/2 → 5/8 | anchor:c4 note:67 ]",
+  "[ 5/8 → 3/4 | anchor:c4 note:69 ]",
+  "[ 3/4 → 7/8 | anchor:c4 note:71 ]",
+  "[ 7/8 → 1/1 | anchor:c4 note:72 ]",
+  "[ 1/1 → 9/8 | anchor:g4 note:67 ]",
+  "[ 9/8 → 5/4 | anchor:g4 note:68 ]",
+  "[ 5/4 → 11/8 | anchor:g4 note:70 ]",
+  "[ 11/8 → 3/2 | anchor:g4 note:72 ]",
+  "[ 3/2 → 13/8 | anchor:g4 note:73 ]",
+  "[ 13/8 → 7/4 | anchor:g4 note:75 ]",
+  "[ 7/4 → 15/8 | anchor:g4 note:77 ]",
+  "[ 15/8 → 2/1 | anchor:g4 note:79 ]",
+  "[ 2/1 → 17/8 | anchor:c5 note:72 ]",
+  "[ 17/8 → 9/4 | anchor:c5 note:74 ]",
+  "[ 9/4 → 19/8 | anchor:c5 note:76 ]",
+  "[ 19/8 → 5/2 | anchor:c5 note:77 ]",
+  "[ 5/2 → 21/8 | anchor:c5 note:79 ]",
+  "[ 21/8 → 11/4 | anchor:c5 note:81 ]",
+  "[ 11/4 → 23/8 | anchor:c5 note:83 ]",
+  "[ 23/8 → 3/1 | anchor:c5 note:84 ]",
+  "[ 3/1 → 25/8 | anchor:g5 note:79 ]",
+  "[ 25/8 → 13/4 | anchor:g5 note:80 ]",
+  "[ 13/4 → 27/8 | anchor:g5 note:82 ]",
+  "[ 27/8 → 7/2 | anchor:g5 note:84 ]",
+  "[ 7/2 → 29/8 | anchor:g5 note:85 ]",
+  "[ 29/8 → 15/4 | anchor:g5 note:87 ]",
+  "[ 15/4 → 31/8 | anchor:g5 note:89 ]",
+  "[ 31/8 → 4/1 | anchor:g5 note:91 ]",
+]
+`;
+
 exports[`runs examples > example "apply" example index 0 1`] = `
 [
   "[ 0/1 → 1/1 | note:C3 ]",
@@ -1030,6 +1239,35 @@ exports[`runs examples > example "bank" example index 0 1`] = `
   "[ 13/4 → 7/2 | s:sd bank:RolandTR909 ]",
   "[ 29/8 → 15/4 | s:bd bank:RolandTR909 ]",
   "[ 15/4 → 4/1 | s:sd bank:RolandTR909 ]",
+]
+`;
+
+exports[`runs examples > example "base" example index 0 1`] = `
+[
+  "[ 0/1 → 1/6 | note:D3 s:saw ]",
+  "[ 1/6 → 1/3 | note:C4 s:saw ]",
+  "[ 1/3 → 1/2 | note:A3 s:saw ]",
+  "[ 1/2 → 2/3 | note:A3 s:saw ]",
+  "[ 2/3 → 5/6 | note:G3 s:saw ]",
+  "[ 5/6 → 1/1 | note:F3 s:saw ]",
+  "[ 1/1 → 7/6 | note:D3 s:saw ]",
+  "[ 7/6 → 4/3 | note:C4 s:saw ]",
+  "[ 4/3 → 3/2 | note:A3 s:saw ]",
+  "[ 3/2 → 5/3 | note:A3 s:saw ]",
+  "[ 5/3 → 11/6 | note:G3 s:saw ]",
+  "[ 11/6 → 2/1 | note:F3 s:saw ]",
+  "[ 2/1 → 13/6 | note:D3 s:saw ]",
+  "[ 13/6 → 7/3 | note:C4 s:saw ]",
+  "[ 7/3 → 5/2 | note:A3 s:saw ]",
+  "[ 5/2 → 8/3 | note:A3 s:saw ]",
+  "[ 8/3 → 17/6 | note:G3 s:saw ]",
+  "[ 17/6 → 3/1 | note:F3 s:saw ]",
+  "[ 3/1 → 19/6 | note:D3 s:saw ]",
+  "[ 19/6 → 10/3 | note:C4 s:saw ]",
+  "[ 10/3 → 7/2 | note:A3 s:saw ]",
+  "[ 7/2 → 11/3 | note:A3 s:saw ]",
+  "[ 11/3 → 23/6 | note:G3 s:saw ]",
+  "[ 23/6 → 4/1 | note:F3 s:saw ]",
 ]
 `;
 
@@ -2539,6 +2777,84 @@ exports[`runs examples > example "cut" example index 0 1`] = `
 ]
 `;
 
+exports[`runs examples > example "cyclesPer" example index 0 1`] = `
+[
+  "[ 0/1 → 1/4 | s:saw note:62.5 ]",
+  "[ 1/4 → 1/2 | s:saw note:62.5 ]",
+  "[ 1/2 → 5/8 | s:saw note:56.25 ]",
+  "[ 5/8 → 3/4 | s:saw note:56.25 ]",
+  "[ 3/4 → 1/1 | s:saw note:62.5 ]",
+  "[ 1/1 → 5/4 | s:saw note:62.5 ]",
+  "[ 5/4 → 3/2 | s:saw note:62.5 ]",
+  "[ 3/2 → 13/8 | s:saw note:56.25 ]",
+  "[ 13/8 → 7/4 | s:saw note:56.25 ]",
+  "[ 7/4 → 2/1 | s:saw note:62.5 ]",
+  "[ 2/1 → 9/4 | s:saw note:62.5 ]",
+  "[ 9/4 → 5/2 | s:saw note:62.5 ]",
+  "[ 5/2 → 21/8 | s:saw note:56.25 ]",
+  "[ 21/8 → 11/4 | s:saw note:56.25 ]",
+  "[ 11/4 → 3/1 | s:saw note:62.5 ]",
+  "[ 3/1 → 13/4 | s:saw note:62.5 ]",
+  "[ 13/4 → 7/2 | s:saw note:62.5 ]",
+  "[ 7/2 → 29/8 | s:saw note:56.25 ]",
+  "[ 29/8 → 15/4 | s:saw note:56.25 ]",
+  "[ 15/4 → 4/1 | s:saw note:62.5 ]",
+]
+`;
+
+exports[`runs examples > example "cyclesPer" example index 1 1`] = `
+[
+  "[ 0/1 → 1/6 | s:bd note:20.166666666666668 ]",
+  "[ 1/6 → 1/3 | s:sd note:20.166666666666668 ]",
+  "[ 1/3 → 5/12 | s:bd note:20.083333333333332 ]",
+  "[ 5/12 → 1/2 | s:bd note:20.083333333333332 ]",
+  "[ 1/2 → 13/24 | s:sd note:20.041666666666668 ]",
+  "[ 13/24 → 7/12 | s:sd note:20.041666666666668 ]",
+  "[ 7/12 → 5/8 | s:sd note:20.041666666666668 ]",
+  "[ 5/8 → 2/3 | s:sd note:20.041666666666668 ]",
+  "[ 3/4 → 5/6 | s:sd note:20.083333333333332 ]",
+  "[ 5/6 → 11/12 | s:bd note:20.083333333333332 ]",
+  "[ 11/12 → 23/24 | s:bd note:20.041666666666668 ]",
+  "[ 23/24 → 1/1 | s:bd note:20.041666666666668 ]",
+  "[ 1/1 → 7/6 | s:bd note:20.166666666666668 ]",
+  "[ 7/6 → 4/3 | s:sd note:20.166666666666668 ]",
+  "[ 4/3 → 17/12 | s:bd note:20.083333333333332 ]",
+  "[ 17/12 → 3/2 | s:bd note:20.083333333333332 ]",
+  "[ 3/2 → 37/24 | s:sd note:20.041666666666668 ]",
+  "[ 37/24 → 19/12 | s:sd note:20.041666666666668 ]",
+  "[ 19/12 → 13/8 | s:sd note:20.041666666666668 ]",
+  "[ 13/8 → 5/3 | s:sd note:20.041666666666668 ]",
+  "[ 7/4 → 11/6 | s:sd note:20.083333333333332 ]",
+  "[ 11/6 → 23/12 | s:bd note:20.083333333333332 ]",
+  "[ 23/12 → 47/24 | s:bd note:20.041666666666668 ]",
+  "[ 47/24 → 2/1 | s:bd note:20.041666666666668 ]",
+  "[ 2/1 → 13/6 | s:bd note:20.166666666666668 ]",
+  "[ 13/6 → 7/3 | s:sd note:20.166666666666668 ]",
+  "[ 7/3 → 29/12 | s:bd note:20.083333333333332 ]",
+  "[ 29/12 → 5/2 | s:bd note:20.083333333333332 ]",
+  "[ 5/2 → 61/24 | s:sd note:20.041666666666668 ]",
+  "[ 61/24 → 31/12 | s:sd note:20.041666666666668 ]",
+  "[ 31/12 → 21/8 | s:sd note:20.041666666666668 ]",
+  "[ 21/8 → 8/3 | s:sd note:20.041666666666668 ]",
+  "[ 11/4 → 17/6 | s:sd note:20.083333333333332 ]",
+  "[ 17/6 → 35/12 | s:bd note:20.083333333333332 ]",
+  "[ 35/12 → 71/24 | s:bd note:20.041666666666668 ]",
+  "[ 71/24 → 3/1 | s:bd note:20.041666666666668 ]",
+  "[ 3/1 → 19/6 | s:bd note:20.166666666666668 ]",
+  "[ 19/6 → 10/3 | s:sd note:20.166666666666668 ]",
+  "[ 10/3 → 41/12 | s:bd note:20.083333333333332 ]",
+  "[ 41/12 → 7/2 | s:bd note:20.083333333333332 ]",
+  "[ 7/2 → 85/24 | s:sd note:20.041666666666668 ]",
+  "[ 85/24 → 43/12 | s:sd note:20.041666666666668 ]",
+  "[ 43/12 → 29/8 | s:sd note:20.041666666666668 ]",
+  "[ 29/8 → 11/3 | s:sd note:20.041666666666668 ]",
+  "[ 15/4 → 23/6 | s:sd note:20.083333333333332 ]",
+  "[ 23/6 → 47/12 | s:bd note:20.083333333333332 ]",
+  "[ 47/12 → 95/24 | s:bd note:20.041666666666668 ]",
+  "[ 95/24 → 4/1 | s:bd note:20.041666666666668 ]",
+]
+`;
+
 exports[`runs examples > example "decay" example index 0 1`] = `
 [
   "[ 0/1 → 1/4 | note:c3 decay:0.1 sustain:0 ]",
@@ -2725,15 +3041,6 @@ exports[`runs examples > example "delayfeedback" example index 0 1`] = `
 ]
 `;
 
-exports[`runs examples > example "delayfeedback" example index 0 2`] = `
-[
-  "[ 0/1 → 1/1 | s:bd delay:0.25 delayfeedback:0.25 ]",
-  "[ 1/1 → 2/1 | s:bd delay:0.25 delayfeedback:0.5 ]",
-  "[ 2/1 → 3/1 | s:bd delay:0.25 delayfeedback:0.75 ]",
-  "[ 3/1 → 4/1 | s:bd delay:0.25 delayfeedback:1 ]",
-]
-`;
-
 exports[`runs examples > example "delayspeed" example index 0 1`] = `
 [
   "[ 0/1 → 1/8 | note:d s:sawtooth delay:0.8 delaytime:0.5 delayspeed:2 ]",
@@ -2781,6 +3088,43 @@ exports[`runs examples > example "delaysync" example index 0 1`] = `
   "[ 5/2 → 3/1 | s:bd delay:0.25 delaysync:0.375 ]",
   "[ 3/1 → 7/2 | s:bd delay:0.25 delaysync:0.625 ]",
   "[ 7/2 → 4/1 | s:bd delay:0.25 delaysync:0.625 ]",
+]
+`;
+
+exports[`runs examples > example "delaytime" example index 0 1`] = `
+[
+  "[ 0/1 → 1/8 | note:d s:sawtooth delay:0.8 delaytime:0.5 delayspeed:2 ]",
+  "[ 1/8 → 1/4 | note:d s:sawtooth delay:0.8 delaytime:0.5 delayspeed:2 ]",
+  "[ 1/4 → 3/8 | note:a# s:sawtooth delay:0.8 delaytime:0.5 delayspeed:2 ]",
+  "[ 3/8 → 1/2 | note:a s:sawtooth delay:0.8 delaytime:0.5 delayspeed:2 ]",
+  "[ 1/2 → 5/8 | note:d s:sawtooth delay:0.8 delaytime:0.5 delayspeed:2 ]",
+  "[ 5/8 → 3/4 | note:d s:sawtooth delay:0.8 delaytime:0.5 delayspeed:2 ]",
+  "[ 3/4 → 7/8 | note:a# s:sawtooth delay:0.8 delaytime:0.5 delayspeed:2 ]",
+  "[ 7/8 → 1/1 | note:a s:sawtooth delay:0.8 delaytime:0.5 delayspeed:2 ]",
+  "[ 1/1 → 9/8 | note:d s:sawtooth delay:0.8 delaytime:0.5 delayspeed:0.5 ]",
+  "[ 9/8 → 5/4 | note:d s:sawtooth delay:0.8 delaytime:0.5 delayspeed:0.5 ]",
+  "[ 5/4 → 11/8 | note:a# s:sawtooth delay:0.8 delaytime:0.5 delayspeed:0.5 ]",
+  "[ 11/8 → 3/2 | note:a s:sawtooth delay:0.8 delaytime:0.5 delayspeed:0.5 ]",
+  "[ 3/2 → 13/8 | note:d s:sawtooth delay:0.8 delaytime:0.5 delayspeed:0.5 ]",
+  "[ 13/8 → 7/4 | note:d s:sawtooth delay:0.8 delaytime:0.5 delayspeed:0.5 ]",
+  "[ 7/4 → 15/8 | note:a# s:sawtooth delay:0.8 delaytime:0.5 delayspeed:0.5 ]",
+  "[ 15/8 → 2/1 | note:a s:sawtooth delay:0.8 delaytime:0.5 delayspeed:0.5 ]",
+  "[ 2/1 → 17/8 | note:d s:sawtooth delay:0.8 delaytime:0.5 delayspeed:-1 ]",
+  "[ 17/8 → 9/4 | note:d s:sawtooth delay:0.8 delaytime:0.5 delayspeed:-1 ]",
+  "[ 9/4 → 19/8 | note:a# s:sawtooth delay:0.8 delaytime:0.5 delayspeed:-1 ]",
+  "[ 19/8 → 5/2 | note:a s:sawtooth delay:0.8 delaytime:0.5 delayspeed:-1 ]",
+  "[ 5/2 → 21/8 | note:d s:sawtooth delay:0.8 delaytime:0.5 delayspeed:-1 ]",
+  "[ 21/8 → 11/4 | note:d s:sawtooth delay:0.8 delaytime:0.5 delayspeed:-1 ]",
+  "[ 11/4 → 23/8 | note:a# s:sawtooth delay:0.8 delaytime:0.5 delayspeed:-1 ]",
+  "[ 23/8 → 3/1 | note:a s:sawtooth delay:0.8 delaytime:0.5 delayspeed:-1 ]",
+  "[ 3/1 → 25/8 | note:d s:sawtooth delay:0.8 delaytime:0.5 delayspeed:-2 ]",
+  "[ 25/8 → 13/4 | note:d s:sawtooth delay:0.8 delaytime:0.5 delayspeed:-2 ]",
+  "[ 13/4 → 27/8 | note:a# s:sawtooth delay:0.8 delaytime:0.5 delayspeed:-2 ]",
+  "[ 27/8 → 7/2 | note:a s:sawtooth delay:0.8 delaytime:0.5 delayspeed:-2 ]",
+  "[ 7/2 → 29/8 | note:d s:sawtooth delay:0.8 delaytime:0.5 delayspeed:-2 ]",
+  "[ 29/8 → 15/4 | note:d s:sawtooth delay:0.8 delaytime:0.5 delayspeed:-2 ]",
+  "[ 15/4 → 31/8 | note:a# s:sawtooth delay:0.8 delaytime:0.5 delayspeed:-2 ]",
+  "[ 31/8 → 4/1 | note:a s:sawtooth delay:0.8 delaytime:0.5 delayspeed:-2 ]",
 ]
 `;
 
@@ -3075,6 +3419,30 @@ exports[`runs examples > example "djf" example index 0 1`] = `
   "[ 29/8 → 15/4 | note:Eb5 s:supersaw djf:0.75 ]",
   "[ 15/4 → 31/8 | note:Bb4 s:supersaw djf:0.75 ]",
   "[ 31/8 → 4/1 | note:A4 s:supersaw djf:0.75 ]",
+]
+`;
+
+exports[`runs examples > example "dough" example index 0 1`] = `
+[
+  "[ 0/1 → 1/1 | note:F3 phaserrate:3 fmi:1.4 fmh:1.01 ]",
+  "[ 0/1 → 1/1 | note:C4 phaserrate:3 fmi:1.4 fmh:1.01 ]",
+  "[ 0/1 → 1/1 | note:D4 phaserrate:3 fmi:1.4 fmh:1.01 ]",
+  "[ 0/1 → 1/1 | note:E4 phaserrate:3 fmi:1.4 fmh:1.01 ]",
+  "[ 0/1 → 1/1 | note:A4 phaserrate:3 fmi:1.4 fmh:1.01 ]",
+  "[ 1/1 → 2/1 | note:A3 phaserrate:3 fmi:1.4 fmh:1.01 ]",
+  "[ 1/1 → 2/1 | note:D4 phaserrate:3 fmi:1.4 fmh:1.01 ]",
+  "[ 1/1 → 2/1 | note:G4 phaserrate:3 fmi:1.4 fmh:1.01 ]",
+  "[ 1/1 → 2/1 | note:C5 phaserrate:3 fmi:1.4 fmh:1.01 ]",
+  "[ 2/1 → 3/1 | note:A4 phaserrate:3 fmi:1.4 fmh:1.01 ]",
+  "[ 2/1 → 3/1 | note:C5 phaserrate:3 fmi:1.4 fmh:1.01 ]",
+  "[ 2/1 → 3/1 | note:D5 phaserrate:3 fmi:1.4 fmh:1.01 ]",
+  "[ 2/1 → 3/1 | note:F5 phaserrate:3 fmi:1.4 fmh:1.01 ]",
+  "[ 2/1 → 3/1 | note:C6 phaserrate:3 fmi:1.4 fmh:1.01 ]",
+  "[ 3/1 → 4/1 | note:A3 phaserrate:3 fmi:1.4 fmh:1.01 ]",
+  "[ 3/1 → 4/1 | note:D4 phaserrate:3 fmi:1.4 fmh:1.01 ]",
+  "[ 3/1 → 4/1 | note:E4 phaserrate:3 fmi:1.4 fmh:1.01 ]",
+  "[ 3/1 → 4/1 | note:F4 phaserrate:3 fmi:1.4 fmh:1.01 ]",
+  "[ 3/1 → 4/1 | note:C5 phaserrate:3 fmi:1.4 fmh:1.01 ]",
 ]
 `;
 
@@ -3672,6 +4040,93 @@ exports[`runs examples > example "echoWith" example index 0 1`] = `
 ]
 `;
 
+exports[`runs examples > example "edoScale" example index 0 1`] = `
+[
+  "[ 0/1 → 1/6 | degree:1 degreeIndexes:[0 2 4 5 7 9 11] intLabels:[null M2 M3 P4 P5 M6 T7 P8] root:130.8128 freq:130.813 edo:12 ]",
+  "[ 1/6 → 1/3 | degree:3 degreeIndexes:[0 2 4 5 7 9 11] intLabels:[null M2 M3 P4 P5 M6 T7 P8] root:130.8128 freq:164.814 edo:12 ]",
+  "[ 1/3 → 1/2 | degree:5 degreeIndexes:[0 2 4 5 7 9 11] intLabels:[null M2 M3 P4 P5 M6 T7 P8] root:130.8128 freq:195.998 edo:12 ]",
+  "[ 1/2 → 2/3 | degree:7 degreeIndexes:[0 2 4 5 7 9 11] intLabels:[null M2 M3 P4 P5 M6 T7 P8] root:130.8128 freq:246.942 edo:12 ]",
+  "[ 2/3 → 5/6 | degree:5 degreeIndexes:[0 2 4 5 7 9 11] intLabels:[null M2 M3 P4 P5 M6 T7 P8] root:130.8128 freq:195.998 edo:12 ]",
+  "[ 5/6 → 1/1 | degree:3 degreeIndexes:[0 2 4 5 7 9 11] intLabels:[null M2 M3 P4 P5 M6 T7 P8] root:130.8128 freq:164.814 edo:12 ]",
+  "[ 1/1 → 7/6 | degree:1 degreeIndexes:[0 2 4 5 7 9 11] intLabels:[null M2 M3 P4 P5 M6 T7 P8] root:130.8128 freq:130.813 edo:12 ]",
+  "[ 7/6 → 4/3 | degree:3 degreeIndexes:[0 2 4 5 7 9 11] intLabels:[null M2 M3 P4 P5 M6 T7 P8] root:130.8128 freq:164.814 edo:12 ]",
+  "[ 4/3 → 3/2 | degree:5 degreeIndexes:[0 2 4 5 7 9 11] intLabels:[null M2 M3 P4 P5 M6 T7 P8] root:130.8128 freq:195.998 edo:12 ]",
+  "[ 3/2 → 5/3 | degree:7 degreeIndexes:[0 2 4 5 7 9 11] intLabels:[null M2 M3 P4 P5 M6 T7 P8] root:130.8128 freq:246.942 edo:12 ]",
+  "[ 5/3 → 11/6 | degree:5 degreeIndexes:[0 2 4 5 7 9 11] intLabels:[null M2 M3 P4 P5 M6 T7 P8] root:130.8128 freq:195.998 edo:12 ]",
+  "[ 11/6 → 2/1 | degree:3 degreeIndexes:[0 2 4 5 7 9 11] intLabels:[null M2 M3 P4 P5 M6 T7 P8] root:130.8128 freq:164.814 edo:12 ]",
+  "[ 2/1 → 13/6 | degree:1 degreeIndexes:[0 2 4 5 7 9 11] intLabels:[null M2 M3 P4 P5 M6 T7 P8] root:130.8128 freq:130.813 edo:12 ]",
+  "[ 13/6 → 7/3 | degree:3 degreeIndexes:[0 2 4 5 7 9 11] intLabels:[null M2 M3 P4 P5 M6 T7 P8] root:130.8128 freq:164.814 edo:12 ]",
+  "[ 7/3 → 5/2 | degree:5 degreeIndexes:[0 2 4 5 7 9 11] intLabels:[null M2 M3 P4 P5 M6 T7 P8] root:130.8128 freq:195.998 edo:12 ]",
+  "[ 5/2 → 8/3 | degree:7 degreeIndexes:[0 2 4 5 7 9 11] intLabels:[null M2 M3 P4 P5 M6 T7 P8] root:130.8128 freq:246.942 edo:12 ]",
+  "[ 8/3 → 17/6 | degree:5 degreeIndexes:[0 2 4 5 7 9 11] intLabels:[null M2 M3 P4 P5 M6 T7 P8] root:130.8128 freq:195.998 edo:12 ]",
+  "[ 17/6 → 3/1 | degree:3 degreeIndexes:[0 2 4 5 7 9 11] intLabels:[null M2 M3 P4 P5 M6 T7 P8] root:130.8128 freq:164.814 edo:12 ]",
+  "[ 3/1 → 19/6 | degree:1 degreeIndexes:[0 2 4 5 7 9 11] intLabels:[null M2 M3 P4 P5 M6 T7 P8] root:130.8128 freq:130.813 edo:12 ]",
+  "[ 19/6 → 10/3 | degree:3 degreeIndexes:[0 2 4 5 7 9 11] intLabels:[null M2 M3 P4 P5 M6 T7 P8] root:130.8128 freq:164.814 edo:12 ]",
+  "[ 10/3 → 7/2 | degree:5 degreeIndexes:[0 2 4 5 7 9 11] intLabels:[null M2 M3 P4 P5 M6 T7 P8] root:130.8128 freq:195.998 edo:12 ]",
+  "[ 7/2 → 11/3 | degree:7 degreeIndexes:[0 2 4 5 7 9 11] intLabels:[null M2 M3 P4 P5 M6 T7 P8] root:130.8128 freq:246.942 edo:12 ]",
+  "[ 11/3 → 23/6 | degree:5 degreeIndexes:[0 2 4 5 7 9 11] intLabels:[null M2 M3 P4 P5 M6 T7 P8] root:130.8128 freq:195.998 edo:12 ]",
+  "[ 23/6 → 4/1 | degree:3 degreeIndexes:[0 2 4 5 7 9 11] intLabels:[null M2 M3 P4 P5 M6 T7 P8] root:130.8128 freq:164.814 edo:12 ]",
+]
+`;
+
+exports[`runs examples > example "edoScale" example index 1 1`] = `
+[
+  "[ 0/1 → 1/4 | degree:1 degreeIndexes:[0 3 6 7 10 13] intLabels:[null S2 d4 N4 s6 s7 P8] root:97.9989 freq:97.999 edo:16 s:piano ]",
+  "[ 0/1 → 1/4 | degree:2 degreeIndexes:[0 3 6 7 10 13] intLabels:[null S2 d4 N4 s6 s7 P8] root:97.9989 freq:223.2 edo:16 s:piano ]",
+  "[ 1/4 → 1/2 | degree:5 degreeIndexes:[0 3 6 7 10 13] intLabels:[null S2 d4 N4 s6 s7 P8] root:97.9989 freq:151.135 edo:16 s:piano ]",
+  "[ 1/2 → 3/4 | degree:3 degreeIndexes:[0 3 6 7 10 13] intLabels:[null S2 d4 N4 s6 s7 P8] root:97.9989 freq:127.089 edo:16 s:piano ]",
+  "[ 1/2 → 3/4 | degree:2 degreeIndexes:[0 3 6 7 10 13] intLabels:[null S2 d4 N4 s6 s7 P8] root:97.9989 freq:223.2 edo:16 s:piano ]",
+  "[ 3/4 → 1/1 | degree:5 degreeIndexes:[0 3 6 7 10 13] intLabels:[null S2 d4 N4 s6 s7 P8] root:97.9989 freq:151.135 edo:16 s:piano ]",
+  "[ 1/1 → 5/4 | degree:1 degreeIndexes:[0 3 6 9 12 13] intLabels:[null S2 d4  M6 s7 P8] root:97.9989 freq:97.999 edo:16 s:piano ]",
+  "[ 1/1 → 5/4 | degree:2 degreeIndexes:[0 3 6 9 12 13] intLabels:[null S2 d4  M6 s7 P8] root:97.9989 freq:223.2 edo:16 s:piano ]",
+  "[ 5/4 → 3/2 | degree:5 degreeIndexes:[0 3 6 9 12 13] intLabels:[null S2 d4  M6 s7 P8] root:97.9989 freq:164.814 edo:16 s:piano ]",
+  "[ 3/2 → 7/4 | degree:3 degreeIndexes:[0 3 6 9 12 13] intLabels:[null S2 d4  M6 s7 P8] root:97.9989 freq:127.089 edo:16 s:piano ]",
+  "[ 3/2 → 7/4 | degree:2 degreeIndexes:[0 3 6 9 12 13] intLabels:[null S2 d4  M6 s7 P8] root:97.9989 freq:223.2 edo:16 s:piano ]",
+  "[ 7/4 → 2/1 | degree:5 degreeIndexes:[0 3 6 9 12 13] intLabels:[null S2 d4  M6 s7 P8] root:97.9989 freq:164.814 edo:16 s:piano ]",
+  "[ 2/1 → 9/4 | degree:1 degreeIndexes:[0 3 6 7 10 13] intLabels:[null S2 d4 N4 s6 s7 P8] root:97.9989 freq:97.999 edo:16 s:piano ]",
+  "[ 2/1 → 9/4 | degree:2 degreeIndexes:[0 3 6 7 10 13] intLabels:[null S2 d4 N4 s6 s7 P8] root:97.9989 freq:223.2 edo:16 s:piano ]",
+  "[ 9/4 → 5/2 | degree:5 degreeIndexes:[0 3 6 7 10 13] intLabels:[null S2 d4 N4 s6 s7 P8] root:97.9989 freq:151.135 edo:16 s:piano ]",
+  "[ 5/2 → 11/4 | degree:3 degreeIndexes:[0 3 6 7 10 13] intLabels:[null S2 d4 N4 s6 s7 P8] root:97.9989 freq:127.089 edo:16 s:piano ]",
+  "[ 5/2 → 11/4 | degree:2 degreeIndexes:[0 3 6 7 10 13] intLabels:[null S2 d4 N4 s6 s7 P8] root:97.9989 freq:223.2 edo:16 s:piano ]",
+  "[ 11/4 → 3/1 | degree:5 degreeIndexes:[0 3 6 7 10 13] intLabels:[null S2 d4 N4 s6 s7 P8] root:97.9989 freq:151.135 edo:16 s:piano ]",
+  "[ 3/1 → 13/4 | degree:1 degreeIndexes:[0 3 6 9 12 13] intLabels:[null S2 d4  M6 s7 P8] root:97.9989 freq:97.999 edo:16 s:piano ]",
+  "[ 3/1 → 13/4 | degree:2 degreeIndexes:[0 3 6 9 12 13] intLabels:[null S2 d4  M6 s7 P8] root:97.9989 freq:223.2 edo:16 s:piano ]",
+  "[ 13/4 → 7/2 | degree:5 degreeIndexes:[0 3 6 9 12 13] intLabels:[null S2 d4  M6 s7 P8] root:97.9989 freq:164.814 edo:16 s:piano ]",
+  "[ 7/2 → 15/4 | degree:3 degreeIndexes:[0 3 6 9 12 13] intLabels:[null S2 d4  M6 s7 P8] root:97.9989 freq:127.089 edo:16 s:piano ]",
+  "[ 7/2 → 15/4 | degree:2 degreeIndexes:[0 3 6 9 12 13] intLabels:[null S2 d4  M6 s7 P8] root:97.9989 freq:223.2 edo:16 s:piano ]",
+  "[ 15/4 → 4/1 | degree:5 degreeIndexes:[0 3 6 9 12 13] intLabels:[null S2 d4  M6 s7 P8] root:97.9989 freq:164.814 edo:16 s:piano ]",
+]
+`;
+
+exports[`runs examples > example "edoScale" example index 2 1`] = `
+[
+  "[ 0/1 → 1/6 | degree:1 degreeIndexes:[0 3 6 7 10] intLabels:[null s3 n4 t5 d7 P8] root:97.9989 freq:97.999 edo:13 s:piano ]",
+  "[ 1/6 → 1/3 | degree:5 degreeIndexes:[0 3 6 7 10] intLabels:[null s3 n4 t5 d7 P8] root:97.9989 freq:167.025 edo:13 s:piano ]",
+  "[ 1/3 → 1/2 | degree:3 degreeIndexes:[0 3 6 7 10] intLabels:[null s3 n4 t5 d7 P8] root:97.9989 freq:134.945 edo:13 s:piano ]",
+  "[ 1/2 → 2/3 | degree:2 degreeIndexes:[0 3 6 7 10] intLabels:[null s3 n4 t5 d7 P8] root:97.9989 freq:114.998 edo:13 s:piano ]",
+  "[ 2/3 → 5/6 | degree:3 degreeIndexes:[0 3 6 7 10] intLabels:[null s3 n4 t5 d7 P8] root:97.9989 freq:134.945 edo:13 s:piano ]",
+  "[ 5/6 → 1/1 | degree:1 degreeIndexes:[0 3 6 7 10] intLabels:[null s3 n4 t5 d7 P8] root:97.9989 freq:97.999 edo:13 s:piano ]",
+  "[ 1/1 → 7/6 | degree:4 degreeIndexes:[0 3 6 7 10] intLabels:[null s3 n4 t5 d7 P8] root:130.8128 freq:189.995 edo:13 s:piano ]",
+  "[ 7/6 → 4/3 | degree:2 degreeIndexes:[0 3 6 7 10] intLabels:[null s3 n4 t5 d7 P8] root:130.8128 freq:153.504 edo:13 s:piano ]",
+  "[ 4/3 → 3/2 | degree:3 degreeIndexes:[0 3 6 7 10] intLabels:[null s3 n4 t5 d7 P8] root:130.8128 freq:180.13 edo:13 s:piano ]",
+  "[ 3/2 → 5/3 | degree:4 degreeIndexes:[0 3 6 7 10] intLabels:[null s3 n4 t5 d7 P8] root:130.8128 freq:189.995 edo:13 s:piano ]",
+  "[ 5/3 → 11/6 | degree:1 degreeIndexes:[0 3 6 7 10] intLabels:[null s3 n4 t5 d7 P8] root:130.8128 freq:130.813 edo:13 s:piano ]",
+  "[ 11/6 → 2/1 | degree:5 degreeIndexes:[0 3 6 7 10] intLabels:[null s3 n4 t5 d7 P8] root:130.8128 freq:222.952 edo:13 s:piano ]",
+  "[ 2/1 → 13/6 | degree:1 degreeIndexes:[0 3 6 7 10] intLabels:[null s3 n4 t5 d7 P8] root:97.9989 freq:195.998 edo:13 s:piano ]",
+  "[ 13/6 → 7/3 | degree:4 degreeIndexes:[0 3 6 7 10] intLabels:[null s3 n4 t5 d7 P8] root:97.9989 freq:142.336 edo:13 s:piano ]",
+  "[ 7/3 → 5/2 | degree:3 degreeIndexes:[0 3 6 7 10] intLabels:[null s3 n4 t5 d7 P8] root:97.9989 freq:134.945 edo:13 s:piano ]",
+  "[ 5/2 → 8/3 | degree:3 degreeIndexes:[0 3 6 7 10] intLabels:[null s3 n4 t5 d7 P8] root:97.9989 freq:134.945 edo:13 s:piano ]",
+  "[ 8/3 → 17/6 | degree:4 degreeIndexes:[0 3 6 7 10] intLabels:[null s3 n4 t5 d7 P8] root:97.9989 freq:142.336 edo:13 s:piano ]",
+  "[ 17/6 → 3/1 | degree:2 degreeIndexes:[0 3 6 7 10] intLabels:[null s3 n4 t5 d7 P8] root:97.9989 freq:114.998 edo:13 s:piano ]",
+  "[ 3/1 → 19/6 | degree:2 degreeIndexes:[0 3 6 7 10] intLabels:[null s3 n4 t5 d7 P8] root:130.8128 freq:153.504 edo:13 s:piano ]",
+  "[ 19/6 → 10/3 | degree:2 degreeIndexes:[0 3 6 7 10] intLabels:[null s3 n4 t5 d7 P8] root:130.8128 freq:153.504 edo:13 s:piano ]",
+  "[ 10/3 → 7/2 | degree:1 degreeIndexes:[0 3 6 7 10] intLabels:[null s3 n4 t5 d7 P8] root:130.8128 freq:261.626 edo:13 s:piano ]",
+  "[ 7/2 → 11/3 | degree:3 degreeIndexes:[0 3 6 7 10] intLabels:[null s3 n4 t5 d7 P8] root:130.8128 freq:180.13 edo:13 s:piano ]",
+  "[ 11/3 → 23/6 | degree:3 degreeIndexes:[0 3 6 7 10] intLabels:[null s3 n4 t5 d7 P8] root:130.8128 freq:180.13 edo:13 s:piano ]",
+  "[ 23/6 → 4/1 | degree:4 degreeIndexes:[0 3 6 7 10] intLabels:[null s3 n4 t5 d7 P8] root:130.8128 freq:189.995 edo:13 s:piano ]",
+]
+`;
+
 exports[`runs examples > example "end" example index 0 1`] = `
 [
   "[ 0/1 → 1/8 | s:oh end:0.1 ]",
@@ -3722,6 +4177,51 @@ exports[`runs examples > example "end" example index 0 1`] = `
   "[ 15/4 → 31/8 | s:oh end:1 ]",
   "[ 15/4 → 4/1 | s:bd end:1 ]",
   "[ 31/8 → 4/1 | s:oh end:1 ]",
+]
+`;
+
+exports[`runs examples > example "env" example index 0 1`] = `
+[
+  "[ 0/1 → 1/1 | s:saw note:F1 cutoff:500 env:{0:{control:cutoff attack:1} __ids:{}} ]",
+  "[ 1/1 → 2/1 | s:saw note:F1 cutoff:500 env:{0:{control:cutoff attack:1} __ids:{}} ]",
+  "[ 2/1 → 3/1 | s:saw note:F1 cutoff:500 env:{0:{control:cutoff attack:1} __ids:{}} ]",
+  "[ 3/1 → 4/1 | s:saw note:F1 cutoff:500 env:{0:{control:cutoff attack:1} __ids:{}} ]",
+]
+`;
+
+exports[`runs examples > example "env" example index 1 1`] = `
+[
+  "[ 0/1 → 1/1 | s:saw env:{0:{control:s decay:1} 1:{control:cutoff attack:0.1 decay:1 acurve:0.8 dcurve:0.3 depth:50} __ids:{}} note:F1 resonance:4 cutoff:50 ]",
+  "[ 1/1 → 2/1 | s:saw env:{0:{control:s decay:1} 1:{control:cutoff attack:0.1 decay:1 acurve:0.8 dcurve:0.3 depth:50} __ids:{}} note:F1 resonance:4 cutoff:50 ]",
+  "[ 2/1 → 3/1 | s:saw env:{0:{control:s decay:1} 1:{control:cutoff attack:0.1 decay:1 acurve:0.8 dcurve:0.3 depth:50} __ids:{}} note:F1 resonance:4 cutoff:50 ]",
+  "[ 3/1 → 4/1 | s:saw env:{0:{control:s decay:1} 1:{control:cutoff attack:0.1 decay:1 acurve:0.8 dcurve:0.3 depth:50} __ids:{}} note:F1 resonance:4 cutoff:50 ]",
+]
+`;
+
+exports[`runs examples > example "env" example index 2 1`] = `
+[
+  "[ 0/1 → 1/1 | s:saw cutoff:500 distort:0.3 distortvol:1 distorttype:diode env:{0:{control:cutoff attack:0.5 decay:0.5} __ids:{}} ]",
+  "[ 1/1 → 2/1 | s:saw cutoff:500 distort:0.3 distortvol:1 distorttype:diode env:{0:{control:cutoff attack:0.5 decay:0.5} __ids:{}} ]",
+  "[ 2/1 → 3/1 | s:saw cutoff:500 distort:0.3 distortvol:1 distorttype:diode env:{0:{control:cutoff attack:0.5 decay:0.5} __ids:{}} ]",
+  "[ 3/1 → 4/1 | s:saw cutoff:500 distort:0.3 distortvol:1 distorttype:diode env:{0:{control:cutoff attack:0.5 decay:0.5} __ids:{}} ]",
+]
+`;
+
+exports[`runs examples > example "env" example index 3 1`] = `
+[
+  "[ 0/1 → 1/1 | s:pulse cutoff:500 env:{0:{control:cutoff attack:1} 1:{control:s attack:0.5} __ids:{}} distort:0.3 distortvol:1 distorttype:diode ]",
+  "[ 1/1 → 2/1 | s:pulse cutoff:500 env:{0:{control:cutoff attack:1} 1:{control:s attack:1} __ids:{}} distort:0.3 distortvol:1 distorttype:diode ]",
+  "[ 2/1 → 3/1 | s:pulse cutoff:500 env:{0:{control:cutoff attack:1} 1:{control:s attack:1} __ids:{}} distort:0.3 distortvol:1 distorttype:diode ]",
+  "[ 3/1 → 4/1 | s:pulse cutoff:500 env:{0:{control:cutoff attack:1} 1:{control:s attack:0.5} __ids:{}} distort:0.3 distortvol:1 distorttype:diode ]",
+]
+`;
+
+exports[`runs examples > example "env" example index 4 1`] = `
+[
+  "[ 0/1 → 1/1 | s:pulse cutoff:500 env:{1:{control:s attack:1} __ids:{} lpf_mod:{control:cutoff attack:0.5}} distort:0.3 distortvol:1 distorttype:diode ]",
+  "[ 1/1 → 2/1 | s:pulse cutoff:500 env:{1:{control:s attack:1} __ids:{} lpf_mod:{control:cutoff attack:1}} distort:0.3 distortvol:1 distorttype:diode ]",
+  "[ 2/1 → 3/1 | s:pulse cutoff:500 env:{1:{control:s attack:1} __ids:{} lpf_mod:{control:cutoff attack:1}} distort:0.3 distortvol:1 distorttype:diode ]",
+  "[ 3/1 → 4/1 | s:pulse cutoff:500 env:{1:{control:s attack:1} __ids:{} lpf_mod:{control:cutoff attack:0.5}} distort:0.3 distortvol:1 distorttype:diode ]",
 ]
 `;
 
@@ -3898,6 +4398,27 @@ exports[`runs examples > example "extend" example index 0 1`] = `
 ]
 `;
 
+exports[`runs examples > example "fadeTime" example index 0 1`] = `
+[
+  "[ 0/1 → 1/4 | s:oh end:0.1 fadeTime:0 ]",
+  "[ 1/4 → 1/2 | s:oh end:0.1 fadeTime:0 ]",
+  "[ 1/2 → 3/4 | s:oh end:0.1 fadeTime:0 ]",
+  "[ 3/4 → 1/1 | s:oh end:0.1 fadeTime:0 ]",
+  "[ 1/1 → 5/4 | s:oh end:0.1 fadeTime:0.2 ]",
+  "[ 5/4 → 3/2 | s:oh end:0.1 fadeTime:0.2 ]",
+  "[ 3/2 → 7/4 | s:oh end:0.1 fadeTime:0.2 ]",
+  "[ 7/4 → 2/1 | s:oh end:0.1 fadeTime:0.2 ]",
+  "[ 2/1 → 9/4 | s:oh end:0.1 fadeTime:0.4 ]",
+  "[ 9/4 → 5/2 | s:oh end:0.1 fadeTime:0.4 ]",
+  "[ 5/2 → 11/4 | s:oh end:0.1 fadeTime:0.4 ]",
+  "[ 11/4 → 3/1 | s:oh end:0.1 fadeTime:0.4 ]",
+  "[ 3/1 → 13/4 | s:oh end:0.1 fadeTime:0.8 ]",
+  "[ 13/4 → 7/2 | s:oh end:0.1 fadeTime:0.8 ]",
+  "[ 7/2 → 15/4 | s:oh end:0.1 fadeTime:0.8 ]",
+  "[ 15/4 → 4/1 | s:oh end:0.1 fadeTime:0.8 ]",
+]
+`;
+
 exports[`runs examples > example "fanchor" example index 0 1`] = `
 [
   "[ 0/1 → 1/8 | note:f s:sawtooth cutoff:1000 lpenv:8 fanchor:0 ]",
@@ -4040,6 +4561,70 @@ exports[`runs examples > example "filter" example index 0 1`] = `
   "[ 29/8 → 15/4 | s:hh ]",
   "[ 15/4 → 31/8 | s:hh ]",
   "[ 31/8 → 4/1 | s:oh ]",
+]
+`;
+
+exports[`runs examples > example "filterHaps" example index 0 1`] = `
+[
+  "[ 1/8 → 1/4 | s:bd velocity:0.6852155700325966 ]",
+  "[ 1/4 → 3/8 | s:bd velocity:0.36975969187915325 ]",
+  "[ 3/8 → 1/2 | s:bd velocity:0.40139251574873924 ]",
+  "[ 1/1 → 9/8 | s:bd velocity:0.5195421651005745 ]",
+  "[ 9/8 → 5/4 | s:bd velocity:0.6724895145744085 ]",
+  "[ 5/4 → 11/8 | s:bd velocity:0.7287282031029463 ]",
+  "[ 3/2 → 13/8 | s:bd velocity:0.6084080748260021 ]",
+  "[ 2/1 → 17/8 | s:bd velocity:0.9595271199941635 ]",
+  "[ 17/8 → 9/4 | s:bd velocity:0.9033902939409018 ]",
+  "[ 9/4 → 19/8 | s:bd velocity:0.34548251144587994 ]",
+  "[ 19/8 → 5/2 | s:bd velocity:0.8365066405385733 ]",
+  "[ 3/1 → 25/8 | s:bd velocity:0.21728911064565182 ]",
+  "[ 25/8 → 13/4 | s:bd velocity:0.34324387833476067 ]",
+  "[ 13/4 → 27/8 | s:bd velocity:0.9923650715500116 ]",
+  "[ 27/8 → 7/2 | s:bd velocity:0.40869180113077164 ]",
+  "[ 29/8 → 15/4 | s:bd velocity:0.9391485787928104 ]",
+  "[ 15/4 → 31/8 | s:bd velocity:0.8121673222631216 ]",
+]
+`;
+
+exports[`runs examples > example "filterValues" example index 0 1`] = `
+[
+  "[ 0/1 → 1/4 | s:saw note:G#1 cutoff:80 lpenv:4 orbit:2 ]",
+  "[ 1/4 → 1/2 | s:saw note:G#1 cutoff:80 lpenv:4 orbit:2 ]",
+  "[ 1/2 → 3/4 | s:saw note:G#1 cutoff:80 lpenv:4 orbit:2 ]",
+  "[ 3/4 → 1/1 | s:saw note:G#1 cutoff:80 lpenv:4 orbit:2 ]",
+  "[ 1/1 → 5/4 | s:saw note:G#1 cutoff:80 lpenv:4 orbit:2 ]",
+  "[ 5/4 → 3/2 | s:saw note:G#1 cutoff:80 lpenv:4 orbit:2 ]",
+  "[ 3/2 → 7/4 | s:saw note:G#1 cutoff:80 lpenv:4 orbit:2 ]",
+  "[ 7/4 → 2/1 | s:saw note:G#1 cutoff:80 lpenv:4 orbit:2 ]",
+  "[ 2/1 → 9/4 | s:saw note:G#1 cutoff:80 lpenv:4 orbit:2 ]",
+  "[ 9/4 → 5/2 | s:saw note:G#1 cutoff:80 lpenv:4 orbit:2 ]",
+  "[ 5/2 → 11/4 | s:saw note:G#1 cutoff:80 lpenv:4 orbit:2 ]",
+  "[ 11/4 → 3/1 | s:saw note:G#1 cutoff:80 lpenv:4 orbit:2 ]",
+  "[ 3/1 → 13/4 | s:saw note:G#1 cutoff:80 lpenv:4 orbit:2 ]",
+  "[ 13/4 → 7/2 | s:saw note:G#1 cutoff:80 lpenv:4 orbit:2 ]",
+  "[ 7/2 → 15/4 | s:saw note:G#1 cutoff:80 lpenv:4 orbit:2 ]",
+  "[ 15/4 → 4/1 | s:saw note:G#1 cutoff:80 lpenv:4 orbit:2 ]",
+]
+`;
+
+exports[`runs examples > example "filterWhen" example index 0 1`] = `
+[
+  "[ 0/1 → 1/4 | s:bd ]",
+  "[ 1/4 → 1/2 | s:bd ]",
+  "[ 1/2 → 3/4 | s:bd ]",
+  "[ 3/4 → 1/1 | s:bd ]",
+  "[ 1/1 → 5/4 | s:bd ]",
+  "[ 5/4 → 3/2 | s:bd ]",
+  "[ 3/2 → 7/4 | s:bd ]",
+  "[ 7/4 → 2/1 | s:bd ]",
+  "[ 2/1 → 9/4 | s:bd ]",
+  "[ 9/4 → 5/2 | s:bd ]",
+  "[ 5/2 → 11/4 | s:bd ]",
+  "[ 11/4 → 3/1 | s:bd ]",
+  "[ 3/1 → 13/4 | s:bd ]",
+  "[ 13/4 → 7/2 | s:bd ]",
+  "[ 7/2 → 15/4 | s:bd ]",
+  "[ 15/4 → 4/1 | s:bd ]",
 ]
 `;
 
@@ -4533,6 +5118,78 @@ exports[`runs examples > example "fscope" example index 0 1`] = `
 ]
 `;
 
+exports[`runs examples > example "ftranspose" example index 0 1`] = `
+[
+  "[ 0/1 → 1/3 | freq:329.6275569 ]",
+  "[ 1/3 → 2/3 | freq:349.2282315 ]",
+  "[ 2/3 → 1/1 | freq:369.9944227 ]",
+  "[ 1/1 → 4/3 | freq:329.6275569 ]",
+  "[ 4/3 → 5/3 | freq:349.2282315 ]",
+  "[ 5/3 → 2/1 | freq:369.9944227 ]",
+  "[ 2/1 → 7/3 | freq:329.6275569 ]",
+  "[ 7/3 → 8/3 | freq:349.2282315 ]",
+  "[ 8/3 → 3/1 | freq:369.9944227 ]",
+  "[ 3/1 → 10/3 | freq:329.6275569 ]",
+  "[ 10/3 → 11/3 | freq:349.2282315 ]",
+  "[ 11/3 → 4/1 | freq:369.9944227 ]",
+]
+`;
+
+exports[`runs examples > example "ftranspose" example index 1 1`] = `
+[
+  "[ 0/1 → 1/3 | freq:263.0921203 ]",
+  "[ 1/3 → 2/3 | freq:314.6248353 ]",
+  "[ 2/3 → 1/1 | freq:393.4589706 ]",
+  "[ 1/1 → 4/3 | freq:183.965981 ]",
+  "[ 4/3 → 5/3 | freq:220 ]",
+  "[ 5/3 → 2/1 | freq:275.1244143 ]",
+  "[ 2/1 → 7/3 | freq:263.0921203 ]",
+  "[ 7/3 → 8/3 | freq:314.6248353 ]",
+  "[ 8/3 → 3/1 | freq:393.4589706 ]",
+  "[ 3/1 → 10/3 | freq:183.965981 ]",
+  "[ 10/3 → 11/3 | freq:220 ]",
+  "[ 11/3 → 4/1 | freq:275.1244143 ]",
+]
+`;
+
+exports[`runs examples > example "ftranspose" example index 2 1`] = `
+[
+  "[ 0/1 → 1/4 | freq:220 ]",
+  "[ 1/4 → 1/2 | freq:257.2747684 ]",
+  "[ 1/2 → 3/4 | freq:263.0921203 ]",
+  "[ 3/4 → 1/1 | freq:329.0139341 ]",
+  "[ 1/1 → 5/4 | freq:224.9745158 ]",
+  "[ 5/4 → 3/2 | freq:263.0921203 ]",
+  "[ 3/2 → 7/4 | freq:269.0410108 ]",
+  "[ 7/4 → 2/1 | freq:336.4534115 ]",
+  "[ 2/1 → 9/4 | freq:233.0818808 ]",
+  "[ 9/4 → 5/2 | freq:272.5731222 ]",
+  "[ 5/2 → 11/4 | freq:278.7363919 ]",
+  "[ 11/4 → 3/1 | freq:348.5781207 ]",
+  "[ 3/1 → 13/4 | freq:220 ]",
+  "[ 13/4 → 7/2 | freq:257.2747684 ]",
+  "[ 7/2 → 15/4 | freq:263.0921203 ]",
+  "[ 15/4 → 4/1 | freq:329.0139341 ]",
+]
+`;
+
+exports[`runs examples > example "ftranspose" example index 3 1`] = `
+[
+  "[ 0/1 → 1/3 | freq:200 ]",
+  "[ 1/3 → 2/3 | freq:300 ]",
+  "[ 2/3 → 1/1 | freq:400 ]",
+  "[ 1/1 → 4/3 | freq:233.8861531 ]",
+  "[ 4/3 → 5/3 | freq:350.8292297 ]",
+  "[ 5/3 → 2/1 | freq:467.7723062 ]",
+  "[ 2/1 → 7/3 | freq:299.6614154 ]",
+  "[ 7/3 → 8/3 | freq:449.4921231 ]",
+  "[ 8/3 → 3/1 | freq:599.3228308 ]",
+  "[ 3/1 → 10/3 | freq:200 ]",
+  "[ 10/3 → 11/3 | freq:300 ]",
+  "[ 11/3 → 4/1 | freq:400 ]",
+]
+`;
+
 exports[`runs examples > example "ftype" example index 0 1`] = `
 [
   "[ 0/1 → 1/8 | note:f s:sawtooth lpenv:4 cutoff:500 ftype:0 resonance:1 ]",
@@ -4701,6 +5358,15 @@ exports[`runs examples > example "gain" example index 0 1`] = `
 `;
 
 exports[`runs examples > example "gap" example index 0 1`] = `[]`;
+
+exports[`runs examples > example "getDur" example index 0 1`] = `
+[
+  "[ 0/1 → 1/1 | s:sax cps:null ]",
+  "[ 1/1 → 2/1 | s:sax cps:null ]",
+  "[ 2/1 → 3/1 | s:sax cps:null ]",
+  "[ 3/1 → 4/1 | s:sax cps:null ]",
+]
+`;
 
 exports[`runs examples > example "grow" example index 0 1`] = `
 [
@@ -5217,6 +5883,43 @@ exports[`runs examples > example "hush" example index 0 1`] = `
 ]
 `;
 
+exports[`runs examples > example "i" example index 0 1`] = `
+[
+  "[ 0/1 → 1/8 | freq:220 ]",
+  "[ 1/8 → 1/4 | freq:252.7136381 ]",
+  "[ 1/4 → 3/8 | freq:290.2917404 ]",
+  "[ 3/8 → 1/2 | freq:333.4576446 ]",
+  "[ 1/2 → 5/8 | freq:383.0422479 ]",
+  "[ 5/8 → 3/4 | freq:440 ]",
+  "[ 3/4 → 7/8 | freq:505.4272762 ]",
+  "[ 7/8 → 1/1 | freq:580.5834807 ]",
+  "[ 1/1 → 9/8 | freq:220 ]",
+  "[ 9/8 → 5/4 | freq:235.7901618 ]",
+  "[ 5/4 → 11/8 | freq:252.7136381 ]",
+  "[ 11/8 → 3/2 | freq:270.8517709 ]",
+  "[ 3/2 → 13/8 | freq:290.2917404 ]",
+  "[ 13/8 → 7/4 | freq:311.1269837 ]",
+  "[ 7/4 → 15/8 | freq:333.4576446 ]",
+  "[ 15/8 → 2/1 | freq:357.3910544 ]",
+  "[ 2/1 → 17/8 | freq:220 ]",
+  "[ 17/8 → 9/4 | freq:230.404707 ]",
+  "[ 9/4 → 19/8 | freq:241.3014955 ]",
+  "[ 19/8 → 5/2 | freq:252.7136381 ]",
+  "[ 5/2 → 21/8 | freq:264.6655079 ]",
+  "[ 21/8 → 11/4 | freq:277.182631 ]",
+  "[ 11/4 → 23/8 | freq:290.2917404 ]",
+  "[ 23/8 → 3/1 | freq:304.0208336 ]",
+  "[ 3/1 → 25/8 | freq:220 ]",
+  "[ 25/8 → 13/4 | freq:275 ]",
+  "[ 13/4 → 27/8 | freq:293.3333333 ]",
+  "[ 27/8 → 7/2 | freq:330 ]",
+  "[ 7/2 → 29/8 | freq:352 ]",
+  "[ 29/8 → 15/4 | freq:440 ]",
+  "[ 15/4 → 31/8 | freq:550 ]",
+  "[ 31/8 → 4/1 | freq:586.6666667 ]",
+]
+`;
+
 exports[`runs examples > example "inhabit" example index 0 1`] = `
 [
   "[ 0/1 → 1/8 | s:bd ]",
@@ -5248,6 +5951,30 @@ exports[`runs examples > example "inhabit" example index 1 1`] = `
   "[ 3/1 → 25/8 | s:bd ]",
   "[ 27/8 → 7/2 | s:bd ]",
   "[ 15/4 → 31/8 | s:bd ]",
+]
+`;
+
+exports[`runs examples > example "initDough" example index 0 1`] = `
+[
+  "[ 0/1 → 1/1 | note:F3 phaserrate:3 fmi:1.4 fmh:1.01 ]",
+  "[ 0/1 → 1/1 | note:C4 phaserrate:3 fmi:1.4 fmh:1.01 ]",
+  "[ 0/1 → 1/1 | note:D4 phaserrate:3 fmi:1.4 fmh:1.01 ]",
+  "[ 0/1 → 1/1 | note:E4 phaserrate:3 fmi:1.4 fmh:1.01 ]",
+  "[ 0/1 → 1/1 | note:A4 phaserrate:3 fmi:1.4 fmh:1.01 ]",
+  "[ 1/1 → 2/1 | note:A3 phaserrate:3 fmi:1.4 fmh:1.01 ]",
+  "[ 1/1 → 2/1 | note:D4 phaserrate:3 fmi:1.4 fmh:1.01 ]",
+  "[ 1/1 → 2/1 | note:G4 phaserrate:3 fmi:1.4 fmh:1.01 ]",
+  "[ 1/1 → 2/1 | note:C5 phaserrate:3 fmi:1.4 fmh:1.01 ]",
+  "[ 2/1 → 3/1 | note:A4 phaserrate:3 fmi:1.4 fmh:1.01 ]",
+  "[ 2/1 → 3/1 | note:C5 phaserrate:3 fmi:1.4 fmh:1.01 ]",
+  "[ 2/1 → 3/1 | note:D5 phaserrate:3 fmi:1.4 fmh:1.01 ]",
+  "[ 2/1 → 3/1 | note:F5 phaserrate:3 fmi:1.4 fmh:1.01 ]",
+  "[ 2/1 → 3/1 | note:C6 phaserrate:3 fmi:1.4 fmh:1.01 ]",
+  "[ 3/1 → 4/1 | note:A3 phaserrate:3 fmi:1.4 fmh:1.01 ]",
+  "[ 3/1 → 4/1 | note:D4 phaserrate:3 fmi:1.4 fmh:1.01 ]",
+  "[ 3/1 → 4/1 | note:E4 phaserrate:3 fmi:1.4 fmh:1.01 ]",
+  "[ 3/1 → 4/1 | note:F4 phaserrate:3 fmi:1.4 fmh:1.01 ]",
+  "[ 3/1 → 4/1 | note:C5 phaserrate:3 fmi:1.4 fmh:1.01 ]",
 ]
 `;
 
@@ -5877,6 +6604,271 @@ exports[`runs examples > example "juxBy" example index 0 1`] = `
 ]
 `;
 
+exports[`runs examples > example "juxFlip" example index 0 1`] = `
+[
+  "[ 0/1 → 1/8 | s:bd pan:0 ]",
+  "[ 0/1 → 1/8 | s:hh pan:1 ]",
+  "[ 1/8 → 1/4 | s:lt pan:0 ]",
+  "[ 1/8 → 1/4 | s:bd pan:1 ]",
+  "[ 5/16 → 3/8 | s:ht pan:0 ]",
+  "[ 3/8 → 1/2 | s:mt pan:0 ]",
+  "[ 3/8 → 1/2 | s:cp pan:1 ]",
+  "[ 1/2 → 5/8 | s:cp pan:0 ]",
+  "[ 1/2 → 5/8 | s:mt pan:1 ]",
+  "[ 5/8 → 11/16 | s:ht pan:1 ]",
+  "[ 3/4 → 7/8 | s:bd pan:0 ]",
+  "[ 3/4 → 7/8 | s:lt pan:1 ]",
+  "[ 7/8 → 1/1 | s:hh pan:0 ]",
+  "[ 7/8 → 1/1 | s:bd pan:1 ]",
+  "[ 1/1 → 9/8 | s:bd pan:1 ]",
+  "[ 1/1 → 9/8 | s:hh pan:0 ]",
+  "[ 9/8 → 5/4 | s:lt pan:1 ]",
+  "[ 9/8 → 5/4 | s:bd pan:0 ]",
+  "[ 21/16 → 11/8 | s:ht pan:1 ]",
+  "[ 11/8 → 3/2 | s:mt pan:1 ]",
+  "[ 11/8 → 3/2 | s:cp pan:0 ]",
+  "[ 3/2 → 13/8 | s:cp pan:1 ]",
+  "[ 3/2 → 13/8 | s:mt pan:0 ]",
+  "[ 13/8 → 27/16 | s:ht pan:0 ]",
+  "[ 7/4 → 15/8 | s:bd pan:1 ]",
+  "[ 7/4 → 15/8 | s:lt pan:0 ]",
+  "[ 15/8 → 2/1 | s:hh pan:1 ]",
+  "[ 15/8 → 2/1 | s:bd pan:0 ]",
+  "[ 2/1 → 17/8 | s:bd pan:0 ]",
+  "[ 2/1 → 17/8 | s:hh pan:1 ]",
+  "[ 17/8 → 9/4 | s:lt pan:0 ]",
+  "[ 17/8 → 9/4 | s:bd pan:1 ]",
+  "[ 37/16 → 19/8 | s:ht pan:0 ]",
+  "[ 19/8 → 5/2 | s:mt pan:0 ]",
+  "[ 19/8 → 5/2 | s:cp pan:1 ]",
+  "[ 5/2 → 21/8 | s:cp pan:0 ]",
+  "[ 5/2 → 21/8 | s:mt pan:1 ]",
+  "[ 21/8 → 43/16 | s:ht pan:1 ]",
+  "[ 11/4 → 23/8 | s:bd pan:0 ]",
+  "[ 11/4 → 23/8 | s:lt pan:1 ]",
+  "[ 23/8 → 3/1 | s:hh pan:0 ]",
+  "[ 23/8 → 3/1 | s:bd pan:1 ]",
+  "[ 3/1 → 25/8 | s:bd pan:1 ]",
+  "[ 3/1 → 25/8 | s:hh pan:0 ]",
+  "[ 25/8 → 13/4 | s:lt pan:1 ]",
+  "[ 25/8 → 13/4 | s:bd pan:0 ]",
+  "[ 53/16 → 27/8 | s:ht pan:1 ]",
+  "[ 27/8 → 7/2 | s:mt pan:1 ]",
+  "[ 27/8 → 7/2 | s:cp pan:0 ]",
+  "[ 7/2 → 29/8 | s:cp pan:1 ]",
+  "[ 7/2 → 29/8 | s:mt pan:0 ]",
+  "[ 29/8 → 59/16 | s:ht pan:0 ]",
+  "[ 15/4 → 31/8 | s:bd pan:1 ]",
+  "[ 15/4 → 31/8 | s:lt pan:0 ]",
+  "[ 31/8 → 4/1 | s:hh pan:1 ]",
+  "[ 31/8 → 4/1 | s:bd pan:0 ]",
+]
+`;
+
+exports[`runs examples > example "juxFlip" example index 1 1`] = `
+[
+  "[ 0/1 → 1/8 | s:bd pan:0 ]",
+  "[ 1/16 → 1/8 | s:bd pan:1 ]",
+  "[ 1/8 → 1/4 | s:lt pan:0 ]",
+  "[ 3/16 → 1/4 | s:lt pan:1 ]",
+  "[ 5/16 → 3/8 | s:ht pan:0 ]",
+  "[ 11/32 → 3/8 | s:ht pan:1 ]",
+  "[ 3/8 → 1/2 | s:mt pan:0 ]",
+  "[ 7/16 → 1/2 | s:mt pan:1 ]",
+  "[ 1/2 → 5/8 | s:cp pan:0 ]",
+  "[ 9/16 → 5/8 | s:cp pan:1 ]",
+  "[ 3/4 → 7/8 | s:bd pan:0 ]",
+  "[ 13/16 → 7/8 | s:bd pan:1 ]",
+  "[ 7/8 → 1/1 | s:hh pan:0 ]",
+  "[ 15/16 → 1/1 | s:hh pan:1 ]",
+  "[ 1/1 → 9/8 | s:bd pan:1 ]",
+  "[ 17/16 → 9/8 | s:bd pan:0 ]",
+  "[ 9/8 → 5/4 | s:lt pan:1 ]",
+  "[ 19/16 → 5/4 | s:lt pan:0 ]",
+  "[ 21/16 → 11/8 | s:ht pan:1 ]",
+  "[ 43/32 → 11/8 | s:ht pan:0 ]",
+  "[ 11/8 → 3/2 | s:mt pan:1 ]",
+  "[ 23/16 → 3/2 | s:mt pan:0 ]",
+  "[ 3/2 → 13/8 | s:cp pan:1 ]",
+  "[ 25/16 → 13/8 | s:cp pan:0 ]",
+  "[ 7/4 → 15/8 | s:bd pan:1 ]",
+  "[ 29/16 → 15/8 | s:bd pan:0 ]",
+  "[ 15/8 → 2/1 | s:hh pan:1 ]",
+  "[ 31/16 → 2/1 | s:hh pan:0 ]",
+  "[ 2/1 → 17/8 | s:bd pan:0 ]",
+  "[ 33/16 → 17/8 | s:bd pan:1 ]",
+  "[ 17/8 → 9/4 | s:lt pan:0 ]",
+  "[ 35/16 → 9/4 | s:lt pan:1 ]",
+  "[ 37/16 → 19/8 | s:ht pan:0 ]",
+  "[ 75/32 → 19/8 | s:ht pan:1 ]",
+  "[ 19/8 → 5/2 | s:mt pan:0 ]",
+  "[ 39/16 → 5/2 | s:mt pan:1 ]",
+  "[ 5/2 → 21/8 | s:cp pan:0 ]",
+  "[ 41/16 → 21/8 | s:cp pan:1 ]",
+  "[ 11/4 → 23/8 | s:bd pan:0 ]",
+  "[ 45/16 → 23/8 | s:bd pan:1 ]",
+  "[ 23/8 → 3/1 | s:hh pan:0 ]",
+  "[ 47/16 → 3/1 | s:hh pan:1 ]",
+  "[ 3/1 → 25/8 | s:bd pan:1 ]",
+  "[ 49/16 → 25/8 | s:bd pan:0 ]",
+  "[ 25/8 → 13/4 | s:lt pan:1 ]",
+  "[ 51/16 → 13/4 | s:lt pan:0 ]",
+  "[ 53/16 → 27/8 | s:ht pan:1 ]",
+  "[ 107/32 → 27/8 | s:ht pan:0 ]",
+  "[ 27/8 → 7/2 | s:mt pan:1 ]",
+  "[ 55/16 → 7/2 | s:mt pan:0 ]",
+  "[ 7/2 → 29/8 | s:cp pan:1 ]",
+  "[ 57/16 → 29/8 | s:cp pan:0 ]",
+  "[ 15/4 → 31/8 | s:bd pan:1 ]",
+  "[ 61/16 → 31/8 | s:bd pan:0 ]",
+  "[ 31/8 → 4/1 | s:hh pan:1 ]",
+  "[ 63/16 → 4/1 | s:hh pan:0 ]",
+]
+`;
+
+exports[`runs examples > example "juxFlip" example index 2 1`] = `
+[
+  "[ 0/1 → 1/8 | s:bd pan:0 ]",
+  "[ 0/1 → 1/8 | s:bd pan:1 ]",
+  "[ 1/8 → 1/4 | s:lt pan:0 ]",
+  "[ 1/8 → 1/4 | s:lt pan:1 ]",
+  "[ 5/16 → 3/8 | s:ht pan:0 ]",
+  "[ 5/16 → 3/8 | s:ht pan:1 ]",
+  "[ 3/8 → 1/2 | s:mt pan:0 ]",
+  "[ 3/8 → 1/2 | s:mt pan:1 ]",
+  "[ 1/2 → 5/8 | s:cp pan:0 ]",
+  "[ 1/2 → 5/8 | s:cp pan:1 ]",
+  "[ 3/4 → 7/8 | s:bd pan:0 ]",
+  "[ 3/4 → 7/8 | s:bd pan:1 ]",
+  "[ 7/8 → 1/1 | s:hh pan:0 ]",
+  "[ 7/8 → 1/1 | s:hh pan:1 ]",
+  "[ 1/1 → 9/8 | s:bd pan:1 ]",
+  "[ 17/16 → 9/8 | s:ht pan:0 ]",
+  "[ 9/8 → 5/4 | s:lt pan:1 ]",
+  "[ 9/8 → 5/4 | s:mt pan:0 ]",
+  "[ 5/4 → 11/8 | s:cp pan:0 ]",
+  "[ 21/16 → 11/8 | s:ht pan:1 ]",
+  "[ 11/8 → 3/2 | s:mt pan:1 ]",
+  "[ 3/2 → 13/8 | s:cp pan:1 ]",
+  "[ 3/2 → 13/8 | s:bd pan:0 ]",
+  "[ 13/8 → 7/4 | s:hh pan:0 ]",
+  "[ 7/4 → 15/8 | s:bd pan:1 ]",
+  "[ 7/4 → 15/8 | s:bd pan:0 ]",
+  "[ 15/8 → 2/1 | s:hh pan:1 ]",
+  "[ 15/8 → 2/1 | s:lt pan:0 ]",
+  "[ 2/1 → 17/8 | s:bd pan:0 ]",
+  "[ 2/1 → 17/8 | s:cp pan:1 ]",
+  "[ 17/8 → 9/4 | s:lt pan:0 ]",
+  "[ 9/4 → 19/8 | s:bd pan:1 ]",
+  "[ 37/16 → 19/8 | s:ht pan:0 ]",
+  "[ 19/8 → 5/2 | s:mt pan:0 ]",
+  "[ 19/8 → 5/2 | s:hh pan:1 ]",
+  "[ 5/2 → 21/8 | s:cp pan:0 ]",
+  "[ 5/2 → 21/8 | s:bd pan:1 ]",
+  "[ 21/8 → 11/4 | s:lt pan:1 ]",
+  "[ 11/4 → 23/8 | s:bd pan:0 ]",
+  "[ 45/16 → 23/8 | s:ht pan:1 ]",
+  "[ 23/8 → 3/1 | s:hh pan:0 ]",
+  "[ 23/8 → 3/1 | s:mt pan:1 ]",
+  "[ 3/1 → 25/8 | s:bd pan:1 ]",
+  "[ 3/1 → 25/8 | s:bd pan:0 ]",
+  "[ 25/8 → 13/4 | s:lt pan:1 ]",
+  "[ 25/8 → 13/4 | s:hh pan:0 ]",
+  "[ 13/4 → 27/8 | s:bd pan:0 ]",
+  "[ 53/16 → 27/8 | s:ht pan:1 ]",
+  "[ 27/8 → 7/2 | s:mt pan:1 ]",
+  "[ 27/8 → 7/2 | s:lt pan:0 ]",
+  "[ 7/2 → 29/8 | s:cp pan:1 ]",
+  "[ 57/16 → 29/8 | s:ht pan:0 ]",
+  "[ 29/8 → 15/4 | s:mt pan:0 ]",
+  "[ 15/4 → 31/8 | s:bd pan:1 ]",
+  "[ 15/4 → 31/8 | s:cp pan:0 ]",
+  "[ 31/8 → 4/1 | s:hh pan:1 ]",
+]
+`;
+
+exports[`runs examples > example "juxFlipBy" example index 0 1`] = `
+[
+  "[ 0/1 → 1/8 | s:bd pan:0.09999999999999998 ]",
+  "[ 0/1 → 1/8 | s:hh pan:0.9 ]",
+  "[ 1/8 → 1/4 | s:lt pan:0.09999999999999998 ]",
+  "[ 1/8 → 1/4 | s:bd pan:0.9 ]",
+  "[ 5/16 → 3/8 | s:ht pan:0.09999999999999998 ]",
+  "[ 3/8 → 1/2 | s:mt pan:0.09999999999999998 ]",
+  "[ 3/8 → 1/2 | s:cp pan:0.9 ]",
+  "[ 1/2 → 5/8 | s:cp pan:0.09999999999999998 ]",
+  "[ 1/2 → 5/8 | s:mt pan:0.9 ]",
+  "[ 5/8 → 11/16 | s:ht pan:0.9 ]",
+  "[ 3/4 → 7/8 | s:bd pan:0.09999999999999998 ]",
+  "[ 3/4 → 7/8 | s:lt pan:0.9 ]",
+  "[ 7/8 → 1/1 | s:hh pan:0.09999999999999998 ]",
+  "[ 7/8 → 1/1 | s:bd pan:0.9 ]",
+  "[ 1/1 → 9/8 | s:bd pan:0.9 ]",
+  "[ 1/1 → 9/8 | s:hh pan:0.09999999999999998 ]",
+  "[ 9/8 → 5/4 | s:lt pan:0.9 ]",
+  "[ 9/8 → 5/4 | s:bd pan:0.09999999999999998 ]",
+  "[ 21/16 → 11/8 | s:ht pan:0.9 ]",
+  "[ 11/8 → 3/2 | s:mt pan:0.9 ]",
+  "[ 11/8 → 3/2 | s:cp pan:0.09999999999999998 ]",
+  "[ 3/2 → 13/8 | s:cp pan:0.9 ]",
+  "[ 3/2 → 13/8 | s:mt pan:0.09999999999999998 ]",
+  "[ 13/8 → 27/16 | s:ht pan:0.09999999999999998 ]",
+  "[ 7/4 → 15/8 | s:bd pan:0.9 ]",
+  "[ 7/4 → 15/8 | s:lt pan:0.09999999999999998 ]",
+  "[ 15/8 → 2/1 | s:hh pan:0.9 ]",
+  "[ 15/8 → 2/1 | s:bd pan:0.09999999999999998 ]",
+  "[ 2/1 → 17/8 | s:bd pan:0.09999999999999998 ]",
+  "[ 2/1 → 17/8 | s:hh pan:0.9 ]",
+  "[ 17/8 → 9/4 | s:lt pan:0.09999999999999998 ]",
+  "[ 17/8 → 9/4 | s:bd pan:0.9 ]",
+  "[ 37/16 → 19/8 | s:ht pan:0.09999999999999998 ]",
+  "[ 19/8 → 5/2 | s:mt pan:0.09999999999999998 ]",
+  "[ 19/8 → 5/2 | s:cp pan:0.9 ]",
+  "[ 5/2 → 21/8 | s:cp pan:0.09999999999999998 ]",
+  "[ 5/2 → 21/8 | s:mt pan:0.9 ]",
+  "[ 21/8 → 43/16 | s:ht pan:0.9 ]",
+  "[ 11/4 → 23/8 | s:bd pan:0.09999999999999998 ]",
+  "[ 11/4 → 23/8 | s:lt pan:0.9 ]",
+  "[ 23/8 → 3/1 | s:hh pan:0.09999999999999998 ]",
+  "[ 23/8 → 3/1 | s:bd pan:0.9 ]",
+  "[ 3/1 → 25/8 | s:bd pan:0.9 ]",
+  "[ 3/1 → 25/8 | s:hh pan:0.09999999999999998 ]",
+  "[ 25/8 → 13/4 | s:lt pan:0.9 ]",
+  "[ 25/8 → 13/4 | s:bd pan:0.09999999999999998 ]",
+  "[ 53/16 → 27/8 | s:ht pan:0.9 ]",
+  "[ 27/8 → 7/2 | s:mt pan:0.9 ]",
+  "[ 27/8 → 7/2 | s:cp pan:0.09999999999999998 ]",
+  "[ 7/2 → 29/8 | s:cp pan:0.9 ]",
+  "[ 7/2 → 29/8 | s:mt pan:0.09999999999999998 ]",
+  "[ 29/8 → 59/16 | s:ht pan:0.09999999999999998 ]",
+  "[ 15/4 → 31/8 | s:bd pan:0.9 ]",
+  "[ 15/4 → 31/8 | s:lt pan:0.09999999999999998 ]",
+  "[ 31/8 → 4/1 | s:hh pan:0.9 ]",
+  "[ 31/8 → 4/1 | s:bd pan:0.09999999999999998 ]",
+]
+`;
+
+exports[`runs examples > example "keep" example index 0 1`] = `
+[
+  "[ 0/1 → 1/4 | note:c s:piano ]",
+  "[ 1/4 → 1/2 | note:a s:piano ]",
+  "[ 1/2 → 3/4 | note:f s:piano ]",
+  "[ 3/4 → 1/1 | note:e s:piano ]",
+  "[ 1/1 → 5/4 | note:c s:piano ]",
+  "[ 5/4 → 3/2 | note:a s:piano ]",
+  "[ 3/2 → 7/4 | note:f s:piano ]",
+  "[ 7/4 → 2/1 | note:e s:piano ]",
+  "[ 2/1 → 9/4 | note:c s:piano ]",
+  "[ 9/4 → 5/2 | note:a s:piano ]",
+  "[ 5/2 → 11/4 | note:f s:piano ]",
+  "[ 11/4 → 3/1 | note:e s:piano ]",
+  "[ 3/1 → 13/4 | note:c s:piano ]",
+  "[ 13/4 → 7/2 | note:a s:piano ]",
+  "[ 7/2 → 15/4 | note:f s:piano ]",
+  "[ 15/4 → 4/1 | note:e s:piano ]",
+]
+`;
+
 exports[`runs examples > example "keyDown" example index 0 1`] = `[]`;
 
 exports[`runs examples > example "lastOf" example index 0 1`] = `
@@ -5968,6 +6960,51 @@ exports[`runs examples > example "leslie" example index 0 1`] = `
   "[ 3/1 → 4/1 | n:0 s:supersquare leslie:1 ]",
   "[ 3/1 → 4/1 | n:4 s:supersquare leslie:1 ]",
   "[ 3/1 → 4/1 | n:7 s:supersquare leslie:1 ]",
+]
+`;
+
+exports[`runs examples > example "lfo" example index 0 1`] = `
+[
+  "[ 0/1 → 1/1 | s:saw note:F1 cutoff:500 lfo:{0:{control:cutoff} __ids:{}} ]",
+  "[ 1/1 → 2/1 | s:saw note:F1 cutoff:500 lfo:{0:{control:cutoff} __ids:{}} ]",
+  "[ 2/1 → 3/1 | s:saw note:F1 cutoff:500 lfo:{0:{control:cutoff} __ids:{}} ]",
+  "[ 3/1 → 4/1 | s:saw note:F1 cutoff:500 lfo:{0:{control:cutoff} __ids:{}} ]",
+]
+`;
+
+exports[`runs examples > example "lfo" example index 1 1`] = `
+[
+  "[ 0/1 → 1/1 | s:saw lfo:{0:{control:s} 1:{control:cutoff sync:0.3} __ids:{}} cutoff:500 ]",
+  "[ 1/1 → 2/1 | s:saw lfo:{0:{control:s} 1:{control:cutoff sync:0.3} __ids:{}} cutoff:500 ]",
+  "[ 2/1 → 3/1 | s:saw lfo:{0:{control:s} 1:{control:cutoff sync:0.3} __ids:{}} cutoff:500 ]",
+  "[ 3/1 → 4/1 | s:saw lfo:{0:{control:s} 1:{control:cutoff sync:0.3} __ids:{}} cutoff:500 ]",
+]
+`;
+
+exports[`runs examples > example "lfo" example index 2 1`] = `
+[
+  "[ 0/1 → 1/1 | s:saw cutoff:500 distort:0.3 distortvol:1 distorttype:diode lfo:{0:{control:cutoff} __ids:{}} ]",
+  "[ 1/1 → 2/1 | s:saw cutoff:500 distort:0.3 distortvol:1 distorttype:diode lfo:{0:{control:cutoff} __ids:{}} ]",
+  "[ 2/1 → 3/1 | s:saw cutoff:500 distort:0.3 distortvol:1 distorttype:diode lfo:{0:{control:cutoff} __ids:{}} ]",
+  "[ 3/1 → 4/1 | s:saw cutoff:500 distort:0.3 distortvol:1 distorttype:diode lfo:{0:{control:cutoff} __ids:{}} ]",
+]
+`;
+
+exports[`runs examples > example "lfo" example index 3 1`] = `
+[
+  "[ 0/1 → 1/1 | s:pulse cutoff:500 lfo:{0:{control:cutoff} 1:{control:s sync:8} __ids:{}} distort:0.3 distortvol:1 distorttype:diode ]",
+  "[ 1/1 → 2/1 | s:pulse cutoff:500 lfo:{0:{control:cutoff} 1:{control:s} __ids:{}} distort:0.3 distortvol:1 distorttype:diode ]",
+  "[ 2/1 → 3/1 | s:pulse cutoff:500 lfo:{0:{control:cutoff} 1:{control:s} __ids:{}} distort:0.3 distortvol:1 distorttype:diode ]",
+  "[ 3/1 → 4/1 | s:pulse cutoff:500 lfo:{0:{control:cutoff} 1:{control:s sync:8} __ids:{}} distort:0.3 distortvol:1 distorttype:diode ]",
+]
+`;
+
+exports[`runs examples > example "lfo" example index 4 1`] = `
+[
+  "[ 0/1 → 1/1 | s:pulse cutoff:500 lfo:{1:{control:s} __ids:{} lpf_mod:{control:cutoff depth:4 sync:8}} distort:0.3 distortvol:1 distorttype:diode ]",
+  "[ 1/1 → 2/1 | s:pulse cutoff:500 lfo:{1:{control:s} __ids:{} lpf_mod:{control:cutoff depth:4}} distort:0.3 distortvol:1 distorttype:diode ]",
+  "[ 2/1 → 3/1 | s:pulse cutoff:500 lfo:{1:{control:s} __ids:{} lpf_mod:{control:cutoff depth:4}} distort:0.3 distortvol:1 distorttype:diode ]",
+  "[ 3/1 → 4/1 | s:pulse cutoff:500 lfo:{1:{control:s} __ids:{} lpf_mod:{control:cutoff depth:4 sync:8}} distort:0.3 distortvol:1 distorttype:diode ]",
 ]
 `;
 
@@ -6963,6 +8000,12 @@ exports[`runs examples > example "midicmd" example index 0 1`] = `
 ]
 `;
 
+exports[`runs examples > example "midikeys" example index 0 1`] = `[]`;
+
+exports[`runs examples > example "midikeys" example index 1 1`] = `[]`;
+
+exports[`runs examples > example "midikeys" example index 2 1`] = `[]`;
+
 exports[`runs examples > example "midin" example index 0 1`] = `
 [
   "[ 0/1 → 1/4 | note:c cutoff:0 resonance:0 s:sawtooth ]",
@@ -6981,6 +8024,27 @@ exports[`runs examples > example "midin" example index 0 1`] = `
   "[ 13/4 → 7/2 | note:a cutoff:0 resonance:0 s:sawtooth ]",
   "[ 7/2 → 15/4 | note:f cutoff:0 resonance:0 s:sawtooth ]",
   "[ 15/4 → 4/1 | note:e cutoff:0 resonance:0 s:sawtooth ]",
+]
+`;
+
+exports[`runs examples > example "midin" example index 1 1`] = `
+[
+  "[ 0/1 → 1/4 | note:c s:saw ]",
+  "[ 1/4 → 1/2 | note:a s:saw ]",
+  "[ 1/2 → 3/4 | note:f s:saw ]",
+  "[ 3/4 → 1/1 | note:e s:saw ]",
+  "[ 1/1 → 5/4 | note:c s:saw ]",
+  "[ 5/4 → 3/2 | note:a s:saw ]",
+  "[ 3/2 → 7/4 | note:f s:saw ]",
+  "[ 7/4 → 2/1 | note:e s:saw ]",
+  "[ 2/1 → 9/4 | note:c s:saw ]",
+  "[ 9/4 → 5/2 | note:a s:saw ]",
+  "[ 5/2 → 11/4 | note:f s:saw ]",
+  "[ 11/4 → 3/1 | note:e s:saw ]",
+  "[ 3/1 → 13/4 | note:c s:saw ]",
+  "[ 13/4 → 7/2 | note:a s:saw ]",
+  "[ 7/2 → 15/4 | note:f s:saw ]",
+  "[ 15/4 → 4/1 | note:e s:saw ]",
 ]
 `;
 
@@ -7670,6 +8734,48 @@ exports[`runs examples > example "panchor" example index 0 1`] = `
 ]
 `;
 
+exports[`runs examples > example "panspan" example index 0 1`] = `
+[
+  "[ 0/1 → 1/4 | s:bd pan:0.5 panspan:0 ]",
+  "[ 1/4 → 1/2 | s:hh pan:0.5 panspan:0 ]",
+  "[ 1/2 → 3/4 | s:bd pan:0.5 panspan:0 ]",
+  "[ 3/4 → 1/1 | s:hh pan:0.5 panspan:0 ]",
+  "[ 1/1 → 5/4 | s:bd pan:1 panspan:0.5 ]",
+  "[ 5/4 → 3/2 | s:hh pan:1 panspan:0.5 ]",
+  "[ 3/2 → 7/4 | s:bd pan:1 panspan:0.5 ]",
+  "[ 7/4 → 2/1 | s:hh pan:1 panspan:0.5 ]",
+  "[ 2/1 → 9/4 | s:bd pan:0.5 panspan:1 ]",
+  "[ 9/4 → 5/2 | s:hh pan:0.5 panspan:1 ]",
+  "[ 5/2 → 11/4 | s:bd pan:0.5 panspan:1 ]",
+  "[ 11/4 → 3/1 | s:hh pan:0.5 panspan:1 ]",
+  "[ 3/1 → 13/4 | s:bd pan:0 panspan:0 ]",
+  "[ 13/4 → 7/2 | s:hh pan:0 panspan:0 ]",
+  "[ 7/2 → 15/4 | s:bd pan:0 panspan:0 ]",
+  "[ 15/4 → 4/1 | s:hh pan:0 panspan:0 ]",
+]
+`;
+
+exports[`runs examples > example "pansplay" example index 0 1`] = `
+[
+  "[ 0/1 → 1/4 | s:bd pan:0.5 pansplay:0 ]",
+  "[ 1/4 → 1/2 | s:hh pan:0.5 pansplay:0 ]",
+  "[ 1/2 → 3/4 | s:bd pan:0.5 pansplay:0 ]",
+  "[ 3/4 → 1/1 | s:hh pan:0.5 pansplay:0 ]",
+  "[ 1/1 → 5/4 | s:bd pan:1 pansplay:0.5 ]",
+  "[ 5/4 → 3/2 | s:hh pan:1 pansplay:0.5 ]",
+  "[ 3/2 → 7/4 | s:bd pan:1 pansplay:0.5 ]",
+  "[ 7/4 → 2/1 | s:hh pan:1 pansplay:0.5 ]",
+  "[ 2/1 → 9/4 | s:bd pan:0.5 pansplay:1 ]",
+  "[ 9/4 → 5/2 | s:hh pan:0.5 pansplay:1 ]",
+  "[ 5/2 → 11/4 | s:bd pan:0.5 pansplay:1 ]",
+  "[ 11/4 → 3/1 | s:hh pan:0.5 pansplay:1 ]",
+  "[ 3/1 → 13/4 | s:bd pan:0 pansplay:0 ]",
+  "[ 13/4 → 7/2 | s:hh pan:0 pansplay:0 ]",
+  "[ 7/2 → 15/4 | s:bd pan:0 pansplay:0 ]",
+  "[ 15/4 → 4/1 | s:hh pan:0 pansplay:0 ]",
+]
+`;
+
 exports[`runs examples > example "partials" example index 0 1`] = `
 [
   "[ 0/1 → 1/16 | s:user note:A3 partials:[1 0 1 0 0 1] ]",
@@ -7825,6 +8931,51 @@ exports[`runs examples > example "penv" example index 0 1`] = `
   "[ 1/1 → 2/1 | note:c penv:7 ]",
   "[ 2/1 → 3/1 | note:c penv:1 ]",
   "[ 3/1 → 4/1 | note:c penv:0.5 ]",
+]
+`;
+
+exports[`runs examples > example "per" example index 0 1`] = `
+[
+  "[ 0/1 → 1/7 | n:0 s:bd distort:3.5 ]",
+  "[ 1/7 → 3/14 | n:0 s:bd distort:7 ]",
+  "[ 3/14 → 2/7 | n:0 s:bd distort:7 ]",
+  "[ 2/7 → 3/7 | n:0 s:bd distort:3.5 ]",
+  "[ 3/7 → 1/2 | n:0 s:bd distort:7 ]",
+  "[ 1/2 → 4/7 | n:0 s:bd distort:7 ]",
+  "[ 4/7 → 5/7 | n:0 s:bd distort:3.5 ]",
+  "[ 5/7 → 17/21 | n:0 s:bd distort:5.25 ]",
+  "[ 17/21 → 19/21 | n:0 s:bd distort:5.25 ]",
+  "[ 19/21 → 1/1 | n:0 s:bd distort:5.25 ]",
+  "[ 1/1 → 8/7 | n:0 s:bd distort:3.5 ]",
+  "[ 8/7 → 17/14 | n:0 s:bd distort:7 ]",
+  "[ 17/14 → 9/7 | n:0 s:bd distort:7 ]",
+  "[ 9/7 → 10/7 | n:0 s:bd distort:3.5 ]",
+  "[ 10/7 → 3/2 | n:0 s:bd distort:7 ]",
+  "[ 3/2 → 11/7 | n:0 s:bd distort:7 ]",
+  "[ 11/7 → 12/7 | n:0 s:bd distort:3.5 ]",
+  "[ 12/7 → 38/21 | n:0 s:bd distort:5.25 ]",
+  "[ 38/21 → 40/21 | n:0 s:bd distort:5.25 ]",
+  "[ 40/21 → 2/1 | n:0 s:bd distort:5.25 ]",
+  "[ 2/1 → 15/7 | n:0 s:bd distort:3.5 ]",
+  "[ 15/7 → 31/14 | n:0 s:bd distort:7 ]",
+  "[ 31/14 → 16/7 | n:0 s:bd distort:7 ]",
+  "[ 16/7 → 17/7 | n:0 s:bd distort:3.5 ]",
+  "[ 17/7 → 5/2 | n:0 s:bd distort:7 ]",
+  "[ 5/2 → 18/7 | n:0 s:bd distort:7 ]",
+  "[ 18/7 → 19/7 | n:0 s:bd distort:3.5 ]",
+  "[ 19/7 → 59/21 | n:0 s:bd distort:5.25 ]",
+  "[ 59/21 → 61/21 | n:0 s:bd distort:5.25 ]",
+  "[ 61/21 → 3/1 | n:0 s:bd distort:5.25 ]",
+  "[ 3/1 → 22/7 | n:0 s:bd distort:3.5 ]",
+  "[ 22/7 → 45/14 | n:0 s:bd distort:7 ]",
+  "[ 45/14 → 23/7 | n:0 s:bd distort:7 ]",
+  "[ 23/7 → 24/7 | n:0 s:bd distort:3.5 ]",
+  "[ 24/7 → 7/2 | n:0 s:bd distort:7 ]",
+  "[ 7/2 → 25/7 | n:0 s:bd distort:7 ]",
+  "[ 25/7 → 26/7 | n:0 s:bd distort:3.5 ]",
+  "[ 26/7 → 80/21 | n:0 s:bd distort:5.25 ]",
+  "[ 80/21 → 82/21 | n:0 s:bd distort:5.25 ]",
+  "[ 82/21 → 4/1 | n:0 s:bd distort:5.25 ]",
 ]
 `;
 
@@ -8223,6 +9374,33 @@ exports[`runs examples > example "pickF" example index 0 1`] = `
 `;
 
 exports[`runs examples > example "pickF" example index 1 1`] = `
+[
+  "[ 0/1 → 1/8 | note:c2 s:square pan:0 ]",
+  "[ 1/8 → 1/4 | note:c2 s:square pan:1 ]",
+  "[ 3/8 → 1/2 | note:c2 s:square pan:0 ]",
+  "[ 1/2 → 9/16 | note:d2 s:square ]",
+  "[ 11/16 → 3/4 | note:d2 s:square ]",
+  "[ 7/8 → 15/16 | note:d2 s:square ]",
+  "[ 1/1 → 9/8 | note:d2 s:square cutoff:800 ]",
+  "[ 11/8 → 3/2 | note:d2 s:square cutoff:800 ]",
+  "[ 3/2 → 25/16 | note:d2 s:square ]",
+  "[ 27/16 → 7/4 | note:d2 s:square ]",
+  "[ 15/8 → 31/16 | note:d2 s:square ]",
+  "[ 2/1 → 17/8 | note:c2 s:square pan:0 ]",
+  "[ 17/8 → 9/4 | note:c2 s:square pan:1 ]",
+  "[ 19/8 → 5/2 | note:c2 s:square pan:0 ]",
+  "[ 5/2 → 41/16 | note:d2 s:square ]",
+  "[ 43/16 → 11/4 | note:d2 s:square ]",
+  "[ 23/8 → 47/16 | note:d2 s:square ]",
+  "[ 3/1 → 25/8 | note:d2 s:square cutoff:800 ]",
+  "[ 27/8 → 7/2 | note:d2 s:square cutoff:800 ]",
+  "[ 7/2 → 57/16 | note:d2 s:square ]",
+  "[ 59/16 → 15/4 | note:d2 s:square ]",
+  "[ 31/8 → 63/16 | note:d2 s:square ]",
+]
+`;
+
+exports[`runs examples > example "pickF" example index 2 1`] = `
 [
   "[ 0/1 → 1/8 | note:c2 s:square pan:0 ]",
   "[ 1/8 → 1/4 | note:c2 s:square pan:1 ]",
@@ -9101,6 +10279,43 @@ exports[`runs examples > example "ratio" example index 0 1`] = `
 ]
 `;
 
+exports[`runs examples > example "register" example index 0 1`] = `
+[
+  "[ 0/1 → 1/8 | s:saw velocity:0 cutoff:0 ]",
+  "[ 1/8 → 1/4 | s:saw velocity:0.6852155700325966 cutoff:548.1724560260773 ]",
+  "[ 1/4 → 3/8 | s:saw velocity:0.36975969187915325 cutoff:295.8077535033226 ]",
+  "[ 3/8 → 1/2 | s:saw velocity:0.40139251574873924 cutoff:321.1140125989914 ]",
+  "[ 1/2 → 5/8 | s:saw velocity:0.2604806162416935 cutoff:208.3844929933548 ]",
+  "[ 5/8 → 3/4 | s:saw velocity:0.1356358677148819 cutoff:108.50869417190552 ]",
+  "[ 3/4 → 7/8 | s:saw velocity:0.19582648016512394 cutoff:156.66118413209915 ]",
+  "[ 7/8 → 1/1 | s:saw velocity:0.3976310808211565 cutoff:318.1048646569252 ]",
+  "[ 1/1 → 9/8 | s:saw velocity:0.5195421651005745 cutoff:415.6337320804596 ]",
+  "[ 9/8 → 5/4 | s:saw velocity:0.6724895145744085 cutoff:537.9916116595268 ]",
+  "[ 5/4 → 11/8 | s:saw velocity:0.7287282031029463 cutoff:582.982562482357 ]",
+  "[ 11/8 → 3/2 | s:saw velocity:0.18280375190079212 cutoff:146.2430015206337 ]",
+  "[ 3/2 → 13/8 | s:saw velocity:0.6084080748260021 cutoff:486.7264598608017 ]",
+  "[ 13/8 → 7/4 | s:saw velocity:0.49675471149384975 cutoff:397.4037691950798 ]",
+  "[ 7/4 → 15/8 | s:saw velocity:0.20473789609968662 cutoff:163.7903168797493 ]",
+  "[ 15/8 → 2/1 | s:saw velocity:0.5945571791380644 cutoff:475.6457433104515 ]",
+  "[ 2/1 → 17/8 | s:saw velocity:0.9595271199941635 cutoff:767.6216959953308 ]",
+  "[ 17/8 → 9/4 | s:saw velocity:0.9033902939409018 cutoff:722.7122351527214 ]",
+  "[ 9/4 → 19/8 | s:saw velocity:0.34548251144587994 cutoff:276.38600915670395 ]",
+  "[ 19/8 → 5/2 | s:saw velocity:0.8365066405385733 cutoff:669.2053124308586 ]",
+  "[ 5/2 → 21/8 | s:saw velocity:0.45861607417464256 cutoff:366.89285933971405 ]",
+  "[ 21/8 → 11/4 | s:saw velocity:0.16019348427653313 cutoff:128.1547874212265 ]",
+  "[ 11/4 → 23/8 | s:saw velocity:0.6332327704876661 cutoff:506.5862163901329 ]",
+  "[ 23/8 → 3/1 | s:saw velocity:0.01625417172908783 cutoff:13.003337383270264 ]",
+  "[ 3/1 → 25/8 | s:saw velocity:0.21728911064565182 cutoff:173.83128851652145 ]",
+  "[ 25/8 → 13/4 | s:saw velocity:0.34324387833476067 cutoff:274.59510266780853 ]",
+  "[ 13/4 → 27/8 | s:saw velocity:0.9923650715500116 cutoff:793.8920572400093 ]",
+  "[ 27/8 → 7/2 | s:saw velocity:0.40869180113077164 cutoff:326.9534409046173 ]",
+  "[ 7/2 → 29/8 | s:saw velocity:0.40994881466031075 cutoff:327.9590517282486 ]",
+  "[ 29/8 → 15/4 | s:saw velocity:0.9391485787928104 cutoff:751.3188630342484 ]",
+  "[ 15/4 → 31/8 | s:saw velocity:0.8121673222631216 cutoff:649.7338578104973 ]",
+  "[ 31/8 → 4/1 | s:saw velocity:0.7361665386706591 cutoff:588.9332309365273 ]",
+]
+`;
+
 exports[`runs examples > example "release" example index 0 1`] = `
 [
   "[ 0/1 → 1/4 | note:c3 release:0 ]",
@@ -9722,42 +10937,6 @@ exports[`runs examples > example "samples" example index 1 1`] = `
 ]
 `;
 
-exports[`runs examples > example "samples" example index 2 1`] = `
-[
-  "[ 0/1 → 1/2 | s:noise ]",
-  "[ 1/2 → 3/4 | s:chimp n:0 ]",
-  "[ 3/4 → 1/1 | s:chimp n:0 ]",
-  "[ 1/1 → 3/2 | s:noise ]",
-  "[ 3/2 → 2/1 | s:chimp n:1 ]",
-  "[ 2/1 → 5/2 | s:noise ]",
-  "[ 5/2 → 11/4 | s:chimp n:0 ]",
-  "[ 11/4 → 3/1 | s:chimp n:0 ]",
-  "[ 3/1 → 7/2 | s:noise ]",
-  "[ 7/2 → 4/1 | s:chimp n:1 ]",
-]
-`;
-
-exports[`runs examples > example "samples" example index 3 1`] = `
-[
-  "[ 0/1 → 1/4 | s:chocolat ]",
-  "[ 1/4 → 1/2 | s:chocolat ]",
-  "[ 1/2 → 3/4 | s:chocolat ]",
-  "[ 3/4 → 1/1 | s:chocolat ]",
-  "[ 1/1 → 5/4 | s:chocolat ]",
-  "[ 5/4 → 3/2 | s:chocolat ]",
-  "[ 3/2 → 7/4 | s:chocolat ]",
-  "[ 7/4 → 2/1 | s:chocolat ]",
-  "[ 2/1 → 9/4 | s:chocolat ]",
-  "[ 9/4 → 5/2 | s:chocolat ]",
-  "[ 5/2 → 11/4 | s:chocolat ]",
-  "[ 11/4 → 3/1 | s:chocolat ]",
-  "[ 3/1 → 13/4 | s:chocolat ]",
-  "[ 13/4 → 7/2 | s:chocolat ]",
-  "[ 7/2 → 15/4 | s:chocolat ]",
-  "[ 15/4 → 4/1 | s:chocolat ]",
-]
-`;
-
 exports[`runs examples > example "saw" example index 0 1`] = `
 [
   "[ 0/1 → 1/8 | note:c3 clip:0 ]",
@@ -10204,6 +11383,18 @@ exports[`runs examples > example "scrub" example index 1 1`] = `
 ]
 `;
 
+exports[`runs examples > example "seed" example index 0 1`] = `
+[
+  "[ 0/1 → 1/4 | s:bd ]",
+  "[ 1/4 → 1/2 | s:bd ]",
+  "[ 1/2 → 3/4 | s:bd ]",
+  "[ 1/1 → 5/4 | s:bd ]",
+  "[ 7/4 → 2/1 | s:bd ]",
+  "[ 9/4 → 5/2 | s:bd ]",
+  "[ 11/4 → 3/1 | s:bd ]",
+]
+`;
+
 exports[`runs examples > example "segment" example index 0 1`] = `
 [
   "[ 0/1 → 1/24 | note:40 ]",
@@ -10384,6 +11575,114 @@ exports[`runs examples > example "seqPLoop" example index 0 1`] = `
   "[ 3/1 → 25/8 | s:bd ]",
   "[ 27/8 → 7/2 | s:bd ]",
   "[ 15/4 → 31/8 | s:bd ]",
+]
+`;
+
+exports[`runs examples > example "set" example index 0 1`] = `
+[
+  "[ 0/1 → 1/4 | note:c s:triangle ]",
+  "[ 1/4 → 1/2 | note:a s:triangle ]",
+  "[ 1/2 → 3/4 | note:f s:triangle ]",
+  "[ 3/4 → 1/1 | note:e s:triangle ]",
+  "[ 1/1 → 5/4 | note:c s:triangle ]",
+  "[ 5/4 → 3/2 | note:a s:triangle ]",
+  "[ 3/2 → 7/4 | note:f s:triangle ]",
+  "[ 7/4 → 2/1 | note:e s:triangle ]",
+  "[ 2/1 → 9/4 | note:c s:triangle ]",
+  "[ 9/4 → 5/2 | note:a s:triangle ]",
+  "[ 5/2 → 11/4 | note:f s:triangle ]",
+  "[ 11/4 → 3/1 | note:e s:triangle ]",
+  "[ 3/1 → 13/4 | note:c s:triangle ]",
+  "[ 13/4 → 7/2 | note:a s:triangle ]",
+  "[ 7/2 → 15/4 | note:f s:triangle ]",
+  "[ 15/4 → 4/1 | note:e s:triangle ]",
+]
+`;
+
+exports[`runs examples > example "setDefaultJoin" example index 0 1`] = `
+[
+  "[ 0/1 → 1/4 | s:saw velocity:1 note:F delay:0 ]",
+  "[ 1/4 → 1/3 | s:saw velocity:1 note:A delay:0 ]",
+  "[ 1/3 → 1/2 | s:saw velocity:1 note:A delay:0.2 ]",
+  "[ 1/2 → 2/3 | s:saw velocity:0.5 note:C delay:0.2 ]",
+  "[ 2/3 → 3/4 | s:saw velocity:0.5 note:C delay:0.3 ]",
+  "[ 3/4 → 1/1 | s:saw velocity:0.5 note:E delay:0.3 ]",
+  "[ 1/1 → 5/4 | s:saw velocity:1 note:F delay:0 ]",
+  "[ 5/4 → 4/3 | s:saw velocity:1 note:A delay:0 ]",
+  "[ 4/3 → 3/2 | s:saw velocity:1 note:A delay:0.2 ]",
+  "[ 3/2 → 5/3 | s:saw velocity:0.5 note:C delay:0.2 ]",
+  "[ 5/3 → 7/4 | s:saw velocity:0.5 note:C delay:0.3 ]",
+  "[ 7/4 → 2/1 | s:saw velocity:0.5 note:E delay:0.3 ]",
+  "[ 2/1 → 9/4 | s:saw velocity:1 note:F delay:0 ]",
+  "[ 9/4 → 7/3 | s:saw velocity:1 note:A delay:0 ]",
+  "[ 7/3 → 5/2 | s:saw velocity:1 note:A delay:0.2 ]",
+  "[ 5/2 → 8/3 | s:saw velocity:0.5 note:C delay:0.2 ]",
+  "[ 8/3 → 11/4 | s:saw velocity:0.5 note:C delay:0.3 ]",
+  "[ 11/4 → 3/1 | s:saw velocity:0.5 note:E delay:0.3 ]",
+  "[ 3/1 → 13/4 | s:saw velocity:1 note:F delay:0 ]",
+  "[ 13/4 → 10/3 | s:saw velocity:1 note:A delay:0 ]",
+  "[ 10/3 → 7/2 | s:saw velocity:1 note:A delay:0.2 ]",
+  "[ 7/2 → 11/3 | s:saw velocity:0.5 note:C delay:0.2 ]",
+  "[ 11/3 → 15/4 | s:saw velocity:0.5 note:C delay:0.3 ]",
+  "[ 15/4 → 4/1 | s:saw velocity:0.5 note:E delay:0.3 ]",
+]
+`;
+
+exports[`runs examples > example "setGainCurve" example index 0 1`] = `
+[
+  "[ 0/1 → 1/4 | s:bd gain:0.5 ]",
+  "[ 1/4 → 1/2 | s:bd gain:0.5 ]",
+  "[ 1/2 → 3/4 | s:bd gain:0.5 ]",
+  "[ 3/4 → 1/1 | s:bd gain:0.5 ]",
+  "[ 1/1 → 5/4 | s:bd gain:0.5 ]",
+  "[ 5/4 → 3/2 | s:bd gain:0.5 ]",
+  "[ 3/2 → 7/4 | s:bd gain:0.5 ]",
+  "[ 7/4 → 2/1 | s:bd gain:0.5 ]",
+  "[ 2/1 → 9/4 | s:bd gain:0.5 ]",
+  "[ 9/4 → 5/2 | s:bd gain:0.5 ]",
+  "[ 5/2 → 11/4 | s:bd gain:0.5 ]",
+  "[ 11/4 → 3/1 | s:bd gain:0.5 ]",
+  "[ 3/1 → 13/4 | s:bd gain:0.5 ]",
+  "[ 13/4 → 7/2 | s:bd gain:0.5 ]",
+  "[ 7/2 → 15/4 | s:bd gain:0.5 ]",
+  "[ 15/4 → 4/1 | s:bd gain:0.5 ]",
+]
+`;
+
+exports[`runs examples > example "setMaxPolyphony" example index 0 1`] = `
+[
+  "[ 0/1 → 1/8 | note:C#3 room:1 release:4 gain:0.5 ]",
+  "[ 1/8 → 1/4 | note:E5 room:1 release:4 gain:0.5 ]",
+  "[ 1/4 → 3/8 | note:D#4 room:1 release:4 gain:0.5 ]",
+  "[ 3/8 → 1/2 | note:E4 room:1 release:4 gain:0.5 ]",
+  "[ 1/2 → 5/8 | note:B3 room:1 release:4 gain:0.5 ]",
+  "[ 5/8 → 3/4 | note:F#3 room:1 release:4 gain:0.5 ]",
+  "[ 3/4 → 7/8 | note:G#3 room:1 release:4 gain:0.5 ]",
+  "[ 7/8 → 1/1 | note:E4 room:1 release:4 gain:0.5 ]",
+  "[ 1/1 → 9/8 | note:A4 room:1 release:4 gain:0.5 ]",
+  "[ 9/8 → 5/4 | note:E5 room:1 release:4 gain:0.5 ]",
+  "[ 5/4 → 11/8 | note:F#5 room:1 release:4 gain:0.5 ]",
+  "[ 11/8 → 3/2 | note:G#3 room:1 release:4 gain:0.5 ]",
+  "[ 3/2 → 13/8 | note:C#5 room:1 release:4 gain:0.5 ]",
+  "[ 13/8 → 7/4 | note:G#4 room:1 release:4 gain:0.5 ]",
+  "[ 7/4 → 15/8 | note:G#3 room:1 release:4 gain:0.5 ]",
+  "[ 15/8 → 2/1 | note:C#5 room:1 release:4 gain:0.5 ]",
+  "[ 2/1 → 17/8 | note:E6 room:1 release:4 gain:0.5 ]",
+  "[ 17/8 → 9/4 | note:C#6 room:1 release:4 gain:0.5 ]",
+  "[ 9/4 → 19/8 | note:D#4 room:1 release:4 gain:0.5 ]",
+  "[ 19/8 → 5/2 | note:B5 room:1 release:4 gain:0.5 ]",
+  "[ 5/2 → 21/8 | note:G#4 room:1 release:4 gain:0.5 ]",
+  "[ 21/8 → 11/4 | note:F#3 room:1 release:4 gain:0.5 ]",
+  "[ 11/4 → 23/8 | note:D#5 room:1 release:4 gain:0.5 ]",
+  "[ 23/8 → 3/1 | note:C#3 room:1 release:4 gain:0.5 ]",
+  "[ 3/1 → 25/8 | note:A3 room:1 release:4 gain:0.5 ]",
+  "[ 25/8 → 13/4 | note:D#4 room:1 release:4 gain:0.5 ]",
+  "[ 13/4 → 27/8 | note:E6 room:1 release:4 gain:0.5 ]",
+  "[ 27/8 → 7/2 | note:E4 room:1 release:4 gain:0.5 ]",
+  "[ 7/2 → 29/8 | note:E4 room:1 release:4 gain:0.5 ]",
+  "[ 29/8 → 15/4 | note:D#6 room:1 release:4 gain:0.5 ]",
+  "[ 15/4 → 31/8 | note:A5 room:1 release:4 gain:0.5 ]",
+  "[ 31/8 → 4/1 | note:F#5 room:1 release:4 gain:0.5 ]",
 ]
 `;
 
@@ -11428,18 +12727,10 @@ exports[`runs examples > example "stepcat" example index 1 1`] = `
 
 exports[`runs examples > example "stretch" example index 0 1`] = `
 [
-  "[ (0/1 → 1/3) ⇝ 1/1 | s:gm_flute stretch:1 ]",
-  "[ 0/1 ⇜ (1/3 → 2/3) ⇝ 1/1 | s:gm_flute stretch:2 ]",
-  "[ 0/1 ⇜ (2/3 → 1/1) | s:gm_flute stretch:0.5 ]",
-  "[ (1/1 → 4/3) ⇝ 2/1 | s:gm_flute stretch:1 ]",
-  "[ 1/1 ⇜ (4/3 → 5/3) ⇝ 2/1 | s:gm_flute stretch:2 ]",
-  "[ 1/1 ⇜ (5/3 → 2/1) | s:gm_flute stretch:0.5 ]",
-  "[ (2/1 → 7/3) ⇝ 3/1 | s:gm_flute stretch:1 ]",
-  "[ 2/1 ⇜ (7/3 → 8/3) ⇝ 3/1 | s:gm_flute stretch:2 ]",
-  "[ 2/1 ⇜ (8/3 → 3/1) | s:gm_flute stretch:0.5 ]",
-  "[ (3/1 → 10/3) ⇝ 4/1 | s:gm_flute stretch:1 ]",
-  "[ 3/1 ⇜ (10/3 → 11/3) ⇝ 4/1 | s:gm_flute stretch:2 ]",
-  "[ 3/1 ⇜ (11/3 → 4/1) | s:gm_flute stretch:0.5 ]",
+  "[ 0/1 → 1/1 | s:gm_flute stretch:2 ]",
+  "[ 1/1 → 2/1 | s:gm_flute stretch:1 ]",
+  "[ 2/1 → 3/1 | s:gm_flute stretch:0 ]",
+  "[ 3/1 → 4/1 | s:gm_flute stretch:-2 ]",
 ]
 `;
 
@@ -11762,6 +13053,75 @@ exports[`runs examples > example "sysexid" example index 0 1`] = `
 ]
 `;
 
+exports[`runs examples > example "tag" example index 0 1`] = `
+[
+  "[ 0/1 → 1/16 | s:square note:F1 cutoff:40 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 1/16 → 1/8 | s:square note:F1 cutoff:41.25 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 1/8 → 3/16 | s:square note:F1 cutoff:42.5 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 3/16 → 1/4 | s:square note:F1 cutoff:43.75 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 1/4 → 5/16 | s:square note:F1 cutoff:45 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 5/16 → 3/8 | s:square note:F1 cutoff:46.25 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 3/8 → 7/16 | s:square note:F1 cutoff:47.5 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 7/16 → 1/2 | s:square note:F1 cutoff:48.75 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 1/2 → 9/16 | s:square note:F1 cutoff:50 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 9/16 → 5/8 | s:square note:F1 cutoff:51.25 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 5/8 → 11/16 | s:square note:F1 cutoff:52.5 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 11/16 → 3/4 | s:square note:F1 cutoff:53.75 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 3/4 → 13/16 | s:square note:F1 cutoff:55 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 13/16 → 7/8 | s:square note:F1 cutoff:56.25 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 7/8 → 15/16 | s:square note:F1 cutoff:57.5 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 15/16 → 1/1 | s:square note:F1 cutoff:58.75 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 1/1 → 17/16 | s:saw note:F2 cutoff:60 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 17/16 → 9/8 | s:saw note:F2 cutoff:61.25 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 9/8 → 19/16 | s:saw note:F2 cutoff:62.5 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 19/16 → 5/4 | s:saw note:F2 cutoff:63.75 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 5/4 → 21/16 | s:saw note:F2 cutoff:65 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 21/16 → 11/8 | s:saw note:F2 cutoff:66.25 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 11/8 → 23/16 | s:saw note:F2 cutoff:67.5 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 23/16 → 3/2 | s:saw note:F2 cutoff:68.75 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 3/2 → 25/16 | s:saw note:F2 cutoff:70 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 25/16 → 13/8 | s:saw note:F2 cutoff:71.25 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 13/8 → 27/16 | s:saw note:F2 cutoff:72.5 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 27/16 → 7/4 | s:saw note:F2 cutoff:73.75 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 7/4 → 29/16 | s:saw note:F2 cutoff:75 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 29/16 → 15/8 | s:saw note:F2 cutoff:76.25 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 15/8 → 31/16 | s:saw note:F2 cutoff:77.5 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 31/16 → 2/1 | s:saw note:F2 cutoff:78.75 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 2/1 → 33/16 | s:saw note:F1 cutoff:80 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 33/16 → 17/8 | s:saw note:F1 cutoff:78.75 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 17/8 → 35/16 | s:saw note:F1 cutoff:77.5 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 35/16 → 9/4 | s:saw note:F1 cutoff:76.25 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 9/4 → 37/16 | s:saw note:F1 cutoff:75 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 37/16 → 19/8 | s:saw note:F1 cutoff:73.75 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 19/8 → 39/16 | s:saw note:F1 cutoff:72.5 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 39/16 → 5/2 | s:saw note:F1 cutoff:71.25 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 5/2 → 41/16 | s:saw note:F1 cutoff:70 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 41/16 → 21/8 | s:saw note:F1 cutoff:68.75 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 21/8 → 43/16 | s:saw note:F1 cutoff:67.5 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 43/16 → 11/4 | s:saw note:F1 cutoff:66.25 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 11/4 → 45/16 | s:saw note:F1 cutoff:65 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 45/16 → 23/8 | s:saw note:F1 cutoff:63.75 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 23/8 → 47/16 | s:saw note:F1 cutoff:62.5 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 47/16 → 3/1 | s:saw note:F1 cutoff:61.25 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 3/1 → 49/16 | s:square note:F1 cutoff:60 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 49/16 → 25/8 | s:square note:F1 cutoff:58.75 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 25/8 → 51/16 | s:square note:F1 cutoff:57.5 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 51/16 → 13/4 | s:square note:F1 cutoff:56.25 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 13/4 → 53/16 | s:square note:F1 cutoff:55 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 53/16 → 27/8 | s:square note:F1 cutoff:53.75 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 27/8 → 55/16 | s:square note:F1 cutoff:52.5 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 55/16 → 7/2 | s:square note:F1 cutoff:51.25 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 7/2 → 57/16 | s:square note:F1 cutoff:50 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 57/16 → 29/8 | s:square note:F1 cutoff:48.75 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 29/8 → 59/16 | s:square note:F1 cutoff:47.5 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 59/16 → 15/4 | s:square note:F1 cutoff:46.25 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 15/4 → 61/16 | s:square note:F1 cutoff:45 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 61/16 → 31/8 | s:square note:F1 cutoff:43.75 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 31/8 → 63/16 | s:square note:F1 cutoff:42.5 lpenv:5 resonance:4 lpdecay:0.15 ]",
+  "[ 63/16 → 4/1 | s:square note:F1 cutoff:41.25 lpenv:5 resonance:4 lpdecay:0.15 ]",
+]
+`;
+
 exports[`runs examples > example "take" example index 0 1`] = `
 [
   "[ 0/1 → 1/2 | s:bd ]",
@@ -11871,6 +13231,84 @@ exports[`runs examples > example "tour" example index 0 1`] = `
   "[ 15/4 → 61/16 | note:c s:folkharp ]",
   "[ 61/16 → 31/8 | note:g s:folkharp ]",
   "[ 31/8 → 4/1 | note:e s:folkharp ]",
+]
+`;
+
+exports[`runs examples > example "transient" example index 0 1`] = `
+[
+  "[ 0/1 → 1/1 | s:bd transient:-1 ]",
+  "[ 1/1 → 2/1 | s:bd transient:-0.5 ]",
+  "[ 2/1 → 3/1 | s:bd transient:0 ]",
+  "[ 3/1 → 4/1 | s:bd transient:0.5 ]",
+]
+`;
+
+exports[`runs examples > example "transient" example index 1 1`] = `
+[
+  "[ 0/1 → 1/16 | s:hh bank:tr909 transient:-1 transsustain:1 ]",
+  "[ 1/16 → 1/8 | s:hh bank:tr909 transient:-1 transsustain:1 ]",
+  "[ 1/8 → 3/16 | s:hh bank:tr909 transient:-1 transsustain:1 ]",
+  "[ 3/16 → 1/4 | s:hh bank:tr909 transient:-1 transsustain:1 ]",
+  "[ 1/4 → 5/16 | s:hh bank:tr909 transient:-1 transsustain:1 ]",
+  "[ 5/16 → 3/8 | s:hh bank:tr909 transient:-1 transsustain:1 ]",
+  "[ 3/8 → 7/16 | s:hh bank:tr909 transient:-1 transsustain:1 ]",
+  "[ 7/16 → 1/2 | s:hh bank:tr909 transient:-1 transsustain:1 ]",
+  "[ 1/2 → 9/16 | s:hh bank:tr909 transient:-1 transsustain:1 ]",
+  "[ 9/16 → 5/8 | s:hh bank:tr909 transient:-1 transsustain:1 ]",
+  "[ 5/8 → 11/16 | s:hh bank:tr909 transient:-1 transsustain:1 ]",
+  "[ 11/16 → 3/4 | s:hh bank:tr909 transient:-1 transsustain:1 ]",
+  "[ 3/4 → 13/16 | s:hh bank:tr909 transient:-1 transsustain:1 ]",
+  "[ 13/16 → 7/8 | s:hh bank:tr909 transient:-1 transsustain:1 ]",
+  "[ 7/8 → 15/16 | s:hh bank:tr909 transient:-1 transsustain:1 ]",
+  "[ 15/16 → 1/1 | s:hh bank:tr909 transient:-1 transsustain:1 ]",
+  "[ 1/1 → 17/16 | s:hh bank:tr909 transient:1 transsustain:-1 ]",
+  "[ 17/16 → 9/8 | s:hh bank:tr909 transient:1 transsustain:-1 ]",
+  "[ 9/8 → 19/16 | s:hh bank:tr909 transient:1 transsustain:-1 ]",
+  "[ 19/16 → 5/4 | s:hh bank:tr909 transient:1 transsustain:-1 ]",
+  "[ 5/4 → 21/16 | s:hh bank:tr909 transient:1 transsustain:-1 ]",
+  "[ 21/16 → 11/8 | s:hh bank:tr909 transient:1 transsustain:-1 ]",
+  "[ 11/8 → 23/16 | s:hh bank:tr909 transient:1 transsustain:-1 ]",
+  "[ 23/16 → 3/2 | s:hh bank:tr909 transient:1 transsustain:-1 ]",
+  "[ 3/2 → 25/16 | s:hh bank:tr909 transient:1 transsustain:-1 ]",
+  "[ 25/16 → 13/8 | s:hh bank:tr909 transient:1 transsustain:-1 ]",
+  "[ 13/8 → 27/16 | s:hh bank:tr909 transient:1 transsustain:-1 ]",
+  "[ 27/16 → 7/4 | s:hh bank:tr909 transient:1 transsustain:-1 ]",
+  "[ 7/4 → 29/16 | s:hh bank:tr909 transient:1 transsustain:-1 ]",
+  "[ 29/16 → 15/8 | s:hh bank:tr909 transient:1 transsustain:-1 ]",
+  "[ 15/8 → 31/16 | s:hh bank:tr909 transient:1 transsustain:-1 ]",
+  "[ 31/16 → 2/1 | s:hh bank:tr909 transient:1 transsustain:-1 ]",
+  "[ 2/1 → 33/16 | s:hh bank:tr909 transient:-1 transsustain:1 ]",
+  "[ 33/16 → 17/8 | s:hh bank:tr909 transient:-1 transsustain:1 ]",
+  "[ 17/8 → 35/16 | s:hh bank:tr909 transient:-1 transsustain:1 ]",
+  "[ 35/16 → 9/4 | s:hh bank:tr909 transient:-1 transsustain:1 ]",
+  "[ 9/4 → 37/16 | s:hh bank:tr909 transient:-1 transsustain:1 ]",
+  "[ 37/16 → 19/8 | s:hh bank:tr909 transient:-1 transsustain:1 ]",
+  "[ 19/8 → 39/16 | s:hh bank:tr909 transient:-1 transsustain:1 ]",
+  "[ 39/16 → 5/2 | s:hh bank:tr909 transient:-1 transsustain:1 ]",
+  "[ 5/2 → 41/16 | s:hh bank:tr909 transient:-1 transsustain:1 ]",
+  "[ 41/16 → 21/8 | s:hh bank:tr909 transient:-1 transsustain:1 ]",
+  "[ 21/8 → 43/16 | s:hh bank:tr909 transient:-1 transsustain:1 ]",
+  "[ 43/16 → 11/4 | s:hh bank:tr909 transient:-1 transsustain:1 ]",
+  "[ 11/4 → 45/16 | s:hh bank:tr909 transient:-1 transsustain:1 ]",
+  "[ 45/16 → 23/8 | s:hh bank:tr909 transient:-1 transsustain:1 ]",
+  "[ 23/8 → 47/16 | s:hh bank:tr909 transient:-1 transsustain:1 ]",
+  "[ 47/16 → 3/1 | s:hh bank:tr909 transient:-1 transsustain:1 ]",
+  "[ 3/1 → 49/16 | s:hh bank:tr909 transient:1 transsustain:-1 ]",
+  "[ 49/16 → 25/8 | s:hh bank:tr909 transient:1 transsustain:-1 ]",
+  "[ 25/8 → 51/16 | s:hh bank:tr909 transient:1 transsustain:-1 ]",
+  "[ 51/16 → 13/4 | s:hh bank:tr909 transient:1 transsustain:-1 ]",
+  "[ 13/4 → 53/16 | s:hh bank:tr909 transient:1 transsustain:-1 ]",
+  "[ 53/16 → 27/8 | s:hh bank:tr909 transient:1 transsustain:-1 ]",
+  "[ 27/8 → 55/16 | s:hh bank:tr909 transient:1 transsustain:-1 ]",
+  "[ 55/16 → 7/2 | s:hh bank:tr909 transient:1 transsustain:-1 ]",
+  "[ 7/2 → 57/16 | s:hh bank:tr909 transient:1 transsustain:-1 ]",
+  "[ 57/16 → 29/8 | s:hh bank:tr909 transient:1 transsustain:-1 ]",
+  "[ 29/8 → 59/16 | s:hh bank:tr909 transient:1 transsustain:-1 ]",
+  "[ 59/16 → 15/4 | s:hh bank:tr909 transient:1 transsustain:-1 ]",
+  "[ 15/4 → 61/16 | s:hh bank:tr909 transient:1 transsustain:-1 ]",
+  "[ 61/16 → 31/8 | s:hh bank:tr909 transient:1 transsustain:-1 ]",
+  "[ 31/8 → 63/16 | s:hh bank:tr909 transient:1 transsustain:-1 ]",
+  "[ 63/16 → 4/1 | s:hh bank:tr909 transient:1 transsustain:-1 ]",
 ]
 `;
 
@@ -12367,6 +13805,97 @@ exports[`runs examples > example "tri" example index 0 1`] = `
 ]
 `;
 
+exports[`runs examples > example "tune" example index 0 1`] = `
+[
+  "[ 0/1 → 1/6 | freq:{i:0} ]",
+  "[ 1/6 → 1/3 | freq:{i:1} ]",
+  "[ 1/3 → 1/2 | freq:{i:2} ]",
+  "[ 1/2 → 2/3 | freq:{i:3} ]",
+  "[ 2/3 → 5/6 | freq:{i:4} ]",
+  "[ 5/6 → 1/1 | freq:{i:5} ]",
+  "[ 1/1 → 7/6 | freq:{i:0} ]",
+  "[ 7/6 → 4/3 | freq:{i:1} ]",
+  "[ 4/3 → 3/2 | freq:{i:2} ]",
+  "[ 3/2 → 5/3 | freq:{i:3} ]",
+  "[ 5/3 → 11/6 | freq:{i:4} ]",
+  "[ 11/6 → 2/1 | freq:{i:5} ]",
+  "[ 2/1 → 13/6 | freq:{i:0} ]",
+  "[ 13/6 → 7/3 | freq:{i:1} ]",
+  "[ 7/3 → 5/2 | freq:{i:2} ]",
+  "[ 5/2 → 8/3 | freq:{i:3} ]",
+  "[ 8/3 → 17/6 | freq:{i:4} ]",
+  "[ 17/6 → 3/1 | freq:{i:5} ]",
+  "[ 3/1 → 19/6 | freq:{i:0} ]",
+  "[ 19/6 → 10/3 | freq:{i:1} ]",
+  "[ 10/3 → 7/2 | freq:{i:2} ]",
+  "[ 7/2 → 11/3 | freq:{i:3} ]",
+  "[ 11/3 → 23/6 | freq:{i:4} ]",
+  "[ 23/6 → 4/1 | freq:{i:5} ]",
+]
+`;
+
+exports[`runs examples > example "tune" example index 1 1`] = `
+[
+  "[ 0/1 → 1/12 | freq:{i:4} clip:0.5 room:1 ]",
+  "[ 1/12 → 1/6 | freq:{i:8} clip:0.5 room:1 ]",
+  "[ 1/6 → 1/4 | freq:{i:9} clip:0.5 room:1 ]",
+  "[ 1/4 → 1/3 | freq:{i:10} clip:0.5 room:1 ]",
+  "[ 1/2 → 7/12 | freq:{i:5} clip:0.5 room:1 ]",
+  "[ 7/12 → 2/3 | freq:{i:7} clip:0.5 room:1 ]",
+  "[ 2/3 → 3/4 | freq:{i:9} clip:0.5 room:1 ]",
+  "[ 3/4 → 5/6 | freq:{i:11} clip:0.5 room:1 ]",
+  "[ 1/1 → 13/12 | freq:{i:4} clip:0.5 room:1 ]",
+  "[ 13/12 → 7/6 | freq:{i:8} clip:0.5 room:1 ]",
+  "[ 7/6 → 5/4 | freq:{i:9} clip:0.5 room:1 ]",
+  "[ 5/4 → 4/3 | freq:{i:10} clip:0.5 room:1 ]",
+  "[ 3/2 → 19/12 | freq:{i:5} clip:0.5 room:1 ]",
+  "[ 19/12 → 5/3 | freq:{i:7} clip:0.5 room:1 ]",
+  "[ 5/3 → 7/4 | freq:{i:9} clip:0.5 room:1 ]",
+  "[ 7/4 → 11/6 | freq:{i:11} clip:0.5 room:1 ]",
+  "[ 2/1 → 25/12 | freq:{i:4} clip:0.5 room:1 ]",
+  "[ 25/12 → 13/6 | freq:{i:8} clip:0.5 room:1 ]",
+  "[ 13/6 → 9/4 | freq:{i:9} clip:0.5 room:1 ]",
+  "[ 9/4 → 7/3 | freq:{i:10} clip:0.5 room:1 ]",
+  "[ 5/2 → 31/12 | freq:{i:5} clip:0.5 room:1 ]",
+  "[ 31/12 → 8/3 | freq:{i:7} clip:0.5 room:1 ]",
+  "[ 8/3 → 11/4 | freq:{i:9} clip:0.5 room:1 ]",
+  "[ 11/4 → 17/6 | freq:{i:11} clip:0.5 room:1 ]",
+  "[ 3/1 → 37/12 | freq:{i:4} clip:0.5 room:1 ]",
+  "[ 37/12 → 19/6 | freq:{i:8} clip:0.5 room:1 ]",
+  "[ 19/6 → 13/4 | freq:{i:9} clip:0.5 room:1 ]",
+  "[ 13/4 → 10/3 | freq:{i:10} clip:0.5 room:1 ]",
+  "[ 7/2 → 43/12 | freq:{i:5} clip:0.5 room:1 ]",
+  "[ 43/12 → 11/3 | freq:{i:7} clip:0.5 room:1 ]",
+  "[ 11/3 → 15/4 | freq:{i:9} clip:0.5 room:1 ]",
+  "[ 15/4 → 23/6 | freq:{i:11} clip:0.5 room:1 ]",
+]
+`;
+
+exports[`runs examples > example "tune" example index 2 1`] = `
+[
+  "[ 0/1 → 1/5 | freq:{i:0} ]",
+  "[ 1/5 → 2/5 | freq:{i:1} ]",
+  "[ 2/5 → 3/5 | freq:{i:2} ]",
+  "[ 3/5 → 4/5 | freq:{i:3} ]",
+  "[ 4/5 → 1/1 | freq:{i:4} ]",
+  "[ 1/1 → 6/5 | freq:{i:0} ]",
+  "[ 6/5 → 7/5 | freq:{i:1} ]",
+  "[ 7/5 → 8/5 | freq:{i:2} ]",
+  "[ 8/5 → 9/5 | freq:{i:3} ]",
+  "[ 9/5 → 2/1 | freq:{i:4} ]",
+  "[ 2/1 → 11/5 | freq:{i:0} ]",
+  "[ 11/5 → 12/5 | freq:{i:1} ]",
+  "[ 12/5 → 13/5 | freq:{i:2} ]",
+  "[ 13/5 → 14/5 | freq:{i:3} ]",
+  "[ 14/5 → 3/1 | freq:{i:4} ]",
+  "[ 3/1 → 16/5 | freq:{i:0} ]",
+  "[ 16/5 → 17/5 | freq:{i:1} ]",
+  "[ 17/5 → 18/5 | freq:{i:2} ]",
+  "[ 18/5 → 19/5 | freq:{i:3} ]",
+  "[ 19/5 → 4/1 | freq:{i:4} ]",
+]
+`;
+
 exports[`runs examples > example "undegrade" example index 0 1`] = `
 [
   "[ 0/1 → 1/8 | s:hh ]",
@@ -12582,6 +14111,75 @@ exports[`runs examples > example "unit" example index 0 1`] = `
   "[ 13/4 → 7/2 | speed:2 s:bd unit:c ]",
   "[ 7/2 → 15/4 | speed:0.5 s:bd unit:c ]",
   "[ 15/4 → 4/1 | speed:3 s:bd unit:c ]",
+]
+`;
+
+exports[`runs examples > example "useRNG" example index 0 1`] = `
+[
+  "[ 0/1 → 1/16 | note:D8 ]",
+  "[ 1/16 → 1/8 | note:Bb7 ]",
+  "[ 1/8 → 3/16 | note:Ab6 ]",
+  "[ 3/16 → 1/4 | note:D5 ]",
+  "[ 1/4 → 5/16 | note:Ab9 ]",
+  "[ 5/16 → 3/8 | note:D3 ]",
+  "[ 3/8 → 7/16 | note:G5 ]",
+  "[ 7/16 → 1/2 | note:G3 ]",
+  "[ 1/2 → 9/16 | note:Ab3 ]",
+  "[ 9/16 → 5/8 | note:Eb6 ]",
+  "[ 5/8 → 11/16 | note:Eb6 ]",
+  "[ 11/16 → 3/4 | note:Eb5 ]",
+  "[ 3/4 → 13/16 | note:G7 ]",
+  "[ 13/16 → 7/8 | note:Bb5 ]",
+  "[ 7/8 → 15/16 | note:D3 ]",
+  "[ 15/16 → 1/1 | note:Eb7 ]",
+  "[ 1/1 → 17/16 | note:Eb9 ]",
+  "[ 17/16 → 9/8 | note:G8 ]",
+  "[ 9/8 → 19/16 | note:Ab3 ]",
+  "[ 19/16 → 5/4 | note:Ab5 ]",
+  "[ 5/4 → 21/16 | note:C10 ]",
+  "[ 21/16 → 11/8 | note:C7 ]",
+  "[ 11/8 → 23/16 | note:G5 ]",
+  "[ 23/16 → 3/2 | note:Ab7 ]",
+  "[ 3/2 → 25/16 | note:G6 ]",
+  "[ 25/16 → 13/8 | note:Bb6 ]",
+  "[ 13/8 → 27/16 | note:Eb9 ]",
+  "[ 27/16 → 7/4 | note:G9 ]",
+  "[ 7/4 → 29/16 | note:G7 ]",
+  "[ 29/16 → 15/8 | note:C10 ]",
+  "[ 15/8 → 31/16 | note:Eb3 ]",
+  "[ 31/16 → 2/1 | note:Ab7 ]",
+  "[ 2/1 → 33/16 | note:F6 ]",
+  "[ 33/16 → 17/8 | note:C5 ]",
+  "[ 17/8 → 35/16 | note:Ab4 ]",
+  "[ 35/16 → 9/4 | note:G5 ]",
+  "[ 9/4 → 37/16 | note:C9 ]",
+  "[ 37/16 → 19/8 | note:Eb6 ]",
+  "[ 19/8 → 39/16 | note:C9 ]",
+  "[ 39/16 → 5/2 | note:Eb9 ]",
+  "[ 5/2 → 41/16 | note:D5 ]",
+  "[ 41/16 → 21/8 | note:F5 ]",
+  "[ 21/8 → 43/16 | note:F9 ]",
+  "[ 43/16 → 11/4 | note:Bb7 ]",
+  "[ 11/4 → 45/16 | note:Ab6 ]",
+  "[ 45/16 → 23/8 | note:Bb9 ]",
+  "[ 23/8 → 47/16 | note:C8 ]",
+  "[ 47/16 → 3/1 | note:Eb5 ]",
+  "[ 3/1 → 49/16 | note:F3 ]",
+  "[ 49/16 → 25/8 | note:G4 ]",
+  "[ 25/8 → 51/16 | note:D7 ]",
+  "[ 51/16 → 13/4 | note:D4 ]",
+  "[ 13/4 → 53/16 | note:F8 ]",
+  "[ 53/16 → 27/8 | note:C7 ]",
+  "[ 27/8 → 55/16 | note:Ab5 ]",
+  "[ 55/16 → 7/2 | note:Ab3 ]",
+  "[ 7/2 → 57/16 | note:F9 ]",
+  "[ 57/16 → 29/8 | note:D8 ]",
+  "[ 29/8 → 59/16 | note:F5 ]",
+  "[ 59/16 → 15/4 | note:Eb9 ]",
+  "[ 15/4 → 61/16 | note:Bb4 ]",
+  "[ 61/16 → 31/8 | note:C6 ]",
+  "[ 31/8 → 63/16 | note:C4 ]",
+  "[ 63/16 → 4/1 | note:G8 ]",
 ]
 `;
 
@@ -13071,6 +14669,76 @@ exports[`runs examples > example "when" example index 0 1`] = `
 
 exports[`runs examples > example "whenKey" example index 0 1`] = `[]`;
 
+exports[`runs examples > example "withBase" example index 0 1`] = `
+[
+  "[ 0/1 → 1/12 | freq:220 ]",
+  "[ 1/12 → 1/6 | freq:293.3333333 ]",
+  "[ 1/6 → 1/4 | freq:302.5 ]",
+  "[ 1/4 → 1/3 | freq:320 ]",
+  "[ 1/3 → 1/2 | freq:320 ]",
+  "[ 1/2 → 2/3 | freq:330 ]",
+  "[ 2/3 → 3/4 | freq:330 ]",
+  "[ 3/4 → 5/6 | freq:320 ]",
+  "[ 5/6 → 11/12 | freq:302.5 ]",
+  "[ 11/12 → 1/1 | freq:293.3333333 ]",
+  "[ 1/1 → 13/12 | freq:300 ]",
+  "[ 13/12 → 7/6 | freq:399.99999995454544 ]",
+  "[ 7/6 → 5/4 | freq:412.5 ]",
+  "[ 5/4 → 4/3 | freq:436.3636363636364 ]",
+  "[ 4/3 → 3/2 | freq:436.3636363636364 ]",
+  "[ 3/2 → 5/3 | freq:300 ]",
+  "[ 5/3 → 7/4 | freq:300 ]",
+  "[ 7/4 → 11/6 | freq:290.90909090909093 ]",
+  "[ 11/6 → 23/12 | freq:275 ]",
+  "[ 23/12 → 2/1 | freq:266.66666663636363 ]",
+  "[ 2/1 → 25/12 | freq:220 ]",
+  "[ 25/12 → 13/6 | freq:293.3333333 ]",
+  "[ 13/6 → 9/4 | freq:302.5 ]",
+  "[ 9/4 → 7/3 | freq:320 ]",
+  "[ 7/3 → 5/2 | freq:320 ]",
+  "[ 5/2 → 8/3 | freq:330 ]",
+  "[ 8/3 → 11/4 | freq:330 ]",
+  "[ 11/4 → 17/6 | freq:320 ]",
+  "[ 17/6 → 35/12 | freq:302.5 ]",
+  "[ 35/12 → 3/1 | freq:293.3333333 ]",
+  "[ 3/1 → 37/12 | freq:300 ]",
+  "[ 37/12 → 19/6 | freq:399.99999995454544 ]",
+  "[ 19/6 → 13/4 | freq:412.5 ]",
+  "[ 13/4 → 10/3 | freq:436.3636363636364 ]",
+  "[ 10/3 → 7/2 | freq:436.3636363636364 ]",
+  "[ 7/2 → 11/3 | freq:300 ]",
+  "[ 11/3 → 15/4 | freq:300 ]",
+  "[ 15/4 → 23/6 | freq:290.90909090909093 ]",
+  "[ 23/6 → 47/12 | freq:275 ]",
+  "[ 47/12 → 4/1 | freq:266.66666663636363 ]",
+]
+`;
+
+exports[`runs examples > example "withBase" example index 1 1`] = `
+[
+  "[ 0/1 → 1/5 | freq:220 ]",
+  "[ 1/5 → 2/5 | freq:234.66666666666666 ]",
+  "[ 2/5 → 3/5 | freq:247.5 ]",
+  "[ 3/5 → 4/5 | freq:264 ]",
+  "[ 4/5 → 1/1 | freq:275 ]",
+  "[ 1/1 → 6/5 | freq:220 ]",
+  "[ 6/5 → 7/5 | freq:234.66666666666666 ]",
+  "[ 7/5 → 8/5 | freq:247.5 ]",
+  "[ 8/5 → 9/5 | freq:264 ]",
+  "[ 9/5 → 2/1 | freq:275 ]",
+  "[ 2/1 → 11/5 | freq:220 ]",
+  "[ 11/5 → 12/5 | freq:234.66666666666666 ]",
+  "[ 12/5 → 13/5 | freq:247.5 ]",
+  "[ 13/5 → 14/5 | freq:264 ]",
+  "[ 14/5 → 3/1 | freq:275 ]",
+  "[ 3/1 → 16/5 | freq:220 ]",
+  "[ 16/5 → 17/5 | freq:234.66666666666666 ]",
+  "[ 17/5 → 18/5 | freq:247.5 ]",
+  "[ 18/5 → 19/5 | freq:264 ]",
+  "[ 19/5 → 4/1 | freq:275 ]",
+]
+`;
+
 exports[`runs examples > example "withValue" example index 0 1`] = `
 [
   "[ 0/1 → 1/3 | 10 ]",
@@ -13207,6 +14875,106 @@ exports[`runs examples > example "wtphaserand" example index 0 1`] = `
   "[ 61/16 → 31/8 | s:basique bank:wt_digital wtphaserand:1 ]",
   "[ 31/8 → 63/16 | s:basique bank:wt_digital wtphaserand:1 ]",
   "[ 63/16 → 4/1 | s:basique bank:wt_digital wtphaserand:1 ]",
+]
+`;
+
+exports[`runs examples > example "xen" example index 0 1`] = `
+[
+  "[ 0/1 → 1/3 | freq:220 clip:1 s:piano release:0.1 pan:0.5138888888888888 ]",
+  "[ 1/3 → 2/3 | freq:263.0921203 clip:1 s:piano release:0.1 pan:0.5277777777777778 ]",
+  "[ 2/3 → 1/1 | freq:329.0139341 clip:1 s:piano release:0.1 pan:0.5462962962962963 ]",
+  "[ 1/1 → 4/3 | freq:220 clip:1 s:piano release:0.1 pan:0.5138888888888888 ]",
+  "[ 4/3 → 5/3 | freq:263.0921203 clip:1 s:piano release:0.1 pan:0.5277777777777778 ]",
+  "[ 5/3 → 2/1 | freq:329.0139341 clip:1 s:piano release:0.1 pan:0.5462962962962963 ]",
+  "[ 2/1 → 7/3 | freq:220 clip:1 s:piano release:0.1 pan:0.5138888888888888 ]",
+  "[ 7/3 → 8/3 | freq:263.0921203 clip:1 s:piano release:0.1 pan:0.5277777777777778 ]",
+  "[ 8/3 → 3/1 | freq:329.0139341 clip:1 s:piano release:0.1 pan:0.5462962962962963 ]",
+  "[ 3/1 → 10/3 | freq:220 clip:1 s:piano release:0.1 pan:0.5138888888888888 ]",
+  "[ 10/3 → 11/3 | freq:263.0921203 clip:1 s:piano release:0.1 pan:0.5277777777777778 ]",
+  "[ 11/3 → 4/1 | freq:329.0139341 clip:1 s:piano release:0.1 pan:0.5462962962962963 ]",
+]
+`;
+
+exports[`runs examples > example "xen" example index 1 1`] = `
+[
+  "[ 0/1 → 1/3 | freq:220 clip:1 s:piano release:0.1 pan:0.5138888888888888 ]",
+  "[ 1/3 → 2/3 | freq:263.0921203 clip:1 s:piano release:0.1 pan:0.5277777777777778 ]",
+  "[ 2/3 → 1/1 | freq:329.0139341 clip:1 s:piano release:0.1 pan:0.5462962962962963 ]",
+  "[ 1/1 → 4/3 | freq:220 clip:1 s:piano release:0.1 pan:0.5138888888888888 ]",
+  "[ 4/3 → 5/3 | freq:263.0921203 clip:1 s:piano release:0.1 pan:0.5277777777777778 ]",
+  "[ 5/3 → 2/1 | freq:329.0139341 clip:1 s:piano release:0.1 pan:0.5462962962962963 ]",
+  "[ 2/1 → 7/3 | freq:220 clip:1 s:piano release:0.1 pan:0.5138888888888888 ]",
+  "[ 7/3 → 8/3 | freq:263.0921203 clip:1 s:piano release:0.1 pan:0.5277777777777778 ]",
+  "[ 8/3 → 3/1 | freq:329.0139341 clip:1 s:piano release:0.1 pan:0.5462962962962963 ]",
+  "[ 3/1 → 10/3 | freq:220 clip:1 s:piano release:0.1 pan:0.5138888888888888 ]",
+  "[ 10/3 → 11/3 | freq:263.0921203 clip:1 s:piano release:0.1 pan:0.5277777777777778 ]",
+  "[ 11/3 → 4/1 | freq:329.0139341 clip:1 s:piano release:0.1 pan:0.5462962962962963 ]",
+]
+`;
+
+exports[`runs examples > example "xen" example index 2 1`] = `
+[
+  "[ 0/1 → 1/6 | freq:220 ]",
+  "[ 1/6 → 1/3 | freq:275 ]",
+  "[ 1/3 → 1/2 | freq:293.3333333 ]",
+  "[ 1/2 → 2/3 | freq:330 ]",
+  "[ 2/3 → 5/6 | freq:352 ]",
+  "[ 5/6 → 1/1 | freq:440 ]",
+  "[ 1/1 → 7/6 | freq:220 ]",
+  "[ 7/6 → 4/3 | freq:275 ]",
+  "[ 4/3 → 3/2 | freq:293.3333333 ]",
+  "[ 3/2 → 5/3 | freq:330 ]",
+  "[ 5/3 → 11/6 | freq:352 ]",
+  "[ 11/6 → 2/1 | freq:440 ]",
+  "[ 2/1 → 13/6 | freq:220 ]",
+  "[ 13/6 → 7/3 | freq:275 ]",
+  "[ 7/3 → 5/2 | freq:293.3333333 ]",
+  "[ 5/2 → 8/3 | freq:330 ]",
+  "[ 8/3 → 17/6 | freq:352 ]",
+  "[ 17/6 → 3/1 | freq:440 ]",
+  "[ 3/1 → 19/6 | freq:220 ]",
+  "[ 19/6 → 10/3 | freq:275 ]",
+  "[ 10/3 → 7/2 | freq:293.3333333 ]",
+  "[ 7/2 → 11/3 | freq:330 ]",
+  "[ 11/3 → 23/6 | freq:352 ]",
+  "[ 23/6 → 4/1 | freq:440 ]",
+]
+`;
+
+exports[`runs examples > example "xen" example index 3 1`] = `
+[
+  "[ 0/1 → 1/8 | freq:220 ]",
+  "[ 1/8 → 1/4 | freq:252.7136381 ]",
+  "[ 1/4 → 3/8 | freq:290.2917404 ]",
+  "[ 3/8 → 1/2 | freq:333.4576446 ]",
+  "[ 1/2 → 5/8 | freq:383.0422479 ]",
+  "[ 5/8 → 3/4 | freq:440 ]",
+  "[ 3/4 → 7/8 | freq:505.4272762 ]",
+  "[ 7/8 → 1/1 | freq:580.5834807 ]",
+  "[ 1/1 → 9/8 | freq:220 ]",
+  "[ 9/8 → 5/4 | freq:235.7901618 ]",
+  "[ 5/4 → 11/8 | freq:252.7136381 ]",
+  "[ 11/8 → 3/2 | freq:270.8517709 ]",
+  "[ 3/2 → 13/8 | freq:290.2917404 ]",
+  "[ 13/8 → 7/4 | freq:311.1269837 ]",
+  "[ 7/4 → 15/8 | freq:333.4576446 ]",
+  "[ 15/8 → 2/1 | freq:357.3910544 ]",
+  "[ 2/1 → 17/8 | freq:220 ]",
+  "[ 17/8 → 9/4 | freq:230.404707 ]",
+  "[ 9/4 → 19/8 | freq:241.3014955 ]",
+  "[ 19/8 → 5/2 | freq:252.7136381 ]",
+  "[ 5/2 → 21/8 | freq:264.6655079 ]",
+  "[ 21/8 → 11/4 | freq:277.182631 ]",
+  "[ 11/4 → 23/8 | freq:290.2917404 ]",
+  "[ 23/8 → 3/1 | freq:304.0208336 ]",
+  "[ 3/1 → 25/8 | freq:220 ]",
+  "[ 25/8 → 13/4 | freq:275 ]",
+  "[ 13/4 → 27/8 | freq:293.3333333 ]",
+  "[ 27/8 → 7/2 | freq:330 ]",
+  "[ 7/2 → 29/8 | freq:352 ]",
+  "[ 29/8 → 15/4 | freq:440 ]",
+  "[ 15/4 → 31/8 | freq:550 ]",
+  "[ 31/8 → 4/1 | freq:586.6666667 ]",
 ]
 `;
 

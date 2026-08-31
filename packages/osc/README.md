@@ -46,4 +46,4 @@ all(osc)
 
 [open in repl](https://strudel.cc/#JDogcygiYmQqNCIpCgphbGwob3NjKQ%3D%3D)
 
-You can read more about [how to use Superdirt with Strudel the Tutorial](https://strudel.cc/learn/input-output/#superdirt-api)
+You can read more about [how to use Superdirt with Strudel](https://strudel.cc/learn/input-output/#oscsuperdirtstrudeldirt) in  the tutorial.

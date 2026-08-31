@@ -3,150 +3,165 @@
 import { signal } from '../core/signal.mjs';
 
 /**
- *  Значение акселерометра по оси x в диапазоне от 0 до 1.
+ *  The accelerometer's x-axis value ranges from 0 to 1.
  * @name accelerationX
  * @return {Pattern}
  * @synonyms accX
+ * @tags external_io
  * @example
  * n(accelerationX.segment(4).range(0,7)).scale("C:minor")
  *
  */
 
 /**
- *  Значение акселерометра по оси y в диапазоне от 0 до 1.
+ *  The accelerometer's y-axis value ranges from 0 to 1.
  * @name accelerationY
  * @return {Pattern}
  * @synonyms accY
+ * @tags external_io
  * @example
  * n(accelerationY.segment(4).range(0,7)).scale("C:minor")
  *
  */
 
 /**
- *  Значение акселерометра по оси z в диапазоне от 0 до 1.
+ *  The accelerometer's z-axis value ranges from 0 to 1.
  * @name accelerationZ
  * @return {Pattern}
  * @synonyms accZ
+ * @tags external_io
  * @example
  * n(accelerationZ.segment(4).range(0,7)).scale("C:minor")
  *
  */
 
 /**
- *  Значение гравитации устройства по оси x в диапазоне от 0 до 1.
+ *  The device's gravity x-axis value ranges from 0 to 1.
  * @name gravityX
  * @return {Pattern}
  * @synonyms gravX
+ * @tags external_io
  * @example
  * n(gravityX.segment(4).range(0,7)).scale("C:minor")
  *
  */
 
 /**
- *  Значение гравитации устройства по оси y в диапазоне от 0 до 1.
+ *  The device's gravity y-axis value ranges from 0 to 1.
  * @name gravityY
  * @return {Pattern}
  * @synonyms gravY
+ * @tags external_io
  * @example
  * n(gravityY.segment(4).range(0,7)).scale("C:minor")
  *
  */
 
 /**
- *  Значение гравитации устройства по оси z в диапазоне от 0 до 1.
+ *  The device's gravity z-axis value ranges from 0 to 1.
  * @name gravityZ
  * @return {Pattern}
  * @synonyms gravZ
+ * @tags external_io
  * @example
  * n(gravityZ.segment(4).range(0,7)).scale("C:minor")
  *
  */
 
 /**
- *  Значение вращения устройства вокруг оси alpha в диапазоне от 0 до 1.
+ *  The device's rotation around the alpha-axis value ranges from 0 to 1.
  * @name rotationAlpha
  * @return {Pattern}
  * @synonyms rotA, rotZ, rotationZ
+ * @tags external_io
  * @example
  * n(rotationAlpha.segment(4).range(0,7)).scale("C:minor")
  *
  */
 
 /**
- *  Значение вращения устройства вокруг оси beta в диапазоне от 0 до 1.
+ *  The device's rotation around the beta-axis value ranges from 0 to 1.
  * @name rotationBeta
  * @return {Pattern}
  * @synonyms rotB, rotX, rotationX
+ * @tags external_io
  * @example
  * n(rotationBeta.segment(4).range(0,7)).scale("C:minor")
  *
  */
 
 /**
- *  Значение вращения устройства вокруг оси gamma в диапазоне от 0 до 1.
+ *  The device's rotation around the gamma-axis value ranges from 0 to 1.
  * @name rotationGamma
  * @return {Pattern}
  * @synonyms rotG, rotY, rotationY
+ * @tags external_io
  * @example
  * n(rotationGamma.segment(4).range(0,7)).scale("C:minor")
  *
  */
 
 /**
- *  Значение ориентации устройства alpha в диапазоне от 0 до 1.
+ *  The device's orientation alpha value ranges from 0 to 1.
  * @name orientationAlpha
  * @return {Pattern}
  * @synonyms oriA, oriZ, orientationZ
+ * @tags external_io
  * @example
  * n(orientationAlpha.segment(4).range(0,7)).scale("C:minor")
  *
  */
 
 /**
- *  Значение ориентации устройства beta в диапазоне от 0 до 1.
+ *  The device's orientation beta value ranges from 0 to 1.
  * @name orientationBeta
  * @return {Pattern}
  * @synonyms oriB, oriX, orientationX
+ * @tags external_io
  * @example
  * n(orientationBeta.segment(4).range(0,7)).scale("C:minor")
  *
  */
 
 /**
- *  Значение ориентации устройства gamma в диапазоне от 0 до 1.
+ *  The device's orientation gamma value ranges from 0 to 1.
  * @name orientationGamma
  * @return {Pattern}
  * @synonyms oriG, oriY, orientationY
+ * @tags external_io
  * @example
  * n(orientationGamma.segment(4).range(0,7)).scale("C:minor")
  *
  */
 
 /**
- *  Значение абсолютной ориентации устройства alpha в диапазоне от 0 до 1.
+ *  The device's absolute orientation alpha value ranges from 0 to 1.
  * @name absoluteOrientationAlpha
  * @return {Pattern}
  * @synonyms absOriA, absOriZ, absoluteOrientationZ
+ * @tags external_io
  * @example
  * n(absoluteOrientationAlpha.segment(4).range(0,7)).scale("C:minor")
  *
  */
 
 /**
- *  Значение абсолютной ориентации устройства beta в диапазоне от 0 до 1.
+ *  The device's absolute orientation beta value ranges from 0 to 1.
  * @name absoluteOrientationBeta
  * @return {Pattern}
  * @synonyms absOriB, absOriX, absoluteOrientationX
+ * @tags external_io
  * @example
  * n(absoluteOrientationBeta.segment(4).range(0,7)).scale("C:minor")
  *
  */
 
 /**
- *  Значение абсолютной ориентации устройства gamma в диапазоне от 0 до 1.
+ *  The device's absolute orientation gamma value ranges from 0 to 1.
  * @name absoluteOrientationGamma
  * @return {Pattern}
  * @synonyms absOriG, absOriY, absoluteOrientationY
+ * @tags external_io
  * @example
  * n(absoluteOrientationGamma.segment(4).range(0,7)).scale("C:minor")
  *

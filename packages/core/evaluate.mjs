@@ -5,6 +5,34 @@ This program is free software: you can redistribute it and/or modify it under th
 */
 
 export const strudelScope = {};
+// Make strudelScope available globally so transpiled code can access it
+globalThis.strudelScope = strudelScope;
+
+// Track user-defined keys (from block-based eval) so we can clear them without removing strudel functions
+export const userDefinedKeys = new Set();
+globalThis.userDefinedKeys = userDefinedKeys;
+
+/**
+ * Clears all user-defined variables and functions from the scope.
+ * This removes variables created during block-based evaluation.
+ * @name clearScope
+ * @example
+ * // After defining variables in blocks:
+ * // let myVar = 5
+ * // function myFunc() { return 10; }
+ * clearScope() // removes myVar and myFunc from scope
+ */
+export const clearScope = () => {
+  for (const key of userDefinedKeys) {
+    delete strudelScope[key];
+    delete globalThis[key];
+  }
+  userDefinedKeys.clear();
+  // Return silence if available (for use in pattern expressions), otherwise undefined
+  return globalThis.silence;
+};
+// Make clearScope available globally
+globalThis.clearScope = clearScope;
 
 export const evalScope = async (...args) => {
   const results = await Promise.allSettled(args);

@@ -1,0 +1,211 @@
+0 silly argv {
+0 silly argv   _: [ 'version' ],
+0 silly argv   private: false,
+0 silly argv   lernaVersion: '8.1.9',
+0 silly argv   '$0': 'node_modules/lerna/dist/cli.js'
+0 silly argv }
+1 notice cli v8.1.9
+2 verbose packageConfigs Explicit "packages" configuration found in lerna.json. Resolving packages using the configured glob(s): ["packages/*"]
+3 verbose rootPath /Users/jaderose/Documents/Github/cstrudel/strudel
+4 info versioning independent
+5 silly isAnythingCommitted
+6 verbose isAnythingCommitted 1
+7 silly getCurrentBranch
+8 verbose currentBranch main
+9 silly remoteBranchExists
+10 silly isBehindUpstream
+11 silly isBehindUpstream main is behind origin/main by 0 commit(s) and ahead by 4
+12 silly hasTags
+13 verbose hasTags true
+14 silly git-describe.sync "@strudel/codemirror@1.2.7-4-ga3ac9646" => {"lastTagName":"@strudel/codemirror@1.2.7","lastVersion":"1.2.7","refCount":"4","sha":"a3ac9646","isDirty":false}
+15 info Looking for changed packages since @strudel/codemirror@1.2.7
+16 silly checking diff packages/codemirror
+17 silly no diff found in @strudel/codemirror
+18 silly checking diff packages/core
+19 silly no diff found in @strudel/core
+20 silly checking diff packages/csound
+21 silly no diff found in @strudel/csound
+22 silly checking diff packages/desktopbridge
+23 silly no diff found in @strudel/desktopbridge
+24 silly checking diff packages/draw
+25 silly no diff found in @strudel/draw
+26 silly checking diff packages/embed
+27 silly no diff found in @strudel/embed
+28 silly checking diff packages/gamepad
+29 silly no diff found in @strudel/gamepad
+30 silly checking diff packages/hs2js
+31 silly no diff found in hs2js
+32 silly checking diff packages/hydra
+33 silly no diff found in @strudel/hydra
+34 silly checking diff packages/midi
+35 silly no diff found in @strudel/midi
+36 silly checking diff packages/mini
+37 silly no diff found in @strudel/mini
+38 silly checking diff packages/mondo
+39 silly no diff found in mondolang
+40 silly checking diff packages/mondough
+41 silly no diff found in @strudel/mondo
+42 silly checking diff packages/motion
+43 silly no diff found in @strudel/motion
+44 silly checking diff packages/mqtt
+45 silly no diff found in @strudel/mqtt
+46 silly checking diff packages/osc
+47 silly found diff in packages/osc/server.js
+48 verbose filtered diff [ 'packages/osc/server.js' ]
+49 silly checking diff packages/reference
+50 silly no diff found in @strudel/reference
+51 silly checking diff packages/repl
+52 silly no diff found in @strudel/repl
+53 silly checking diff packages/sampler
+54 silly no diff found in @strudel/sampler
+55 silly checking diff packages/serial
+56 silly no diff found in @strudel/serial
+57 silly checking diff packages/soundfonts
+58 silly no diff found in @strudel/soundfonts
+59 silly checking diff packages/superdough
+60 silly found diff in packages/superdough/package.json
+61 verbose filtered diff [ 'packages/superdough/package.json' ]
+62 silly checking diff packages/supradough
+63 silly found diff in packages/supradough/package.json
+64 verbose filtered diff [ 'packages/supradough/package.json' ]
+65 silly checking diff packages/tidal
+66 silly no diff found in @strudel/tidal
+67 silly checking diff packages/tonal
+68 silly no diff found in @strudel/tonal
+69 silly checking diff packages/transpiler
+70 silly no diff found in @strudel/transpiler
+71 silly checking diff packages/vite-plugin-bundle-audioworklet
+72 silly no diff found in vite-plugin-bundle-audioworklet
+73 silly checking diff packages/web
+74 silly no diff found in @strudel/web
+75 silly checking diff packages/webaudio
+76 silly found diff in packages/webaudio/package.json
+77 verbose filtered diff [ 'packages/webaudio/package.json' ]
+78 silly checking diff packages/xen
+79 silly no diff found in @strudel/xen
+80 verbose updated @strudel/codemirror
+81 verbose updated @strudel/csound
+82 verbose updated @strudel/midi
+83 verbose updated @strudel/osc
+84 verbose updated @strudel/repl
+85 verbose updated @strudel/soundfonts
+86 verbose updated superdough
+87 verbose updated supradough
+88 verbose updated @strudel/web
+89 verbose updated @strudel/webaudio
+90 verbose git-describe undefined => "@strudel/codemirror@1.2.7-4-ga3ac9646"
+91 silly git-describe parsed => {"lastTagName":"@strudel/codemirror@1.2.7","lastVersion":"1.2.7","refCount":"4","sha":"a3ac9646","isDirty":false}
+92 info execute Skipping releases
+93 silly lifecycle No script for "preversion" in "@strudel/monorepo", continuing
+94 silly lifecycle No script for "preversion" in "@strudel/osc", continuing
+95 silly lifecycle No script for "preversion" in "superdough", continuing
+96 silly lifecycle No script for "preversion" in "supradough", continuing
+97 verbose version supradough has no lockfile. Skipping lockfile update.
+98 verbose version @strudel/osc has no lockfile. Skipping lockfile update.
+99 verbose version superdough has no lockfile. Skipping lockfile update.
+100 silly lifecycle No script for "version" in "supradough", continuing
+101 silly lifecycle No script for "version" in "superdough", continuing
+102 silly lifecycle No script for "preversion" in "@strudel/codemirror", continuing
+103 silly lifecycle No script for "preversion" in "@strudel/webaudio", continuing
+104 silly lifecycle No script for "version" in "@strudel/osc", continuing
+105 verbose version @strudel/webaudio has no lockfile. Skipping lockfile update.
+106 verbose version @strudel/codemirror has no lockfile. Skipping lockfile update.
+107 silly lifecycle No script for "version" in "@strudel/codemirror", continuing
+108 silly lifecycle No script for "version" in "@strudel/webaudio", continuing
+109 silly lifecycle No script for "preversion" in "@strudel/csound", continuing
+110 silly lifecycle No script for "preversion" in "@strudel/midi", continuing
+111 silly lifecycle No script for "preversion" in "@strudel/soundfonts", continuing
+112 silly lifecycle No script for "preversion" in "@strudel/web", continuing
+113 verbose version @strudel/csound has no lockfile. Skipping lockfile update.
+114 verbose version @strudel/midi has no lockfile. Skipping lockfile update.
+115 verbose version @strudel/soundfonts has no lockfile. Skipping lockfile update.
+116 verbose version @strudel/web has no lockfile. Skipping lockfile update.
+117 silly lifecycle No script for "version" in "@strudel/midi", continuing
+118 silly lifecycle No script for "version" in "@strudel/csound", continuing
+119 silly lifecycle No script for "version" in "@strudel/soundfonts", continuing
+120 silly lifecycle No script for "preversion" in "@strudel/repl", continuing
+121 verbose version @strudel/repl has no lockfile. Skipping lockfile update.
+122 silly lifecycle No script for "version" in "@strudel/web", continuing
+123 silly lifecycle No script for "version" in "@strudel/repl", continuing
+124 silly lifecycle No script for "version" in "@strudel/monorepo", continuing
+125 verbose version Updating root pnpm-lock.yaml
+126 silly version Skipped applying prettier to ignored file: packages/supradough/package.json
+127 silly version Skipped applying prettier to ignored file: packages/superdough/package.json
+128 silly version Skipped applying prettier to ignored file: packages/osc/package.json
+129 silly version Skipped applying prettier to ignored file: packages/codemirror/package.json
+130 silly version Skipped applying prettier to ignored file: packages/webaudio/package.json
+131 silly version Skipped applying prettier to ignored file: packages/midi/package.json
+132 silly version Skipped applying prettier to ignored file: packages/csound/package.json
+133 silly version Skipped applying prettier to ignored file: packages/soundfonts/package.json
+134 silly version Skipped applying prettier to ignored file: packages/web/package.json
+135 silly version Skipped applying prettier to ignored file: packages/repl/package.json
+136 silly version Skipped applying prettier to ignored file: pnpm-lock.yaml
+137 silly gitAdd [
+137 silly gitAdd   'packages/supradough/package.json',
+137 silly gitAdd   'packages/superdough/package.json',
+137 silly gitAdd   'packages/osc/package.json',
+137 silly gitAdd   'packages/codemirror/package.json',
+137 silly gitAdd   'packages/webaudio/package.json',
+137 silly gitAdd   'packages/midi/package.json',
+137 silly gitAdd   'packages/csound/package.json',
+137 silly gitAdd   'packages/soundfonts/package.json',
+137 silly gitAdd   'packages/web/package.json',
+137 silly gitAdd   'packages/repl/package.json',
+137 silly gitAdd   'pnpm-lock.yaml'
+137 silly gitAdd ]
+138 silly gitCommit Publish
+138 silly gitCommit
+138 silly gitCommit  - @strudel/codemirror@1.2.8
+138 silly gitCommit  - @strudel/csound@1.2.8
+138 silly gitCommit  - @strudel/midi@1.2.8
+138 silly gitCommit  - @strudel/osc@1.3.2
+138 silly gitCommit  - @strudel/repl@1.2.9
+138 silly gitCommit  - @strudel/soundfonts@1.2.8
+138 silly gitCommit  - superdough@1.2.5
+138 silly gitCommit  - supradough@1.2.4
+138 silly gitCommit  - @strudel/web@1.2.8
+138 silly gitCommit  - @strudel/webaudio@1.2.9
+139 verbose git [
+139 verbose git   'commit',
+139 verbose git   '-F',
+139 verbose git   '/private/var/folders/hc/yf_zr55547sbcpz5rj7q85sc0000gn/T/3c85b5d4-56ae-40e9-8df7-db2bc1048402/lerna-commit.txt'
+139 verbose git ]
+140 silly gitTag @strudel/codemirror@1.2.8 git tag %s -m %s
+141 verbose git [
+141 verbose git   'tag',
+141 verbose git   '@strudel/codemirror@1.2.8',
+141 verbose git   '-m',
+141 verbose git   '@strudel/codemirror@1.2.8'
+141 verbose git ]
+142 silly gitTag @strudel/csound@1.2.8 git tag %s -m %s
+143 verbose git [ 'tag', '@strudel/csound@1.2.8', '-m', '@strudel/csound@1.2.8' ]
+144 silly gitTag @strudel/midi@1.2.8 git tag %s -m %s
+145 verbose git [ 'tag', '@strudel/midi@1.2.8', '-m', '@strudel/midi@1.2.8' ]
+146 silly gitTag @strudel/osc@1.3.2 git tag %s -m %s
+147 verbose git [ 'tag', '@strudel/osc@1.3.2', '-m', '@strudel/osc@1.3.2' ]
+148 silly gitTag @strudel/repl@1.2.9 git tag %s -m %s
+149 verbose git [ 'tag', '@strudel/repl@1.2.9', '-m', '@strudel/repl@1.2.9' ]
+150 silly gitTag @strudel/soundfonts@1.2.8 git tag %s -m %s
+151 verbose git [
+151 verbose git   'tag',
+151 verbose git   '@strudel/soundfonts@1.2.8',
+151 verbose git   '-m',
+151 verbose git   '@strudel/soundfonts@1.2.8'
+151 verbose git ]
+152 silly gitTag superdough@1.2.5 git tag %s -m %s
+153 verbose git [ 'tag', 'superdough@1.2.5', '-m', 'superdough@1.2.5' ]
+154 silly gitTag supradough@1.2.4 git tag %s -m %s
+155 verbose git [ 'tag', 'supradough@1.2.4', '-m', 'supradough@1.2.4' ]
+156 silly gitTag @strudel/web@1.2.8 git tag %s -m %s
+157 verbose git [ 'tag', '@strudel/web@1.2.8', '-m', '@strudel/web@1.2.8' ]
+158 silly gitTag @strudel/webaudio@1.2.9 git tag %s -m %s
+159 verbose git [ 'tag', '@strudel/webaudio@1.2.9', '-m', '@strudel/webaudio@1.2.9' ]
+160 error Error: Command failed with exit code 128: git tag superdough@1.2.5 -m superdough@1.2.5
+160 error fatal: tag 'superdough@1.2.5' already exists
+160 error     at makeError (/Users/jaderose/Documents/Github/cstrudel/strudel/node_modules/.pnpm/execa@5.0.0/node_modules/execa/lib/error.js:59:11)
+160 error     at handlePromise (/Users/jaderose/Documents/Github/cstrudel/strudel/node_modules/.pnpm/execa@5.0.0/node_modules/execa/index.js:114:26)
+160 error     at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+160 error     at async Promise.all (index 6)
+160 error     at async VersionCommand.gitCommitAndTagVersionForUpdates (/Users/jaderose/Documents/Github/cstrudel/strudel/node_modules/.pnpm/lerna@8.1.9_encoding@0.1.13/node_modules/lerna/dist/index.js:9957:11)
+160 error     at async VersionCommand.commitAndTagUpdates (/Users/jaderose/Documents/Github/cstrudel/strudel/node_modules/.pnpm/lerna@8.1.9_encoding@0.1.13/node_modules/lerna/dist/index.js:9933:18)
+160 error     at async Promise.all (index 0)

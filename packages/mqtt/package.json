@@ -1,6 +1,6 @@
 {
   "name": "@strudel/mqtt",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "description": "MQTT API for strudel",
   "main": "mqtt.mjs",
   "type": "module",

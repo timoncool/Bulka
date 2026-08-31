@@ -1,6 +1,6 @@
 {
   "name": "@strudel/mondo",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "description": "mondo notation for strudel",
   "main": "mondough.mjs",
   "type": "module",

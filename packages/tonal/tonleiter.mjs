@@ -134,6 +134,16 @@ let modeTarget = {
   duck: (v) => v.slice(-1)[0],
   above: (v) => v[0],
   root: (v) => v[0],
+  oldabove: (v) => v[0],
+  oldroot: (v) => v[0],
+};
+let modeMult = {
+  below: 1,
+  duck: 1,
+  above: -1,
+  root: -1,
+  oldabove: 1,
+  oldroot: 1,
 };
 
 export function renderVoicing({ chord, dictionary, offset = 0, n, mode = 'below', anchor = 'c5', octaves = 1 }) {
@@ -144,19 +154,20 @@ export function renderVoicing({ chord, dictionary, offset = 0, n, mode = 'below'
   const voicings = dictionary[symbol].map((voicing) =>
     (typeof voicing === 'string' ? voicing.split(' ') : voicing).map(step2semitones),
   );
+  const mult = modeMult[mode];
 
   let minDistance, bestIndex;
   // calculate distances up from voicing top notes
   let chromaDiffs = voicings.map((v, i) => {
     const targetStep = modeTarget[mode](v);
-    const diff = _mod(anchorChroma - targetStep - rootChroma, 12);
+    const diff = _mod((anchorChroma - targetStep - rootChroma) * mult, 12);
     if (minDistance === undefined || diff < minDistance) {
       minDistance = diff;
       bestIndex = i;
     }
-    return diff;
+    return diff * mult;
   });
-  if (mode === 'root') {
+  if (mode === 'root' || mode === 'oldroot') {
     bestIndex = 0;
   }
 

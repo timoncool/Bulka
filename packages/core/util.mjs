@@ -71,7 +71,7 @@ export const getEventOffsetMs = (targetTimeSeconds, currentTimeSeconds) => {
 };
 
 /**
- * @deprecated не используется и не вызывается нигде в кодовой базе
+ * @deprecated does not appear to be referenced or invoked anywhere in the codebase
  * @noAutocomplete
  */
 export const getFreq = (noteOrMidi) => {
@@ -83,7 +83,7 @@ export const getFreq = (noteOrMidi) => {
 
 const pcs = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
 /**
- * @deprecated используется только в workshop (first-notes)
+ * @deprecated only used in workshop (first-notes)
  * @noAutocomplete
  */
 export const midi2note = (n) => {
@@ -137,7 +137,7 @@ export const getFrequency = (hap) => {
     if (value.freq) {
       return value.freq;
     }
-    return getFreq(value.note || value.n || value.value);
+    return getFreq(value.note ?? value.n ?? value.value);
   }
   if (typeof value === 'number' && context.type !== 'frequency') {
     value = midiToFreq(hap.value);
@@ -339,8 +339,13 @@ export function uniqsortr(a) {
 
 export function unicodeToBase64(text) {
   const utf8Bytes = new TextEncoder().encode(text);
-  const base64String = btoa(String.fromCharCode(...utf8Bytes));
-  return base64String;
+  let binaryString = '';
+  const chunkSize = 0x8000;
+  for (let i = 0; i < utf8Bytes.length; i += chunkSize) {
+    const chunk = utf8Bytes.subarray(i, i + chunkSize);
+    binaryString += String.fromCharCode.apply(null, chunk);
+  }
+  return btoa(binaryString);
 }
 
 export function base64ToUnicode(base64String) {

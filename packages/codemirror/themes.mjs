@@ -198,6 +198,7 @@ export function activateTheme(name) {
   const themeSettings = settings[name] || settings.strudelTheme;
   // set css variables
   themeStyle.innerHTML = `:root {
+      color-scheme: ${themeSettings.light ? 'light' : 'dark'};
       ${Object.entries(themeSettings)
         // important to override fallback
         .map(([key, value]) => `--${key}: ${value} !important;`)

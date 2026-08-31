@@ -8,6 +8,7 @@ export async function prebake() {
     core,
     import('@strudel/draw'),
     import('@strudel/mini'),
+    import('@strudel/edo'),
     import('@strudel/tonal'),
     import('@strudel/webaudio'),
     import('@strudel/codemirror'),

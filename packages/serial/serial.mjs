@@ -68,7 +68,7 @@ Pattern.prototype.serial = function (br = 115200, sendcrc = false, singlecharids
     if (!(name in writeMessagers)) {
       getWriter(name, br);
     }
-    const onTrigger = (t_deprecate, hap, currentTime, cps, targetTime) => {
+    const onTrigger = (hap, currentTime, _cps, targetTime) => {
       var message = '';
       var chk = 0;
       if (typeof hap.value === 'object') {

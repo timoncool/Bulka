@@ -78,14 +78,21 @@ Tune.prototype.frequency = function(stepIn, octaveIn) {
 	}
 	
 	// which scale degree (0 - scale length) is our input
+	// 60 % 12 = 0
 	var scaleDegree = stepIn % this.scale.length
 
+	// what's this doing
+	// 0 scaleDegree = 12
+	// seems to simply be for a negative result from above, maybe another way to do it, but ok for now
 	while (scaleDegree < 0) {
 		scaleDegree += this.scale.length
 	}
 	
+	// tonic is currently always 1
+	// so this is 1*scale[scaledegree]
 	var freq = this.tonic*this.scale[scaleDegree]
 	
+	// map it to octave
 	freq = freq*(Math.pow(2,octave))
 	
 	// truncate irrational numbers
@@ -137,10 +144,13 @@ Tune.prototype.MIDI = function(stepIn,octaveIn) {
 }
 
 /* Load a new scale */
+// sets .scale to ratios
 
 Tune.prototype.loadScale = function(scale){
 
 	/* load the scale */
+	let name
+	if (typeof scale === 'string') name = scale;
 	var freqs = isArrayOfNumbers(scale) ? scale : TuningList[scale].frequencies
 	this.scale = []
 	for (var i=0;i<freqs.length-1;i++) {
@@ -148,10 +158,10 @@ Tune.prototype.loadScale = function(scale){
 	}
 
 	/* visualize in console */
-/* 	console.log(" ");
-	console.log("LOADED "+name);
-	console.log(TuningList[name].description);
-	console.log(this.scale); */
+	// console.log(" ");
+	// console.log("LOADED "+name);
+	// console.log(TuningList[name].description);
+	// console.log(this.scale);
 	var vis = [];
 	for (var i=0;i<100;i++) {
 		vis[i] = " ";

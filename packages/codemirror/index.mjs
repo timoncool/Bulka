@@ -4,3 +4,5 @@ export * from './flash.mjs';
 export * from './slider.mjs';
 export * from './themes.mjs';
 export * from './widget.mjs';
+export { Vim } from './keybindings.mjs';
+export * from './basicSetup.mjs';

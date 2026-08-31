@@ -1,4 +1,4 @@
-import { drywet } from './helpers.mjs';
+import { drywet, onceEnded, releaseAudioNode } from './helpers.mjs';
 import { getAudioContext } from './audioContext.mjs';
 
 let noiseCache = {};
@@ -65,9 +65,12 @@ export function getNoiseOscillator(type = 'white', t, density = 0.02) {
 export function getNoiseMix(inputNode, wet, t) {
   const noiseOscillator = getNoiseOscillator('pink', t);
   const noiseMix = drywet(inputNode, noiseOscillator.node, wet);
-  noiseOscillator.node.onended = () => noiseMix.onended();
+  onceEnded(noiseOscillator.node, () => {
+    releaseAudioNode(noiseOscillator.node);
+  });
   return {
     node: noiseMix.node,
     stop: (time) => noiseOscillator?.stop(time),
+    teardown: noiseMix.teardown,
   };
 }

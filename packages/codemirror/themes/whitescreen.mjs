@@ -2,7 +2,8 @@ import { tags as t } from '@lezer/highlight';
 import { createTheme } from './theme-helper.mjs';
 export const settings = {
   background: 'white',
-  foreground: 'black', // whats that?
+  foreground: 'black',
+  muted: '#00000050',
   caret: 'black',
   selection: 'rgba(128, 203, 196, 0.5)',
   selectionMatch: '#ffffff26',

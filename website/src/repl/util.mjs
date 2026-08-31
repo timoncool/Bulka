@@ -92,6 +92,7 @@ export function loadModules() {
     import('@strudel/tonal'),
     import('@strudel/mini'),
     import('@strudel/xen'),
+    import('@strudel/edo'),
     import('@strudel/webaudio'),
     import('@strudel/codemirror'),
     import('@strudel/hydra'),

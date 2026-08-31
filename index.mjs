@@ -4,6 +4,7 @@ export * from './packages/core/index.mjs';
 export * from './packages/csound/index.mjs';
 export * from './packages/desktopbridge/index.mjs';
 export * from './packages/draw/index.mjs';
+export * from './packages/edo/index.mjs';
 export * from './packages/embed/index.mjs';
 export * from './packages/hydra/index.mjs';
 export * from './packages/midi/index.mjs';

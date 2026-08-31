@@ -5,20 +5,32 @@ This program is free software: you can redistribute it and/or modify it under th
 */
 
 import * as _WebMidi from 'webmidi';
-import { Pattern, isPattern, logger, ref } from '@strudel/core';
+import {
+  Hap,
+  Pattern,
+  TimeSpan,
+  getCps,
+  getIsStarted,
+  getPattern,
+  getTime,
+  getTriggerFunc,
+  isPattern,
+  logger,
+  ref,
+  reify,
+} from '@strudel/core';
 import { noteToMidi, getControlName } from '@strudel/core';
 import { Note } from 'webmidi';
-import { scheduleAtTime } from '../superdough/helpers.mjs';
+import { getAudioContext, getClockBridge } from '@strudel/webaudio';
+import { scheduleAtTime, ensureMinimalOutput } from '../superdough/helpers.mjs';
+import { getMidiDeviceNamesString, getDevice } from './util.mjs';
+import { MidiInput } from './input.mjs';
 
 // if you use WebMidi from outside of this package, make sure to import that instance:
 export const { WebMidi } = _WebMidi;
 
 function supportsMidi() {
   return typeof navigator.requestMIDIAccess === 'function';
-}
-
-function getMidiDeviceNamesString(devices) {
-  return devices.map((o) => `'${o.name}'`).join(' | ');
 }
 
 export function enableWebMidi(options = {}) {
@@ -56,29 +68,6 @@ export function enableWebMidi(options = {}) {
       { sysex: true },
     );
   });
-}
-
-function getDevice(indexOrName, devices) {
-  if (!devices.length) {
-    throw new Error(`🔌 No MIDI devices found. Connect a device or enable IAC Driver.`);
-  }
-  if (typeof indexOrName === 'number') {
-    return devices[indexOrName];
-  }
-  const byName = (name) => devices.find((output) => output.name.includes(name));
-  if (typeof indexOrName === 'string') {
-    return byName(indexOrName);
-  }
-  // attempt to default to first IAC device if none is specified
-  const IACOutput = byName('IAC');
-  const device = IACOutput ?? devices[0];
-  if (!device) {
-    throw new Error(
-      `🔌 MIDI device '${device ? device : ''}' not found. Use one of ${getMidiDeviceNamesString(devices)}`,
-    );
-  }
-
-  return IACOutput ?? devices[0];
 }
 
 // send start/stop messages to outputs when repl starts/stops
@@ -123,7 +112,8 @@ function githubPath(base, subpath = '') {
 }
 
 /**
- * Настраивает midimap по умолчанию, который используется когда параметр "midimap" не задан
+ * configures the default midimap, which is used when no "midimap" port is set
+ * @tags external_io, midi
  * @example
  * defaultmidimap({ lpf: 74 })
  * $: note("c a f e").midi();
@@ -136,7 +126,8 @@ export function defaultmidimap(mapping) {
 let loadCache = {};
 
 /**
- * Добавляет midimaps в реестр. Внутри каждого midimap имена контролов (например lpf) сопоставляются с номерами cc.
+ * Adds midimaps to the registry. Inside each midimap, control names (e.g. lpf) are mapped to cc numbers.
+ * @tags external_io, midi
  * @example
  * midimaps({ mymap: { lpf: 74 } })
  * $: note("c a f e")
@@ -180,6 +171,23 @@ function normalize(value = 0, min = 0, max = 1, exp = 1) {
   return Math.pow(normalized, exp);
 }
 
+const isFirefox = navigator?.userAgent?.includes('Firefox');
+// call fn either directly with given time (non-firefox) or after scheduleAtTime with undefined (firefox)
+// the scheduleAtTime approach is still jittery, but the best we can be on firefox
+// firefox bug: https://bugzilla.mozilla.org/show_bug.cgi?id=2062997
+function timedSend(timeMs, fn) {
+  if (isFirefox) {
+    const audioTime = getClockBridge().getAudioContextTime(timeMs);
+    if (!audioTime) {
+      logger('[midi]: skip event, not ready');
+      return;
+    }
+    scheduleAtTime(() => fn(undefined), audioTime);
+  } else {
+    fn(timeMs);
+  }
+}
+
 function mapCC(mapping, value) {
   return Object.keys(value)
     .filter((key) => !!mapping[getControlName(key)])
@@ -191,7 +199,7 @@ function mapCC(mapping, value) {
 }
 
 // sends a cc message to the given device on the given channel
-function sendCC(ccn, ccv, device, midichan, targetTime) {
+function sendCC(ccn, ccv, device, midichan, timeMs) {
   if (typeof ccv !== 'number' || ccv < 0 || ccv > 1) {
     throw new Error('expected ccv to be a number between 0 and 1');
   }
@@ -199,23 +207,19 @@ function sendCC(ccn, ccv, device, midichan, targetTime) {
     throw new Error('expected ccn to be a number or a string');
   }
   const scaled = Math.round(ccv * 127);
-  scheduleAtTime(() => {
-    device.sendControlChange(ccn, scaled, midichan);
-  }, targetTime);
+  timedSend(timeMs, (timeMs) => device.sendControlChange(ccn, scaled, { channels: midichan, time: timeMs }));
 }
 
 // sends a program change message to the given device on the given channel
-function sendProgramChange(progNum, device, midichan, targetTime) {
+function sendProgramChange(progNum, device, midichan, timeMs) {
   if (typeof progNum !== 'number' || progNum < 0 || progNum > 127) {
     throw new Error('expected progNum (program change) to be a number between 0 and 127');
   }
-  scheduleAtTime(() => {
-    device.sendProgramChange(progNum, midichan);
-  }, targetTime);
+  timedSend(timeMs, (timeMs) => device.sendProgramChange(progNum, { channels: midichan, time: timeMs }));
 }
 
 // sends a sysex message to the given device on the given channel
-function sendSysex(sysexid, sysexdata, device, targetTime) {
+function sendSysex(sysexid, sysexdata, device, timeMs) {
   if (Array.isArray(sysexid)) {
     if (!sysexid.every((byte) => Number.isInteger(byte) && byte >= 0 && byte <= 255)) {
       throw new Error('all sysexid bytes must be integers between 0 and 255');
@@ -230,13 +234,11 @@ function sendSysex(sysexid, sysexdata, device, targetTime) {
   if (!sysexdata.every((byte) => Number.isInteger(byte) && byte >= 0 && byte <= 255)) {
     throw new Error('all sysex bytes must be integers between 0 and 255');
   }
-  scheduleAtTime(() => {
-    device.sendSysex(sysexid, sysexdata);
-  }, targetTime);
+  timedSend(timeMs, (timeMs) => device.sendSysex(sysexid, sysexdata, { time: timeMs }));
 }
 
 // sends a NRPN message to the given device on the given channel
-function sendNRPN(nrpnn, nrpv, device, midichan, targetTime) {
+function sendNRPN(nrpnn, nrpv, device, midichan, timeMs) {
   if (Array.isArray(nrpnn)) {
     if (!nrpnn.every((byte) => Number.isInteger(byte) && byte >= 0 && byte <= 255)) {
       throw new Error('all nrpnn bytes must be integers between 0 and 255');
@@ -244,34 +246,29 @@ function sendNRPN(nrpnn, nrpv, device, midichan, targetTime) {
   } else if (!Number.isInteger(nrpv) || nrpv < 0 || nrpv > 255) {
     throw new Error('A:sysexid must be an number between 0 and 255 or an array of such integers');
   }
-  scheduleAtTime(() => {
-    device.sendNRPN(nrpnn, nrpv, midichan);
-  }, targetTime);
+
+  timedSend(timeMs, (timeMs) => device.sendNrpnValue(nrpnn, nrpv, { channels: midichan, time: timeMs }));
 }
 
 // sends a pitch bend message to the given device on the given channel
-function sendPitchBend(midibend, device, midichan, targetTime) {
+function sendPitchBend(midibend, device, midichan, timeMs) {
   if (typeof midibend !== 'number' || midibend < -1 || midibend > 1) {
     throw new Error('expected midibend to be a number between -1 and 1');
   }
-  scheduleAtTime(() => {
-    device.sendPitchBend(midibend, midichan);
-  }, targetTime);
+  timedSend(timeMs, (timeMs) => device.sendPitchBend(midibend, { channels: midichan, time: timeMs }));
 }
 
 // sends a channel aftertouch message to the given device on the given channel
-function sendAftertouch(miditouch, device, midichan, targetTime) {
+function sendAftertouch(miditouch, device, midichan, timeMs) {
   if (typeof miditouch !== 'number' || miditouch < 0 || miditouch > 1) {
     throw new Error('expected miditouch to be a number between 0 and 1');
   }
 
-  scheduleAtTime(() => {
-    device.sendChannelAftertouch(miditouch, midichan);
-  }, targetTime);
+  timedSend(timeMs, (timeMs) => device.sendChannelAftertouch(miditouch, { channels: midichan, time: timeMs }));
 }
 
 // sends a note message to the given device on the given channel
-function sendNote(note, velocity, duration, device, midichan, targetTime) {
+function sendNote(note, velocity, duration, device, midichan, timeMs) {
   if (note == null || note === '') {
     throw new Error('note cannot be null or empty');
   }
@@ -282,21 +279,19 @@ function sendNote(note, velocity, duration, device, midichan, targetTime) {
     throw new Error('duration must be a positive number');
   }
   const midiNumber = typeof note === 'number' ? note : noteToMidi(note);
-  const midiNote = new Note(midiNumber, { attack: velocity, duration });
+  const midiNote = new Note(midiNumber, { attack: velocity });
 
-  scheduleAtTime(() => {
-    device.playNote(midiNote, midichan);
-  }, targetTime);
+  timedSend(timeMs, (timeMs) => device.sendNoteOn(midiNote, { channels: midichan, time: timeMs }));
+  timedSend(timeMs + duration, (timeMs) => device.sendNoteOff(midiNote, { channels: midichan, time: timeMs }));
 }
 
 /**
- * MIDI output: Открывает порт вывода MIDI.
- * @param {string | number} midiport Имя MIDI устройства или индекс, по умолчанию 0
- * @param {object} options Дополнительные опции конфигурации MIDI
+ * MIDI output: Opens a MIDI output port.
+ * @tags external_io
+ * @param {string | number} midiport MIDI device name or index defaulting to 0
+ * @param {object} options Additional MIDI configuration options
  * @example
  * note("c4").midichan(1).midi('IAC Driver Bus 1')
- * @example
- * note("c4").midichan(1).midi('IAC Driver Bus 1', { controller: true, latency: 50 })
  */
 
 Pattern.prototype.midi = function (midiport, options = {}) {
@@ -322,7 +317,7 @@ Pattern.prototype.midi = function (midiport, options = {}) {
   let midiConfig = {
     // Default configuration values
     isController: false, // Disable sending notes for midi controllers
-    noteOffsetMs: 10, // Default note-off offset to prevent glitching in ms
+    noteOffsetMs: isFirefox ? 10 : 1, // Default note-off offset to prevent glitching in ms. firefox needs more slack
     midichannel: 1, // Default MIDI channel
     velocity: 0.9, // Default velocity
     gain: 1, // Default gain
@@ -345,11 +340,19 @@ Pattern.prototype.midi = function (midiport, options = {}) {
       logger(`Midi device disconnected! Available: ${getMidiDeviceNamesString(outputs)}`),
   });
 
-  return this.onTrigger((hap, _currentTime, cps, targetTime) => {
+  ensureMinimalOutput();
+
+  return this.sortHapsByPart().onTrigger((hap, _currentTime, cps, targetTime) => {
     if (!WebMidi.enabled) {
       logger('Midi not enabled');
       return;
     }
+    const timeMs = getClockBridge().getPerformanceTime(targetTime);
+    if (!timeMs) {
+      logger('[midi] clockbridge not ready');
+      return;
+    }
+
     hap.ensureObjectValue();
 
     // midi event values from hap with configurable defaults
@@ -387,7 +390,7 @@ Pattern.prototype.midi = function (midiport, options = {}) {
     // if midimap is set, send a cc messages from defined controls
     if (midicontrolMap.has(midimap)) {
       const ccs = mapCC(midicontrolMap.get(midimap), hap.value);
-      ccs.forEach(({ ccn, ccv }) => sendCC(ccn, ccv, device, midichan, targetTime));
+      ccs.forEach(({ ccn, ccv }) => sendCC(ccn, ccv, device, midichan, timeMs));
     } else if (midimap !== 'default') {
       // Add warning when a non-existent midimap is specified
       logger(`[midi] midimap "${midimap}" not found! Available maps: ${[...midicontrolMap.keys()].join(', ')}`);
@@ -395,16 +398,20 @@ Pattern.prototype.midi = function (midiport, options = {}) {
 
     // Handle note
     if (note !== undefined && !midiConfig.isController) {
-      // note off messages will often a few ms arrive late,
-      // try to prevent glitching by subtracting noteOffsetMs from the duration length
-      const duration = (hap.duration.valueOf() / cps) * 1000 - midiConfig.noteOffsetMs;
+      // note off time is calculated early, together with note on time
+      // when the note off is due, the clock might have drifted, and the next note on message might happen before the note off
+      // this would lead to the next note being cut off
+      // this is why we make notes shorter by noteOffsetMs, so note offs happen earlier than the note ons after
+      const hapDuration = (hap.duration.valueOf() / cps) * 1000;
+      const offset = Math.min(midiConfig.noteOffsetMs, hapDuration / 2);
+      const duration = hapDuration - offset;
 
-      sendNote(note, velocity, duration, device, midichan, targetTime);
+      sendNote(note, velocity, duration, device, midichan, timeMs);
     }
 
     // Handle program change
     if (progNum !== undefined) {
-      sendProgramChange(progNum, device, midichan, targetTime);
+      sendProgramChange(progNum, device, midichan, timeMs);
     }
 
     // Handle sysex
@@ -414,115 +421,263 @@ Pattern.prototype.midi = function (midiport, options = {}) {
     // if sysexid is an array the first byte is 0x00
 
     if (sysexid !== undefined && sysexdata !== undefined) {
-      sendSysex(sysexid, sysexdata, device, targetTime);
+      sendSysex(sysexid, sysexdata, device, timeMs);
     }
 
     // Handle control change
     if (ccv !== undefined && ccn !== undefined) {
-      sendCC(ccn, ccv, device, midichan, targetTime);
+      sendCC(ccn, ccv, device, midichan, timeMs);
     }
 
     // Handle NRPN non-registered parameter number
     if (nrpnn !== undefined && nrpv !== undefined) {
-      sendNRPN(nrpnn, nrpv, device, midichan, targetTime);
+      sendNRPN(nrpnn, nrpv, device, midichan, timeMs);
     }
 
     // Handle midibend
     if (midibend !== undefined) {
-      sendPitchBend(midibend, device, midichan, targetTime);
+      sendPitchBend(midibend, device, midichan, timeMs);
     }
 
     // Handle miditouch
     if (miditouch !== undefined) {
-      sendAftertouch(miditouch, device, midichan, targetTime);
+      sendAftertouch(miditouch, device, midichan, timeMs);
     }
 
     // Handle midicmd
     if (hap.whole.begin + 0 === 0) {
       // we need to start here because we have the timing info
-      scheduleAtTime(() => {
-        device.sendStart();
-      }, targetTime);
+      timedSend(timeMs, (timeMs) => device.sendStart({ time: timeMs }));
     }
     if (['clock', 'midiClock'].includes(midicmd)) {
-      scheduleAtTime(() => {
-        device.sendClock();
-      }, targetTime);
+      timedSend(timeMs, (timeMs) => device.sendClock({ time: timeMs }));
     } else if (['start'].includes(midicmd)) {
-      scheduleAtTime(() => {
-        device.sendStart();
-      }, targetTime);
+      timedSend(timeMs, (timeMs) => device.sendStart({ time: timeMs }));
     } else if (['stop'].includes(midicmd)) {
-      scheduleAtTime(() => {
-        device.sendStop();
-      }, targetTime);
+      timedSend(timeMs, (timeMs) => device.sendStop({ time: timeMs }));
     } else if (['continue'].includes(midicmd)) {
-      scheduleAtTime(() => {
-        device.sendContinue();
-      }, targetTime);
+      timedSend(timeMs, (timeMs) => device.sendContinue({ time: timeMs }));
     } else if (Array.isArray(midicmd)) {
       if (midicmd[0] === 'progNum') {
-        sendProgramChange(midicmd[1], device, midichan, targetTime);
+        sendProgramChange(midicmd[1], device, midichan, timeMs);
       } else if (midicmd[0] === 'cc') {
         if (midicmd.length === 2) {
-          sendCC(midicmd[0], midicmd[1] / 127, device, midichan, targetTime);
+          sendCC(midicmd[0], midicmd[1] / 127, device, midichan, timeMs);
         }
       } else if (midicmd[0] === 'sysex') {
         if (midicmd.length === 3) {
           const [_, id, data] = midicmd;
-          sendSysex(id, data, device, targetTime);
+          sendSysex(id, data, device, timeMs);
         }
       }
     }
   });
 };
 
-let listeners = {};
-const refs = {};
-
 /**
- * MIDI input: Открывает порт ввода MIDI для приёма MIDI control change сообщений.
- * @param {string | number} input Имя MIDI устройства или индекс, по умолчанию 0
- * @returns {Function}
- * @example
- * let cc = await midin('IAC Driver Bus 1')
- * note("c a f e").lpf(cc(0).range(0, 1000)).lpq(cc(1).range(0, 10)).sound("sawtooth")
+ * Initialize a midi input device
  */
-export async function midin(input) {
+async function _initializeInput(input) {
   if (isPattern(input)) {
     throw new Error(
-      `midin: does not accept Pattern as input. Make sure to pass device name with single quotes. Example: midin('${
+      `[midi] Midi input cannot be a pattern. Make sure to pass device name with single quotes. Example: midin('${
         WebMidi.outputs?.[0]?.name || 'IAC Driver Bus 1'
       }')`,
     );
   }
+
   const initial = await enableWebMidi(); // only returns on first init
-  const device = getDevice(input, WebMidi.inputs);
-  if (!device) {
-    throw new Error(
-      `midiin: device "${input}" not found.. connected devices: ${getMidiDeviceNamesString(WebMidi.inputs)}`,
-    );
-  }
+
+  const instance = midiInputs[input] || new MidiInput(input);
+  midiInputs[input] = instance;
+
   if (initial) {
+    const device = instance.initialDevice;
+
     const otherInputs = WebMidi.inputs.filter((o) => o.name !== device.name);
     logger(
-      `Midi enabled! Using "${device.name}". ${
-        otherInputs?.length ? `Also available: ${getMidiDeviceNamesString(otherInputs)}` : ''
-      }`,
+      device
+        ? `[midi] Midi enabled! Using "${device.name}". ${
+            otherInputs?.length ? `Also available: ${getMidiDeviceNamesString(otherInputs)}` : ''
+          }`
+        : `[midi] Midi enabled! Waiting for device "${input}"... Currently connected devices: ${getMidiDeviceNamesString(WebMidi.inputs)}`,
     );
   }
-  // ensure refs for this input are initialized
-  if (!refs[input]) {
-    refs[input] = {};
-  }
-  const cc = (cc) => ref(() => refs[input][cc] || 0);
 
-  listeners[input] && device.removeListener('midimessage', listeners[input]);
-  listeners[input] = (e) => {
-    const cc = e.dataBytes[0];
-    const v = e.dataBytes[1];
-    refs[input] && (refs[input][cc] = v / 127);
+  return instance;
+}
+
+// MIDI input wrappers, by specified input string/index
+const midiInputs = {};
+
+/**
+ * MIDI input: Opens a MIDI input port to receive MIDI control change messages.
+ *
+ * The output is a function that accepts a midi cc value to query as well as (optionally) a midi channel
+ *
+ * @name midin
+ * @tags external_io, midi
+ * @param {string | number} input MIDI device name or index defaulting to 0
+ * @returns {function(number, number=): Pattern} A function from (cc, channel?) to a pattern.
+ *   When queried, the pattern will produces the most recently received midi value (normalized to 0 to 1)
+ *   that came through that cc number (and channel, if provided)
+ * @example
+ * const cc = await midin('IAC Driver Bus 1')
+ * note("c a f e").lpf(cc(0).range(0, 1000)).lpq(cc(1).range(0, 10)).sound("sawtooth")
+ * @example
+ * const allCC = await midin('IAC Driver Bus 1')
+ * const cc = (ccNum) => allCC(ccNum, 2) // just channel 2
+ * note("c a f e").s("saw")
+ *   .when(cc(0).gt(0), x => x.postgain(0))
+ */
+export async function midin(input) {
+  const instance = await _initializeInput(input);
+
+  return instance.createCC.bind(instance);
+}
+
+/**
+ * MIDI keyboard: Opens a MIDI input port to receive MIDI keyboard messages.
+ *
+ * The note length is fixed as Superdough is not currently set up for undetermined
+ * note durations
+ *
+ * The 'midichan' control value contains the number of the channel the note is coming from
+ * so it could be filtered or manipulated further in the chain.
+ *
+ * @name midikeys
+ * @tags external_io, midi
+ * @param {string | number} input MIDI device name or index defaulting to 0
+ * @returns {function((number | Pattern)=): Pattern} A function that produces a pattern.
+ *   When queried, the pattern will produces the most recently played midi notes and velocities,
+ *   lasting for the specified duration
+ * @example
+ * const kb = await midikeys('Arturia KeyStep 32')
+ * kb().s("tri").lpf(80).lpe(6).lpd(0.1).room(2).delay(0.35)
+ * @example
+ * const kb = await midikeys('Arturia KeyStep 32')
+ * kb("0.5 1")
+ *   .s("saw")
+ *   .add(note(rand.mul(0.3)))
+ *   .lpf(1000).lpe(2).room(0.5)
+ * @example
+ * // discard all notes not coming out from midi channel 2
+ * const kb = await midikeys('Arturia KeyStep 32')
+ * kb().filterValues(v=>v.midichan==2).s("tri")
+ */
+const kHaps = {};
+const kListeners = {};
+
+function _triggerKeyboard(input, cps, now, latencyCycles) {
+  const pattern = getPattern();
+  const trigger = getTriggerFunc();
+  if (!pattern || !trigger) {
+    return false;
+  }
+  const t = now + latencyCycles;
+  const eps = 1e-6;
+  const haps = pattern.queryArc(t - eps, t + eps, { _cps: cps });
+  // Only keep haps coming from `midikeys`
+  const kbHaps = haps.filter((hap) => hap.value?.midikey?.startsWith(`${input}_`));
+  const ctxNow = getAudioContext().currentTime;
+  if (!kbHaps.length) {
+    return false;
+  }
+  kbHaps.forEach((hap) => {
+    if (!hap.hasOnset()) {
+      return;
+    }
+    const t = ctxNow + (hap.whole.begin - now) / cps;
+    const duration = hap.duration / cps;
+    trigger(hap, t - ctxNow, duration, cps, t);
+  });
+
+  return true;
+}
+export async function midikeys(input) {
+  const instance = await _initializeInput(input);
+
+  // TODO: support unpluggable device usage
+  const device = instance.initialDevice;
+  if (!device) {
+    throw new Error(
+      `[midi] Midi device "${input}" not found.. connected devices: ${getMidiDeviceNamesString(WebMidi.inputs)}`,
+    );
+  }
+
+  if (!kHaps[input]) {
+    kHaps[input] = [];
+  }
+  kListeners[input] && device.removeListener('midimessage', kListeners[input]);
+  kListeners[input] = (e) => {
+    const { dataBytes, message } = e;
+    const noteon = message.command === 9;
+    let noteoff = message.command === 8;
+    // Don't enqueue or trigger midi notes if scheduler is not started
+    const notStarted = !getIsStarted();
+    // Ignore non-note messages (e.g. CC, pitchbend, modwheel, etc.)
+    const notANote = !noteon && !noteoff;
+    if (notStarted || notANote) {
+      return;
+    }
+    const [note, velocity] = dataBytes;
+    noteoff ||= noteon && velocity === 0; // handle devices which may use velocity = 0 to signal noteoff
+    const key = `${input}_${note}`;
+    const cps = getCps() ?? 0.5;
+    const triggerAvailable = !!(getPattern() && getTriggerFunc());
+    const latencySeconds = triggerAvailable ? 0.01 : 0.06; // avoid missing notes due to cyclist / trigger latency
+    const now = getTime();
+    const t = now + latencySeconds * cps;
+    const span = new TimeSpan(t, t);
+    let value = { midikey: key };
+    if (noteoff) {
+      /* TODO: It's a big effort, but we could modify superdough to allow for situations where
+      we don't know the hap duration in advance. This would mean, for example, that if the hap
+      is flagged as such a special note-on event, we have all effects be persistent & all ADSR
+      envelopes stop at the S stage [and store references to them by `midikey`]
+      If this is implemented, then getting full keyboard functionality should be as simple
+      as sending the corresponding note-off event below and triggering `release` on each of those
+      referenced effects/envelopes
+      
+      value = { ...value, noteoff: true };
+  
+      If this is achieved, we can remove the noteLength parameter
+      */
+      return;
+    } else {
+      value = { ...value, note: Math.round(note), velocity: velocity / 127, midichan: message.channel };
+    }
+    kHaps[input].push(new Hap(span, span, value, {}));
+    if (!noteoff && triggerAvailable) {
+      // If we have access to a trigger function, we call it to immediately
+      // dispatch to the audio engine, rather than waiting for cyclist to catch these haps
+      const triggered = _triggerKeyboard(input, cps, now, latencySeconds * cps);
+      if (triggered) {
+        kHaps[input] = [];
+      }
+    }
   };
-  device.addListener('midimessage', listeners[input]);
-  return cc;
+  device.addListener('midimessage', kListeners[input]);
+  const kb = (noteLength = 0.5) => {
+    const nlPat = reify(noteLength);
+    const query = (state) => {
+      const haps = kHaps[input].flatMap((hap) => {
+        const lenHaps = nlPat.query(state.setSpan(hap.wholeOrPart()));
+        return lenHaps.map((lenHap) => {
+          const nl = lenHap.value ?? 0.5;
+          const whole = new TimeSpan(hap.whole.begin, hap.whole.begin.add(nl));
+          const part = new TimeSpan(hap.part.begin, hap.part.begin.add(nl));
+          const context = hap.combineContext(lenHap);
+          return new Hap(whole, part, hap.value, context);
+        });
+      });
+      if (state.controls.cyclist) {
+        // Notes have been sent; clear them
+        kHaps[input] = [];
+      }
+      return haps;
+    };
+    return new Pattern(query);
+  };
+  return kb;
 }

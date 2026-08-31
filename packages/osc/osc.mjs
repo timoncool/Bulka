@@ -4,7 +4,8 @@ Copyright (C) 2022 Strudel contributors - see <https://codeberg.org/uzu/strudel/
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more details. You should have received a copy of the GNU Affero General Public License along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { logger, parseNumeral, register, isNote, noteToMidi, ClockCollator } from '@strudel/core';
+import { logger, parseNumeral, register, isNote, noteToMidi } from '@strudel/core';
+import { ensureMinimalOutput, getClockBridge } from '@strudel/webaudio';
 
 let connection; // Promise<OSC>
 function connect() {
@@ -42,10 +43,9 @@ export function parseControlsFromHap(hap, cps) {
     if (isNote(controls.note)) {
       controls.midinote = noteToMidi(controls.note, controls.octave || 3);
     } else {
-      controls.note = parseNumeral(controls.note);
+      controls.midinote = parseNumeral(controls.note);
     }
   }
-  controls.bank && (controls.s = controls.bank + controls.s);
   controls.roomsize && (controls.size = parseNumeral(controls.roomsize));
   // speed adjustment for CPS is handled on the DSP side in superdirt and pattern side in Strudel,
   // so we need to undo the adjustment before sending the message to superdirt.
@@ -55,13 +55,18 @@ export function parseControlsFromHap(hap, cps) {
   return controls;
 }
 
-const collator = new ClockCollator({});
-
 export async function oscTrigger(hap, currentTime, cps = 1, targetTime) {
   const ws = await connect();
+
+  const timeMs = getClockBridge().getPerformanceTime(targetTime);
+  if (!timeMs) {
+    logger('[osc] clockbridge not ready');
+    return;
+  }
+  const ts = performance.timeOrigin + timeMs;
+
   const controls = parseControlsFromHap(hap, cps);
   const keyvals = Object.entries(controls).flat();
-  const ts = collator.calculateTimestamp(currentTime, targetTime) * 1000;
   const msg = { address: '/dirt/play', args: keyvals, timestamp: ts };
 
   if ('oschost' in hap.value) {
@@ -75,11 +80,15 @@ export async function oscTrigger(hap, currentTime, cps = 1, targetTime) {
 
 /**
  *
- * Отправляет каждый hap как OSC сообщение, которое может быть принято SuperCollider или любым другим программным обеспечением с поддержкой OSC.
- * Для дополнительной информации читайте [MIDI & OSC в документации](https://strudel.cc/learn/input-output/)
+ * Sends each hap as an OSC message, which can be picked up by SuperCollider or any other OSC-enabled software.
+ * For more info, read [MIDI & OSC in the docs](https://strudel.cc/learn/input-output/)
  *
  * @name osc
+ * @tags external_io
  * @memberof Pattern
  * @returns Pattern
  */
-export const osc = register('osc', (pat) => pat.onTrigger(oscTrigger));
+export const osc = register('osc', (pat) => {
+  ensureMinimalOutput();
+  return pat.onTrigger(oscTrigger);
+});

@@ -23,6 +23,7 @@ export const settings = {
   background: hex[0],
   lineBackground: 'transparent',
   foreground: hex[10],
+  muted: hex[7],
   selection: hex[8],
   selectionMatch: hex[0],
   gutterBackground: hex[3],
