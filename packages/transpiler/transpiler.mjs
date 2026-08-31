@@ -1,44 +1,11 @@
-import { getLeafLocations } from '@strudel/mini';
+/*
+transpiler.mjs - <short description TODO>
+Copyright (C) 2022 Strudel contributors - see <https://codeberg.org/uzu/strudel/src/branch/main/packages/superdough/superdough.mjs>
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more details. You should have received a copy of the GNU Affero General Public License along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
 import { parse } from 'acorn';
 import escodegen from 'escodegen';
 import { walk } from 'estree-walker';
-
-let widgetMethods = [];
-export function registerWidgetType(type) {
-  widgetMethods.push(type);
-}
-
-// Functions that accept URLs and should NOT have their string arguments parsed as mini-notation
-// This prevents URLs like "https://example.com/image.jpg" from being broken by the "/" operator
-const urlFunctions = new Set([
-  'initImage',
-  'initVideo',
-  'initCam',
-  'initScreen',
-  'initStream',
-  'loadScript',
-]);
-
-function isUrlFunctionArgument(node, parent) {
-  if (!parent || parent.type !== 'CallExpression') {
-    return false;
-  }
-  // Check for method calls like s0.initImage("url")
-  if (parent.callee?.type === 'MemberExpression') {
-    const methodName = parent.callee.property?.name;
-    if (urlFunctions.has(methodName)) {
-      return true;
-    }
-  }
-  // Check for direct function calls like loadScript("url")
-  if (parent.callee?.type === 'Identifier') {
-    const funcName = parent.callee.name;
-    if (urlFunctions.has(funcName)) {
-      return true;
-    }
-  }
-  return false;
-}
 
 let languages = new Map();
 // config = { getLocations: (code: string, offset?: number) => number[][] }
@@ -49,115 +16,137 @@ let languages = new Map();
 export function registerLanguage(type, config) {
   languages.set(type, config);
 }
+export function getLanguages() {
+  return languages;
+}
+
+const plugins = [];
+
+export function registerTranspilerPlugin(plugin) {
+  plugins.push(plugin);
+}
+export function getPlugins() {
+  return plugins.flat(Infinity);
+}
 
 export function transpiler(input, options = {}) {
-  const { wrapAsync = false, addReturn = true, emitMiniLocations = true, emitWidgets = true } = options;
+  options = {
+    wrapAsync: false,
+    addReturn: true,
+    emitMiniLocations: true,
+    emitWidgets: true,
+    blockBased: false,
+    range: [],
+    ...options,
+  };
 
+  const { wrapAsync, addReturn, emitMiniLocations, emitWidgets, blockBased, range } = options;
+
+  const comments = [];
   let ast = parse(input, {
     ecmaVersion: 2022,
     allowAwaitOutsideFunction: true,
     locations: true,
+    onComment: comments,
   });
 
-  let miniLocations = [];
-  const collectMiniLocations = (value, node) => {
-    const minilang = languages.get('minilang');
-    if (minilang) {
-      const code = `[${value}]`;
-      const locs = minilang.getLocations(code, node.start);
-      miniLocations = miniLocations.concat(locs);
-    } else {
-      const leafLocs = getLeafLocations(`"${value}"`, node.start, input);
-      miniLocations = miniLocations.concat(leafLocs);
-    }
-  };
-  let widgets = [];
+  let miniDisableRanges = findMiniDisableRanges(comments, input.length);
+
+  // Position offset for block-based evaluation
+  let nodeOffset = range && range.length > 0 ? range[0] : 0;
+
+  // Track declarations to add to strudelScope for block-based eval
+  let scopeDeclarations = [];
+
+  let labels = [];
+
+  const context = { options, input, nodeOffset, miniDisableRanges, labels };
+  const plugins = getPlugins().map((plugin) => plugin.walk?.(context));
 
   walk(ast, {
-    enter(node, parent /* , prop, index */) {
-      if (isLanguageLiteral(node)) {
-        const { name } = node.tag;
-        const language = languages.get(name);
-        const code = node.quasi.quasis[0].value.raw;
-        const offset = node.quasi.start + 1;
-        if (emitMiniLocations) {
-          const locs = language.getLocations(code, offset);
-          miniLocations = miniLocations.concat(locs);
+    enter(node, parent, prop, index) {
+      // Apply position offset for block-based evaluation
+      if (blockBased && node.start !== undefined) {
+        node.start = node.start + nodeOffset;
+        node.end = node.end + nodeOffset;
+      }
+      // Collect variable and function declarations for strudelScope (block-based eval)
+      if (blockBased && parent?.type === 'Program') {
+        if (node.type === 'VariableDeclaration') {
+          for (const declarator of node.declarations) {
+            if (declarator.id?.name) {
+              scopeDeclarations.push(declarator.id.name);
+            }
+          }
+        } else if (node.type === 'FunctionDeclaration' && node.id?.name) {
+          scopeDeclarations.push(node.id.name);
         }
-        this.skip();
-        return this.replace(languageWithLocation(name, code, offset));
       }
-      if (isTemplateLiteral(node, 'tidal')) {
-        const raw = node.quasi.quasis[0].value.raw;
-        const offset = node.quasi.start + 1;
-        if (emitMiniLocations) {
-          const stringLocs = collectHaskellMiniLocations(raw, offset);
-          miniLocations = miniLocations.concat(stringLocs);
-        }
-        this.skip();
-        return this.replace(tidalWithLocation(raw, offset));
+
+      for (const plugin of plugins) {
+        if (!plugin?.enter?.call(this, node, parent, prop, index)) continue;
+        return;
       }
-      if (isBackTickString(node, parent)) {
-        const { quasis } = node;
-        const { raw } = quasis[0].value;
-        this.skip();
-        emitMiniLocations && collectMiniLocations(raw, node);
-        return this.replace(miniWithLocation(raw, node));
-      }
-      if (isStringWithDoubleQuotes(node) && !isUrlFunctionArgument(node, parent)) {
-        const { value } = node;
-        this.skip();
-        emitMiniLocations && collectMiniLocations(value, node);
-        return this.replace(miniWithLocation(value, node));
-      }
-      if (isSliderFunction(node)) {
-        emitWidgets &&
-          widgets.push({
-            from: node.arguments[0].start,
-            to: node.arguments[0].end,
-            value: node.arguments[0].raw, // don't use value!
-            min: node.arguments[1]?.value ?? 0,
-            max: node.arguments[2]?.value ?? 1,
-            step: node.arguments[3]?.value,
-            type: 'slider',
-          });
-        return this.replace(sliderWithLocation(node));
-      }
-      if (isWidgetMethod(node)) {
-        const type = node.callee.property.name;
-        const index = widgets.filter((w) => w.type === type).length;
-        const widgetConfig = {
-          to: node.end,
-          index,
-          type,
-          id: options.id,
-        };
-        emitWidgets && widgets.push(widgetConfig);
-        return this.replace(widgetWithLocation(node, widgetConfig));
-      }
-      if (isBareSamplesCall(node, parent)) {
-        return this.replace(withAwait(node));
-      }
+
       if (isLabelStatement(node)) {
+        // Collect label info for block-based evaluation
+        // Store positions WITHOUT offset so repl can slice the transpiler output correctly
+        if (blockBased) {
+          labels.push({
+            name: node.label.name,
+            index: node.start - nodeOffset,
+            end: node.label.end - nodeOffset,
+            fullMatch: input.slice(node.start - nodeOffset, node.label.end - nodeOffset),
+            activeVisualizer: findVisualizerInSubtree(node.body),
+          });
+        }
         return this.replace(labelToP(node));
       }
+      // Detect all() calls as special labels for block management
+      // Store positions WITHOUT offset so repl can slice the transpiler output correctly
+      if (blockBased && isAllCall(node)) {
+        labels.push({
+          name: 'all',
+          index: node.start - nodeOffset,
+          end: node.end - nodeOffset,
+          fullMatch: input.slice(node.start - nodeOffset, node.end - nodeOffset),
+          activeVisualizer: node.arguments[0] ? findVisualizerInSubtree(node.arguments[0]) : null,
+        });
+      }
     },
-    leave(node, parent, prop, index) {},
+
+    leave(node, parent, prop, index) {
+      for (const plugin of plugins) {
+        if (!plugin?.leave?.call(this, node, parent, prop, index)) continue;
+        return;
+      }
+    },
   });
 
   let { body } = ast;
 
+  const silenceExpression = {
+    type: 'ExpressionStatement',
+    expression: {
+      type: 'Identifier',
+      name: 'silence',
+    },
+  };
+
   if (!body.length) {
     console.warn('empty body -> fallback to silence');
-    body.push({
-      type: 'ExpressionStatement',
-      expression: {
-        type: 'Identifier',
-        name: 'silence',
-      },
-    });
+    body.push(silenceExpression);
   } else if (!body?.[body.length - 1]?.expression) {
-    throw new Error('unexpected ast format without body expression');
+    // Last statement is not an expression (e.g., VariableDeclaration, FunctionDeclaration)
+    body.push(silenceExpression);
+  }
+
+  // For block-based eval, add scope assignments before the return statement
+  // This allows variables/functions defined in one block to be used in other blocks
+  if (blockBased && scopeDeclarations.length > 0) {
+    const scopeAssignments = scopeDeclarations.flatMap((name) => createScopeAssignment(name));
+    // Insert scope assignments before the last statement (which will become the return)
+    body.splice(body.length - 1, 0, ...scopeAssignments);
   }
 
   // add return to last statement
@@ -175,96 +164,15 @@ export function transpiler(input, options = {}) {
   if (!emitMiniLocations) {
     return { output };
   }
-  return { output, miniLocations, widgets };
+
+  let pluginContext;
+  ({ options, input, miniDisableRanges, nodeOffset, ...pluginContext } = context);
+
+  return { output, ...pluginContext };
 }
 
-function isStringWithDoubleQuotes(node, locations, code) {
-  if (node.type !== 'Literal') {
-    return false;
-  }
-  return node.raw[0] === '"';
-}
-
-function isBackTickString(node, parent) {
-  return node.type === 'TemplateLiteral' && parent.type !== 'TaggedTemplateExpression';
-}
-
-function miniWithLocation(value, node) {
-  const { start: fromOffset } = node;
-
-  const minilang = languages.get('minilang');
-  let name = 'm';
-  if (minilang && minilang.name) {
-    name = minilang.name; // name is expected to be exported from the package of the minilang
-  }
-
-  return {
-    type: 'CallExpression',
-    callee: {
-      type: 'Identifier',
-      name,
-    },
-    arguments: [
-      { type: 'Literal', value },
-      { type: 'Literal', value: fromOffset },
-    ],
-    optional: false,
-  };
-}
-
-// these functions are connected to @strudel/codemirror -> slider.mjs
-// maybe someday there will be pluggable transpiler functions, then move this there
-function isSliderFunction(node) {
-  return node.type === 'CallExpression' && node.callee.name === 'slider';
-}
-
-function isWidgetMethod(node) {
-  return node.type === 'CallExpression' && widgetMethods.includes(node.callee.property?.name);
-}
-
-function sliderWithLocation(node) {
-  const id = 'slider_' + node.arguments[0].start; // use loc of first arg for id
-  // add loc as identifier to first argument
-  // the sliderWithID function is assumed to be sliderWithID(id, value, min?, max?)
-  node.arguments.unshift({
-    type: 'Literal',
-    value: id,
-    raw: id,
-  });
-  node.callee.name = 'sliderWithID';
-  return node;
-}
-
-export function getWidgetID(widgetConfig) {
-  // the widget id is used as id for the dom element + as key for eventual resources
-  // for example, for each scope widget, a new analyser + buffer (large) is created
-  // that means, if we use the index index of line position as id, less garbage is generated
-  // return `widget_${widgetConfig.to}`; // more gargabe
-  //return `widget_${widgetConfig.index}_${widgetConfig.to}`; // also more garbage
-  return `${widgetConfig.id || ''}_widget_${widgetConfig.type}_${widgetConfig.index}`; // less garbage
-}
-
-function widgetWithLocation(node, widgetConfig) {
-  const id = getWidgetID(widgetConfig);
-  // add loc as identifier to first argument
-  // the sliderWithID function is assumed to be sliderWithID(id, value, min?, max?)
-  node.arguments.unshift({
-    type: 'Literal',
-    value: id,
-    raw: id,
-  });
-  return node;
-}
-
-function isBareSamplesCall(node, parent) {
-  return node.type === 'CallExpression' && node.callee.name === 'samples' && parent.type !== 'AwaitExpression';
-}
-
-function withAwait(node) {
-  return {
-    type: 'AwaitExpression',
-    argument: node,
-  };
+function isAllCall(node) {
+  return node.type === 'CallExpression' && node.callee.name === 'all';
 }
 
 function isLabelStatement(node) {
@@ -297,65 +205,144 @@ function labelToP(node) {
   };
 }
 
-function isLanguageLiteral(node) {
-  return node.type === 'TaggedTemplateExpression' && languages.has(node.tag.name);
+// List of non-inline widgets that need cleanup
+// These are Pattern.prototype methods that create persistent visualizations
+// (should be repalced by a function call producing an actual list of registered widgets)
+const nonInlineWidgets = ['punchcard', 'spiral', 'scope', 'pitchwheel', 'spectrum', 'pianoroll', 'wordfall'];
+
+function isVisualizerCall(node) {
+  if (
+    node.type === 'CallExpression' &&
+    node.callee.type === 'MemberExpression' &&
+    nonInlineWidgets.includes(node.callee.property?.name)
+  ) {
+    return node.callee.property.name;
+  }
+  return null;
 }
 
-// tidal highlighting
-// this feels kind of stupid, when we also know the location inside the string op (tidal.mjs)
-// but maybe it's the only way
+function findVisualizerInSubtree(node) {
+  if (!node || typeof node !== 'object') return null;
 
-function isTemplateLiteral(node, value) {
-  return node.type === 'TaggedTemplateExpression' && node.tag.name === value;
-}
+  // Check if this node is a visualizer call
+  const viz = isVisualizerCall(node);
+  if (viz) return viz;
 
-function collectHaskellMiniLocations(haskellCode, offset) {
-  return haskellCode
-    .split('')
-    .reduce((acc, char, i) => {
-      if (char !== '"') {
-        return acc;
+  // Recursively search children
+  for (const key of Object.keys(node)) {
+    if (key === 'parent') continue; // Skip parent references to avoid cycles
+    const child = node[key];
+    if (Array.isArray(child)) {
+      for (const item of child) {
+        const found = findVisualizerInSubtree(item);
+        if (found) return found;
       }
-      if (!acc.length || acc[acc.length - 1].length > 1) {
-        acc.push([i + 1]);
-      } else {
-        acc[acc.length - 1].push(i);
-      }
-      return acc;
-    }, [])
-    .map(([start, end]) => {
-      const miniString = haskellCode.slice(start, end);
-      return getLeafLocations(`"${miniString}"`, offset + start - 1);
-    })
-    .flat();
+    } else if (child && typeof child === 'object' && child.type) {
+      const found = findVisualizerInSubtree(child);
+      if (found) return found;
+    }
+  }
+  return null;
 }
 
-function tidalWithLocation(value, offset) {
-  return {
-    type: 'CallExpression',
-    callee: {
-      type: 'Identifier',
-      name: 'tidal',
+// Creates AST nodes for: userDefinedKeys.add('name'); strudelScope.name = name; globalThis.name = name;
+// Used in block-based evaluation to persist variables/functions across blocks
+// We add to both strudelScope (for internal lookups) and globalThis (for direct access)
+// We also track the key in userDefinedKeys so clearScope() can remove it later
+function createScopeAssignment(name) {
+  return [
+    // userDefinedKeys.add('name');
+    {
+      type: 'ExpressionStatement',
+      expression: {
+        type: 'CallExpression',
+        callee: {
+          type: 'MemberExpression',
+          object: {
+            type: 'Identifier',
+            name: 'userDefinedKeys',
+          },
+          property: {
+            type: 'Identifier',
+            name: 'add',
+          },
+          computed: false,
+        },
+        arguments: [
+          {
+            type: 'Literal',
+            value: name,
+          },
+        ],
+      },
     },
-    arguments: [
-      { type: 'Literal', value },
-      { type: 'Literal', value: offset },
-    ],
-    optional: false,
-  };
+    // strudelScope.name = name;
+    {
+      type: 'ExpressionStatement',
+      expression: {
+        type: 'AssignmentExpression',
+        operator: '=',
+        left: {
+          type: 'MemberExpression',
+          object: {
+            type: 'Identifier',
+            name: 'strudelScope',
+          },
+          property: {
+            type: 'Identifier',
+            name: name,
+          },
+          computed: false,
+        },
+        right: {
+          type: 'Identifier',
+          name: name,
+        },
+      },
+    },
+    // globalThis.name = name;
+    {
+      type: 'ExpressionStatement',
+      expression: {
+        type: 'AssignmentExpression',
+        operator: '=',
+        left: {
+          type: 'MemberExpression',
+          object: {
+            type: 'Identifier',
+            name: 'globalThis',
+          },
+          property: {
+            type: 'Identifier',
+            name: name,
+          },
+          computed: false,
+        },
+        right: {
+          type: 'Identifier',
+          name: name,
+        },
+      },
+    },
+  ];
 }
 
-function languageWithLocation(name, value, offset) {
-  return {
-    type: 'CallExpression',
-    callee: {
-      type: 'Identifier',
-      name: name,
-    },
-    arguments: [
-      { type: 'Literal', value },
-      { type: 'Literal', value: offset },
-    ],
-    optional: false,
-  };
+function findMiniDisableRanges(comments, codeEnd) {
+  const ranges = [];
+  const stack = []; // used to track on/off pairs
+  for (const comment of comments) {
+    const value = comment.value.trim();
+    if (value.startsWith('mini-off')) {
+      stack.push(comment.start);
+    } else if (value.startsWith('mini-on')) {
+      const start = stack.pop();
+      ranges.push([start, comment.end]);
+    }
+  }
+  while (stack.length) {
+    // If no closing mini-on is found, just turn it off until `codeEnd`
+    const start = stack.pop();
+    ranges.push([start, codeEnd]);
+  }
+  return ranges;
 }

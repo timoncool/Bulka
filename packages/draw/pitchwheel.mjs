@@ -54,11 +54,42 @@ export function pitchwheel({
   }
 
   if (edo) {
+    edo = haps.length >= 1 && haps[0].value && haps[0].value.edo ? haps[0].value.edo : edo;
+    root = haps.length >= 1 && haps[0].value && haps[0].value.root ? haps[0].value.root : root;
+    const degreeIndexes =
+      haps.length >= 1 && haps[0].value && haps[0].value.degreeIndexes ? haps[0].value.degreeIndexes : null;
+    const intLabels = haps.length >= 1 && haps[0].value && haps[0].value.intLabels ? haps[0].value.intLabels : null;
+    ctx.font = '20px sans-serif';
+    const label = `${edo} EDO`;
+    // Draw EDO label:
+    ctx.fillText(label, centerX + radius - ctx.measureText(label).width + 15, centerY + radius);
     Array.from({ length: edo }, (_, i) => {
       const angle = freq2angle(root * Math.pow(2, i / edo), root);
+
       const [x, y] = circlePos(centerX, centerY, radius, angle);
       ctx.beginPath();
-      ctx.arc(x, y, hapRadius, 0, 2 * Math.PI);
+      // Draw interval label for degree i when it exists:
+      if (degreeIndexes === null || degreeIndexes.includes(i)) {
+        ctx.globalAlpha = 1;
+        ctx.arc(x, y, hapRadius, 0, 2 * Math.PI);
+        if (intLabels !== null) {
+          const degree = degreeIndexes.indexOf(i);
+          if (intLabels[degree]) {
+            if (angle < 0.32 && angle > 0.125) {
+              ctx.fillText(intLabels[degree], x - 34, y);
+            } else {
+              if (angle < 0.1 && angle > -1.125) {
+                ctx.fillText(intLabels[degree], x - 7, y - 12);
+              } else {
+                ctx.fillText(intLabels[degree], x + 9, y);
+              }
+            }
+          }
+        }
+      } else {
+        ctx.globalAlpha = 0.15;
+        ctx.arc(x, y, hapRadius, 0, 2 * Math.PI);
+      }
       ctx.fill();
     });
     ctx.stroke();
@@ -116,6 +147,7 @@ export function pitchwheel({
 /**
  * Отрисовывает круг высот для визуализации частот в пределах одной октавы
  * @name pitchwheel
+ * @tags visualization
  * @param {number} hapcircles
  * @param {number} circle
  * @param {number} edo

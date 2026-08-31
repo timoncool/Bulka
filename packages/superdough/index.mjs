@@ -13,3 +13,4 @@ export * from './logger.mjs';
 export * from './dspworklet.mjs';
 export * from './audioContext.mjs';
 export * from './wavetable.mjs';
+export * from './clockbridge.mjs';

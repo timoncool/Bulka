@@ -11,6 +11,7 @@ export const settings = {
   background: '#272C35',
   lineBackground: '#272C3599',
   foreground: 'hsl(220, 14%, 71%)',
+  muted: 'hsl(220, 14%, 41%)',
   caret: '#797977',
   selection: '#ffffff30',
   selectionMatch: '#2B323D',
@@ -25,6 +26,7 @@ export default createTheme({
   settings: {
     background: '#272C35',
     foreground: '#9d9b97',
+    muted: 'hsl(220, 14%, 41%)',
     caret: '#797977',
     selection: '#3d4c64',
     selectionMatch: '#3d4c64',

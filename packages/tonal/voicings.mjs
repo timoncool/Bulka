@@ -87,13 +87,14 @@ export const setDefaultVoicings = (dict) => (defaultDict = dict);
 export const setVoicingRange = (name, range) => addVoicings(name, voicingRegistry[name].dictionary, range);
 
 /**
- * Добавляет новый пользовательский словарь voicing.
+ * Adds a new custom voicing dictionary.
  *
  * @name addVoicings
+ * @tags tonal
  * @memberof Pattern
- * @param {string} name идентификатор для словаря voicing
- * @param {Object} dictionary отображает символ chord на возможные voicing
- * @param {Array} range минимальная и максимальная нота
+ * @param {string} name identifier for the voicing dictionary
+ * @param {Object} dictionary maps chord symbol to possible voicings
+ * @param {Array} range min, max note
  * @returns Pattern
  * @example
  * addVoicings('cookie', {
@@ -128,13 +129,14 @@ const getVoicing = (chord, dictionaryName, lastVoicing) => {
 };
 
 /**
- * УСТАРЕЛО: всё ещё работает, но рекомендуется использовать .voicing (без s).
- * Преобразует символы chord в voicing, используя максимально плавное голосоведение.
- * Использует [пакет chord-voicings](https://github.com/felixroos/chord-voicings#chord-voicings).
+ * DEPRECATED: still works, but it is recommended you use .voicing instead (without s).
+ * Turns chord symbols into voicings, using the smoothest voice leading possible.
+ * Uses [chord-voicings package](https://github.com/felixroos/chord-voicings#chord-voicings).
  *
  * @name voicings
+ * @tags tonal
  * @memberof Pattern
- * @param {string} dictionary какой словарь voicing использовать.
+ * @param {string} dictionary which voicing dictionary to use.
  * @returns Pattern
  * @example
  * stack("<C^7 A7 Dm7 G7>".voicings('lefthand'), "<C3 A2 D3 G2>").note()
@@ -154,11 +156,12 @@ export const voicings = register('voicings', function (dictionary, pat) {
 });
 
 /**
- * Отображает chord входящего pattern на основные ноты в заданной октаве.
+ * Maps the chords of the incoming pattern to root notes in the given octave.
  *
  * @name rootNotes
+ * @tags tonal
  * @memberof Pattern
- * @param {octave} octave октава для использования
+ * @param {octave} octave octave to use
  * @returns Pattern
  * @example
  * "<C^7 A7 Dm7 G7>".rootNotes(2).note()
@@ -173,22 +176,26 @@ export const rootNotes = register('rootNotes', function (octave, pat) {
 });
 
 /**
- * Преобразует символы chord в voicing. Вы можете использовать следующие параметры управления:
+ * Turns chord symbols into voicings. You can use the following control params:
  *
- * - `chord`: нота, за которой следует символ chord, например C Am G7 Bb^7
- * - `dict`: словарь voicing для использования, по умолчанию используется словарь по умолчанию
- * - `anchor`: нота, которая используется для выравнивания chord
- * - `mode`: как voicing выравнивается относительно anchor
- *   - `below`: верхняя нота <= anchor
- *   - `duck`: верхняя нота <= anchor, anchor исключается
- *   - `above`: нижняя нота >= anchor
- * - `offset`: целое число, которое сдвигает voicing вверх или вниз к следующему voicing
- * - `n`: если установлено, voicing играется как scale. Выходящие за пределы числа будут октавированы
+ * - `chord`: Note, followed by chord symbol, e.g. C Am G7 Bb^7
+ * - `dict`: voicing dictionary to use, falls back to default dictionary
+ * - `anchor`: the note that is used to align the chord
+ * - `mode`: how the voicing is aligned to the anchor
+ *   - `below`: top note <= anchor
+ *   - `duck`: top note <= anchor, anchor excluded
+ *   - `above`: bottom note >= anchor
+ *   - `root`: bottom note is the lowest root of the chord >= anchor
+ *   - `oldabove` : old (buggy) behavior of above, kept for legacy reason
+ *   - `oldroot` : old (buggy) behavior of root, kept for legacy reason
+ * - `offset`: whole number that shifts the voicing up or down to the next voicing
+ * - `n`: if set, the voicing is played like a scale. Overshooting numbers will be octaved
  *
- * Все вышеперечисленные параметры являются необязательными, кроме `chord`.
- * Если вы передаете pattern строк в voicing, они будут интерпретированы как chord.
+ * All of the above controls are optional, except `chord`.
+ * If you pass a pattern of strings to voicing, they will be interpreted as chords.
  *
  * @name voicing
+ * @tags tonal
  * @returns Pattern
  * @example
  * n("0 1 2 3").chord("<C Am F G>").voicing()

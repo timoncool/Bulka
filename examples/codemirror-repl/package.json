@@ -16,6 +16,7 @@
     "@strudel/codemirror": "workspace:*",
     "@strudel/core": "workspace:*",
     "@strudel/draw": "workspace:*",
+    "@strudel/edo": "workspace:*",
     "@strudel/mini": "workspace:*",
     "@strudel/soundfonts": "workspace:*",
     "@strudel/tonal": "workspace:*",

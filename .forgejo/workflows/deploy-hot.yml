@@ -1,0 +1,44 @@
+name: Build and Deploy hot PRs
+
+on:
+  pull_request_target:
+    types: [labeled]
+
+# Allow one concurrent deployment
+concurrency:
+  group: "warm-pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: ${{ github.event.label.name == 'serve-hot' }}
+    runs-on: docker
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}      
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Dependencies
+        run: pnpm install
+
+      - name: Build
+        run: pnpm build
+
+      - name: Deploy
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          eval $(ssh-agent -s)
+          echo "$SSH_PRIVATE_KEY" | ssh-add -
+          apt update && apt install -y rsync
+          mkdir -p ~/.ssh
+          ssh-keyscan matrix.toplap.org > ~/.ssh/known_hosts
+          rsync -atv --delete --delete-after --progress \
+            ./website/dist/ \
+            strudel@matrix.toplap.org:/home/strudel/deploy/pr-${{ github.event.pull_request.number }}.hot.strudel.cc

@@ -2,11 +2,11 @@ import { ref, pure } from '@strudel/core';
 import { WidgetType, ViewPlugin, Decoration } from '@codemirror/view';
 import { StateEffect } from '@codemirror/state';
 
+// Global state storage for all widget types
 export let sliderValues = {};
-const getSliderID = (from) => `slider_${from}`;
 
 export class SliderWidget extends WidgetType {
-  constructor(value, min, max, from, to, step, view) {
+  constructor(value, min, max, from, to, step, view, id) {
     super();
     this.value = value;
     this.min = min;
@@ -16,10 +16,21 @@ export class SliderWidget extends WidgetType {
     this.to = to;
     this.step = step;
     this.view = view;
+    this.id = id || `${from}:${to}`; // Range-based ID for stability
   }
 
-  eq() {
-    return false;
+  eq(other) {
+    if (!(other instanceof SliderWidget)) {
+      return false;
+    }
+    return (
+      this.id === other.id &&
+      this.from === other.from &&
+      this.to === other.to &&
+      this.value === other.value &&
+      this.min === other.min &&
+      this.max === other.max
+    );
   }
 
   toDOM() {
@@ -38,6 +49,7 @@ export class SliderWidget extends WidgetType {
     slider.from = this.from;
     slider.originalFrom = this.originalFrom;
     slider.to = this.to;
+    slider.id = this.id; // Store range-based ID in DOM element
     slider.style = 'width:64px;margin-right:4px;transform:translateY(4px)';
     this.slider = slider;
     slider.addEventListener('input', (e) => {
@@ -49,7 +61,7 @@ export class SliderWidget extends WidgetType {
       slider.originalValue = insert;
       slider.value = insert;
       this.view.dispatch({ changes: change });
-      const id = getSliderID(slider.originalFrom); // matches id generated in transpiler
+      const id = slider.id; // Use range-based ID
       window.postMessage({ type: 'cm-slider', value: Number(next), id });
     });
     return wrap;
@@ -62,19 +74,60 @@ export class SliderWidget extends WidgetType {
 
 export const setSliderWidgets = StateEffect.define();
 
-export const updateSliderWidgets = (view, widgets) => {
-  view.dispatch({ effects: setSliderWidgets.of(widgets) });
+export const setSliderWidgetsInRange = StateEffect.define();
+
+export const updateSliderWidgets = (view, widgets, range = null) => {
+  if (range) {
+    // range argument passed for block-based evaluation
+    view.dispatch({ effects: setSliderWidgetsInRange.of({ widgets, range }) });
+  } else {
+    view.dispatch({ effects: setSliderWidgets.of(widgets) });
+  }
 };
 
 function getSliders(widgetConfigs, view) {
-  return widgetConfigs
-    .filter((w) => w.type === 'slider')
-    .map(({ from, to, value, min, max, step }) => {
-      return Decoration.widget({
-        widget: new SliderWidget(value, min, max, from, to, step, view),
-        side: 0,
-      }).range(from /* , to */);
-    });
+  return (
+    widgetConfigs
+      .filter((w) => w.type === 'slider')
+      // Deduplicate sliders that might appear multiple times (e.g., during paste operations)
+      .filter((slider, index, self) => index === self.findIndex((s) => s.from === slider.from && s.to === slider.to))
+      .sort((a, b) => a.from - b.from)
+      .map(({ from, to, value, min, max, step, id }) => {
+        return Decoration.widget({
+          widget: new SliderWidget(value, min, max, from, to, step, view, id),
+          side: 0,
+        }).range(from /* , to */);
+      })
+  );
+}
+
+export function getSliderWidgets(view) {
+  if (!view || !view.state) {
+    return [];
+  }
+
+  const sliderPluginInstance = view.plugin(sliderPlugin);
+  if (!sliderPluginInstance || !sliderPluginInstance.decorations) {
+    return [];
+  }
+
+  const sliderWidgets = [];
+
+  sliderPluginInstance.decorations.between(0, view.state.doc.length, (from, to, decoration) => {
+    if (decoration.widget instanceof SliderWidget) {
+      sliderWidgets.push({
+        type: 'slider',
+        from: decoration.widget.from,
+        to: decoration.widget.to,
+        value: decoration.widget.value,
+        min: decoration.widget.min,
+        max: decoration.widget.max,
+        step: decoration.widget.step,
+      });
+    }
+  });
+
+  return sliderWidgets;
 }
 
 export const sliderPlugin = ViewPlugin.fromClass(
@@ -101,7 +154,42 @@ export const sliderPlugin = ViewPlugin.fromClass(
           }
         }
         for (let e of tr.effects) {
-          if (e.is(setSliderWidgets)) {
+          if (e.is(setSliderWidgetsInRange)) {
+            // Block-aware slider update logic
+            const { widgets, range } = e.value;
+            const [rangeStart, rangeEnd] = range;
+
+            // Get existing slider widgets that should be preserved
+            const existingSliders = [];
+            this.decorations.between(0, update.view.state.doc.length, (from, to, decoration) => {
+              if (decoration.widget instanceof SliderWidget) {
+                // Preserve sliders outside the evaluation range
+                // Use strict > for rangeEnd because when code is deleted, slider positions
+                // map to the deletion boundary (rangeEnd), and those should be removed, not preserved
+                if (from < rangeStart || from > rangeEnd) {
+                  existingSliders.push({
+                    from,
+                    to,
+                    value: decoration.widget.value,
+                    min: decoration.widget.min,
+                    max: decoration.widget.max,
+                    step: decoration.widget.step,
+                    id: decoration.widget.id || `${from}:${to}`,
+                    type: 'slider',
+                  });
+                }
+              }
+            });
+
+            // Merge preserved sliders with new widgets
+            const mergedWidgets = [...existingSliders, ...widgets]
+              .filter(
+                (slider, index, self) => index === self.findIndex((s) => s.type === 'slider' && s.id === slider.id),
+              )
+              .sort((a, b) => a.from - b.from);
+
+            this.decorations = Decoration.set(getSliders(mergedWidgets, update.view));
+          } else if (e.is(setSliderWidgets)) {
             this.decorations = Decoration.set(getSliders(e.value, update.view));
           }
         }
@@ -114,13 +202,14 @@ export const sliderPlugin = ViewPlugin.fromClass(
 );
 
 /**
- * Отображает widget-слайдер, позволяющий пользователю манипулировать значением
+ * Displays a slider widget to allow the user manipulate a value
  *
  * @name slider
- * @param {number} value Начальное значение
- * @param {number} min Минимальное значение - необязательно, по умолчанию 0
- * @param {number} max Максимальное значение - необязательно, по умолчанию 1
- * @param {number} step Размер шага - необязательно
+ * @tags external_io, visualization
+ * @param {number} value Initial value
+ * @param {number} min Minimum value - optional, defaults to 0
+ * @param {number} max Maximum value - optional, defaults to 1
+ * @param {number} step Step size - optional
  */
 export let slider = (value) => {
   console.warn('slider will only work when the transpiler is used... passing value as is');
@@ -131,6 +220,7 @@ export let sliderWithID = (id, value, min, max) => {
   sliderValues[id] = value; // sync state at eval time (code -> state)
   return ref(() => sliderValues[id]); // use state at query time
 };
+
 // update state when sliders are moved
 if (typeof window !== 'undefined') {
   window.addEventListener('message', (e) => {
@@ -139,7 +229,7 @@ if (typeof window !== 'undefined') {
         // update state when slider is moved
         sliderValues[e.data.id] = e.data.value;
       } else {
-        console.warn(`slider with id "${e.data.id}" is not registered. Only ${Object.keys(sliderValues)}`);
+        console.error(`slider with id "${e.data.id}" is not registered. Only ${Object.keys(sliderValues)}`);
       }
     }
   });

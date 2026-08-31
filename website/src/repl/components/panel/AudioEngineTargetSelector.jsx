@@ -1,6 +1,6 @@
 import React from 'react';
 import { audioEngineTargets } from '../../../settings.mjs';
-import { SelectInput } from './SelectInput';
+import { SelectInputDuplicate } from '@src/repl/components/panel/SettingsTab';
 
 // Allows the user to select an audio interface for Strudel to play through
 export function AudioEngineTargetSelector({ target, onChange, isDisabled }) {
@@ -12,8 +12,8 @@ export function AudioEngineTargetSelector({ target, onChange, isDisabled }) {
     [audioEngineTargets.osc, audioEngineTargets.osc],
   ]);
   return (
-    <div className=" flex flex-col gap-1">
-      <SelectInput isDisabled={isDisabled} options={options} value={target} onChange={onTargetChange} />
+    <div className="flex flex-col gap-1">
+      <SelectInputDuplicate isDisabled={isDisabled} options={options} value={target} onChange={onTargetChange} />
       {target === audioEngineTargets.osc && (
         <div>
           <p className="text-sm italic">

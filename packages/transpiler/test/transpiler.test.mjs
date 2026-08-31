@@ -5,7 +5,7 @@ This program is free software: you can redistribute it and/or modify it under th
 */
 
 import { describe, it, expect } from 'vitest';
-import { transpiler } from '../transpiler.mjs';
+import { transpiler } from '../index.mjs';
 
 const simple = { wrapAsync: false, addReturn: false, simpleLocs: true };
 

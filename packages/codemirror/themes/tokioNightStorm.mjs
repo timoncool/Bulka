@@ -4,7 +4,8 @@ import { createTheme } from './theme-helper.mjs';
 export const settings = {
   background: '#24283b',
   lineBackground: '#24283b99',
-  foreground: '#7982a9',
+  foreground: '#f9f2f9',
+  muted: '#f9f2f950',
   caret: '#c0caf5',
   selection: '#6f7bb630',
   selectionMatch: '#1f2335',
@@ -18,7 +19,8 @@ export default createTheme({
   theme: 'dark',
   settings: {
     background: '#24283b',
-    foreground: '#7982a9',
+    foreground: '#f9f2f9',
+    muted: '#f9f2f950',
     caret: '#c0caf5',
     selection: '#6f7bb630',
     selectionMatch: '#343b5f',

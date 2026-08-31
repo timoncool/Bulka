@@ -6,6 +6,7 @@ export const settings = {
   background: '#fff',
   lineBackground: '#ffffff99',
   foreground: '#000',
+  muted: '#00000050',
   caret: '#FFFFFF',
   selection: '#d7d4f0',
   selectionMatch: '#d7d4f0',
@@ -20,6 +21,7 @@ export default createTheme({
   settings: {
     background: '#fff',
     foreground: '#000',
+    muted: '#00000050',
     caret: '#FFFFFF',
     selection: '#d7d4f0',
     selectionMatch: '#d7d4f0',

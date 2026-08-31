@@ -79,28 +79,29 @@ function scaleOffset(scale, offset, note) {
 
 // Pattern.prototype._transpose = function (intervalOrSemitones: string | number) {
 /**
- * Изменяет высоту каждого значения на заданную величину. Ожидает числа или строки note в качестве значений.
- * Величина может быть задана как количество полутонов или как строка в краткой нотации интервалов.
- * Если вас не волнует энгармоническая правильность, просто используйте числа. В противном случае передайте интервал в
- * форме: ST, где S - номер ступени, а T - тип интервала:
+ * Change the pitch of each value by the given amount. Expects numbers or note strings as values.
+ * The amount can be given as a number of semitones or as a string in interval short notation.
+ * If you don't care about enharmonic correctness, just use numbers. Otherwise, pass the interval of
+ * the form: ST where S is the degree number and T the type of interval with
  *
- * - M = мажорный
- * - m = минорный
- * - P = чистый
- * - A = увеличенный
- * - d = уменьшенный
+ * - M = major
+ * - m = minor
+ * - P = perfect
+ * - A = augmented
+ * - d = diminished
  *
- * Примеры интервалов:
+ * Examples intervals:
  *
- * - 1P = прима
- * - 3M = большая терция
- * - 3m = малая терция
- * - 4P = чистая кварта
- * - 4A = увеличенная кварта
- * - 5P = чистая квинта
- * - 5d = уменьшенная квинта
+ * - 1P = unison
+ * - 3M = major third
+ * - 3m = minor third
+ * - 4P = perfect fourth
+ * - 4A = augmented fourth
+ * - 5P = perfect fifth
+ * - 5d = diminished fifth
  *
- * @param {string | number} amount Количество полутонов или строка интервала.
+ * @tags tonal
+ * @param {string | number} amount Either number of semitones or interval string.
  * @returns Pattern
  * @memberof Pattern
  * @name transpose
@@ -136,7 +137,14 @@ export const { transpose, trans } = register(['transpose', 'trans'], function tr
     const interval = !isNaN(Number(intervalOrSemitones))
       ? Interval.fromSemitones(intervalOrSemitones)
       : String(intervalOrSemitones);
-    const targetNote = Note.transpose(note, interval);
+
+    let n = Note.get(note);
+    if (n.oct == undefined) {
+      n.oct = 3;
+      let n1 = Note.get(Note.transpose(n, interval));
+      n.oct = n1.oct == 3 ? undefined : 3;
+    }
+    const targetNote = Note.transpose(n, interval);
     if (typeof hap.value === 'object') {
       return hap.withValue(() => ({ ...hap.value, note: targetNote }));
     }
@@ -149,12 +157,13 @@ export const { transpose, trans } = register(['transpose', 'trans'], function tr
 // or even `stack(c3).superimpose(transpose.slowcat(7, 5))` or
 
 /**
- * Транспонирует ноты внутри scale на заданное количество ступеней.
- * Ожидается вызов на Pattern, который уже имеет {@link Pattern#scale}
+ * Transposes notes inside the scale by the number of steps.
+ * Expected to be called on a Pattern which already has a {@link Pattern#scale}
  *
  * @memberof Pattern
  * @name scaleTranspose
- * @param {offset} offset количество ступеней внутри scale
+ * @tags tonal
+ * @param {offset} offset number of steps inside the scale
  * @returns Pattern
  * @synonyms scaleTrans, strans
  * @example
@@ -229,22 +238,23 @@ function _getNearestScaleNote(scaleName, note, preferHigher = true) {
 }
 
 /**
- * Преобразует числа в ноты в scale (с нулевой индексацией) или квантизует ноты к scale.
+ * Turns numbers into notes in the scale (zero indexed) or quantizes notes to a scale.
  *
- * При описании нот через числа обратите внимание, что отрицательные числа могут использоваться для
- * движения назад по scale, а также диезы или бемоли для получения нот вне scale.
+ * When describing notes via numbers, note that negative numbers can be used to wrap backwards
+ * in the scale as well as sharps or flats to produce notes outside of the scale.
  *
- * Также устанавливает scale для других операций со scale, таких как {@link Pattern#scaleTranspose}.
+ * Also sets scale for other scale operations, like {@link Pattern#scaleTranspose}.
  *
- * Scale состоит из основной ноты (например, `c4`, `c`, `f#`, `bb4`), за которой следует двоеточие (':'), а затем [тип scale](https://github.com/tonaljs/tonal/blob/main/packages/scale-type/data.ts).
+ * A scale consists of a root note (e.g. `c4`, `c`, `f#`, `bb4`) followed by semicolon (':') and then a [scale type](https://github.com/tonaljs/tonal/blob/main/packages/scale-type/data.ts).
  *
- * Название scale должно быть написано без пробелов (потому что иначе оно будет интерпретировано как многошаговый pattern).
- * Если название вашей scale содержит пробелы, замените их на двоеточия.
+ * The scale name must be written without spaces (because it would be interpreted as a multi-step pattern otherwise).
+ * If your scale name includes spaces, replace them with colons.
  *
- * Основная нота по умолчанию находится в октаве 3, если номер октавы не указан.
+ * The root note defaults to octave 3, if no octave number is given.
  *
  * @name scale
- * @param {string} scale Название scale
+ * @tags tonal
+ * @param {string} scale Name of scale
  * @returns Pattern
  * @example
  * n("0 2 4 6 4 2").scale("C:major")

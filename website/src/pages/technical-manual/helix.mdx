@@ -1,0 +1,85 @@
+---
+title: Helix Keybindings
+layout: ../../layouts/MainLayout.astro
+---
+
+# Helix Keybindings in the REPL
+
+The Strudel REPL supports [Helix editor](https://helix-editor.com/) keybindings through the `codemirror-helix` extension. Helix is a post-modern modal text editor with a focus on selection-first editing and multiple cursors.
+
+## Enabling Helix Mode
+
+1. Open the Settings panel in the REPL (click the settings icon or use the keyboard shortcut)
+2. Find the "Keybindings" section
+3. Select "Helix" from the available options
+
+## Key Differences from Vim
+
+Helix uses a selection-first approach, which means:
+
+- **Selection → Action** (Helix) vs **Action → Motion** (Vim)
+- For example, to delete a word in Helix: `w` (select word) → `d` (delete)
+- In Vim, it would be: `dw` (delete word)
+
+## Common Helix Commands
+
+### Normal Mode
+
+- `i` — Enter insert mode before selection
+- `a` — Enter insert mode after selection
+- `v` — Enter visual/select mode
+- `w` — Select next word
+- `e` — Select to end of word
+- `b` — Select previous word
+- `x` — Select/extend line
+- `d` — Delete selection
+- `c` — Change selection (delete and enter insert mode)
+- `y` — Yank (copy) selection
+- `p` — Paste after selection
+- `u` — Undo
+- `U` — Redo
+- `/` — Search
+- `n` — Select next search match
+- `N` — Select previous search match
+
+### Movement
+
+- `h, j, k, l` — Move left, down, up, right
+- `gg` — Go to start of document
+- `ge` — Go to end of document
+- `{` / `}` — Move to previous/next paragraph
+- `%` — Match bracket
+
+### Multi-cursor
+
+- `C` — Duplicate cursor to line below
+- `Alt-C` — Duplicate cursor to line above
+- `,` — Remove primary cursor
+- `Alt-,` — Remove all secondary cursors
+
+## Strudel-Specific Features
+
+Currently, Helix mode in Strudel provides standard Helix keybindings. Unlike Vim mode, there are no custom Strudel-specific commands (like `:w` to evaluate) yet.
+
+To evaluate code while in Helix mode, use the standard shortcuts:
+
+- `Ctrl+Enter` or `Alt+Enter` — Evaluate code
+- `Alt+.` — Stop playback
+
+## Resources
+
+- [Helix Documentation](https://docs.helix-editor.com/)
+- [Helix Keymap](https://docs.helix-editor.com/keymap.html)
+- [codemirror-helix on npm](https://www.npmjs.com/package/codemirror-helix)
+- [codemirror-helix on GitLab](https://gitlab.com/_rvidal/codemirror-helix)
+
+## Notes
+
+- The `codemirror-helix` extension is described as an "initial version" and may not implement all Helix features
+- Behavior may differ slightly from the native Helix editor
+- If you encounter issues, you can switch back to other keybinding modes in Settings
+- The keybinding preference is saved in your browser's local storage
+
+## Contributing
+
+If you'd like to add Strudel-specific Helix commands (similar to Vim's `:w` for evaluate), contributions are welcome! See the implementation in `/packages/codemirror/keybindings.mjs` for reference.

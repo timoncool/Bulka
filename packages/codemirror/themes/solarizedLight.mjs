@@ -8,6 +8,7 @@ export const settings = {
   background: '#fdf6e3',
   lineBackground: '#fdf6e399',
   foreground: '#657b83',
+  muted: '#657b8350',
   caret: '#586e75',
   selection: '#dfd9c8',
   selectionMatch: '#dfd9c8',
@@ -19,6 +20,7 @@ export const settings = {
 const c = {
   background: '#FDF6E3',
   foreground: '#657B83',
+  muted: '#657b8350',
   selection: '#EEE8D5',
   selectionMatch: '#EEE8D5',
   cursor: '#657B83',

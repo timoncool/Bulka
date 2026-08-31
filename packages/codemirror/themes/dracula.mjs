@@ -11,6 +11,7 @@ export const settings = {
   background: '#282a36',
   lineBackground: '#282a3699',
   foreground: '#f8f8f2',
+  muted: '#f8f8f250',
   caret: '#f8f8f0',
   selection: 'rgba(255, 255, 255, 0.1)',
   selectionMatch: 'rgba(255, 255, 255, 0.2)',
@@ -27,6 +28,7 @@ export default createTheme({
   settings: {
     background: '#282a36',
     foreground: '#f8f8f2',
+    muted: '#f8f8f250',
     caret: '#f8f8f0',
     selection: 'rgba(255, 255, 255, 0.1)',
     selectionMatch: 'rgba(255, 255, 255, 0.2)',

@@ -9,7 +9,8 @@ let colorD = '#f8fc55';
 
 export const settings = {
   background: '#000000',
-  foreground: colorA, // whats that?
+  foreground: colorA,
+  muted: colorA + '50',
   caret: colorC,
   selection: colorD,
   selectionMatch: colorA,

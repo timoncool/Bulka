@@ -12,6 +12,7 @@ export const settings = {
   background: hex[0],
   lineBackground: 'transparent',
   foreground: hex[1],
+  muted: hex[2],
   selection: hex[2],
   selectionMatch: hex[0],
   gutterBackground: hex[0],

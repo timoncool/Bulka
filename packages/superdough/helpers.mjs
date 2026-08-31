@@ -5,10 +5,25 @@ import { clamp, nanFallback, midiToFreq, noteToMidi } from './util.mjs';
 
 export const noises = ['pink', 'white', 'brown', 'crackle'];
 
-export function gainNode(value) {
-  const node = getAudioContext().createGain();
+export function gainNode(value, audioContext = getAudioContext()) {
+  const node = audioContext.createGain();
   node.gain.value = value;
   return node;
+}
+
+// this helper makes sure the audio context is "used", meaning it outputs something
+// this prevents the browser from throttling timing accuracy
+// it happened when only midi was running, the clock got more drifty without this
+let constantNode, constantNodeAudioContext;
+export function ensureMinimalOutput() {
+  if (constantNode && constantNodeAudioContext === getAudioContext()) {
+    return;
+  }
+  constantNodeAudioContext = getAudioContext();
+  constantNode = new ConstantSourceNode(constantNodeAudioContext);
+  constantNode.offset.value = 1e-7;
+  constantNode.connect(constantNodeAudioContext.destination);
+  constantNode.start();
 }
 
 export function effectSend(input, effect, wet) {
@@ -150,6 +165,7 @@ export const getADSRValues = (params, curve = 'linear', defaultValues) => {
   if (a == null && d == null && s == null && r == null) {
     return defaultValues ?? [envmin, envmin, envmax, releaseMin];
   }
+
   const sustain = s != null ? s : (a != null && d == null) || (a == null && d == null) ? envmax : envmin;
   return [Math.max(a ?? 0, envmin), Math.max(d ?? 0, envmin), Math.min(sustain, envmax), Math.max(r ?? 0, releaseMin)];
 };
@@ -344,7 +360,7 @@ export function webAudioTimeout(audioContext, onComplete, startTime, stopTime) {
 
   // Certain browsers requires audio nodes to be connected in order for their onended events
   // to fire, so we _mute it_ and then connect it to the destination
-  const zeroGain = gainNode(0);
+  const zeroGain = gainNode(0, audioContext);
   zeroGain.connect(audioContext.destination);
   constantNode.connect(zeroGain);
 

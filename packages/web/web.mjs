@@ -3,6 +3,7 @@ export * from '@strudel/webaudio';
 //export * from '@strudel/soundfonts';
 export * from '@strudel/transpiler';
 export * from '@strudel/mini';
+export * from '@strudel/edo';
 export * from '@strudel/tonal';
 export * from '@strudel/webaudio';
 import { Pattern, evalScope, setTime } from '@strudel/core';
@@ -17,6 +18,7 @@ export async function defaultPrebake() {
     evalScope,
     import('@strudel/core'),
     import('@strudel/mini'),
+    import('@strudel/edo'),
     import('@strudel/tonal'),
     import('@strudel/webaudio'),
     { hush, evaluate },

@@ -21,7 +21,7 @@ function getUpdatedLog(log, event) {
   } else {
     log = log.concat([{ message, type, id, data }]);
   }
-  return log.slice(-20);
+  return log.slice(-40);
 }
 
 export function useLogger() {

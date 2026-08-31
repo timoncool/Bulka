@@ -3,7 +3,8 @@ import { createTheme } from './theme-helper.mjs';
 export const settings = {
   background: '#051DB5',
   lineBackground: '#051DB550',
-  foreground: 'white', // whats that?
+  foreground: 'white',
+  muted: '#ffffff50',
   caret: 'white',
   selection: 'rgba(128, 203, 196, 0.5)',
   selectionMatch: '#036dd626',

@@ -78,6 +78,16 @@ export const cleanupDraw = (clearScreen = true, id) => {
   stopAllAnimations(id);
 };
 
+export const cleanupDrawContext = (replID) => {
+  const ctx = getDrawContext();
+  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+  // clear the big canvas context, ignore inline widgets
+  Object.keys(animationFrames).forEach(
+    (id) => (!replID || id.startsWith(replID)) && !id.startsWith('_') && stopAnimationFrame(id),
+  );
+};
+
 Pattern.prototype.onPaint = function (painter) {
   return this.withState((state) => {
     if (!state.controls.painters) {

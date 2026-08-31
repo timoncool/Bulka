@@ -7203,8 +7203,12 @@ exports[`renders tunes > tune: holyflute 1`] = `
 
 exports[`renders tunes > tune: juxUndTollerei 1`] = `
 [
+  "[ -99/200 ⇜ (0/1 → 1/200) | note:63 s:triangle pan:0 cutoff:758.852817928549 lpattack:0.2 lpenv:-2 decay:0.05 sustain:0 room:0.6 delay:0.5 delaytime:0.1 delayfeedback:0.4 ]",
+  "[ -99/200 ⇜ (0/1 → 1/200) | note:67 s:triangle pan:1 color:green cutoff:758.852817928549 lpattack:0.2 lpenv:-2 decay:0.05 sustain:0 room:0.6 delay:0.5 delaytime:0.1 delayfeedback:0.4 ]",
   "[ 0/1 → 1/4 | note:c3 s:sawtooth pan:0 cutoff:1100 lpattack:0.2 lpenv:-2 decay:0.05 sustain:0 room:0.6 delay:0.5 delaytime:0.1 delayfeedback:0.4 ]",
   "[ 0/1 → 1/4 | note:bb3 s:sawtooth pan:1 color:green cutoff:1100 lpattack:0.2 lpenv:-2 decay:0.05 sustain:0 room:0.6 delay:0.5 delaytime:0.1 delayfeedback:0.4 ]",
+  "[ 1/200 → 101/200 | note:55 s:triangle pan:0 cutoff:1103.534282651425 lpattack:0.2 lpenv:-2 decay:0.05 sustain:0 room:0.6 delay:0.5 delaytime:0.1 delayfeedback:0.4 ]",
+  "[ 1/200 → 101/200 | note:65 s:triangle pan:1 color:green cutoff:1103.534282651425 lpattack:0.2 lpenv:-2 decay:0.05 sustain:0 room:0.6 delay:0.5 delaytime:0.1 delayfeedback:0.4 ]",
   "[ 1/4 → 1/2 | note:eb3 s:sawtooth pan:0 cutoff:1275.581289814515 lpattack:0.2 lpenv:-2 decay:0.05 sustain:0 room:0.6 delay:0.5 delaytime:0.1 delayfeedback:0.4 ]",
   "[ 1/4 → 1/2 | note:g3 s:sawtooth pan:1 color:green cutoff:1275.581289814515 lpattack:0.2 lpenv:-2 decay:0.05 sustain:0 room:0.6 delay:0.5 delaytime:0.1 delayfeedback:0.4 ]",
   "[ 1/2 → 3/4 | note:g3 s:sawtooth pan:0 cutoff:1444.415089128581 lpattack:0.2 lpenv:-2 decay:0.05 sustain:0 room:0.6 delay:0.5 delaytime:0.1 delayfeedback:0.4 ]",

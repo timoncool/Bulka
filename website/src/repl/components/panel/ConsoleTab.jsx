@@ -2,13 +2,23 @@ import cx from '@src/cx.mjs';
 import { useSettings } from '../../../settings.mjs';
 import { useStore } from '@nanostores/react';
 import { $strudel_log_history } from '../useLogger';
+import { useEffect, useRef } from 'react';
 
 export function ConsoleTab() {
   const log = useStore($strudel_log_history);
   const { fontFamily } = useSettings();
+  const scrollRef = useRef();
+  // scroll to bottom when log changes
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [log]);
   return (
-    <div id="console-tab" className="break-all w-full  first-line:text-sm p-2  h-full" style={{ fontFamily }}>
-      <div className="bg-background h-full w-full overflow-auto space-y-1 p-2 rounded-md">
+    <div id="console-tab" className="break-all w-full h-full" style={{ fontFamily }}>
+      <div className="h-full w-full overflow-auto space-y-1 p-2 rounded-md" ref={scrollRef}>
+        {' '}
+        {/* bg-background */}
         {log.map((l, i) => {
           const message = linkify(l.message);
           const color = l.data?.hap?.value?.color;
@@ -16,12 +26,13 @@ export function ConsoleTab() {
             <div
               key={l.id}
               className={cx(
+                'whitespace-nowrap',
                 l.type === 'error' ? 'text-background bg-foreground' : 'text-foreground',
                 l.type === 'highlight' && 'underline',
               )}
               style={color ? { color } : {}}
             >
-              <span dangerouslySetInnerHTML={{ __html: message }} />
+              <span dangerouslySetInnerHTML={{ __html: message }} className="whitespace-nowrap" />
               {l.count ? ` (${l.count})` : ''}
             </div>
           );

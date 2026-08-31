@@ -442,8 +442,10 @@ export function waveformN(partials, phases, type) {
     if (phase !== 0) {
       const c = Math.cos(PI2 * phase);
       const s = Math.sin(PI2 * phase);
-      R = c * R - s * I;
-      I = s * R + c * I;
+      const R0 = R;
+      const I0 = I;
+      R = c * R0 - s * I0;
+      I = s * R0 + c * I0;
     }
     real[n + 1] = R;
     imag[n + 1] = I;

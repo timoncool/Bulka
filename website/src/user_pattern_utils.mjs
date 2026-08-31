@@ -1,4 +1,4 @@
-import { atom } from 'nanostores';
+import { atom, computed } from 'nanostores';
 import { useStore } from '@nanostores/react';
 import { logger } from '@strudel/core';
 import { nanoid } from 'nanoid';
@@ -36,12 +36,9 @@ export let $viewingPatternData = sessionAtom('viewingPatternData', {
   created_at: Date.now(),
 });
 
-export const getViewingPatternData = () => {
-  return parseJSON($viewingPatternData.get());
-};
-export const useViewingPatternData = () => {
-  return useStore($viewingPatternData);
-};
+const $viewingPatterns = computed($viewingPatternData, (state) => parseJSON(state));
+export const useViewingPatternData = () => useStore($viewingPatterns);
+export const getViewingPatternData = () => $viewingPatterns.get();
 
 export const setViewingPatternData = (data) => {
   $viewingPatternData.set(JSON.stringify(data));
@@ -210,9 +207,10 @@ export async function exportPatterns() {
   const userPatterns = userPattern.getAll();
   const blob = new Blob([JSON.stringify(userPatterns)], { type: 'application/json' });
   const downloadLink = document.createElement('a');
+  const prefix = window.location.hostname.split('.').join('_');
   downloadLink.href = window.URL.createObjectURL(blob);
   const date = new Date().toISOString().split('T')[0];
-  downloadLink.download = `strudel_patterns_${date}.json`;
+  downloadLink.download = `${prefix}_patterns_${date}.json`;
   document.body.appendChild(downloadLink);
   downloadLink.click();
   document.body.removeChild(downloadLink);
