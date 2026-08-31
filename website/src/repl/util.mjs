@@ -11,8 +11,8 @@ import { nanoid } from 'nanoid';
 
 // Create a single supabase client for interacting with your database
 export const supabase = createClient(
-  'https://giqrbepsnxmugtusqnce.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdpcXJiZXBzbnhtdWd0dXNxbmNlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUzMjkyODksImV4cCI6MjA4MDkwNTI4OX0.U4KEbP0CeEQT-QDU2hO2q8cUer-kZ9cXvNN22AqjXRA',
+  import.meta.env.PUBLIC_SUPABASE_URL,
+  import.meta.env.PUBLIC_SUPABASE_PUBLISHABLE_KEY,
 );
 
 let dbLoaded;
