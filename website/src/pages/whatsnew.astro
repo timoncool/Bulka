@@ -1,0 +1,149 @@
+---
+import HeadCommon from '../components/HeadCommon.astro';
+import Header from '../components/Header/Header.astro';
+import LeftSidebar from '../components/LeftSidebar/LeftSidebar.astro';
+import PageContent from '../components/PageContent/PageContent.astro';
+/**
+ * ⚠️⚠️⚠️ ВНИМАНИЕ CLAUDE И ДРУГИЕ AI ⚠️⚠️⚠️
+ *
+ * НЕ РЕДАКТИРУЙ ../data/changelog.json ВРУЧНУЮ!
+ *
+ * Этот файл генерируется автоматически из git коммитов.
+ * Чтобы обновить changelog, запусти: pnpm changelog
+ * Скрипт: scripts/generate-changelog.js
+ */
+import changelog from '../data/changelog.json';
+
+const currentPage = Astro.url.pathname;
+
+// Типы и их стили
+const typeStyles: Record<string, { bg: string; text: string }> = {
+  feat: { bg: 'bg-green-500/20', text: 'text-green-400' },
+  fix: { bg: 'bg-red-500/20', text: 'text-red-400' },
+  perf: { bg: 'bg-yellow-500/20', text: 'text-yellow-400' },
+  docs: { bg: 'bg-blue-500/20', text: 'text-blue-400' },
+  refactor: { bg: 'bg-purple-500/20', text: 'text-purple-400' },
+  style: { bg: 'bg-pink-500/20', text: 'text-pink-400' },
+  test: { bg: 'bg-cyan-500/20', text: 'text-cyan-400' },
+  chore: { bg: 'bg-gray-500/20', text: 'text-gray-400' },
+  debug: { bg: 'bg-orange-500/20', text: 'text-orange-400' },
+  blog: { bg: 'bg-indigo-500/20', text: 'text-indigo-400' },
+  other: { bg: 'bg-gray-500/20', text: 'text-gray-400' },
+};
+
+function getTypeStyle(type: string) {
+  return typeStyles[type] || typeStyles.other;
+}
+---
+
+<html dir="ltr" lang="ru" class="initial dark">
+  <head>
+    <HeadCommon />
+    <title>🍞 Что нового в Bulka</title>
+    <meta name="description" content="История изменений и обновлений Bulka - лайвкодинг музыки в браузере" />
+  </head>
+
+  <body class="h-app-height text-gray-50 bg-background">
+    <div class="w-full h-full space-y-4 flex flex-col">
+      <header class="max-w-full fixed top-0 w-full z-[100]">
+        <Header currentPage={currentPage} />
+      </header>
+      <main class="relative pt-16">
+        <div class="h-full top-0 overflow-auto min-w-[300px] flex xl:justify-center pr-4 pl-4 md:pl-[300px] xl:pl-0">
+          <aside title="Site Navigation" class="w-[300px] px-6 left-0 hidden md:block fixed h-full">
+            <LeftSidebar currentPage={currentPage} />
+          </aside>
+          <PageContent>
+            <div class="border-b-4 border-lineHighlight py-4 mb-8">
+              <h1 class="text-3xl font-bold mb-2">✨ Что нового</h1>
+              <p class="text-gray-400">
+                История всех изменений Bulka.
+              </p>
+            </div>
+
+            <!-- Легенда типов -->
+            <div class="flex flex-wrap gap-2 mb-8 p-4 bg-gray-800/50 rounded-lg">
+              <span class="text-sm text-gray-400 mr-2">Типы:</span>
+              {Object.entries(typeStyles).slice(0, -1).map(([type, style]) => (
+                <span class={`text-xs px-2 py-1 rounded ${style.bg} ${style.text}`}>
+                  {type}
+                </span>
+              ))}
+            </div>
+
+            <!-- Timeline -->
+            <div class="space-y-8">
+              {changelog.filter((day: any) => day.date !== "_DO_NOT_EDIT").map((day: any) => (
+                <div class="relative">
+                  <!-- Дата -->
+                  <div class="sticky top-16 z-10 bg-background/95 backdrop-blur py-2 mb-4 border-b border-gray-700">
+                    <h2 class="text-xl font-semibold text-white">
+                      📅 {day.dateFormatted}
+                    </h2>
+                    <span class="text-sm text-gray-500">{day.date}</span>
+                  </div>
+
+                  <!-- Изменения за день -->
+                  <div class="space-y-2 pl-4 border-l-2 border-gray-700">
+                    {day.changes.map((change: any) => {
+                      const style = getTypeStyle(change.type);
+                      return (
+                        <div class="relative pl-4 py-2 hover:bg-gray-800/30 rounded-r transition-colors">
+                          <!-- Точка на линии -->
+                          <div class="absolute -left-[9px] top-4 w-4 h-4 rounded-full bg-gray-700 border-2 border-gray-600"></div>
+
+                          <div class="flex flex-wrap items-start gap-2">
+                            <!-- Тип -->
+                            <span class={`text-xs px-2 py-0.5 rounded font-mono ${style.bg} ${style.text}`}>
+                              {change.emoji} {change.type}
+                            </span>
+
+                            <!-- Scope если есть -->
+                            {change.scope && (
+                              <span class="text-xs px-2 py-0.5 rounded bg-gray-700 text-gray-300 font-mono">
+                                {change.scope}
+                              </span>
+                            )}
+
+                            <!-- Hash коммита -->
+                            <a
+                              href={`https://github.com/timoncool/Bulka/commit/${change.hash}`}
+                              target="_blank"
+                              rel="noopener"
+                              class="text-xs text-gray-500 hover:text-gray-300 font-mono"
+                            >
+                              {change.hash}
+                            </a>
+                          </div>
+
+                          <!-- Описание -->
+                          <p class="mt-1 text-gray-200">
+                            {change.description}
+                          </p>
+
+                          <!-- Автор -->
+                          <span class="text-xs text-gray-500">
+                            by {change.author}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <!-- Футер -->
+            <div class="mt-12 pt-8 border-t border-gray-700 text-center text-gray-500">
+                            <p class="mt-2">
+                <a href="https://github.com/timoncool/Bulka" target="_blank" class="text-blue-400 hover:underline">
+                  GitHub репозиторий
+                </a>
+              </p>
+            </div>
+          </PageContent>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,51 @@
+---
+title: "Hydra: исправления и документация"
+author: "timoncool"
+date: "2025-12-14"
+description: "Исправлены initImage/initVideo и добавлена русскоязычная документация"
+---
+
+# Hydra: исправления и документация
+
+## Исправлены initImage и initVideo
+
+Функции `initImage()` и `initVideo()` раньше не работали — код Strudel некорректно парсил URL-ы при передаче в Hydra, что ломало загрузку внешних медиафайлов.
+
+Теперь это исправлено:
+
+```javascript
+await initHydra()
+
+// Загружаем изображение как источник
+await s0.initImage("https://upload.wikimedia.org/wikipedia/commons/2/25/Hydra-Foto.jpg")
+
+src(s0)
+  .saturate(2)
+  .kaleid(4)
+  .out()
+```
+
+```javascript
+await initHydra()
+
+// Загружаем видео как источник
+await s0.initVideo("https://example.com/video.mp4")
+
+src(s0)
+  .modulate(osc(3), 0.5)
+  .out()
+```
+
+## Русскоязычная документация
+
+Добавлен раздел **[Hydra](/hydra/intro)** с документацией на русском языке:
+
+- [Введение](/hydra/intro) — основы модульного видеосинтеза
+- [Туториал](/hydra/tutorial) — пошаговое обучение
+- [Источники](/hydra/sources) — osc, noise, shape, voronoi
+- [Трансформации](/hydra/transforms) — rotate, scale, pixelate, kaleid
+- [Смешивание](/hydra/blending) — blend, add, mult, diff, layer
+- [Модуляция](/hydra/modulation) — modulate, modulateScale
+- [Внешние источники](/hydra/external-sources) — камера, изображения, видео
+- [Аудиореактивность](/hydra/audio) — связь визуалов со звуком
+- [Примеры](/hydra/examples) — готовые визуалы

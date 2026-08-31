@@ -1,0 +1,380 @@
+---
+title: Первые звуки
+layout: ../../layouts/MainLayout.astro
+---
+
+import { MiniRepl } from '@src/docs/MiniRepl';
+import Box from '@components/Box.astro';
+import QA from '@components/QA';
+
+# Первые звуки
+
+Это первая глава воркшопа Strudel, рады видеть вас на борту!
+
+## Поля с кодом
+
+Воркшоп полон интерактивных полей с кодом. Давайте научимся ими пользоваться. Вот одно из них:
+
+<MiniRepl client:visible tune={`sound("casio")`} dirt />
+
+<Box>
+
+1. ⬆️ кликните в текстовое поле выше ⬆️
+2. нажмите `ctrl`+`enter` для воспроизведения
+3. измените `casio` на `metal`
+4. нажмите `ctrl`+`enter` для обновления
+5. нажмите `ctrl`+`.` для остановки
+
+</Box>
+
+Поздравляем, теперь вы занимаетесь live coding!
+
+## Звуки
+
+Мы только что воспроизвели звук с помощью `sound` вот так:
+
+<MiniRepl client:visible tune={`sound("casio")`} />
+
+<Box>
+
+`casio` — один из многих стандартных звуков.
+
+Попробуйте несколько других звуков:
+
+```
+insect wind jazz metal east crow casio space numbers
+```
+
+Вы можете услышать небольшую паузу, пока звук загружается
+
+</Box>
+
+**Изменение номера sample с помощью :**
+
+Один звук может содержать несколько samples (аудиофайлов).
+
+Вы можете выбрать sample, добавив `:` и число к имени:
+
+<MiniRepl client:visible tune={`sound("casio:1")`} />
+
+<Box>
+
+Попробуйте разные комбинации звуков и номеров samples.
+
+Если не добавлять число, это равносильно `:0`
+
+</Box>
+
+Теперь вы знаете, как использовать разные звуки.
+Пока мы остановимся на этой небольшой подборке звуков, но позже узнаем, как загружать собственные звуки.
+
+## Звуки ударных
+
+По умолчанию Strudel поставляется с широким выбором звуков ударных:
+
+<MiniRepl client:visible tune={`sound("bd hh sd oh")`} />
+
+<Box>
+
+Эти буквенные комбинации обозначают разные части ударной установки:
+
+<img src="/img/drumset.png" />
+
+<a class="text-right text-xs" href="https://de.wikipedia.org/wiki/Schlagzeug#/media/Datei:Drum_set.svg" target="_blank">
+  original image by Pbroks13
+</a>
+
+- `bd` = **b**ass **d**rum (бас-барабан)
+- `sd` = **s**nare **d**rum (малый барабан)
+- `rim` = **rim**shot (удар по ободу)
+- `hh` = **h**i**h**at (хай-хэт)
+- `oh` = **o**pen **h**ihat (открытый хай-хэт)
+- `lt` = **l**ow tom (низкий том)
+- `mt` = **m**iddle tom (средний том)
+- `ht` = **h**igh tom (высокий том)
+- `rd` = **r**i**d**e cymbal (райд-тарелка)
+- `cr` = **cr**ash cymbal (крэш-тарелка)
+
+Попробуйте разные звуки ударных!
+
+</Box>
+
+Чтобы изменить звучание ударных, мы можем использовать `bank` для смены драм-машины:
+
+<MiniRepl client:visible tune={`sound("bd hh sd oh").bank("RolandTR909")`} />
+
+В этом примере `RolandTR909` — это название драм-машины, которую мы используем.
+Это знаменитая драм-машина для house и techno битов.
+
+<Box>
+
+Попробуйте изменить `RolandTR909` на одну из:
+
+- `AkaiLinn`
+- `RhythmAce`
+- `RolandTR808`
+- `RolandTR707`
+- `ViscoSpaceDrum`
+
+Их гораздо больше, но пока давайте упростим
+
+Профи-совет: Выделите название двойным кликом. Затем просто скопируйте и вставьте!
+
+</Box>
+
+## Последовательности
+
+В последнем примере мы уже видели, что можно воспроизводить несколько звуков в последовательности, разделяя их пробелом:
+
+<MiniRepl client:visible tune={`sound("bd hh sd hh")`} punchcard />
+
+Обратите внимание, как текущий воспроизводимый звук подсвечивается в коде и визуализируется ниже.
+
+<Box>
+
+Попробуйте добавить больше звуков в последовательность!
+
+</Box>
+
+**Чем длиннее последовательность, тем быстрее она выполняется**
+
+<MiniRepl client:visible tune={`sound("bd bd hh bd rim bd hh bd")`} punchcard />
+
+Содержимое последовательности будет сжато в то, что называется cycle. По умолчанию cycle длится 2 секунды.
+
+**Один на cycle с помощью `< .. >`**
+
+Вот та же последовательность, но на этот раз окруженная `< .. >` (угловыми скобками):
+
+<MiniRepl client:visible tune={`sound("<bd bd hh bd rim bd hh bd>")`} punchcard />
+
+Это будет воспроизводить только один звук за cycle. С этими скобками темп не меняется, когда мы добавляем или удаляем элементы!
+
+Так как сейчас это очень медленно, мы можем снова ускорить это так:
+
+<MiniRepl client:visible tune={`sound("<bd bd hh bd rim bd hh bd>*8")`} punchcard />
+
+Здесь `*8` означает, что мы делаем всё это в 8 раз быстрее.
+
+<Box>
+
+Подождите минуту, разве это не то же самое, что без `< ... >*8`? Зачем тогда это нужно?
+
+Это правда, особенность этой нотации в том, что темп не изменится, когда вы добавляете или удаляете элементы, попробуйте!
+
+Попробуйте также изменить число в конце, чтобы изменить темп!
+
+</Box>
+
+**изменение темпа с помощью setcpm**
+
+<MiniRepl
+  client:visible
+  tune={`setcpm(90/4)
+sound("<bd hh rim hh>*8")`}
+  punchcard
+/>
+
+<Box>
+
+cpm = cycles per minute (циклов в минуту)
+
+По умолчанию темп составляет 30 циклов в минуту = 120/4 = 1 cycle каждые 2 секунды
+
+В терминах западной музыки можно сказать, что вышеприведенное — это восьмые ноты при 90bpm в размере 4/4.
+Но не волнуйтесь, если вы не знаете эти термины, они не требуются для создания музыки с Strudel.
+
+</Box>
+
+**Добавление пауз в последовательность с помощью '-' или '~'**
+
+<MiniRepl client:visible tune={`sound("bd hh - rim - bd hh rim")`} punchcard />
+
+**Подпоследовательности с [квадратными скобками]**
+
+<MiniRepl client:visible tune={`sound("bd [hh hh] sd [hh bd] bd - [hh sd] cp")`} punchcard />
+
+<Box>
+
+Попробуйте добавить больше звуков внутрь скобки!
+
+</Box>
+
+Подобно всей последовательности, содержимое подпоследовательности будет сжато до собственной длины.
+
+**Умножение: Ускорение**
+
+<MiniRepl client:visible tune={`sound("bd hh*2 rim hh*3 bd [- hh*2] rim hh*2")`} punchcard />
+
+**Умножение: Ускорение подпоследовательностей**
+
+<MiniRepl client:visible tune={`sound("bd [hh rim]*2 bd [hh rim]*1.5")`} punchcard />
+
+**Умножение: Оооочень сильное ускорение**
+
+<MiniRepl client:visible tune={`sound("bd hh*32 rim hh*16")`} punchcard />
+
+<Box>
+
+Высота звука = очень быстрый ритм
+
+</Box>
+
+**Подподпоследовательности с [[двойными скобками]]**
+
+<MiniRepl client:visible tune={`sound("bd [[rim rim] hh] bd cp")`} punchcard />
+
+<Box>
+
+Вы можете углубляться настолько, насколько хотите!
+
+</Box>
+
+**Воспроизведение последовательностей параллельно с помощью запятой**
+
+<MiniRepl client:visible tune={`sound("hh hh hh, bd casio")`} punchcard />
+
+Вы можете использовать столько запятых, сколько хотите:
+
+<MiniRepl client:visible tune={`sound("hh hh hh, bd bd, - casio")`} punchcard />
+
+Запятые также могут использоваться внутри подпоследовательностей:
+
+<MiniRepl client:visible tune={`sound("hh hh hh, bd [bd,casio]")`} punchcard />
+
+<Box>
+
+Заметили, что два примера выше одинаковые?
+
+Довольно часто существует много способов выразить одну и ту же идею.
+
+</Box>
+
+**Несколько строк с обратными кавычками**
+
+<MiniRepl
+  client:visible
+  tune={`sound(\`bd*2, - cp,
+- - - oh, hh*4,
+[- casio]*2\`)`}
+  punchcard
+/>
+
+**выбор номеров samples отдельно**
+
+Вместо того чтобы выбирать номера samples по одному:
+
+<MiniRepl client:visible tune={`sound("jazz:0 jazz:1 [jazz:4 jazz:2] jazz:3*2")`} punchcard />
+
+Мы также можем использовать функцию `n`, чтобы сделать это короче и читабельнее:
+
+<MiniRepl client:visible tune={`n("0 1 [4 2] 3*2").sound("jazz")`} punchcard />
+
+## Итоги
+
+Теперь мы изучили основы так называемой Mini-Notation, ритмического языка Tidal.
+Вот что мы изучили к настоящему моменту:
+
+| Концепция         | Синтаксис | Пример                                                                  |
+| ----------------- | --------- | ----------------------------------------------------------------------- |
+| Последовательность| пробел    | <MiniRepl client:visible tune={`sound("bd bd sd hh")`} />               |
+| Номер sample      | :x        | <MiniRepl client:visible tune={`sound("hh:0 hh:1 hh:2 hh:3")`} />       |
+| Паузы             | - или ~   | <MiniRepl client:visible tune={`sound("metal - jazz jazz:1")`} />       |
+| Чередование       | \<\>      | <MiniRepl client:visible tune={`sound("<bd hh rim oh bd rim>")`} />     |
+| Подпоследовательности | \[\]  | <MiniRepl client:visible tune={`sound("bd wind [metal jazz] hh")`} />   |
+| Подподпоследовательности | \[\[\]\] | <MiniRepl client:visible tune={`sound("bd [metal [jazz [sd cp]]]")`} /> |
+| Ускорение         | \*        | <MiniRepl client:visible tune={`sound("bd sd*2 cp*3")`} />              |
+| Параллельно       | ,         | <MiniRepl client:visible tune={`sound("bd*2, hh*2 [hh oh]")`} />        |
+
+Mini-Notation обычно используется внутри какой-либо функции. Вот функции, которые мы видели к настоящему моменту:
+
+| Название | Описание                             | Пример                                                                            |
+| -------- | ------------------------------------ | --------------------------------------------------------------------------------- |
+| sound    | воспроизводит звук с указанным именем| <MiniRepl client:visible tune={`sound("bd sd [- bd] sd")`} />                     |
+| bank     | выбирает sound bank                  | <MiniRepl client:visible tune={`sound("bd sd [- bd] sd").bank("RolandTR909")`} /> |
+| setcpm   | устанавливает темп в циклах в минуту | <MiniRepl client:visible tune={`setcpm(45); sound("bd sd [- bd] sd")`} />         |
+| n        | выбрать номер sample                 | <MiniRepl client:visible tune={`n("0 1 4 2 0 6 3 2").sound("jazz")`} />           |
+
+## Примеры
+
+**Базовый рок-бит**
+
+<MiniRepl
+  client:visible
+  tune={`setcpm(100/4)
+sound("[bd sd]*2, hh*8").bank("RolandTR505")`}
+  punchcard
+/>
+
+**Классический house**
+
+<MiniRepl client:visible tune={`sound("bd*4, [- cp]*2, [- hh]*4").bank("RolandTR909")`} punchcard />
+
+<Box>
+
+Обратите внимание, что эти два паттерна очень похожи.
+Определенные барабанные паттерны используются в разных жанрах.
+
+</Box>
+
+We Will Rock you
+
+<MiniRepl
+  client:visible
+  tune={`setcpm(81/2)
+sound("bd*2 cp").bank("RolandTR707")`}
+  punchcard
+/>
+
+**Yellow Magic Orchestra - Firecracker**
+
+<MiniRepl
+  client:visible
+  tune={`setcpm(120/2)
+sound("bd sd, - - - hh - hh - -, - perc - perc:1*2")
+.bank("RolandCompurhythm1000")`}
+  punchcard
+/>
+
+**Имитация 16-шагового секвенсора**
+
+<MiniRepl
+  client:visible
+  tune={`
+setcpm(90/4)
+sound(\`
+[-  -  oh - ] [-  -  -  - ] [-  -  -  - ] [-  -  -  - ],
+[hh hh -  - ] [hh -  hh - ] [hh -  hh - ] [hh -  hh - ],
+[-  -  -  - ] [cp -  -  - ] [-  -  -  - ] [cp -  -  - ],
+[bd -  -  - ] [-  -  -  bd] [-  -  bd - ] [-  -  -  bd]
+\`)`}
+  punchcard
+/>
+
+**Еще один**
+
+<MiniRepl
+  client:visible
+  tune={`setcpm(88/4)
+sound(\`
+[-  -  -  - ] [-  -  -  - ] [-  -  -  - ] [-  -  oh:1 - ],
+[hh hh hh hh] [hh hh hh hh] [hh hh hh hh] [hh hh -  - ],
+[-  -  -  - ] [cp -  -  - ] [-  -  -  - ] [~  cp -  - ],
+[bd bd -  - ] [-  -  bd - ] [bd bd - bd ] [-  -  -  - ]
+\`).bank("RolandTR808")`}
+  punchcard
+/>
+
+**Необычные ударные**
+
+<MiniRepl
+  client:visible
+  tune={`setcpm(100/2)
+s(\`jazz*2,
+insect [crow metal] - -,
+- space:4 - space:1,
+- wind\`)`}
+  punchcard
+/>
+
+Теперь, когда мы знаем основы создания битов, давайте посмотрим, как можно воспроизводить [ноты](/workshop/first-notes)

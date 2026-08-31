@@ -1,0 +1,161 @@
+---
+title: Параметры управления
+layout: ../../layouts/MainLayout.astro
+---
+
+import { MiniRepl } from '../../docs/MiniRepl';
+import { JsDoc } from '../../docs/JsDoc';
+
+# Параметры управления
+
+Помимо функций, которые контролируют время, мы видели ранее, что функции вроде `note` и `cutoff` контролируют различные параметры (короткие params) события.
+Теперь давайте более внимательно посмотрим, как работают эти `функции param(eter)`.
+
+# Функции параметров
+
+Очень мощная особенность tidal patterns - это то, что каждый параметр может контролироваться независимо:
+
+<MiniRepl
+  client:only="react"
+  tune={`note("c a f e")
+.cutoff("<500 1000 2000 [4000 8000]>")
+.gain(.8)
+.s('sawtooth')
+.log()`}
+/>
+
+В этом примере параметры `note`, `cutoff`, `gain` и `s` контролируются независимо либо patterns, либо обычными значениями (числами / текстом).
+После нажатия play мы можем наблюдать время и значения параметров каждого события (hap) в выводе, созданном `.log()`.
+
+## Обычные vs параметризованные значения
+
+Patterns, которые не обёрнуты в функцию param, будут содержать немаркированные `обычные значения`:
+
+<MiniRepl client:only="react" tune={`"<c e g>".log()`} />
+
+Это не создаст звукового вывода, потому что Strudel мог бы только догадываться, какой param имеется в виду этими буквами.
+
+Теперь сравните это с версией, обёрнутой в `note`:
+
+<MiniRepl client:only="react" tune={`note("<c e g>").log()`} />
+
+Теперь ясно, что эти буквы предназначены для воспроизведения как ноты.
+Под капотом функция `note` (как и все другие функции param)
+обернёт каждое обычное значение в объект. Если бы функции note не существовало, нам пришлось бы писать:
+
+<MiniRepl client:only="react" tune={`cat({note:'c'},{note:'e'},{note:'g'}).log()`} />
+
+Это будет иметь тот же вывод, хотя это довольно неудобно читать и писать.
+
+## Обёртывание функций параметров
+
+Чтобы избежать слишком большой вложенности, функции param также можно связывать в цепочку вот так:
+
+<MiniRepl client:only="react" tune={`cat('c', 'e', 'g').note().log()`} />
+
+Это эквивалентно `note(cat('c','e','g')).log()`.
+
+Вы можете использовать это с любой функцией, которая объявляет тип (как `n`, `s`, `note`, `freq` и т.д.), просто убедитесь, что оставляете скобки пустыми!
+
+## Модификация обычных значений
+
+Patterns обычных значений могут быть изменены с помощью любого из следующих операторов:
+
+<MiniRepl client:only="react" tune={`"50 60 70".add("<0 1 2>").log()`} />
+
+Здесь функция add изменяет числа слева.
+Снова нет вывода, потому что эти числа не имеют смысла без param.
+
+## Модификация значений параметров
+
+Чтобы изменить значение параметра, вы можете либо:
+
+- Использовать оператор на pattern обычных значений внутри функции param:
+
+  <MiniRepl client:only="react" tune={`note("50 60 70".add("<0 1 2>")).room(.1).log()`} />
+
+- Аналогично, использовать оператор на pattern обычных значений и обернуть его позже:
+
+  <MiniRepl client:only="react" tune={`"50 60 70".add("<0 1 2>").note().room(.1).log()`} />
+
+- Указать, какой param должен быть изменён внутри функции оператора:
+
+  <MiniRepl client:only="react" tune={`note("50 60 70").room(.1).add(note("<0 1 2>")).log()`} />
+
+Помните, что выполнение связанных функций идёт слева направо.
+
+# Операторы
+
+Эта группа функций позволяет изменять значение событий.
+
+## add
+
+<JsDoc client:idle name="Pattern.add" h={0} />
+
+## sub
+
+<JsDoc client:idle name="Pattern.sub" h={0} />
+
+## mul
+
+<JsDoc client:idle name="Pattern.mul" h={0} />
+
+## div
+
+<JsDoc client:idle name="Pattern.div" h={0} />
+
+## round
+
+<JsDoc client:idle name="Pattern.round" h={0} />
+
+## floor
+
+<JsDoc client:idle name="Pattern.floor" h={0} />
+
+## ceil
+
+<JsDoc client:idle name="Pattern.ceil" h={0} />
+
+## range
+
+<JsDoc client:idle name="Pattern.range" h={0} />
+
+## rangex
+
+<JsDoc client:idle name="Pattern.rangex" h={0} />
+
+## range2
+
+<JsDoc client:idle name="Pattern.range2" h={0} />
+
+## ratio
+
+<JsDoc client:idle name="Pattern.ratio" h={0} />
+
+## as
+
+<JsDoc client:idle name="as" h={0} />
+
+# Пользовательские параметры
+
+Вы также можете создавать свои собственные параметры:
+
+<MiniRepl
+  client:only="react"
+  tune={`let x = createParam('x')
+x(sine.range(0, 200))
+`}
+/>
+
+Несколько params также можно создать более лаконичным способом, используя `createParams`:
+
+<MiniRepl
+  client:only="react"
+  tune={`let { x, y } = createParams('x', 'y');
+x(sine.range(0, 200)).y(cosine.range(0, 200));
+`}
+/>
+
+Обратите внимание, что эти params ничего не будут делать, пока вы не придадите им смысл в вашем пользовательском выводе!
+
+От модификации параметров мы переходим к концепции [Signals](/learn/signals).

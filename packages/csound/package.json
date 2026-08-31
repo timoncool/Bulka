@@ -1,0 +1,45 @@
+{
+  "name": "@strudel/csound",
+  "version": "1.2.6",
+  "description": "csound bindings for strudel",
+  "main": "index.mjs",
+  "type": "module",
+  "publishConfig": {
+    "main": "dist/index.mjs"
+  },
+  "scripts": {
+    "build": "vite build",
+    "prepublishOnly": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://codeberg.org/uzu/strudel.git"
+  },
+  "keywords": [
+    "tidalcycles",
+    "strudel",
+    "pattern",
+    "livecoding",
+    "algorave"
+  ],
+  "author": "Felix Roos <flix91@gmail.com>",
+  "contributors": [
+    "Alex McLean <alex@slab.org>"
+  ],
+  "license": "AGPL-3.0-or-later",
+  "bugs": {
+    "url": "https://codeberg.org/uzu/strudel/issues"
+  },
+  "homepage": "https://codeberg.org/uzu/strudel#readme",
+  "dependencies": {
+    "@csound/browser": "6.18.7",
+    "@strudel/core": "workspace:*",
+    "@strudel/webaudio": "workspace:*"
+  },
+  "devDependencies": {
+    "vite": "^6.0.11"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

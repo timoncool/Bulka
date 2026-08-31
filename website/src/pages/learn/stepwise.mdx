@@ -1,0 +1,133 @@
+---
+title: Stepwise patterning
+layout: ../../layouts/MainLayout.astro
+---
+
+import { MiniRepl } from '../../docs/MiniRepl';
+import { JsDoc } from '../../docs/JsDoc';
+
+# Stepwise patterning (экспериментально)
+
+Это развивающаяся область strudel, и поведение может измениться или быть переименовано в будущих версиях. Отзывы и идеи приветствуются!
+
+## Введение
+
+Обычно в strudel единственной точкой отсчета для большинства преобразований patterns является _cycle_. Теперь также возможно работать с _шагами_ (steps) через растущий набор функций.
+
+Например, обычно когда вы используете `fastcat` для объединения двух patterns, cycles будут сжаты в половину cycle каждый:
+
+<MiniRepl client:idle tune={`fastcat("bd hh hh", "bd hh hh cp hh").sound()`} />
+
+С новой stepwise функцией `stepcat`, шаги двух patterns будут равномерно распределены по cycle:
+
+<MiniRepl client:idle tune={`stepcat("bd hh hh", "bd hh hh cp hh").sound()`} />
+
+По умолчанию шаги подсчитываются в соответствии с 'верхним уровнем' в mini-notation. Например, `"a [b c] d e"` имеет пять событий в cycle, но считается как четыре шага, где `[b c]` считается как один шаг.
+
+Однако вы можете отметить другой метрический уровень для подсчета шагов, используя `^` в начале sub-pattern. Если мы сделаем это с subpattern в нашем примере: `"a [^b c] d e"`, то pattern теперь будет считаться имеющим _восемь_ шагов. Это потому, что 'b' и 'c' каждый считаются как отдельные шаги, а события в pattern в два раза длиннее, и поэтому считаются как два шага каждое.
+
+## Управление темпом шагов
+
+Некоторые stepwise функции сами по себе не кажутся делающими много, например, эти два примера функции `expand` звучат абсолютно одинаково, несмотря на разные значения расширения:
+
+<MiniRepl client:idle tune={`"c a f e".expand(2).note().sound("folkharp")`} />
+
+<MiniRepl client:idle tune={`"c a f e".expand(4).note().sound("folkharp")`} />
+
+Количество шагов на cycle изменяется за кулисами, но само по себе это ничего не делает. Однако вы услышите разницу, когда используете другую stepwise функцию вместе с ней, например `stepcat`:
+
+<MiniRepl
+  client:idle
+  tune={`stepcat("c a f e".expand(2), "g d").note()
+  .sound("folkharp")`}
+/>
+
+<MiniRepl
+  client:idle
+  tune={`stepcat("c a f e".expand(4), "g d").note()
+  .sound("folkharp")`}
+/>
+
+Вы должны услышать, что `expand` увеличивает длительность шагов первого subpattern пропорционально второму.
+
+Вы также можете изменить скорость pattern в соответствии с заданным количеством шагов на cycle с помощью функции `pace`:
+
+<MiniRepl
+  client:idle
+  tune={`stepcat("c a f e".expand(2), "g d").note()
+  .sound("folkharp")
+  .pace(8)`}
+/>
+
+<MiniRepl
+  client:idle
+  tune={`stepcat("c a f e".expand(4), "g d").note()
+  .sound("folkharp")
+  .pace(8)`}
+/>
+
+Первый пример имеет десять шагов, а второй пример - 18 шагов, но затем оба воспроизводятся со скоростью 8 шагов на cycle.
+
+Аргумент `expand` также может быть pattern, и будет обрабатываться в stepwise манере. Это означает, что patterns из изменяющихся значений в аргументе будут объединены с помощью `stepcat`:
+
+<MiniRepl client:idle tune={`note("c a f e").sound("folkharp").expand("3 2 1 1 2 3")`} />
+
+Это приводит к плотному pattern, потому что разные расширенные версии сжаты в один cycle. `pace` снова удобен здесь для замедления pattern до определенного количества шагов на cycle:
+
+<MiniRepl client:idle tune={`note("c a f e").sound("folkharp").expand("3 2 1 1 2 3").pace(8)`} />
+
+Ранние версии многих из этих функций имели префикс `s_`, а функция `pace` ранее была известна как `steps`. Они все еще существуют как псевдонимы, но поведение могло измениться, и скоро они будут удалены. Пожалуйста, обновите ваши patterns!
+
+## Stepwise функции
+
+### pace
+
+<JsDoc client:idle name="pace" h={0} />
+
+### stepcat
+
+<JsDoc client:idle name="stepcat" h={0} />
+
+### stepalt
+
+<JsDoc client:idle name="stepalt" h={0} />
+
+### expand
+
+<JsDoc client:idle name="expand" h={0} />
+
+### contract
+
+<JsDoc client:idle name="contract" h={0} />
+
+### extend
+
+<JsDoc client:idle name="extend" h={0} />
+
+### take
+
+<JsDoc client:idle name="take" h={0} />
+
+### drop
+
+<JsDoc client:idle name="drop" h={0} />
+
+### polymeter
+
+<JsDoc client:idle name="polymeter" h={0} />
+
+### shrink
+
+<JsDoc client:idle name="shrink" h={0} />
+
+### grow
+
+<JsDoc client:idle name="grow" h={0} />
+
+### tour
+
+<JsDoc client:idle name="tour" h={0} />
+
+### zip
+
+<JsDoc client:idle name="zip" h={0} />

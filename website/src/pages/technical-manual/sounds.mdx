@@ -1,0 +1,75 @@
+---
+title: Звуки
+layout: ../../layouts/MainLayout.astro
+---
+
+import { MiniRepl } from '../../docs/MiniRepl';
+
+# Звуки
+
+Давайте подробнее рассмотрим, как звуки реализованы в выводе webaudio.
+
+## Регистрация звука
+
+Все звуки регистрируются в карте звуков, используя функцию `registerSound`:
+
+```ts
+function registerSound(
+  name: string, // Имя звука, которое должно быть передано в `s`, например `mysaw`
+  // Функция, вызываемая планировщиком для запуска звука:
+  (
+    time: number, // Время audio context, когда звук должен начаться
+    value: object, // Значение `Hap`
+    onended: () => void // Обратный вызов, который должен быть вызван, когда звук закончился
+  ) => {
+    node: AudioNode, // node для подключения к остальной цепи эффектов
+    stop: (time:number) => void // функция, которая остановит звук
+  },
+  data: object // мета-данные, только для логики ui во вкладке звуков
+);
+```
+
+Когда вызывается `registerSound`, он регистрирует `{ onTrigger, data }` под заданным `name` в [nanostore map](https://github.com/nanostores/nanostores#maps).
+
+### Пример
+
+Это может быть немного абстрактно, поэтому вот минимальный пример:
+
+```js
+registerSound(
+  'mysaw',
+  (time, value, onended) => {
+    let { freq } = value; // деструктуризация контрольных параметров
+    const ctx = getAudioContext();
+    // создать осциллятор
+    const o = new OscillatorNode(ctx, { type: 'sawtooth', frequency: Number(freq) });
+    o.start(time);
+    // добавить gain node для снижения уровня osc
+    const g = new GainNode(ctx, { gain: 0.3 });
+    // подключить osc к gain
+    const node = o.connect(g);
+    // эту функцию можно вызвать извне для остановки звука
+    const stop = (time) => o.stop(time);
+    // ended будет вызван, когда stop был вызван
+    o.addEventListener('ended', () => {
+      o.disconnect();
+      g.disconnect();
+      onended();
+    });
+    return { node, stop };
+  },
+  { type: 'synth' },
+);
+// использовать звук
+freq(220, 440, 330).s('mysaw');
+```
+
+Вы можете фактически использовать этот код в [REPL](https://strudel.cc/) и он будет работать.
+После оценки кода вы должны увидеть `mysaw` в списке во вкладке звуков.
+
+## Воспроизведение звуков
+
+Теперь вот что происходит, когда звук воспроизводится:
+Когда вывод webaudio воспроизводит `Hap`, он найдет и вызовет функцию `onTrigger` для заданного `s`.
+Возвращенный `node` затем может быть подключен к остальной стандартной цепи эффектов
+Наличие отдельной функции stop позволяет воспроизводить звуки через midi тоже, где вы не знаете, как долго будет длиться noteon

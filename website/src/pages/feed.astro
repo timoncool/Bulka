@@ -1,0 +1,49 @@
+---
+import HeadCommon from '../components/HeadCommon.astro';
+import Header from '../components/Header/Header.astro';
+import LeftSidebar from '../components/LeftSidebar/LeftSidebar.astro';
+import PageContent from '../components/PageContent/PageContent.astro';
+import RightSidebar from '../components/RightSidebar/RightSidebar.astro';
+import { Feed } from '../components/Feed/Feed.jsx';
+
+const currentPage = Astro.url.pathname;
+---
+
+<html dir={'ltr'} lang={'ru'} class="initial dark">
+  <head>
+    <HeadCommon />
+    <title>Лента треков | Bulka</title>
+    <meta name="description" content="Слушай и открывай новые треки от сообщества Bulka. Голосуй за лучшие треки и делись своими." />
+  </head>
+
+  <body class="h-app-height text-gray-50 bg-background">
+    <div class="w-full h-full space-y-4 flex flex-col">
+      <header class="max-w-full fixed top-0 w-full z-[100]">
+        <Header currentPage={currentPage} />
+      </header>
+      <main class="relative pt-16">
+        <div class="h-full top-0 overflow-auto min-w-[300px] flex xl:justify-center pr-4 pl-4 md:pl-[300px] xl:pl-0">
+          <aside title="Site Navigation" class="w-[300px] px-6 left-0 hidden md:block fixed h-full">
+            <LeftSidebar currentPage={currentPage} />
+          </aside>
+          <PageContent>
+            <h1>Лента</h1>
+            <p class="text-foreground/70 mb-6">
+              Слушай треки от сообщества, голосуй за лучшие и делись своими творениями.
+              Нажми "Поделиться" в редакторе, чтобы опубликовать свой трек.
+            </p>
+            <Feed client:only="react" />
+          </PageContent>
+          <aside class="fixed right-0 h-full overflow-auto pr-4 pl-0 pb-16 hidden xl:block" title="Table of Contents">
+            <RightSidebar
+              headings={[
+                { depth: 1, slug: 'popular', text: 'Популярное' },
+                { depth: 1, slug: 'latest', text: 'Новое' },
+              ]}
+            />
+          </aside>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

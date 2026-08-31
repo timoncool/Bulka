@@ -1,0 +1,953 @@
+---
+title: Галерея треков
+layout: ../../layouts/MainLayout.astro
+---
+
+import { MiniRepl } from '../../docs/MiniRepl';
+
+# Галерея треков от сообщества
+
+Лучшие треки и каверы от сообщества Strudel. Нажмите play!
+
+---
+
+## Почему я? — Nerual Dreming
+
+<MiniRepl
+  client:visible
+  tune={`// @title Почему я?
+// @by Nerual Dreming
+
+cpm(130/2);
+
+const progression = chord("<Am F Dm E>");
+const heroicArp = n("<4 3 2 1>");
+
+stack(
+  // --- 1. ЭФФЕКТЫ ПЕРЕХОДОВ ---
+  arrange(
+    [15, silence], [1, s("white").gain(saw.fast(2)).lpf(8000).gain(0.5)],
+    [15, silence], [1, s("white").gain(saw.fast(2)).lpf(8000).gain(0.5)],
+    [15, silence], [1, s("white").gain(saw.fast(2)).lpf(8000).gain(0.5)],
+    [7, silence],  [1, s("white").gain(saw.fast(2)).lpf(8000).gain(0.5)],
+    [7, silence]
+  ).gain(0.05),
+
+  // --- 2. УДАРНЫЕ ---
+  arrange(
+    [8, s("bd ~ sd ~").lpf(800)], [8, s("bd ~ sd ~")], [8, s("bd sd [bd sd] sd")],
+    [8, s("bd ~ sd ~")], [8, s("bd sd [bd sd] sd")], [8, silence],
+    [8, s("bd sd bd sd")], [8, s("bd sd [bd sd] sd")], [8, s("bd ~ sd ~").lpf(800).delay(0.5)]
+  ).bank("RolandTR909").gain(0.1),
+  arrange(
+    [8, s("~ ~ sd ~").lpf(800)], [8, s("~ ~ sd ~")], [8, s("~ sd ~ sd")],
+    [8, s("~ ~ sd ~")], [8, s("~ sd ~ sd")], [8, silence],
+    [8, s("~ sd ~ sd")], [8, s("~ sd ~ sd")], [8, s("~ ~ sd ~").lpf(800).delay(0.5)]
+  ).bank("RolandTR909").decay(0.15).lpf(4000).gain(0.1),
+  arrange(
+    [8, silence], [8, s("hh*8")], [8, s("hh*16")],
+    [8, s("hh*8")], [8, s("hh*16")], [8, silence],
+    [16, s("hh*16")], [8, silence]
+  ).bank("RolandTR909").gain(0.07).lpf(9000),
+
+  // --- 3. БАС-ГИТАРА ---
+  arrange(
+    [8, silence], [32, n("0").set(progression).voicing()],
+    [8, n("<0 ~ 1 ~ 2 ~ 3 ~>").set(progression).voicing()],
+    [16, n("0").set(progression).voicing()], [8, silence]
+  ).s("sine").lpf(500).gain(0.15),
+
+  // --- 4. РИТМ-ГИТАРА ---
+  arrange(
+    [8, silence], [8, progression.struct("x ~ [x x] [x x]").adsr("0:0.05:0:0.05")],
+    [8, progression.struct("x.long")], [8, progression.struct("x ~ [x x] [x x]").adsr("0:0.05:0:0.05")],
+    [8, progression.struct("x.long")],
+    [8, silence],
+    [16, progression.struct("x.long")], [8, silence]
+  ).s("gm_electric_guitar_clean")
+   .superimpose(x => x.add(note(0.04)))
+   .gain(0.11),
+
+  // --- 5. ЛИД-МЕЛОДИЯ ---
+  arrange(
+    [8, heroicArp.set(progression).voicing().add(12).s("triangle").room(0.7).delay(0.5)],
+    [8, silence], [8, heroicArp.set(progression).voicing().add(12).s("sawtooth").n(8)],
+    [8, n("<6 5 4 3>").set(progression).voicing().add(12).s("sawtooth").n(8)],
+    [8, heroicArp.set(progression).voicing().add(12).s("sawtooth").n(8)],
+    [8, heroicArp.set(progression).voicing().add(12).s("triangle").room(0.7).delay(0.5).release(4)],
+    [8, n("~ 4 3 2 <1 0> 1 2").scale("Am:minor").add(note(24)).s("sawtooth").distort("2:0.4").gain(0.8)],
+    [8, heroicArp.set(progression).voicing().add(12).s("sawtooth").n(8)],
+    [8, heroicArp.set(progression).voicing().add(12).s("triangle").room(0.7).delay(0.5).release(4)]
+  ).gain(0.12)
+
+).gain(0.12)`}
+/>
+
+---
+
+## Love Again — Nerual Dreming
+
+<MiniRepl
+  client:visible
+  tune={`// @title Love Again
+// @by Nerual Dreming
+
+cpm(116/2);
+const progression = chord("<Em C Am D>");
+
+const introOutroSection = stack(
+    s("bd sd bd sd").gain(0.1),
+    s("hh*8").gain(0.09),
+    n("<4 2 5 3>").set(progression).voicing().add(12).s("piano").room(0.5).delay(0.25).gain(0.12),
+    n(run(8)).set(progression).voicing().add(24).s("sine").decay(0.1).pan(perlin.slow(8).range(0.2, 0.8)).gain(0.05)
+);
+
+arrange(
+  // --- ИНТРО ---
+  [4, introOutroSection],
+
+  // --- КУПЛЕТ 1 ---
+  [8, stack(
+      s("bd ~ sd ~").gain(0.1),
+      s("hh*8").gain(0.07),
+      progression.rootNotes(2).s("square").lpf(700).gain(0.15),
+      n("<4 2 5 3>").set(progression).voicing().add(12).s("piano").room(0.5).delay(0.25).ply(2).gain(0.12),
+      n(run(8)).set(progression).voicing().add(24).s("sine").decay(0.1).pan(perlin.slow(8).range(0.2, 0.8)).gain(0.05)
+    )
+  ],
+  // --- ПРИПЕВ 1 ---
+  [8, stack(
+      s("bd sd bd sd").gain(0.1),
+      s("hh*8").gain(0.09),
+      progression.rootNotes(2).s("square").lpf(700).gain(0.15),
+      n("<4 2 5 3>").set(progression).voicing().add(12).s("piano").room(0.5).delay(0.25).gain(0.12),
+      n(run(8)).set(progression).voicing().add(24).s("sine").decay(0.1).pan(perlin.slow(8).range(0.2, 0.8)).gain(0.05)
+    )
+  ],
+  // --- ДРОП ---
+  [8, stack(
+      s("bd*4").lpf(1000).room(0.7).gain(0.1),
+      progression.rootNotes(1).s("sawtooth").noise(0.4).distort("1:0.2").gain(0.15),
+      n("4*4").set(progression).voicing().add(12).s("sawtooth").lpf(400).lpenv(6).lpd(0.1).decay(0.15).sustain(0).gain(0.11),
+      n("<0 1 2 3>").set(progression).voicing().rev().s("piano").room(0.12).gain(0.04)
+    )
+  ],
+  // --- ФИНАЛЬНЫЙ ПРИПЕВ ---
+  [8, stack(
+      s("bd sd bd sd").gain(0.1),
+      s("hh*8").gain(0.09),
+      progression.rootNotes(2).s("square").lpf(700).gain(0.15),
+      n("<4 2 5 3>").set(progression).voicing().add(12).s("piano").room(0.5).delay(0.25).gain(0.12),
+      n(run(8)).set(progression).voicing().add(24).s("sine").decay(0.1).pan(perlin.slow(8).range(0.2, 0.8)).gain(0.05)
+    )
+  ],
+  // --- АУТРО ---
+  [4, introOutroSection]
+)`}
+/>
+
+---
+
+## Charli XCX - 360 (cover / remix) — KAIXI
+
+<MiniRepl
+  client:visible
+  tune={`/*
+  @title Charli xcx - 360 (cover / remix)
+  @by KAIXI
+  @details Brat and it's the same but we're live coding so it's not
+*/
+
+let cpm = 120/4;
+
+samples({
+  camera_flash: '360_camera_flash.wav',
+  vox: '360_vocals.wav'
+}, 'https://raw.githubusercontent.com/kai-xi/360/main/samples/');
+
+// section 1: intro
+let lead_synth = arrange(
+  [3, "<[[e3,b3] - c4 -] [e3 - f3 c4] [- c4 a4 -] [- - - -]>*4"],
+  [1, "<[- - [g3,b3] -] [g3 - a3 c4] [- c4 c5 -] [c4 - g4 -]>*4"]
+)
+  .note().sound("sawtooth")
+  .attack(0).decay(.25).sustain(0).release(.3)
+  .lpf(300).lpq(0).lpenv(3).lpa(0).lpd(.15).lps(0)
+  .delay(.2).delaytime(.25).delayfeedback(.1);
+
+let section_1 = lead_synth;
+
+// section 2: i went my own way and i made it
+let bass = arrange(
+  [2, "<[e2 -] [- - e2 f2] [- f1] [-]>*4"],
+  [1, "<[- e2] [e2 - e2 f2] [- f1] [-]>*4"],
+  [1, "<[g2 -] [g2 - g2 a2] [-] [-]>*4"],
+)
+  .note().sound("gm_synth_bass_2:0")
+  .attack(0).decay(.5).release(.3)
+  .lpf(1800);
+
+let sub_bass = bass.transpose(-12);
+
+let bass_drum = arrange(
+  [2, "<[bd -] [- - bd bd] [- bd] [-]>*4"],
+  [1, "<[- bd] [bd - bd bd] [- bd] [-]>*4"],
+  [1, "<[bd -] [bd - bd bd] [-] [-]>*4"],
+)
+  .sound().bank("RolandTR808").gain(1.5);
+
+let clap = arrange(
+  [4, "<[-] [cp] [-] [cp]>*4"]
+)
+  .sound().bank("RolandTR808").gain(1.15);
+
+let drums = stack(bass_drum, clap);
+
+let section_2 = stack(lead_synth, bass, sub_bass, drums);
+
+// section 3: drop down, yeah
+let lead_saw = arrange(
+  [4, "<[g4 - g4 g4] [g4 g4@2 g4] [g4 g4 g4@2] [g4@2 g4 g4]>*4"]
+)
+  .note().sound("gm_lead_2_sawtooth:0")
+  .attack(0).decay(.3).sustain(0).release(.15)
+  .lpf(3000).lpenv(10).lpa(0).lpd(.25).lps(0).lpr(0)
+  .gain(.25);
+
+let camera_flash = s("<[- [- camera_flash] - -] [-]>/4");
+let section_3 = stack(
+  lead_synth,
+  bass,
+  sub_bass,
+  drums.mask("<[1 [1 0] 1 1] [1 1 1 [1 0]]>/4"),
+  lead_saw.mask("<1 [1 1 1 [1 0]]>/4"),
+  camera_flash
+);
+
+// section 4: yeah, 360
+let section_4 = stack(
+  lead_synth,
+  bass.lpf("<20000 [20000 20000 20000 500]>/4"),
+  sub_bass.lpf("<20000 [20000 20000 20000 500]>/4"),
+  drums.mask("<1 [1 1 1 [1 0]]>/4")
+);
+
+// section 5: bumpin' that
+let bass_modified = arrange(
+  [1, "<[e2 -] [- - e2 f2] [- f1] [-]>*4"],
+  [1, "<[e2 -] [- - e2 f2] [- f1] [e2 e2 e2 -]>*4"],
+  [1, "<[e2 e2] [- - e2 f2] [- f1] [-]>*4"],
+  [1, "<[g2 -] [g2 - g2 a2] [-] [-]>*4"],
+)
+  .note().sound("gm_synth_bass_2:0")
+  .attack(0).decay(.5).release(.3)
+  .lpf(1800);
+
+let sub_bass_modified = bass_modified.transpose(-12);
+
+let bass_drum_modified = arrange(
+  [1, "<[bd -] [- - bd bd] [- bd] [-]>*4"],
+  [1, "<[bd -] [- - bd bd] [- bd] [bd bd bd -]>*4"],
+  [1, "<[bd bd] [- - bd bd] [- bd] [-]>*4"],
+  [1, "<[bd -] [bd - bd bd] [-] [-]>*4"],
+)
+  .sound().bank("RolandTR808").gain(1.5);
+
+let section_5 = stack(
+  lead_synth,
+  bass_modified,
+  sub_bass_modified,
+  bass_drum_modified,
+  clap.mask("<1 [1 1 1 [1 0]]>/4"),
+  lead_saw.mask("<[1 1 1 [1 0]]>/4")
+);
+
+// instrumental arrangement
+let instrumental = arrange(
+  [4, section_1],
+  [8, section_2],
+  [8, section_3],
+  [8, section_4],
+  [4, section_5]
+).cpm(cpm);
+
+// slicing the vocals
+let vocals = s("vox")
+  .slice(32,
+         "<0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31>")
+  .cpm(cpm);
+
+// cover (1st half of the song)
+let cover = stack(instrumental, vocals);
+
+// REMIX
+let section_5_ext = stack(
+  lead_synth,
+  bass,
+  sub_bass,
+  bass_drum,
+  clap.mask("<1 [1 1 1 [1 0]]>/4"),
+  lead_saw.mask("<1 [1 1 1 [1 0]]>/4")
+);
+
+let vox_chop_1 = s("vox").slice(32, "<30 30 30 30>");
+let vox_chop_2 =
+    s("<- - - vox>").begin((27*4 + 1)/(32 *4)).end("0.89").late(1/4).gain(.8);
+
+let remix_vox = arrange(
+  [4, stack(vox_chop_1.mask("<1 1 1 1 1 1 1 0>"), vox_chop_2.mask("<0 1>/4"))]
+);
+
+let hihats = arrange(
+  [4, "<[hh - hh hh] [hh hh@2 hh] [hh hh hh@2] [hh@2 hh hh]>*4"]
+)
+  .sound().bank("RolandTR808").gain(.85);
+
+let section_6 = stack(
+  bass_modified,
+  sub_bass_modified,
+  bass_drum_modified,
+  clap.mask("<1 [1 1 1 [1 0]]>/4"),
+  hihats.mask("<1 [1 1 1 [1 0]]>/4")
+);
+
+// section 7
+let bass_modified_2 = arrange(
+  [1, "<[e2 -] [- - e2 f2] [- - f1 -] [-]>*4"],
+  [1, "<[e2 -] [- - e2 f2] [- - f1 -] [e2 e2 e2 -]>*4"],
+  [1, "<[e2 e2] [- - e2 f2] [- - f1 - ] [-]>*4"],
+  [1, "<[g2 -] [g2 - g2 a2] [-] [-]>*4"],
+).transpose(24).gain(1.1)
+  .note().sound("gm_fx_brightness:4")
+  .attack(0).decay(.5).release(.3)
+  .lpf(8000).lpa(0).lpd(.08).lpq(10);
+
+let section_7 = stack(
+  bass_modified_2,
+  sub_bass_modified,
+  clap.mask("<1 [1 1 1 [1 0]]>/4")
+);
+
+// section 8
+let bass_modified_3 = arrange(
+  [1, "<[e2 -] [- - e2 f2] [- f1] [-]>*4"],
+  [1, "<[e2 -] [- - e2 f2] [- f1] [e2 e2 e2 -]>*4"],
+  [1, "<[e2 e2] [- - e2 f2] [- f1] [-]>*4"],
+  [1, "<[g2 -] [g2 - g2 a2] [-] [-]>*4"],
+).transpose(24)
+  .note().sound("gm_lead_2_sawtooth:0")
+  .attack(0).decay(.4).release(.3)
+  .lpf(500).lpa(0).lpd(.03).lpq(0);
+
+let vox_chop_3 = s("<vox - - ->*4").begin(79 / (32 * 4)).end((0.630)).gain(.5);
+
+let section_8 = stack(
+  bass_modified_3.lpf("<500 600 700 [[800 [1000 1200]] 1200]>"),
+  sub_bass_modified,
+  clap.mask("<1 [1 1 1 [1 0]]>/4")
+);
+
+// section 9
+let section_9 = stack(section_5, hihats.gain(.8).mask("<1 [1 1 1 [1 0]]>/4"));
+
+let vox_chop_4 = s("vox").slice(32 * 4, "<- 50 - 50 - 50 - 50>*4");
+let vox_chop_5 = s("<- - - - vox@2 vox@2>*4").begin(99 / (32 * 4)).end(0.7852)
+  .delay(.2).delaytime(.25).delayfeedback(.1);
+let vox_chop_6 = s("vox").slice(32 * 4, "<- - - - 89 90 91 92>*4").gain(.8);
+
+arrange(
+  [32, cover],
+  [8, stack(section_5_ext, remix_vox.lpf("<1500 1500 1500 1500 1500 1500 1500 2000>"))],
+  [8, stack(section_6)],
+  [4, stack(section_7)],
+  [4, stack(section_8, vox_chop_3.lpf("<600 1000 1350 0>").mask("<1 1 1 0>"))],
+  [8, stack(
+    section_9,
+    vox_chop_4.mask("<[1 0] [1 0] [1 0] [1 0]>/2"),
+    vox_chop_5.mask("<[0 1] [0 1] [0 1] [0 0]>/2"),
+    vox_chop_6.lpf(1500).lpa(.25).lpd(.25).pan(sine).mask("<[0 0] [0 0] [0 0] [0 1]>/2"),
+    vox_chop_2.mask("<0 1>/4")
+  )],
+  [8, stack(section_5, remix_vox.mask("<1 1 1 0 1 1 1 1>"))],
+  [4, vox_chop_1.delay(.25).delayt(.5).dfb(.2).mask("<1 0 0 0>")]
+)
+  .cpm(cpm)
+  .theme("<[greenText whitescreen] [blackscreen whitescreen]>/2")
+  .color("<[#99CC3E #FFFFFF] [#99CC3E #000000]>")
+  .fontFamily("x3270")
+  .punchcard({
+    vertical: 1, flipTime: 1, fold: 0, stroke: 1,
+    playheadColor: 'rgba(0, 0, 0, 0)'
+  })`}
+/>
+
+---
+
+## Grimes - Music 4 Machines (cover) — KAIXI
+
+<MiniRepl
+  client:visible
+  tune={`/*
+  @title Grimes - Music 4 Machines (cover)
+  @by KAIXI
+  @details THIS IS MUSIC FOR MACHINES - an intro to live coding on strudel
+*/
+
+let cpm = 135/4;
+
+samples({
+  vox: 'vox_chorus.wav',
+}, 'https://raw.githubusercontent.com/kai-xi/music4machines/main/samples/');
+
+let drums = stack(
+  sound("<bd>*4, <- sd>*4, <- cp:3>*4").bank("RolandTR909"),
+  sound("<- hh>*8").bank("LinnDrum").gain(.2),
+  sound("<sh>*8").bank("RolandTR808").gain(.25)
+);
+
+let bass = cat(
+  "<c2>*4", "<g1>*4", "<eb1>*4", "<eb1!2 f1!2>*4",
+  "<c2>*4", "<g1!2 bb1!2>*4", "<eb1>*4", "<f1>*4"
+).note()
+  .n(3).sound("gm_synth_bass_1")
+  .lpf(200).lpenv(5).lpa(.5).lps(.8).lpd(.1);
+
+let synth_arpeggio = cat(
+  "<c3 c4 eb5 c3 c4 d5 c3 bb4>*8",
+  "<g2 g3 bb4 g2 g3 a4 g2 g4>*8",
+  "<eb2 eb3 g4 eb2 eb3 f4 eb2 g4>*8",
+  "<eb2 eb3 g4 eb2 eb3 f4 f2 g4>*8",
+  "<c3 c4 eb5 c3 c4 d5 c3 bb4>*8",
+  "<g2 g3 bb4 g2 bb4 c5 bb2 g4>*8",
+  "<eb2 eb3 g4 eb2 eb3 f4 eb2 g4>*8",
+  "<f2 f3 g4 f2 f3 a4 f2 a4>*8",
+).note()
+  .n(1).sound("gm_pad_poly")
+  .decay(.95).lpf(5000).lpenv(-3).lpa(.2)
+  .delay(".3:.225:.45")
+  .room(.8).rsize(2);
+
+let synth_bass = cat(
+  "<c3 c4 - c3 c4 - c3 ->*8",
+  "<g2 g3 - g2 g3 - g2 ->*8",
+  "<eb2 eb3 - eb2 eb3 - eb2 ->*8",
+  "<eb2 eb3 - eb2 eb3 - f2 ->*8",
+  "<c3 c4 - c3 c4 - c3 ->*8",
+  "<g2 g3 - g2 g3 - bb2 ->*8",
+  "<eb2 eb3 - eb2 eb3 - eb2 ->*8",
+  "<f2 f3 - f2 f3 - f2 ->*8"
+).note()
+  .n(0).sound("gm_synth_bass_1")
+  .attack(.1).decay(.25).release(.25)
+  .lpf(2250).lpenv(2).lpa(.03).lpr(.2).lpd(.3)
+  .gain(.5);
+
+let synth_lead = cat(
+  "<- - eb5 - - d5 - bb4>*8",
+  "<- - bb4 - - a4 - g4>*8",
+  "<- - g4 - - f4 - g4>*8",
+  "<- - g4 - - f4 - g4>*8",
+  "<- - eb5 - - d5 - bb4>*8",
+  "<- - bb4 - bb4 c5 - g4>*8",
+  "<- - g4 - - f4 - g4>*8",
+  "<- - g4 - - a4 - a4>*8",
+).note()
+  .n(1).sound("gm_pad_metallic")
+  .decay(.95).delay(".3:.225:.45")
+  .room(.4).rsize(2).gain(.6);
+
+let intro_vocals = s("vox").room(.3).rsize(2);
+
+let vocals01 = s("vox").begin(0).end(.25 + (.25 * .25 * .5))
+  .attack(.25).delay(".25:.45:.4").room(.2).rsize(2);
+let vocals02 = s("vox").begin(.25).end(.5 + (.25 * .25 * .5))
+  .attack(.25).delay(".25:.45:.4").room(.2).rsize(2);
+
+let section00 = stack(
+  intro_vocals.mask("<1 0 0 0 0 0 0 0>")
+);
+
+let section01 = stack(
+  drums, bass, synth_arpeggio, synth_bass, synth_lead
+);
+
+let section02 = stack(
+  drums, bass, synth_arpeggio, synth_bass, synth_lead,
+  vocals01.mask("<1 0 0 0 0 0 0 0>"),
+  vocals02.mask("<0 0 0 0 1 0 0 0>")
+);
+
+let end = stack(
+  vocals01.mask("<1 0 0 0 0 0 0 0>")
+);
+
+arrange (
+  [8, section00],
+  [8, section01],
+  [8, section02],
+  [8, end]
+).cpm(cpm)`}
+/>
+
+---
+
+## Birds of a Feather — Billie Eilish (saga_3k)
+
+<MiniRepl
+  client:visible
+  tune={`/*
+@title BIRDS OF A FEATHER (REMAKE)
+@by saga_3k
+@license CC BY-NC-SA
+*/
+
+setcps(105/60/4)
+
+let m1 =
+note("<[D@3 A@2 ~ D@2] [Cs@2 ~ A@2 ~ Cs@2]>".add("12,24")).s("gm_kalimba:3").legato(1.5).fast(2)
+.attack(.025).release(.2).lp(1000)
+.room(".6:2").postgain(1.5).color('#4dbcf4')
+
+let m2 =
+note("<[D@3 A@2 ~ D@2] [Cs@2 ~ A@2 ~ Cs@2]>".add("12,24"))
+.layer(
+x=>x.s("gm_kalimba:3").legato(1.5).attack(.025).release(.2).lp(1000).room(".6:2").postgain(2),
+x=>x.s("gm_acoustic_guitar_steel:6").clip(1.5).release(.2).room(".6:2").postgain(1)
+).fast(2)
+
+let dr =
+stack( s("[bd:<1 0>(<3 1>,8,<0 2>:1.3)] , [~ sd:<15>:2.5]").note("B1").bank("LinnDrum")
+.decay(.3).room(".3:2").fast(2),
+
+s("[LinnDrum_hh(<3 2>,8)]").hp("1000").lp("9000").decay(.3).velocity([".8 .6"]).room(".3:2").fast(2),
+s("sh*8").note("B1").bank("RolandTR808").room(".6:2").velocity("[.8 .5]!4").postgain(1.5).fast(2))
+
+let chord =
+n("<[[0,2,4,6] ~!3] ~ ~ ~ [[-1,0,2,4] ~!3] ~ ~ ~ [[1,3,5,7] ~!3] ~ ~ ~ [[-2,0,1,3] ~!3] ~ [[-2,-1,1,3] ~!3] ~>").scale("D:major").s("gm_epiano1:6")
+.decay(1.5).release(.25).lp(2500).delay(".45:.1:.3").room(".6:2")
+.postgain(1.5).fast(2)
+
+let bass1note =
+n("<0 -1 1 -2>/2").scale("D1:major").s("gm_lead_8_bass_lead:1")
+.lp(800).clip(.1).attack(.2).release(.12)
+.delay(".45:.1:.3").room(".6:2")
+.postgain(1.3)
+
+let bassline =
+note("<[D2!28 Cs2!4] B1*32 [E2!28 D2!4] A1*32>/2").s("gm_electric_bass_pick")
+.decay(.5).velocity(rand.range(.7,1).fast(4))
+.lp(1000).compressor("-20:20:10:.002:.02").room(".6:2")
+.postgain(1.5).color('white')
+
+let chordOrg =
+n("<[0,2,4,6] [-1,0,2,4] [1,3,5,7] [-2,0,1,3]>/2").scale("D2:major").s("gm_church_organ:4")
+.legato(1).delay(".45:.1:.3").room(".6:2")
+.postgain(.6)
+
+let chordArp =
+n("<[0 2 4 6]*8 [-1 0 2 4]*8 [1 3 5 7]*8 [-2 0 1 3]*8>/2").scale("D4:major").s("gm_electric_guitar_jazz:<2 3>")
+.legato(.08).delay(".45:.1:.3").room(".6:2").velocity(saw.range(.8,1).fast(4))
+.juxBy(1,rev())
+.postgain(1.8)
+
+$:arrange(
+  [2,stack(m1,dr)],
+  [8,stack(m1,dr,chord,bass1note)],
+  [8,stack(m1,dr,chord,bass1note,bassline)],
+  [8,stack(m2,dr,chord,bass1note,bassline,chordArp)],
+  [8,stack(m2,dr,chord,bass1note,bassline,chordOrg,chordArp)],
+  [4,stack(m2,dr,chord,bass1note,bassline,chordOrg,chordArp)],
+  [4,stack(m2,arrange([2,dr],[2,silence]).fast(4),bass1note,bassline,chordOrg)]
+)`}
+/>
+
+---
+
+## Determination — Undertale (Claffystic)
+
+<MiniRepl
+  client:visible
+  tune={`/*@Determination · Toby Fox (cover)
+  @by Claffystic
+  @details: Unofficial fanmade cover
+*/
+
+setcpm(115 / 4)
+
+$lead: note("<[F#5 F5 D#5 C#5 D#5 A#4 C5 ~] [G#4 ~ D#5 F5 F#5 ~ G#5 ~] [C#6 ~ A#5@5 ~] [F#5 F5 D#5 C#5 D#5 A#4 C5 ~] [G#4 ~ D#4 F4 F#4 ~ F4 ~] [C#4 ~ D#4@5 ~] [F#5 F5 D#5 C#5 D#5 A#4 C5 ~] [G#4 ~ D#5 F5 F#5 ~ G#5 ~] [C#6 ~ A#5@5 ~] [F#5 F5 D#5 C#5 D#5 A#4 C5 ~] [G#4 ~ D#4 F4 F#4 ~ F4 ~] [C#4 ~ D#4@5 ~] [[G#5,F5] [F#5,D#5] [E5,C#5] [D#5,B4] [C#5,A#4] [E5,C#5] [D#5,A#4] ~] [[A#4,F#4] ~ [A#4,F#4] [D#5,A#4] [G#5,E5] [F#5,D#5] [E5,C#5] [D#5,B4]] [[C#5,A#4] [E5,C#5] [D#5,A#4]@3 ~ [D#4,A#3] [G#4,D#4]] [[C#5,A#4] [C5,G#4] [A#4,F#4] [G#4,F4] [A#4,F#4] [C5,G#4] [A#4,F#4] ~] [[D#4,A#3] ~ [D#4,A#3] [F4,C#4] [F#4,D#4] ~ [B4,F#4] ~] [[D#5,B4]@2 [D5,A#4]@4 ~@2] [[G#5,F5] [F#5,D#5] [E5,C#5] [D#5,B4] [C#5,A#4] [E5,C#5] [D#5,A#4] ~] [[A#4,F#4] ~ [A#4,F#4] [D#5,A#4] [G#5,E5] [F#5,D#5] [E5,C#5] [D#5,B4]] [[C#5,A#4] [E5,C#5] [D#5,A#4]@3 ~ [D#4,A#3] [G#4,D#4]] [[C#5,A#4] [C5,G#4] [A#4,F#4] [G#4,F4] [A#4,F#4] [C5,G#4] [A#4,F#4] ~] [[D#4,A#3] ~ [D#4,A#3] [F4,C#4] [F#4,D#4] ~ [F4,C#4] ~] [[C#4,G#3]@2 [D#4,A#3]@4 ~@2] [~@8]>").sound("square").room(.5).roomsize(6).gain(.25).detune("[-5, 5]")
+
+$harmony: note("<[~ D#4 F#4 G#4 A#4 F#4 ~ G#4] [C5 D#5 C5 G#4 ~ D#4 F4 D#4] [G#4 F4 F#4 F4 D#4 C#4 D#4 A#3] [~ D#4 F#4 G#4 A#4 F#4 ~ D#4] [F#4 G#4 A#4 F#4 ~ D#4 F4 A#4] [F4 C#4 F#4 F4 D#4 C#4 D#4 F4] [~ D#4 F#4 G#4 A#4 F#4 ~ G#4] [C5 D#5 C5 G#4 ~ D#4 F4 D#4] [G#4 F4 F#4 F4 D#4 C#4 D#4 A#3] [~ D#4 F#4 G#4 A#4 F#4 ~ D#4] [F#4 G#4 A#4 F#4 ~ D#4 F4 A#4] [F4 C#4 F#4 F4 D#4 C#4 D#4 A#3] [G#3 D#4 G#4 F#4 A#4 G#4 F#4 G#4] [D#4 F#4 C#4 D#4 G#3 D#4 G#4 F#4] [A#4 G#4 F#4@3 ~@3] [~ D#3 C#4 A#3 G#4 F4 D#4 F4] [F#4 F4 d#4 F4 F#4 ~@3] [B4 ~ G#4 F#4 F4 D#4 D4 F4] [G#3 D#4 G#4 F#4 A#4 G#4 F#4 G#4] [D#4 F#4 C#4 D#4 G#3 D#4 G#4 F#4] [A#4 G#4 F#4@3 ~@3] [~@8] [~@2 D#4 F4 F#4 ~ F4 ~] [C#4@2 D#4@4 ~@2] [~@8]>").sound("triangle").gain(.35).shape(.2)
+
+$bass: note("<[D#2@4 F#2@2 G#2@2] [G#2@2 G#1@2 B1@2 C#2@2] [F#2@2 D#2@4 C#2@2] [D#2@4 F#2@2 G#2@2] [G#2@2 D#2@2 F#2@2 F2@2] [C#2@2 D#2@4 C#2@2] [D#2@4 F#2@2 G#2@2] [G#2@2 G#1@2 B1@2 C#2@2] [F#2@2 D#2@4 C#2@2] [D#2@4 F#2@2 G#2@2] [G#2@2 D#2@2 F#2@2 F2@2] [C#2@2 D#2@4 ~@2] [F2@4 C#2@2 D#2@2] [D#2 ~ D#2@2 E2@4] [C#2@2 D#2@3 ~@3] [A#1@4 C#2@2 D#2@2] [D#2@2 C#2@2 B1@2 ~@2] [D#3 ~ D3@2 B2@2 A#2@2] [E2@4 C#2@2 D#2@2] [D#2 ~ D#2@2 E2@4] [C#2@2 D#2@3 ~@3] [G#2@4 ~@2 D#2@2] [D#2@2 ~@2 F#2 ~ F2 ~] [C#2@2 D#2@6] [~@8]>").sound("square").gain(.3)`}
+/>
+
+---
+
+## Blue Monday — New Order
+
+<MiniRepl
+  client:visible
+  tune={`// "Blue Monday" - New Order
+// @by eefano
+stack(
+  s("bd!2 [bd*4]!2 bd!4").slow(8).bank("SequentialCircuitsDrumtracks"),
+  s("~ hh").bank("SequentialCircuitsDrumtracks"),
+  n("<[[2 ~] [2 ~] 2 3] [[3 ~] [3 ~] 3 3]>@4 [-1 ~] -1 -1 [0 ~] 0 0 [0 ~] 0 0 [0 ~] 0 0").slow(8).scale("d2:minor").s("gm_lead_8_bass_lead")
+).cpm(130)`}
+/>
+
+---
+
+## Stranger Things Theme
+
+<MiniRepl
+  client:visible
+  tune={`// "Stranger Things" Theme
+// @by eefano
+setcps(0.7)
+
+$: n("0 2 4 6 7 6 4 2")
+  .scale("<c3:major>/2")
+  .s("supersaw")
+  .distort(0.7)
+  .superimpose((x) => x.detune("<0.5>"))
+  .lpenv(perlin.slow(3).range(1, 4))
+  .lpf(perlin.slow(2).range(100, 2000))
+  .gain(0.3)
+
+$: "<a1 e2>/8".clip(0.8).struct("x*8").s("supersaw").note()`}
+/>
+
+---
+
+## The Rhythm of the Night — Corona
+
+<MiniRepl
+  client:visible
+  tune={`// "The Rhythm Of The Night" - Corona
+// @by eefano
+setDefaultVoicings('legacy')
+const crdpart = "Ab Cm Bb F@2".slow(5)
+stack(
+"<0 1@4 0 1@4>".pick([
+  "~@6 [6 ~]!2"
+  ,"2 0 ~@4 6 4 6 4 ~@4 [4 3]@3 ~@6 4 7 6 [4@2 ~] [3 2@3]@2 0 ~@2".slow(4)
+]).fmap((v) => ({n: v, penv: 0})).scale("c4:minor").s("gm_lead_1_square").room(0.4).delay(0.3).gain(0.7)
+
+,crdpart.chord().anchor("F4").voicing().s("gm_synth_strings_1").gain(0.4)
+
+,"2 ~@2 2 ~@2 2 ~@3 2 ~@3 2 ~"
+  .n().scale("c2:minor").note().s("gm_synth_bass_1").lpf(1500).gain(0.7)
+
+,stack(s("bd*4").gain(0.8),s("[~ oh]*4").gain(0.14),s("hh*16").gain(0.09),s("[~ cp]*2").gain(0.4))
+  .bank("RolandTR909").room(0.2)
+
+).cpm(128/4)`}
+/>
+
+---
+
+## Waltz No. 2 — Шостакович
+
+<MiniRepl
+  client:visible
+  tune={`// "Waltz #2" - Shostakovich
+// @by eefano
+setDefaultVoicings('legacy')
+
+$: "<4 [2@2 1] [0@4 0 1]@2 [2 0 2] [4@2 5] 4 3 3 [1@2 0] [0b@4 -3 0b]@2 [1 0b 1] [3 4 5] 4b 4>"
+  .scale("c4:minor").note().s("gm_oboe:2").gain(0.6)
+
+$: n("<<0 -1> [4,5]!2>*3")
+  .chord("<Cm@10 Fm@4 G@4 Cm@4 Fm@2 Bb@2 Eb Ab>")
+  .anchor('f2').mode('root').voicing().piano().room(0.6)
+
+all(x=>x.cps(sine.segment(32).slow(16).mul(30).add(160).div(60*3)))`}
+/>
+
+---
+
+## Endless Tarantella
+
+<MiniRepl
+  client:visible
+  tune={`// "Endless Tarantella"
+// @by eefano
+setcps(140/60)
+
+let pizza = rand.range(0,16).segment(16).slow(16)
+
+$: pizza.pick(["4 ~ 4","7 ~ 7","4","4 ~ 4","5 ~ 5","5 6 5","4","4 ~ 5","4@2 3","3 ~ 4","3@2 2","2 ~ 3","4 5 4","3 2 1","0","7 ~ 7"])
+  .scale("a:minor").s('gm_clarinet').note()
+
+$: pizza.pick([0,0,0,0,1,1,0,0,2,2,0,0,2,2,0,0]).fast(2)
+  .pick(["[0 ~] [-3 ~]","[3 ~] [-2 ~]","[1 ~] [-3 ~]"]).slow(2)
+  .scale("a2:minor").s('gm_tuba').note().lpf(800)
+
+$: pizza.pick([0,0,0,0,1,1,0,0,2,2,0,0,2,2,0,0]).fast(2)
+  .pick(["[~@2 [0,2,4]]!2","[~@2 [1,3,5]]!2","[~@2 [4,-1,1]]!2"]).slow(2)
+  .scale("a3:minor").s('gm_harmonica').note()
+
+$: s("tambourine")`}
+/>
+
+---
+
+## Enjoy The Silence — Depeche Mode
+
+<MiniRepl
+  client:visible
+  tune={`// "Enjoy The Silence" - Depeche Mode
+// @by eefano
+setCps(113/60/4)
+
+const scala = cat('c minor')
+stack(
+"<[3,5,0] [5,0,2] [0,2,4] [2,4,-1]>".scale(scala).note().s("gm_recorder").gain(1).clip(1).release(0.5),
+"<[2@3 3] [0@3 2] [4@3 6] [2@3 3] [0@3 1] [-1@3 -2] -3 [0 1]>".scale(scala).transpose(12).note().s("gm_ocarina").gain(0.5).clip(1),
+"<-4 -2 0 -1>".struct("[[x ~]!2 x x@0.5 [x ~]!2 x@0.5 [x ~]!2]").scale(scala).note().s("triangle").gain(0.7),
+s("bd!4,[~ sd]!2,[~ hh!2 hh*2]!2").bank("AlesisHR16").clip(1).gain(0.5)
+)`}
+/>
+
+---
+
+## Pump Up The Jam — Technotronic
+
+<MiniRepl
+  client:visible
+  tune={`// "Pump Up The Jam" - Technotronic
+// @by eefano
+const pickRestart = register('pickRestart', (arr, pat) => pat.pick(arr.map((x)=>x.restart(pat.collect().fmap(v=>v+1)))))
+
+stack(
+"<0@4 [0,1]@12 [0,1,2]@4 [0,1,2,3]@4>".pickRestart(
+ [stack(s("oh*16").pan(0.45).gain("[0.08 0.16]*4").release(0),s("hh*4").pan(0.7).gain(0.20))
+ ,s("bd*4").lpf(150).gain(1)
+ ,s("[~ cp]*2").gain(0.5).pan(0.25)
+ ,s("[~ rd]*4").gain(0.15).release(0).hpf(1500).pan(0.75)
+ ]).bank("RolandTR909").velocity(0.7)
+
+,"<0@12 0 1 ~@2 3@8>".pickRestart(
+  ["[0 ~@23]/2"
+  ,"~@2 [~ [e2 ~]] [[0 2] ~]"
+  ,"[0 ~ ~ 0 ~ ~ 0 ~] <[[~ [0 1]] [2 ~]] ~>"
+]).scale("c2:minor").note().clip(0.9)
+  .s("sawtooth").lpf(300).gain(0.8)
+
+).cpm(124.5/4).room(0.3)`}
+/>
+
+---
+
+## Pyramid Song — Radiohead
+
+<MiniRepl
+  client:visible
+  tune={`// "Pyramid Song" - Radiohead
+// @by eefano
+setcps(104/60/4)
+
+let chr = {X:"f#2,c#3,a#3,c#4,f#4", Y:"g2,d3,b3,d4,f#4", Z:"a2,e3,a3,c#4,f#4", J:"g2,d3,b3,d4,g4", K:"f#2,c#3,a#3,c#4,g4",
+           V:"f#2,c#3,a3,c#4,f#4", W:"e2,b2,g#3,b3,f#4"}
+
+$: "<[X:.6 X:.8]@3 Y:.5@2 [Z:.5 Z:.5]@3 [Z:.4 Y:.4]@3 Y:.3@2 [J:.6 J:.9]@3>/2"
+  .pickOut(chr).note().piano().gain(0.8).room(.6)
+
+$: "<[bd,rd] ~ [~ sf*3] [bd,rd] ~ [~ sf*3] [bd,rd] ~ ~ [~ sf*3]>*4".pickOut({
+  bd: s('bd').bank('Linn9000').lpf(1000),
+  sd: s('sd').bank('RolandMT32').velocity(.5),
+  sf: s('sd').bank('RolandMT32').velocity(.2),
+  rd: s('rd').bank('Linn9000').velocity(0.3).hpf(8000),
+}).room(.2).gain(0.5)`}
+/>
+
+---
+
+## Amelie Waltz
+
+<MiniRepl
+  client:visible
+  tune={`// Amelie Waltz
+// @by eefano
+setDefaultVoicings('legacy')
+stack(
+  n("[0@2 ~, ~ [[1,2,3] ~]!2]")
+  .chord("<[Dm Am]!2 [F C]!2>/4")
+  .anchor("<[B3 G3]!2 [C4 B3]!2>/4")
+  .voicing().velocity(0.5)
+  ,
+  n("<[3@5.5 2@0.5 1@3 0@3] [3@3.5 [4 3 2 1 2]@2.5 1@3 0@3] [2@5.5 1@0.5 -3@6]!2>/4")
+  .scale("a4:minor")
+
+).s("gm_harmonica").lpf(4000).clip(1)
+  .attack(0.1).release(0.1)
+  .room(1.5)
+  .cpm(64).gain(.6)`}
+/>
+
+---
+
+## Happy Birthday
+
+<MiniRepl
+  client:visible
+  tune={`// Happy Birthday
+// @by eefano
+setDefaultVoicings('legacy')
+
+const chrds = "F@3 C@6 F@6 Bb@3 F@2 C F@3".slow(8);
+
+stack(
+"[C4@3 C4] D4 C4 F4 E4@2 [C4@3 C4] D4 C4 G4 F4@2 [C4@3 C4] C5 A4 F4 E4 D4 [Bb4@3 Bb4] A4 F4 G4 F4@2".slow(8).early(1/3).note().s("gm_harmonica").gain(0.4),
+chord(chrds).anchor("G4").struct("x*3").voicing().piano().gain(0.2),
+n("2 ~ ~ 2 1 ~").chord(chrds).anchor(chrds.rootNotes(2)).voicing().s("gm_electric_bass_finger").lpf(190).gain(1),
+
+s("hh*3, <bd ~>, ~ ~ rim").bank("KorgDDM110").gain(0.2)
+
+).cpm(120/4).room(0.3)`}
+/>
+
+---
+
+## Satiesfaction — Satie
+
+<MiniRepl
+  client:visible
+  tune={`// "low Effort, high Satie'sfaction"
+// @by eefano
+setcps(185 / 60)
+stack(
+  n("<0 1 2 [1 3 4] 5 4 [6 2 3] 1 4 0>/3".add("<7@24 14>/17")),
+  n("<[3,5,9] [2,5,9] [2,4,9]>/3".sub(7)).gain("<.35 .45 .25 .35>"),
+  n("<[5@3 4] 5>/8".sub(14).gain("<.7@9 .8>/10"))
+)
+  .scale("<b3:lydian c#4:locrian>/48").s("piano")
+  .postgain(sine.mul(.3).add(1.2).segment(48).slow(48 * 7))
+  .room(".8").clip(1)`}
+/>
+
+---
+
+## Shanghai — King Gizzard
+
+<MiniRepl
+  client:visible
+  tune={`// "Shanghai" - King Gizzard
+// @by eefano
+setcps(81 / 60)
+
+$: n("<0 1 2 ~ 4 5 5 ~ 4 2 1 5 8 7 9!2 7 8 5 1 2 4 ~ 5!2 4 ~ 2 1 0 -7!8>*4").scale('ab4:major').clip(.5).s("triangle").room(.8)
+
+$: n("<[0,2,4]!4>".add("<0 1 0 1 -2 0>/8")).scale("<ab3:major@5 bb3:major@1>/8").piano().gain(.5)
+
+$: n("<0@7 -4 0@6 0@4 -4 0@9 3@2 4@2>*4".add("<0 1 0 1 5 1>/8")).scale('ab1:major').clip(.95).s("gm_electric_bass_finger").lpf(800)
+
+$: s("<hh*4>").bank('RolandTR909').speed(1.5).gain(.2)
+$: s("<[bd@3 <~ bd>] ~>").bank('RolandTR909').gain(.7)
+$: s("<~ sd>").bank('RolandTR909').gain(.7)`}
+/>
+
+---
+
+## Clubbed
+
+<MiniRepl
+  client:visible
+  tune={`// "Clubbed"
+// @by eefano
+setcps(162/60/3)
+const standardtuning = [40,45,50,55,59,64];
+const fingering =
+{A:"x:0:2:2:2:0",Am:"x:0:2:2:1:0",D:"x:0:0:2:3:2",Dm:"x:0:0:2:3:1",
+ E:"0:2:2:1:0:0",Em:"0:2:2:0:0:0",G7:"3:2:0:0:0:1",C:"x:3:2:0:1:0"};
+
+const gString = register('gString', (n, pat) =>
+  (pat.fmap((v) => { if(v[n]=='x') return note(0).velocity(0);
+      return note(v[n]+standardtuning[n]); }
+  ).innerJoin()));
+
+$: "<0@2 1 0 1 0>/24".pickRestart(["<Am Dm>/4","<Em G7>/4"]).layer(
+  x=>"<[2,4,5]*8>/3".pickOut(
+    [x.pickOut(fingering).gString(0),x.pickOut(fingering).gString(1),x.pickOut(fingering).gString(2),
+     x.pickOut(fingering).gString(3),x.pickOut(fingering).gString(4),x.pickOut(fingering).gString(5)])
+  .s("gm_electric_guitar_clean:2").clip(0.5).release(0.1).gain(0.9).room(0.2),
+  x=>chord(x).anchor("g5").voicing().s("gm_percussive_organ").gain(0.8).mask("<~@3 1@6 ~@3>/12").room(.4)
+)
+
+$: "<~ 0 [0,1]@6 [1,2]@4 [0,1]@8 1@3 ~ >/6".pick([
+     s("<[~ hh]*2>"),
+     s("<bd sd [bd [~ bd]] sd [bd <~ bd>] [[sd bd] ~]>*2"),
+     s("<oh:2*8>")
+  ]).bank("RolandTR808").room(1).lpf(1800).gain(3.5)`}
+/>
+
+---
+
+## Human Performance — Parquet Courts
+
+<MiniRepl
+  client:visible
+  tune={`// "Human Performance" - Parquet Courts
+// @by eefano
+setcps(110 / 60 / 2)
+
+const chseq = "<B@2 F#m@2 E@2 D@2 D A@2>"
+
+$: n("<[0,[~ 1@40],[~@2 2@40],[~@3 3@40],[~@4 4@40]]>/2").chord(chseq).anchor('e3').mode('root')
+  .voicing().s("gm_electric_guitar_clean:2").lpf(1800).gain(.7)
+
+$: n("<~ 8 8 7 9 8 ~ ~ ~ 7 7 5 8 7 ~ ~ ~ 8 8 7 9 8 7 6 7 5 ~ 4 7 5 ~ ~ ~ 7 7 6 7 2@2 ~@5>*4")
+  .scale("a2:major").s("gm_tenor_sax:1").gain(1)
+
+$: n("<1 [4b 4] 5 [2 5] 4 [1 4] [3@3 3] [0@3 0] [-4@3 -4] [0 0] [0 0 2 2b]>")
+  .scale("a2:major").s("gm_electric_bass_finger:3").clip(.97).lpf(350).gain(1)
+
+$: "<rd*4,[bd sd]>".pickOut({
+  rd:s("<RolandTR808_rd:1>").speed(1.1).hpf(4000).velocity(.1),
+  bd:s('RolandTR808_bd').velocity(.55).lpf(500),
+  sd:s('RolandTR808_sd').velocity(.55).hpf(200)
+}).speed(.94).gain(.6).room(.3)`}
+/>
+
+---
+
+## Cabinet — Spratleys Japs
+
+<MiniRepl
+  client:visible
+  tune={`// "Cabinet" - Spratleys Japs
+// @by eefano
+setDefaultVoicings('legacy')
+function arr(p,l) { return [l,p.slow(l)]; }
+
+const h1 = arr("D@8 A F@3",24/2);
+const h2 = arr("D@5 E C@3 A@2 B G@2 E@7 F# D@2 B C# A@2 F#@3 G# E@2",68/2);
+
+const chords = arrange(h1,h2);
+
+stack(
+  chord(chords).rootNotes(3).s('triangle').lpf(400).gain(0.6),
+  chord(chords).anchor("E5").voicing().s('gm_drawbar_organ').gain(0.35),
+  s("sleighbells").struct("x*6").gain(3),
+  s("[bd sd]").gain(0.4).room(2),
+  s("rd*6").gain(0.01)
+).cpm(133/8)`}
+/>
+
+---
+
+## Ресурсы сообщества
+
+### Прямые ссылки на треки
+| Трек | Автор | Ссылка |
+|------|-------|--------|
+| Grimes – Music 4 Machines | KAIXI | [открыть](https://strudel.cc/?sOc7cVTqJHUU) |
+| Charli XCX – 360 | KAIXI | [открыть](https://strudel.cc/?2ErYTSUotoaQ) |
+| Radiohead – Pyramid Song | eefano | [открыть](https://strudel.cc/?MeMCjUtlCAoK) |
+| Billie Eilish – Birds of a Feather | saga_3k | [открыть](https://strudel.cc/?yTnr825wyd9V) |
+| Shostakovich – Waltz No.2 | eefano | [открыть](https://strudel.cc/?o2VwC4Jq66XI) |
+
+### Коллекции
+- [eefano/strudel-songs-collection](https://github.com/eefano/strudel-songs-collection) — 75+ каверов
+- [awesome-strudel](https://github.com/terryds/awesome-strudel) — курируемая коллекция

@@ -1,0 +1,282 @@
+:root {
+  --background: #222;
+  --lineBackground: #22222299;
+  --foreground: #fff;
+  --caret: #ffcc00;
+  --selection: rgba(128, 203, 196, 0.5);
+  --selectionMatch: #036dd626;
+  --lineHighlight: #00000050;
+  --gutterBackground: transparent;
+  --gutterForeground: #8a919966;
+}
+
+.darken::before {
+  content: ' ';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: block;
+  background: black;
+  opacity: 0.5;
+}
+
+#code .cm-scroller {
+  padding-top: 10px !important;
+  height: 100%;
+  font-family: inherit;
+}
+#code .cm-content {
+  padding-bottom: 50vh;
+}
+#code .cm-line > * {
+  background: var(--lineBackground);
+}
+
+#code .cm-editor {
+  background-color: transparent !important;
+  height: 100%;
+  z-index: 11;
+}
+
+#code .cm-theme {
+  width: 100%;
+  height: 100%;
+}
+
+#code .cm-theme-light {
+  width: 100%;
+}
+
+#code .cm-cursorLayer {
+  animation-name: inherit !important;
+}
+
+#code .cm-cursor {
+  border-left: 2px solid currentcolor !important;
+}
+
+#code .cm-foldGutter {
+  display: none !important;
+}
+
+#code .cm-focused {
+  outline: none;
+}
+
+#code .cm-matchingBracket {
+  text-decoration: underline 0.18rem;
+  text-underline-offset: 0.22rem;
+}
+
+/* Override default styles from the codemirror inline css for autocomplete info tooltip*/
+.cm-tooltip.cm-completionInfo {
+  padding: 0 !important;
+  border: 1px solid var(--foreground) !important;
+  border-radius: 4px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+  max-width: 500px !important;
+  min-width: 300px !important;
+  max-height: 400px !important;
+  background-color: var(--lineHighlight) !important;
+  overflow: auto;
+  background: var(--background) !important;
+}
+
+/* Main tooltip container */
+.autocomplete-info-container {
+  padding: 12px !important;
+  border-radius: 4px !important;
+  color: var(--foreground);
+  font-family: var(--font-family, 'SF Mono', 'Monaco', monospace);
+  font-size: var(--font-size, 13px);
+  line-height: 1.4;
+  max-width: 600px;
+  height: 100%;
+  min-width: 400px;
+  white-space: normal !important;
+  overflow-y: auto !important;
+}
+
+.autocomplete-info-tooltip {
+  overflow-y: auto !important;
+}
+
+.autocomplete-info-function-description {
+  white-space: pre-wrap !important;
+}
+
+.autocomplete-info-function-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--foreground);
+  margin: 0 0 8px 0;
+}
+
+.autocomplete-info-function-synonyms {
+  margin: 0 0 12px 0;
+  color: var(--foreground);
+  line-height: 1.5;
+  opacity: 0.8;
+}
+
+.autocomplete-info-function-description {
+  margin: 0 0 12px 0;
+  color: var(--foreground);
+  line-height: 1.5;
+  opacity: 0.8;
+}
+
+.autocomplete-info-section-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--foreground);
+  margin: 16px 0 6px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.autocomplete-info-section-title:first-child {
+  margin-top: 0;
+}
+
+.autocomplete-info-params-section {
+  margin-top: 12px;
+}
+
+.autocomplete-info-params-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.autocomplete-info-param-item {
+  margin-bottom: 8px;
+  padding: 8px;
+  background-color: var(--lineBackground);
+  border-radius: 3px;
+  border-left: 2px solid var(--foreground, #555);
+}
+
+.autocomplete-info-param-item:last-child {
+  margin-bottom: 0;
+}
+
+.autocomplete-info-param-name {
+  font-weight: 600;
+  color: var(--variable, var(--foreground));
+  margin-right: 8px;
+}
+
+.autocomplete-info-param-type {
+  color: var(--comment);
+  font-size: 12px;
+  background-color: var(--gutterForeground);
+  padding: 1px 4px;
+  border-radius: 2px;
+}
+
+.autocomplete-info-param-desc {
+  color: var(--foreground);
+  font-size: 10px;
+  margin-top: 4px;
+  line-height: 1.4;
+  opacity: 0.7;
+}
+
+.autocomplete-info-examples-section {
+  margin-top: 12px;
+}
+
+.autocomplete-info-example-code {
+  background: var(--lineBackground);
+  color: var(--foreground);
+  padding: 8px;
+  border-radius: 3px;
+  font-family: var(--font-family, 'SF Mono', 'Monaco', monospace);
+  font-size: 12px;
+  line-height: 1.5;
+  margin: 4px 0;
+  overflow-x: auto;
+  white-space: pre;
+  border: 1px solid var(--foreground, #3a3a3a);
+}
+
+/* ===== Scrollbar Theming ===== */
+
+/* Main editor scrollbar */
+#code .cm-scroller::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+#code .cm-scroller::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#code .cm-scroller::-webkit-scrollbar-thumb {
+  background: var(--gutterForeground);
+  border-radius: 4px;
+}
+
+#code .cm-scroller::-webkit-scrollbar-thumb:hover {
+  background: var(--foreground);
+}
+
+#code .cm-scroller::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Autocomplete tooltip scrollbar */
+.autocomplete-info-tooltip::-webkit-scrollbar,
+.cm-tooltip.cm-completionInfo::-webkit-scrollbar {
+  width: 6px;
+}
+
+.autocomplete-info-tooltip::-webkit-scrollbar-track,
+.cm-tooltip.cm-completionInfo::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.autocomplete-info-tooltip::-webkit-scrollbar-thumb,
+.cm-tooltip.cm-completionInfo::-webkit-scrollbar-thumb {
+  background: var(--gutterForeground);
+  border-radius: 3px;
+}
+
+.autocomplete-info-tooltip::-webkit-scrollbar-thumb:hover,
+.cm-tooltip.cm-completionInfo::-webkit-scrollbar-thumb:hover {
+  background: var(--foreground);
+}
+
+/* Autocomplete list scrollbar */
+.cm-tooltip-autocomplete::-webkit-scrollbar {
+  width: 6px;
+}
+
+.cm-tooltip-autocomplete::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.cm-tooltip-autocomplete::-webkit-scrollbar-thumb {
+  background: var(--gutterForeground);
+  border-radius: 3px;
+}
+
+.cm-tooltip-autocomplete::-webkit-scrollbar-thumb:hover {
+  background: var(--foreground);
+}
+
+/* Firefox scrollbar support */
+#code .cm-scroller {
+  scrollbar-width: thin;
+  scrollbar-color: var(--gutterForeground) transparent;
+}
+
+.autocomplete-info-tooltip,
+.cm-tooltip.cm-completionInfo,
+.cm-tooltip-autocomplete {
+  scrollbar-width: thin;
+  scrollbar-color: var(--gutterForeground) transparent;
+}
