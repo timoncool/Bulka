@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { SelectInputDuplicate } from '@src/repl/components/panel/SettingsTab';
+import { SelectInput } from './SelectInput';
 import { getAudioDevices } from '@strudel/webaudio';
 
 const initdevices = new Map();
@@ -29,7 +29,7 @@ export function AudioDeviceSelector({ audioDeviceName, onChange, isDisabled }) {
     options.set(deviceName, deviceName);
   });
   return (
-    <SelectInputDuplicate
+    <SelectInput
       isDisabled={isDisabled}
       options={options}
       onClick={onClick}

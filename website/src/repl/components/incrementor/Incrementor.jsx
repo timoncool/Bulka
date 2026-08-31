@@ -1,4 +1,4 @@
-import { Textbox } from '@src/repl/components/panel/SettingsTab';
+import { Textbox } from '../textbox/Textbox';
 import cx from '@src/cx.mjs';
 
 function IncButton({ children, className, ...buttonProps }) {

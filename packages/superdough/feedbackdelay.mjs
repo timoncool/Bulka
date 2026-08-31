@@ -5,19 +5,18 @@ if (typeof DelayNode !== 'undefined') {
       wet = Math.abs(wet);
       this.delayTime.value = time;
 
-      const feedbackGain = ac.createGain();
-      feedbackGain.gain.value = Math.min(Math.abs(feedback), 0.995);
-      this.feedback = feedbackGain.gain;
+      this.feedbackGain = ac.createGain();
+      this.feedbackGain.gain.value = Math.min(Math.abs(feedback), 0.995);
+      this.feedback = this.feedbackGain.gain;
 
-      const delayGain = ac.createGain();
-      delayGain.gain.value = wet;
-      this.delayGain = delayGain;
+      this.delayGain = ac.createGain();
+      this.delayGain.gain.value = wet;
 
-      this.connect(feedbackGain);
-      this.connect(delayGain);
-      feedbackGain.connect(this);
+      this.connect(this.feedbackGain);
+      this.connect(this.delayGain);
+      this.feedbackGain.connect(this);
 
-      this.connect = (target) => delayGain.connect(target);
+      this.connect = (target) => this.delayGain.connect(target);
       return this;
     }
     start(t) {
@@ -25,7 +24,7 @@ if (typeof DelayNode !== 'undefined') {
     }
   }
 
-  AudioContext.prototype.createFeedbackDelay = function (wet, time, feedback) {
+  BaseAudioContext.prototype.createFeedbackDelay = function (wet, time, feedback) {
     return new FeedbackDelayNode(this, wet, time, feedback);
   };
 }

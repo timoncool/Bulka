@@ -8,7 +8,8 @@ export function Code(Props) {
 
   return (
     <section
-      className={'code-container text-gray-100 cursor-text pb-0 overflow-auto grow z-10'}
+      className={'text-gray-100 cursor-text pb-0 overflow-auto grow'}
+      id="code"
       ref={(el) => {
         containerRef.current = el;
         if (!editorRef.current) {

@@ -6,7 +6,7 @@ This program is free software: you can redistribute it and/or modify it under th
 
 import { code2hash, getPerformanceTimeSeconds, logger, silence } from '@strudel/core';
 import { getDrawContext } from '@strudel/draw';
-import { transpiler, evaluate } from '@strudel/transpiler';
+import { evaluate, transpiler } from '@strudel/transpiler';
 import {
   getAudioContextCurrentTime,
   webaudioOutput,
@@ -68,7 +68,6 @@ export function useReplContext() {
   const defaultOutput = shouldUseWebaudio ? webaudioOutput : superdirtOutput;
   const getTime = shouldUseWebaudio ? getAudioContextCurrentTime : getPerformanceTimeSeconds;
   const init = useCallback(() => {
-    setActivePattern(getViewingPatternData().id);
     const drawTime = [-2, 2];
     const drawContext = getDrawContext();
     const editor = new StrudelMirror({
@@ -84,12 +83,12 @@ export function useReplContext() {
       pattern: silence,
       drawTime,
       drawContext,
-      prebake: async () => {
-        await Promise.all([modulesLoading, presets]);
-        if (prebakeScript) {
-          return evaluate(prebakeScript, { addReturn: false });
-        }
-      },
+      prebake: async () =>
+        Promise.all([modulesLoading, presets]).then(() => {
+          if (prebakeScript?.length) {
+            return evaluate(prebakeScript ?? '');
+          }
+        }),
       onUpdateState: (state) => {
         setReplState({ ...state });
       },
@@ -104,24 +103,17 @@ export function useReplContext() {
         //post to iframe parent (like Udels) if it exists...
         window.parent?.postMessage(code);
 
-        // Get the full buffer content from the editor instead of just the evaluated block
-        const fullBufferCode = editorRef.current?.code || code;
-        setLatestCode(fullBufferCode);
-
-        try {
-          window.location.hash = '#' + code2hash(fullBufferCode);
-        } catch (e) {
-          console.warn('[useReplContext] Failed to update hash:', e.message);
-        }
-        setDocumentTitle(fullBufferCode);
+        setLatestCode(code);
+        window.location.hash = '#' + code2hash(code);
+        setDocumentTitle(code);
         const viewingPatternData = getViewingPatternData();
-        setVersionDefaultsFrom(fullBufferCode);
-        const data = { ...viewingPatternData, code: fullBufferCode };
+        setVersionDefaultsFrom(code);
+        const data = { ...viewingPatternData, code };
         let id = data.id;
         const isExamplePattern = viewingPatternData.collection !== userPattern.collection;
 
         if (isExamplePattern) {
-          const codeHasChanged = fullBufferCode !== viewingPatternData.code;
+          const codeHasChanged = code !== viewingPatternData.code;
           if (codeHasChanged) {
             // fork example
             const newPattern = userPattern.duplicate(data);
@@ -290,8 +282,9 @@ stack(
   useEffect(() => {
     let editorSettings = {};
     Object.keys(defaultSettings).forEach((key) => {
-      // Don't use hasOwnProperty - nanostore uses proxies so values may not be own properties
-      editorSettings[key] = _settings[key];
+      if (Object.prototype.hasOwnProperty.call(_settings, key)) {
+        editorSettings[key] = _settings[key];
+      }
     });
     editorRef.current?.updateSettings(editorSettings);
   }, [_settings]);

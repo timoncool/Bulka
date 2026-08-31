@@ -1,5 +1,5 @@
 import { clamp } from './util.mjs';
-import { registerSound, soundMap } from './superdough.mjs';
+import { getSuperdoughAudioController, registerSound, soundMap } from './superdough.mjs';
 import { getAudioContext } from './audioContext.mjs';
 import {
   applyFM,
@@ -12,13 +12,15 @@ import {
   getVibratoOscillator,
   getWorklet,
   noises,
+  onceEnded,
   releaseAudioNode,
   webAudioTimeout,
 } from './helpers.mjs';
 import { logger } from './logger.mjs';
 import { getNoiseMix, getNoiseOscillator } from './noise.mjs';
+import { getNodeFromPool, releaseNodeToPool } from './nodePools.mjs';
 
-const waveforms = ['triangle', 'square', 'sawtooth', 'sine', 'user'];
+const waveforms = ['triangle', 'square', 'sawtooth', 'sine', 'user', 'one'];
 const waveformAliases = [
   ['tri', 'triangle'],
   ['sqr', 'square'],
@@ -51,17 +53,17 @@ export function registerSynthSounds() {
         // turn down
         const g = gainNode(0.3);
 
-        let sound = getOscillator(s, t, value, () => {
-          g.disconnect();
+        const sound = getOscillator(s, t, value, () => {
+          releaseAudioNode(g);
           onended();
         });
 
-        let { node: o, stop, triggerRelease } = sound;
+        const { node: o, nodes, stop, triggerRelease } = sound;
 
         const { duration } = value;
 
         const envGain = gainNode(1);
-        let node = o.connect(g).connect(envGain);
+        const node = o.connect(g).connect(envGain);
         const holdEnd = t + duration;
         getParamADSR(node.gain, attack, decay, sustain, release, 0, 1, t, holdEnd, 'linear');
         const envEnd = holdEnd + release + 0.01;
@@ -69,12 +71,13 @@ export function registerSynthSounds() {
         stop(envEnd);
         return {
           node,
+          nodes,
           stop: (endTime) => {
             stop(endTime);
           },
         };
       },
-      { type: 'synth', prebake: true, pack: 'Synths' },
+      { type: 'synth', prebake: true },
     );
   });
 
@@ -110,15 +113,15 @@ export function registerSynthSounds() {
 
       const mix = gainNode(mixGain);
 
-      o.onended = () => {
-        o.disconnect();
-        g.disconnect();
-        sat.disconnect();
-        noise.node.disconnect();
-        noiseGain.disconnect();
-        mix.disconnect();
+      onceEnded(o, () => {
+        releaseAudioNode(o);
+        releaseAudioNode(g);
+        releaseAudioNode(sat);
+        releaseAudioNode(noise.node);
+        releaseAudioNode(noiseGain);
+        releaseAudioNode(mix);
         onended();
-      };
+      });
 
       const node = o.connect(sat).connect(g).connect(mix);
       noise.node.connect(noiseGain).connect(mix);
@@ -138,12 +141,13 @@ export function registerSynthSounds() {
 
       return {
         node,
+        nodes: { source: [o] },
         stop: (endTime) => {
           o.stop(endTime);
         },
       };
     },
-    { type: 'synth', prebake: true, pack: 'Synths' },
+    { type: 'synth', prebake: true },
   );
 
   registerSound(
@@ -164,26 +168,26 @@ export function registerSynthSounds() {
       const end = holdend + release + 0.01;
       const voices = clamp(unison, 1, 100);
       let panspread = voices > 1 ? clamp(spread, 0, 1) : 0;
-      let o = getWorklet(
-        ac,
-        'supersaw-oscillator',
-        {
-          frequency,
-          begin,
-          end,
-          freqspread: detune,
-          voices,
-          panspread,
-        },
-        {
-          outputChannelCount: [2],
-        },
-      );
-
+      const params = {
+        frequency,
+        begin,
+        end,
+        freqspread: detune,
+        voices,
+        panspread,
+      };
+      const factory = () => new AudioWorkletNode(ac, 'supersaw-oscillator', { outputChannelCount: [2] });
+      const o = getNodeFromPool('supersaw', factory);
+      Object.entries(params).forEach(([key, value]) => {
+        const param = o.parameters.get(key);
+        const target = value !== undefined ? value : param.defaultValue;
+        param.value = target;
+      });
+      o.port.postMessage({ type: 'initialize' });
       const gainAdjustment = 1 / Math.sqrt(voices);
       getPitchEnvelope(o.parameters.get('detune'), value, begin, holdend);
-      const vibratoOscillator = getVibratoOscillator(o.parameters.get('detune'), value, begin);
-      const fm = applyFM(o.parameters.get('frequency'), value, begin);
+      const vibratoHandle = getVibratoOscillator(o.parameters.get('detune'), value, begin);
+      const fmHandle = applyFM(o.parameters.get('frequency'), value, begin);
       let envGain = gainNode(1);
       envGain = o.connect(envGain);
 
@@ -192,10 +196,10 @@ export function registerSynthSounds() {
       let timeoutNode = webAudioTimeout(
         ac,
         () => {
-          releaseAudioNode(o);
+          releaseNodeToPool(o);
           onended();
-          fm?.stop();
-          vibratoOscillator?.stop();
+          fmHandle?.stop();
+          vibratoHandle?.stop();
         },
         begin,
         end,
@@ -203,6 +207,7 @@ export function registerSynthSounds() {
 
       return {
         node: envGain,
+        nodes: { source: [o], ...fmHandle?.nodes, ...vibratoHandle?.nodes },
         stop: (time) => {
           timeoutNode.stop(time);
         },
@@ -278,6 +283,7 @@ export function registerSynthSounds() {
 
       return {
         node: envGain,
+        source: o,
         stop: (time) => {
           timeoutNode.stop(time);
         },
@@ -328,25 +334,25 @@ export function registerSynthSounds() {
       );
 
       getPitchEnvelope(o.parameters.get('detune'), value, begin, holdend);
-      const vibratoOscillator = getVibratoOscillator(o.parameters.get('detune'), value, begin);
-      const fm = applyFM(o.parameters.get('frequency'), value, begin);
+      const vibratoHandle = getVibratoOscillator(o.parameters.get('detune'), value, begin);
+      const fmHandle = applyFM(o.parameters.get('frequency'), value, begin);
       let envGain = gainNode(1);
       envGain = o.connect(envGain);
 
       getParamADSR(envGain.gain, attack, decay, sustain, release, 0, 1, begin, holdend, 'linear');
-      let lfo;
+      let pw_lfo;
       if (pwsweep != 0) {
-        lfo = getLfo(ac, begin, end, { frequency: pwrate, depth: pwsweep });
-        lfo.connect(o.parameters.get('pulsewidth'));
+        pw_lfo = getLfo(ac, { frequency: pwrate, depth: pwsweep, begin, end });
+        pw_lfo.connect(o.parameters.get('pulsewidth'));
       }
       let timeoutNode = webAudioTimeout(
         ac,
         () => {
           releaseAudioNode(o);
-          releaseAudioNode(lfo);
+          releaseAudioNode(pw_lfo);
           onended();
-          fm?.stop();
-          vibratoOscillator?.stop();
+          fmHandle?.stop();
+          vibratoHandle?.stop();
         },
         begin,
         end,
@@ -354,12 +360,48 @@ export function registerSynthSounds() {
 
       return {
         node: envGain,
+        nodes: { source: [o], pw_lfo: [pw_lfo], ...fmHandle?.nodes, ...vibratoHandle?.nodes },
         stop: (time) => {
           timeoutNode.stop(time);
         },
       };
     },
     { prebake: true, type: 'synth' },
+  );
+
+  registerSound(
+    'bus',
+    (begin, value, onended) => {
+      const ac = getAudioContext();
+      const [attack, decay, sustain, release] = getADSRValues(
+        [value.attack, value.decay, value.sustain, value.release],
+        'linear',
+        [0.001, 0.05, 1, 0.01],
+      );
+      const holdend = begin + value.duration;
+      const end = holdend + release + 0.01;
+      const bus = getSuperdoughAudioController().getBus(value.n ?? 0);
+      const envGain = bus.connect(gainNode(0));
+      getParamADSR(envGain.gain, attack, decay, sustain, release, 0, 1, begin, holdend, 'linear');
+      const timeoutNode = webAudioTimeout(
+        ac,
+        () => {
+          bus.disconnect(envGain);
+          onended();
+        },
+        begin,
+        end,
+      );
+
+      return {
+        node: envGain,
+        nodes: { source: [bus] },
+        stop: (time) => {
+          timeoutNode.stop(time);
+        },
+      };
+    },
+    { prebake: true, type: 'input' },
   );
 
   [...noises].forEach((s) => {
@@ -384,11 +426,11 @@ export function registerSynthSounds() {
 
         const { duration } = value;
 
-        o.onended = () => {
-          o.disconnect();
-          g.disconnect();
+        onceEnded(o, () => {
+          releaseAudioNode(o);
+          releaseAudioNode(g);
           onended();
-        };
+        });
 
         const envGain = gainNode(1);
         let node = o.connect(g).connect(envGain);
@@ -399,12 +441,13 @@ export function registerSynthSounds() {
         stop(envEnd);
         return {
           node,
+          nodes: { source: [o] },
           stop: (endTime) => {
             stop(endTime);
           },
         };
       },
-      { type: 'synth', prebake: true, pack: 'Synths' },
+      { type: 'synth', prebake: true },
     );
   });
   waveformAliases.forEach(([alias, actual]) => soundMap.set({ ...soundMap.get(), [alias]: soundMap.get()[actual] }));
@@ -468,8 +511,17 @@ export function getOscillator(s, t, value, onended) {
     s = 'triangle';
   }
   s = s === 'user' && !partials ? 'triangle' : s;
-  // If no partials are given, use stock waveforms
-  if (!partials || partials?.length === 0 || s === 'sine') {
+  if (s === 'one') {
+    // Constant 1 oscillator (used for modulation)
+    o = new ConstantSourceNode(getAudioContext(), { offset: 1 });
+    o.start(t);
+    return {
+      node: o,
+      nodes: { source: o },
+      stop: (time) => o?.stop(time),
+    };
+  } else if (!partials || partials?.length === 0 || s === 'sine') {
+    // If no partials are given, use stock waveforms
     o = getAudioContext().createOscillator();
     o.type = s || 'triangle';
   }
@@ -480,29 +532,31 @@ export function getOscillator(s, t, value, onended) {
   // set frequency
   o.frequency.value = getFrequencyFromValue(value);
 
-  let vibratoOscillator = getVibratoOscillator(o.detune, value, t);
+  const vibratoHandle = getVibratoOscillator(o.detune, value, t);
 
   // pitch envelope
   getPitchEnvelope(o.detune, value, t, t + duration);
-  const fmModulator = applyFM(o.frequency, value, t);
+  const fmHandle = applyFM(o.frequency, value, t);
 
   let noiseMix;
   if (noise) {
     noiseMix = getNoiseMix(o, noise, t);
   }
 
-  o.onended = () => {
-    noiseMix || o.disconnect();
-    noiseMix?.node.disconnect();
+  onceEnded(o, () => {
+    noiseMix?.teardown();
+    releaseAudioNode(o);
+    releaseAudioNode(noiseMix?.node);
     onended();
-  };
+  });
   o.start(t);
 
   return {
     node: noiseMix?.node || o,
+    nodes: { source: [o], ...vibratoHandle?.nodes, ...fmHandle?.nodes },
     stop: (time) => {
-      fmModulator.stop(time);
-      vibratoOscillator?.stop(time);
+      fmHandle.stop(time);
+      vibratoHandle?.stop(time);
       noiseMix?.stop(time);
       o.stop(time);
     },

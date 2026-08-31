@@ -16,7 +16,7 @@
       "learn",
       "factories"
     ],
-    "path": "functions/intro.mdx"
+    "path": "functions\\intro.mdx"
   },
   {
     "id": "functions-value-modifiers",
@@ -45,7 +45,7 @@
       "ceil",
       "range"
     ],
-    "path": "functions/value-modifiers.mdx"
+    "path": "functions\\value-modifiers.mdx"
   },
   {
     "id": "hydra-audio",
@@ -70,7 +70,7 @@
       "bass",
       "high"
     ],
-    "path": "hydra/audio.mdx"
+    "path": "hydra\\audio.mdx"
   },
   {
     "id": "hydra-blending",
@@ -88,7 +88,7 @@
       "mask",
       "blending"
     ],
-    "path": "hydra/blending.mdx"
+    "path": "hydra\\blending.mdx"
   },
   {
     "id": "hydra-examples",
@@ -100,7 +100,7 @@
       "примеров",
       "strudel"
     ],
-    "path": "hydra/examples.mdx"
+    "path": "hydra\\examples.mdx"
   },
   {
     "id": "hydra-external-sources",
@@ -128,7 +128,7 @@
       "youtube",
       "vimeo"
     ],
-    "path": "hydra/external-sources.mdx"
+    "path": "hydra\\external-sources.mdx"
   },
   {
     "id": "hydra-feedback",
@@ -149,7 +149,7 @@
       "amount",
       "brightness"
     ],
-    "path": "hydra/feedback.mdx"
+    "path": "hydra\\feedback.mdx"
   },
   {
     "id": "hydra-intro",
@@ -178,7 +178,7 @@
       "hue",
       "invert"
     ],
-    "path": "hydra/intro.mdx"
+    "path": "hydra\\intro.mdx"
   },
   {
     "id": "hydra-modulation",
@@ -206,7 +206,7 @@
       "math",
       "time"
     ],
-    "path": "hydra/modulation.mdx"
+    "path": "hydra\\modulation.mdx"
   },
   {
     "id": "hydra-sources",
@@ -235,7 +235,7 @@
       "smoothing",
       "speed"
     ],
-    "path": "hydra/sources.mdx"
+    "path": "hydra\\sources.mdx"
   },
   {
     "id": "hydra-transforms",
@@ -264,7 +264,7 @@
       "javascript",
       "angle"
     ],
-    "path": "hydra/transforms.mdx"
+    "path": "hydra\\transforms.mdx"
   },
   {
     "id": "hydra-tutorial",
@@ -293,7 +293,7 @@
       "diff",
       "feedback"
     ],
-    "path": "hydra/tutorial.mdx"
+    "path": "hydra\\tutorial.mdx"
   },
   {
     "id": "intro-gallery",
@@ -322,7 +322,7 @@
       "eilish",
       "determination"
     ],
-    "path": "intro/gallery.mdx"
+    "path": "intro\\gallery.mdx"
   },
   {
     "id": "intro-showcase",
@@ -333,7 +333,7 @@
       "витрина",
       "strudel"
     ],
-    "path": "intro/showcase.mdx"
+    "path": "intro\\showcase.mdx"
   },
   {
     "id": "learn-accumulation",
@@ -351,7 +351,7 @@
       "learn",
       "tonal"
     ],
-    "path": "learn/accumulation.mdx"
+    "path": "learn\\accumulation.mdx"
   },
   {
     "id": "learn-advanced-integrations",
@@ -380,12 +380,12 @@
       "hydra",
       "feedstrudel"
     ],
-    "path": "learn/advanced-integrations.mdx"
+    "path": "learn\\advanced-integrations.mdx"
   },
   {
     "id": "learn-ai-agent",
     "title": "Bulka AI Agent",
-    "content": "# Bulka AI Agent\n\nBulka AI — это встроенный музыкальный помощник, который поможет тебе создавать музыку через код. Агент понимает Strudel/TidalCycles и может писать, редактировать и запускать код за тебя.\n\n## Особенности\n\n- **Три провайдера на выбор**: OpenAI, Anthropic (Claude), Google Gemini\n- **Полный real-time стриминг**: ответы появляются в реальном времени\n- **Отображение мыслей**: для Claude 4+ и Gemini 2.5+ показывается процесс размышления\n- **Динамическая загрузка моделей**: список моделей подгружается напрямую с API провайдеров\n- **Работа с выделением**: выдели код — агент сфокусируется на нём\n- **Поиск по документации**: агент знает Strudel и может искать в справочнике\n\n## Где найти агента?\n\nAI-агент находится в правой панели редактора. Открой вкладку **Chat** (иконка чата) в боковой панели справа от редактора кода.\n\n## Настройка API ключа\n\nДля работы агента нужен API ключ от одного из провайдеров:\n\n1. Открой вкладку **Chat** в боковой панели\n2. Если ключ не настроен — автоматически откроется панель настроек\n3. Выбери провайдера:\n   - **OpenAI** — GPT-4o, GPT-5\n   - **Anthropic** — Claude Sonnet 4.5, Claude Opus 4\n   - **Google Gemini** — Gemini 2.5 Pro, Gemini 2.5 Flash\n4. Введи свой API ключ\n5. Нажми **Сохранить**\n\n### Где получить API ключ?\n\n- **OpenAI**: [platform.openai.com/api-keys](https://platform.openai.com/api-keys)\n- **Anthropic**: [console.anthropic.com](https://console.anthropic.com/)\n- **Google Gemini**: [aistudio.google.com/apikey](https://aistudio.google.com/apikey)\n\nВсе ключи хранятся только локально в твоём браузере.\n\n## Поддерживаемые модели\n\n### OpenAI\n- **GPT-4o** — быстрая и умная модель\n- **GPT-4o Mini** — экономичная версия\n- **GPT-5** — самая мощная модель (если доступна)\n\n### Anthropic (Claude)\n- **Claude Sonnet 4.5** — отличный баланс скорости и качества\n- **Claude Opus 4** — максимальное качество\n- **Claude 3.5 Haiku** — быстрая версия\n\n### Google Gemini\n- **Gemini 2.5 Pro** — мощная модель с thinking\n- **Gemini 2.5 Flash** — быстрая и экономичная\n\n## Что умеет агент?\n\n### Создание музыки\nПросто опиши что хочешь создать:\n- \"Создай простой бит с бочкой и снейром\"\n- \"Сделай расслабляющий эмбиент трек\"\n- \"Напиши драм-н-бейс паттерн на 174 BPM\"\n\n### Редактирование кода\nАгент может изменять существующий код:\n- \"Добавь бас к текущему треку\"\n- \"Сделай хай-хэты быстрее\"\n- \"Добавь реверберацию на все инструменты\"\n\n### Объяснение кода\nЕсли непонятно что делает код:\n- \"Объясни что делает текущий код\"\n- \"Что означает .lpf(800)?\"\n\n### Работа с выделением\nВыдели часть кода в редакторе, и агент будет работать только с этим фрагментом:\n- \"Измени этот фрагмент\"\n- \"Добавь эффект к выделенному\"\n\n### Поиск в коде\nАгент может найти и выделить нужный фрагмент:\n- \"Покажи где регулируется громкость\"\n- \"Найди где определён бас\"\n\n### Визуализация Hydra\nАгент умеет добавлять визуализации:\n- \"Добавь Hydra визуализацию\"\n- \"Сделай визуал синхронизированный с музыкой\"\n\n## Инструменты агента\n\nАгент использует специальные инструменты для работы с редактором:\n\n| Инструмент | Описание |\n|------------|----------|\n| `readCode()` | Прочитать текущий код из редактора |\n| `setFullCode(code)` | Заменить весь код (для нового трека) |\n| `editCode(search, replace)` | Найти и заменить фрагмент кода |\n| `appendCode(code)` | Добавить код в конец |\n| `playMusic()` | Запустить воспроизведение |\n| `stopMusic()` | Остановить воспроизведение |\n| `searchDocs(query)` | Поиск по документации Strudel |\n| `highlightCode(search)` | Выделить фрагмент кода в редакторе |\n\n## Быстрые команды\n\nВ чате есть кнопки быстрых команд:\n- **Простой бит** — создать базовый ритм\n- **Добавь бас** — добавить басовую линию\n- **Объясни код** — получить объяснение текущего кода\n- **Добавь эффект** — добавить реверберацию и задержку\n\n## Отправка ошибок в чат\n\nЕсли возникла ошибка, на плашке ошибки есть кнопка **\"В чат\"** — нажми её, и агент получит описание ошибки и поможет исправить.\n\n## Советы по использованию\n\n### Будь конкретным\nЧем точнее описание, тем лучше результат:\n- ❌ \"Сделай что-нибудь\"\n- ✅ \"Создай минималистичный техно бит в 120 BPM с глубоким басом\"\n\n### Используй выделение\nВыдели код который хочешь изменить — агент сфокусируется на нём.\n\n### Итерируй\nНе пытайся сделать всё сразу. Начни с простого и постепенно добавляй элементы.\n\n### Сообщай об ошибках\nЕсли что-то звучит не так — скажи об этом. Агент исправит.\n\n## Пример диалога\n\n**Ты:** Создай простой хаус бит\n\n**Агент:** *создаёт код и запускает*\n\n```javascript\n// === ХАУС БИТ ===\nstack(\n  s(\"bd*4\").gain(0.9)._scope(),           // бочка на каждую долю\n  s(\"~ cp ~ cp\").gain(0.7),               // хлопок на 2 и 4\n  s(\"hh*8\").gain(0.5)._scope(),           // хай-хэты\n  note(\"c2 c2 c2 c3\").s(\"bass\").lpf(600)  // басовая линия\n)\n```\n\n**Ты:** Добавь пианино\n\n**Агент:** *редактирует код, добавляет пианино*\n\n**Ты:** Сделай бас глубже\n\n**Агент:** *находит бас и понижает фильтр*\n\n## Ограничения\n\n- Агент видит только код, но не слышит результат\n- При ошибках — опиши что пошло не так\n- Сложные многослойные треки лучше строить постепенно\n- Агент работает только с Strudel/TidalCycles синтаксисом\n\n## Приватность\n\n- API ключи хранятся только в localStorage твоего браузера\n- Код и сообщения отправляются напрямую провайдеру (OpenAI/Anthropic/Google)\n- Bulka не сохраняет твои данные на своих серверах",
+    "content": "# Bulka AI Agent\n\nBulka AI — это встроенный музыкальный помощник, который поможет тебе создавать музыку через код. Агент понимает Strudel/TidalCycles и может писать, редактировать и запускать код за тебя.\n\n## Особенности\n\n- **Три провайдера на выбор**: OpenAI, Anthropic (Claude), Google Gemini\n- **Полный real-time стриминг**: ответы появляются в реальном времени\n- **Отображение мыслей**: для моделей с extended thinking показывается процесс размышления\n- **Динамическая загрузка моделей**: список моделей подгружается напрямую с API провайдеров\n- **Работа с выделением**: выдели код — агент сфокусируется на нём\n- **Поиск по документации**: агент знает Strudel и может искать в справочнике\n\n## Где найти агента?\n\nAI-агент находится в правой панели редактора. Открой вкладку **Chat** (иконка чата) в боковой панели справа от редактора кода.\n\n## Настройка API ключа\n\nДля работы агента нужен API ключ от одного из провайдеров:\n\n1. Открой вкладку **Chat** в боковой панели\n2. Если ключ не настроен — автоматически откроется панель настроек\n3. Выбери провайдера (OpenAI, Anthropic или Google)\n4. Введи свой API ключ\n5. Нажми **Сохранить**\n\n### Где получить API ключ?\n\n- **OpenAI**: [platform.openai.com/api-keys](https://platform.openai.com/api-keys)\n- **Anthropic**: [console.anthropic.com](https://console.anthropic.com/)\n- **Google Gemini**: [aistudio.google.com/apikey](https://aistudio.google.com/apikey)\n\nВсе ключи хранятся только локально в твоём браузере.\n\n## Поддерживаемые модели\n\nСписок моделей загружается **автоматически** с API каждого провайдера.\n\n**Провайдеры:**\n- **OpenAI** — GPT-5.2, GPT-5.1, GPT-5.1-Codex-Max\n- **Anthropic** — Claude Opus 4.5, Claude Sonnet 4.5, Claude Haiku 4.5\n- **Google** — Gemini 3 Pro, Gemini 2.5 Flash, Gemini 2.5 Pro\n- **GPT4Free** — бесплатный доступ без API ключа ([подробнее](/learn/gpt4free))\n\n## Что умеет агент?\n\n### Создание музыки\nПросто опиши что хочешь создать:\n- \"Создай простой бит с бочкой и снейром\"\n- \"Сделай расслабляющий эмбиент трек\"\n- \"Напиши драм-н-бейс паттерн на 174 BPM\"\n\n### Редактирование кода\nАгент может изменять существующий код:\n- \"Добавь бас к текущему треку\"\n- \"Сделай хай-хэты быстрее\"\n- \"Добавь реверберацию на все инструменты\"\n\n### Объяснение кода\nЕсли непонятно что делает код:\n- \"Объясни что делает текущий код\"\n- \"Что означает .lpf(800)?\"\n\n### Работа с выделением\nВыдели часть кода в редакторе, и агент будет работать только с этим фрагментом:\n- \"Измени этот фрагмент\"\n- \"Добавь эффект к выделенному\"\n\n### Поиск в коде\nАгент может найти и выделить нужный фрагмент:\n- \"Покажи где регулируется громкость\"\n- \"Найди где определён бас\"\n\n### Визуализация Hydra\nАгент умеет добавлять визуализации:\n- \"Добавь Hydra визуализацию\"\n- \"Сделай визуал синхронизированный с музыкой\"\n\n## Инструменты агента\n\nАгент использует специальные инструменты для работы с редактором:\n\n| Инструмент | Описание |\n|------------|----------|\n| `readCode()` | Прочитать текущий код из редактора |\n| `setFullCode(code)` | Заменить весь код (для нового трека) |\n| `editCode(search, replace)` | Найти и заменить фрагмент кода |\n| `appendCode(code)` | Добавить код в конец |\n| `playMusic()` | Запустить воспроизведение |\n| `stopMusic()` | Остановить воспроизведение |\n| `searchDocs(query)` | Поиск по документации Strudel |\n| `highlightCode(search)` | Выделить фрагмент кода в редакторе |\n\n## Быстрые команды\n\nВ чате есть кнопки быстрых команд:\n- **Простой бит** — создать базовый ритм\n- **Добавь бас** — добавить басовую линию\n- **Объясни код** — получить объяснение текущего кода\n- **Добавь эффект** — добавить реверберацию и задержку\n\n## Отправка ошибок в чат\n\nЕсли возникла ошибка, на плашке ошибки есть кнопка **\"В чат\"** — нажми её, и агент получит описание ошибки и поможет исправить.\n\n## Советы по использованию\n\n### Будь конкретным\nЧем точнее описание, тем лучше результат:\n- ❌ \"Сделай что-нибудь\"\n- ✅ \"Создай минималистичный техно бит в 120 BPM с глубоким басом\"\n\n### Используй выделение\nВыдели код который хочешь изменить — агент сфокусируется на нём.\n\n### Итерируй\nНе пытайся сделать всё сразу. Начни с простого и постепенно добавляй элементы.\n\n### Сообщай об ошибках\nЕсли что-то звучит не так — скажи об этом. Агент исправит.\n\n## Пример диалога\n\n**Ты:** Создай простой хаус бит\n\n**Агент:** *создаёт код и запускает*\n\n```javascript\n// === ХАУС БИТ ===\nstack(\n  s(\"bd*4\").gain(0.9)._scope(),           // бочка на каждую долю\n  s(\"~ cp ~ cp\").gain(0.7),               // хлопок на 2 и 4\n  s(\"hh*8\").gain(0.5)._scope(),           // хай-хэты\n  note(\"c2 c2 c2 c3\").s(\"bass\").lpf(600)  // басовая линия\n)\n```\n\n**Ты:** Добавь пианино\n\n**Агент:** *редактирует код, добавляет пианино*\n\n**Ты:** Сделай бас глубже\n\n**Агент:** *находит бас и понижает фильтр*\n\n## Ограничения\n\n- Агент видит только код, но не слышит результат\n- При ошибках — опиши что пошло не так\n- Сложные многослойные треки лучше строить постепенно\n- Агент работает только с Strudel/TidalCycles синтаксисом\n\n## Приватность\n\n- API ключи хранятся только в localStorage твоего браузера\n- Код и сообщения отправляются напрямую провайдеру (OpenAI/Anthropic/Google)\n- Bulka не сохраняет твои данные на своих серверах",
     "category": "learn",
     "keywords": [
       "bulka",
@@ -409,7 +409,7 @@
       "claude",
       "google"
     ],
-    "path": "learn/ai-agent.mdx"
+    "path": "learn\\ai-agent.mdx"
   },
   {
     "id": "learn-code",
@@ -438,7 +438,7 @@
       "license",
       "learn"
     ],
-    "path": "learn/code.mdx"
+    "path": "learn\\code.mdx"
   },
   {
     "id": "learn-colors",
@@ -448,7 +448,7 @@
     "keywords": [
       "цвета"
     ],
-    "path": "learn/colors.mdx"
+    "path": "learn\\colors.mdx"
   },
   {
     "id": "learn-community",
@@ -477,7 +477,7 @@
       "community",
       "bakery"
     ],
-    "path": "learn/community.mdx"
+    "path": "learn\\community.mdx"
   },
   {
     "id": "learn-conditional-modifiers",
@@ -506,7 +506,7 @@
       "pickmodf",
       "pickrestart"
     ],
-    "path": "learn/conditional-modifiers.mdx"
+    "path": "learn\\conditional-modifiers.mdx"
   },
   {
     "id": "learn-csound",
@@ -535,7 +535,7 @@
       "freq",
       "note"
     ],
-    "path": "learn/csound.mdx"
+    "path": "learn\\csound.mdx"
   },
   {
     "id": "learn-devicemotion",
@@ -546,7 +546,7 @@
       "движение",
       "устройства"
     ],
-    "path": "learn/devicemotion.mdx"
+    "path": "learn\\devicemotion.mdx"
   },
   {
     "id": "learn-effects",
@@ -575,7 +575,7 @@
       "vocoder",
       "stretch"
     ],
-    "path": "learn/effects.mdx"
+    "path": "learn\\effects.mdx"
   },
   {
     "id": "learn-factories",
@@ -603,7 +603,36 @@
       "time",
       "modifiers"
     ],
-    "path": "learn/factories.mdx"
+    "path": "learn\\factories.mdx"
+  },
+  {
+    "id": "learn-faq",
+    "title": "Frequently Asked Questions",
+    "content": "# Frequently Asked Questions\n\nThis page contains frequently asked questions, with answers. Usually, the topic is explained in more detail in a section which is linked in the answer.\n\n## Is Strudel/Tidal free?\n\nYes - there is no charge, this is a collective open source project, and the music you make with it is your own. However if you can, please make a one-off or regular donation to our [opencollective fund](https://opencollective.com/tidalcycles), that supports the software and cultural development of Strudel and other Uzu languages.\n\nWhile there is no charge there are some caveats, e.g.:\n\n- the source code must stay free, i.e. you cannot distribute strudel or tidal as part of projects with incompatible licenses - see the [license](https://www.gnu.org/licenses/agpl-3.0.en.html) for details.\n- the contributed examples and tracks are also separately licensed, and must not e.g. be used to train AI models without permission.\n\n## How do I try out the latest features?\n\nThe main, stable strudel website is [strudel.cc](https://strudel.cc/). There is also [warm.strudel.cc](https://warm.strudel.cc), known as \"warm strudel\", which has the latest development features. You might find warm strudel has bug fixes and features that the main website doesn't, but it will often be less stable and probably not suitable for important performances.\n\nAlternatively, you can run strudel locally to try out the latest features. You can find development-oriented [instructions for that here](https://codeberg.org/uzu/strudel/src/branch/main/CONTRIBUTING.md#project-setup).\n\nYou can see the [latest changes here](https://codeberg.org/uzu/strudel/pulls?q=&type=all&sort=recentupdate&state=closed&labels=&milestone=0&project=0&assignee=0&poster=0), as 'pull requests'.\n\n## How to record or export audio?\n\nStrudel is not a digital audio workstation and does not operate following the same principles shared by most traditional audio softwares. However, there are multiple ways to record the audio -- and video -- output of Strudel:\n\n- Use the 'export' tab to render and download as an audio file.\n- capture the raw stereo signal coming out of your web browser. You will need an external audio editor/DAW such as Reaper/Audacity/Ardour, etc.\n- use the alternative SuperDirt audio engine. Read [this page](/learn/input-output/#oscsuperdirtstrudeldirt) to know more about it.\n- capture the audio/video stream using a capture tool such as [OBS](https://obsproject.com/fr), which is designed for live streaming, but also works very well for recording.\n- don't record anything and code it again in front of your friends.\n\n## Can I use strudel with my IDE?\n\nYes you can. There are experimental modes, made by community members, for several IDEs such as:\n\n- VS Code: [Strudel VS](https://marketplace.visualstudio.com/items?itemName=cmillsdev.strudelvs): an experimental mode for Microsoft VSCode. A revived version of [TidalStrudel](https://marketplace.visualstudio.com/items?itemName=roipoussiere.tidal-strudel), which is defunct.\n- nvim: [strudel.nvim](https://github.com/gruvw/strudel.nvim)\n\n## How can I use my own samples?\n\nThere are multiple ways to load your sample collection. Some methods are good for quick experimentation, some others are good to share your audio collection with other musicians:\n\n- Import folders [from the interface](/learn/samples/#from-disk-via-import-sounds-folder). These are stored locally in your web browser, and not uploaded.\n- Serve a folder of samples locally using the [strudel 'sampler' commandline tool](https://strudel.cc/learn/samples/#from-disk-via-strudelsampler). This can be most reliable method, but requires [nodejs](https://nodejs.org) to be installed.\n- Host your sound library online on the web and [load them from an URL](/learn/samples/#loading-custom-samples)\n\n## Can I create a new project based on Strudel?\n\nStrudel is free/open source software, and we are always happy to see people making use of it within the following terms:\n\n- Please don't use 'strudel' in the name of your project (e.g. strudel2000, foo-strudel), so people don't assume it's official strudel project. (If you'd like it to be an official strudel project, please check in with the community, e.g. on the [discord chat](https://discord.com/invite/HGEdXmRkzT).)\n- Please respect our AGPL license, which e.g. requires you to share/link to the source code of strudel, any modifications you've made to it, and the source code for the rest of your project if it integrates with strudel. You are also required to maintain Strudel's copyright notices in the source code, and include Strudel's copyright notice in your user interface. This is an ad-hoc summary - please [refer to the license](https://codeberg.org/uzu/strudel/src/branch/main/LICENSE) for full details.\n\nYou are also encouraged to connect with [the community](https://discord.com/invite/HGEdXmRkzT) to understand our aims and values.\n\n## Can I use Strudel with AI/LLM tools?\n\nYou are free to do what you like with Strudel, within the terms of the free/open source AGPLv3 license.\nHowever as a community we are interested in exploring human creativity. AI is _way_ over-hyped right now,\nincluding by people with very shady motives. Many in the community are very wary of people training models\non their tunes that they've poured their love into. So please keep discussion and questions around AI and\nLLMs to channels dedicated to the topic and be fully respectful of other people's work.\n\nFurthermore, tools like ChatGPT generally give wrong answers. Please don't ask the community to fix those\nanswers for you, as generally they will be timewasting nonsense.\n\nHuman questions are always welcome!\n\n## Where can I download loads of patterns to train my LLM?\n\nYou cannot, as there is no such place. For details regarding our stance towards AI/LLM, see [above](/learn/faq/#can-i-use-strudel-with-aillm-tools)\n\n## How to run offline?\n\nStrudel works offline just fine! There are multiple techniques for this, see [this explanation](learn/pwa/#using-strudel-offline).\n\n## How to change tempo? How do I translate BPM to cpm?\n\nStrudel works in cycles, rather than beats, but if you assume a certain number of beats per cycle, you can convert between them.\n\nFor example, if you have your tempo in beats per minute and use 4 beats per cycle (e.g. if your track is in 4/4ths) then you can do `setcpm(BPM/4)`\nwhere BPM is your beats per minute.\n\nIf you have a different number of beats per bar or are using more or less beats per cycle (e.g. If you want to put only half a bar or\ntwo bars into one cycle), adjust accordingly.\n\n## Where can I see all the functions?\n\nIf you pop open the sidetab of strudel.cc (small white < on the right hand side), there is a tab \"reference\" which lists all the functions of strudel.\n\n## Where can I see all the samples and synths?\n\nIf you pop open the sidetab of strudel.cc (small white < on the right hand side), there is a tab \"sounds\" which lists all the drum machines, samples and synths currently loaded.\n\n## How do I use this exactly like a DAW?\n\nStrudel has different design aims for a DAW, and so treating it like one will likely be frustrating. DAWs are geared towards\nsequencing notes over time in predictable ways, whereas Strudel and similar Uzu languages are geared towards combining and\ntransforming patterns in ways that can be hard to predict.\n\nIf you want to emulate the functionality of a DAW in Strudel, you'll have to identify the operations\nexecuted by the DAW (sequencing, repeating, applying filters and envelopes) and write code that is equivalent to these\noperations. For example in Strudel, the 'arrange' and 'pick' methods are useful for sequencing patterns over time (see question on these later in this document).\n\nYou might still find that the typical DAW workflow is not really adapted to live coding because, despite\nboth being ways of making music on the computer, they are two very different tools. You could then adapt your way of proceeding\nto the medium of code, which m",
+    "category": "learn",
+    "keywords": [
+      "frequently",
+      "asked",
+      "questions",
+      "setcpm",
+      "mask",
+      "all",
+      "when",
+      "lpf",
+      "range",
+      "punchcard",
+      "release",
+      "trancegate",
+      "rlpf",
+      "acidenv",
+      "note",
+      "scale",
+      "bank",
+      "fast",
+      "slow",
+      "choosecycles"
+    ],
+    "path": "learn\\faq.mdx"
   },
   {
     "id": "learn-getting-started",
@@ -632,7 +661,36 @@
       "alex",
       "mclean"
     ],
-    "path": "learn/getting-started.mdx"
+    "path": "learn\\getting-started.mdx"
+  },
+  {
+    "id": "learn-gpt4free",
+    "title": "GPT4Free — бесплатный AI",
+    "content": "# GPT4Free — бесплатный AI-агент\n\nGPT4Free — это open-source проект, который предоставляет бесплатный доступ к различным языковым моделям. Bulka интегрирует GPT4Free, чтобы AI-агент был доступен каждому — без API ключей и подписок.\n\n## Быстрый старт\n\n1. Открой вкладку **Chat** в боковой панели справа\n2. Нажми на иконку настроек (шестерёнка)\n3. Выбери провайдера **GPT4Free**\n4. Выбери модель из списка\n5. Выбери провайдера из списка\n6. Начинай общаться с агентом!\n\nAPI ключ не требуется.\n\n## Доступные модели\n\nGPT4Free предоставляет доступ к различным моделям — список загружается автоматически из API. Доступность моделей зависит от провайдера и может меняться.\n\nПодбирайте модели и провайдеров самостоятельно — разные комбинации работают по-разному.\n\n## Что мы сделали\n\nМодели через GPT4Free не поддерживают function calling (tools), поэтому мы реализовали **симуляцию инструментов** через текстовые маркеры:\n\n**Работает:**\n- ✅ **Автоподстановка кода** — код из ответа автоматически вставляется в редактор\n- ✅ **Запуск музыки** — агент добавляет маркер [PLAY] и музыка запускается\n- ✅ **Остановка музыки** — агент добавляет маркер [STOP] и музыка останавливается\n- ✅ **Авто-плей** — если есть код но нет маркеров, воспроизведение запускается автоматически\n\n**Не работает:**\n- ❌ Поиск по документации Strudel\n- ❌ Просмотр примеров кода\n- ❌ Выделение фрагментов в редакторе\n\n## Важно понимать\n\nЯ постарался настроить агента так, чтобы он работал максимально похоже на полноценный режим. Но это **симуляция** — модель генерирует текст с маркерами, а мы их парсим и выполняем.\n\n**Это может работать не всегда хорошо** — модель может забыть добавить маркеры, сгенерировать невалидный код, или провайдер может быть недоступен. Это не будет работать так стабильно как полноценный агент с API ключом, который использует настоящий function calling.\n\n### Возможные проблемы\n\n- **Реклама** — некоторые провайдеры могут вставлять рекламные сообщения\n- **Лимиты** — количество запросов ограничено\n- **Нестабильность** — провайдеры могут периодически не работать\n- **Медленные ответы** — скорость зависит от загрузки провайдера\n\n### Что работает\n\n- ✅ Генерация кода для музыки\n- ✅ Объяснение как работает код\n- ✅ Помощь с синтаксисом Strudel\n- ✅ Ответы на вопросы о лайв-кодинге\n\n## Советы по использованию\n\n### Подбирайте провайдеров\n\nЕсли один провайдер не отвечает или выдаёт ошибки — попробуйте другой. Разные провайдеры имеют разную доступность.\n\n### Копируйте код вручную\n\nПоскольку инструменты не работают, копируй сгенерированный код из чата в редактор вручную (Ctrl+C / Ctrl+V).\n\n### Будьте терпеливы\n\nБесплатные провайдеры могут отвечать медленнее платных API.\n\n## Сравнение с платными API\n\n| Функция | GPT4Free | Платный API |\n|---------|----------|-------------|\n| Генерация кода | ✅ | ✅ |\n| Объяснение кода | ✅ | ✅ |\n| Поиск по документации | ❌ | ✅ |\n| Просмотр примеров | ❌ | ✅ |\n| Запуск/стоп музыки | ✅ (симуляция) | ✅ |\n| Редактирование кода | ✅ (симуляция) | ✅ |\n| Стабильность | Низкая | Высокая |\n| Скорость | Переменная | Быстрая |\n| Стоимость | Бесплатно | По тарифу API |\n\n## Для максимального опыта\n\nЕсли хочешь полноценного AI-агента со всеми инструментами:\n\n1. Получи API ключ от [Anthropic](https://console.anthropic.com/)\n2. В настройках чата выбери провайдера **Anthropic**\n3. Введи API ключ\n4. Выбери модель **Claude Opus 4.5** или **Claude Sonnet 4.5**\n\nВ этом режиме агент:\n- Ищет по документации и находит нужные функции\n- Смотрит примеры использования\n- Автоматически редактирует код в редакторе\n- Запускает и останавливает музыку\n- Выделяет фрагменты кода\n\n## Ссылки\n\n- [Документация AI-агента](/learn/ai-agent) — полное описание возможностей\n- [GPT4Free на GitHub](https://github.com/xtekky/gpt4free) — исходный код проекта\n- [Блог-пост о GPT4Free](/blog/2025-12-16-gpt4free) — анонс интеграции",
+    "category": "learn",
+    "keywords": [
+      "gpt4free",
+      "бесплатный",
+      "open",
+      "source",
+      "bulka",
+      "chat",
+      "function",
+      "calling",
+      "tools",
+      "play",
+      "stop",
+      "strudel",
+      "ctrl",
+      "anthropic",
+      "https",
+      "console",
+      "claude",
+      "opus",
+      "sonnet",
+      "learn"
+    ],
+    "path": "learn\\gpt4free.mdx"
   },
   {
     "id": "learn-hydra",
@@ -655,7 +713,7 @@
       "synth",
       "feedstrudel"
     ],
-    "path": "learn/hydra.mdx"
+    "path": "learn\\hydra.mdx"
   },
   {
     "id": "learn-input-devices",
@@ -669,7 +727,7 @@
       "midi",
       "patterns"
     ],
-    "path": "learn/input-devices.mdx"
+    "path": "learn\\input-devices.mdx"
   },
   {
     "id": "learn-input-output",
@@ -698,7 +756,36 @@
       "branch",
       "main"
     ],
-    "path": "learn/input-output.mdx"
+    "path": "learn\\input-output.mdx"
+  },
+  {
+    "id": "learn-lfo",
+    "title": "Low-frequency oscillators (LFO)",
+    "content": "# Low frequency oscillators (LFO)\n\nA low frequency oscillator (or short LFO) is a common way on synthesizers to continuously modulate various signals.\n\nThis documentation is an interactive version of glossing's tutorial https://www.youtube.com/watch?v=11frBA9L638\n\n## Signals vs LFOs\n\nIn Strudel, there are two ways to modulate:\n\n1. [signals](/learn/signals/) for pattern-level modulation\n2. `lfo` (this page) for audio-level modulation\n\n## Applying an LFO\n\nHere, the LFO will change the frequency of the `saw`. Put a comment like this `//.lfo()` to see and hear how it changes, and remove the comment again.\n\nBy default, the LFO will modulate the control parameter which is right before `.lfo()`:\n\nHere, the LFO will modulate the low pass filter `.lpf`.\n\n## Moving away from the default\n\nThe following sections explain how to pass parameters to `.lfo`. Similar to `._spectrum` above, almost all the configuration of `lfo` lives inside a json object, starting with `{` and ending with `}`.\nAll the parameters (except `id`) are written as `key: value` inside and separated by `,`.\n\nThe reference refers to them as `config.key`, i.e. for the following one as `config.control` but you use them like below.\n\n## Control\n\n`control` determines which parameter will be modulated. This allows you to place your `lfo` at different places,\nnot necessarily immediately after the controlled parameter.\n\nHere, we place `lfo` after the `s`, but it modulates the low pass filter.\n\nYou can even influence parameters which are always present, even if you haven't explicitly written them, like `gain`.\n\n`control` has an alias `c`.\n\n## Rate\n\n`rate` determines how often the `lfo` oscillates per second:\n\nThe alias of `rate` is `r`.{' '}\n\n## Sync\n\nInstead of controlling the frequency with `rate` by setting a frequency in Hz, you can use `sync`\nto snychronize your lfo with your other patterns.\n\n`sync` expresses this frequency as \"times per cycle\"\n\nTry removing the `sync: \"<2 4 8 0.5 >\"` from the pattern and notice that there is something not in sync.\n\nYou can put patterns into the parameters of `lfo` if you want them to change over time, as seen above.\n\n## Relative Depth\n\n`.depth` is relative depth, a value of 1 (the default) means that\nthe value goes above and below by half of the value which is being modulated\n\nE.g. for depth `1`, it modulates the frequency to oscillate between 32 = (64/2) and 96 (= 64 + 64/2).\n\nThe `freq` is not needed here, as this is the default frequency, it's just for instructive purposes.\n\nThe aliases of `depth` are `dr` and `dep`.\n\n## Absolute Depth\n\n`depthabs` controls the absolute modulation depth. For example you can modulate\nthe low pass filter by exactly 250 Hz up and below:\n\nThe alias of `depthabs` is `da`.\n\n## DC offset\n\nIf you don't want to go up or down by the same amount with your modulation, then you can shift the center of the modulation with `dcoffset`.\nThe default value is -0.5, which is the middle point between:\n\"dcoffset = 0: All modulations increase the control parameter (or keep it constant)\"\n\"dcoffset = -1: All modulations decrease the control parameter (or keep it constant)\"\n\nOther values will work as well.\n\nThe marvellous alias of `dcoffset` is `dc`.\n\n## Shape\n\nYou can change the shape of the modulation with `shape`. The default is `triangle`, but other shapes are available too:\n\nYou can add `._spectrum()` to see the shape of the modulations in the spectrum.\n\nYou can also get these shapes by using numbers:\n\n| Shape    | number |\n| -------- | ------ |\n| triangle | 0      |\n| sine     | 1      |\n| ramp     | 2      |\n| saw      | 3      |\n| square   | 4      |\n\nthis way, you can use a function like `irand` to generate numbers:\n\nThe alias of `shape` is `sh`.\n\n## Skewing some shapes\n\nYou can influence some of the shapes (`triangle` and `square`) in more detail.\n\nThe default skew is 0.5, it does different things for these two.\n\nFor `triangle`, it skews the top of the triangle to the left or right,\nwhere 0 makes it look like `saw` and 1 makes it look like `ramp`.\n\nFor `square`, the skew influences the pulse width (see reference for `pulse` and `.pw`):\n\nThe alias of `skew` is `sk`.{' '}\n\n## Curve\n\nYou can change the curves of your lfo and can make it more intense.\nThe default value is 1. Writing numbers greater than one can make it more intense,\nnumbers between 0 and 1 will make it less intense.\nThis will raise the lfo to the power of curve, so larger numbers (such as 10) can have very unexpected results.\n\n## Referencing your lfos with id\n\nAll the lfos are numbered from the first starting with 0, the second having an `id` of 1 and so on.\n\nYou can refer to this in a later call if you want to modify a specific `lfo`.\n\nThe `id` is outside of the config json (which is different from the other parameters of `lfo()`\n\nTry out how the sound changes when you replace the 0 with a 1.\n\nYou can also name your lfos and refer to them by name, using the `id` parameter\n\n## FX index\n\nIf you are using `FX()` to reorder your effects, you dont need to write your lfos inside the `FX`,\nbut instead can refer to them by their FX index (starting with 0)\n\n## Modulating other LFOs with Sub-control\n\nLFOs can modulate other lfos and will modulate their frequency (given by `r` or `s`):\n\nTo modulate other parameters of the first lfo (like `skew`, `depth` and so on), we can specify this with `subControl`or\nits alias `sc`",
+    "category": "learn",
+    "keywords": [
+      "low-frequency",
+      "oscillators",
+      "(lfo)",
+      "lfo",
+      "frequency",
+      "oscillator",
+      "short",
+      "common",
+      "synthesizers",
+      "continuously",
+      "modulate",
+      "various",
+      "signals",
+      "this",
+      "documentation",
+      "interactive",
+      "version",
+      "glossing",
+      "tutorial",
+      "https"
+    ],
+    "path": "learn\\lfo.mdx"
   },
   {
     "id": "learn-metadata",
@@ -727,7 +814,7 @@
       "album",
       "jimmy"
     ],
-    "path": "learn/metadata.mdx"
+    "path": "learn\\metadata.mdx"
   },
   {
     "id": "learn-mini-notation",
@@ -756,7 +843,7 @@
       "euclidian",
       "rhythms"
     ],
-    "path": "learn/mini-notation.mdx"
+    "path": "learn\\mini-notation.mdx"
   },
   {
     "id": "learn-mondo-notation",
@@ -785,7 +872,7 @@
       "tail",
       "range"
     ],
-    "path": "learn/mondo-notation.mdx"
+    "path": "learn\\mondo-notation.mdx"
   },
   {
     "id": "learn-notes",
@@ -814,7 +901,7 @@
       "wikipedia",
       "wiki"
     ],
-    "path": "learn/notes.mdx"
+    "path": "learn\\notes.mdx"
   },
   {
     "id": "learn-pwa",
@@ -843,7 +930,7 @@
       "service",
       "workers"
     ],
-    "path": "learn/pwa.mdx"
+    "path": "learn\\pwa.mdx"
   },
   {
     "id": "learn-random-modifiers",
@@ -872,7 +959,7 @@
       "almostalways",
       "never"
     ],
-    "path": "learn/random-modifiers.mdx"
+    "path": "learn\\random-modifiers.mdx"
   },
   {
     "id": "learn-samples",
@@ -901,7 +988,7 @@
       "bass",
       "kick"
     ],
-    "path": "learn/samples.mdx"
+    "path": "learn\\samples.mdx"
   },
   {
     "id": "learn-signals",
@@ -925,7 +1012,7 @@
       "modifiers",
       "learn"
     ],
-    "path": "learn/signals.mdx"
+    "path": "learn\\signals.mdx"
   },
   {
     "id": "learn-sounds",
@@ -948,7 +1035,7 @@
       "code",
       "strudel"
     ],
-    "path": "learn/sounds.mdx"
+    "path": "learn\\sounds.mdx"
   },
   {
     "id": "learn-stepwise",
@@ -977,7 +1064,7 @@
       "take",
       "drop"
     ],
-    "path": "learn/stepwise.mdx"
+    "path": "learn\\stepwise.mdx"
   },
   {
     "id": "learn-strudel-vs-tidal",
@@ -1006,7 +1093,7 @@
       "fast",
       "javascript"
     ],
-    "path": "learn/strudel-vs-tidal.mdx"
+    "path": "learn\\strudel-vs-tidal.mdx"
   },
   {
     "id": "learn-synths",
@@ -1035,7 +1122,7 @@
       "synthesis",
       "harmonics"
     ],
-    "path": "learn/synths.mdx"
+    "path": "learn\\synths.mdx"
   },
   {
     "id": "learn-themes",
@@ -1064,7 +1151,7 @@
       "aura",
       "bbedit"
     ],
-    "path": "learn/themes.mdx"
+    "path": "learn\\themes.mdx"
   },
   {
     "id": "learn-time-modifiers",
@@ -1093,7 +1180,7 @@
       "compress",
       "zoom"
     ],
-    "path": "learn/time-modifiers.mdx"
+    "path": "learn\\time-modifiers.mdx"
   },
   {
     "id": "learn-tonal",
@@ -1121,7 +1208,7 @@
       "struct",
       "voicings"
     ],
-    "path": "learn/tonal.mdx"
+    "path": "learn\\tonal.mdx"
   },
   {
     "id": "learn-visual-feedback",
@@ -1145,7 +1232,7 @@
       "spectrum",
       "markcss"
     ],
-    "path": "learn/visual-feedback.mdx"
+    "path": "learn\\visual-feedback.mdx"
   },
   {
     "id": "learn-xen",
@@ -1174,7 +1261,7 @@
       "pitch",
       "wheel"
     ],
-    "path": "learn/xen.mdx"
+    "path": "learn\\xen.mdx"
   },
   {
     "id": "recipes-arpeggios",
@@ -1199,7 +1286,7 @@
       "legato",
       "todo"
     ],
-    "path": "recipes/arpeggios.mdx"
+    "path": "recipes\\arpeggios.mdx"
   },
   {
     "id": "recipes-microrhythms",
@@ -1217,7 +1304,7 @@
       "cycle",
       "stglgjjcpiey"
     ],
-    "path": "recipes/microrhythms.mdx"
+    "path": "recipes\\microrhythms.mdx"
   },
   {
     "id": "recipes-recipes",
@@ -1246,7 +1333,7 @@
       "early",
       "clip"
     ],
-    "path": "recipes/recipes.mdx"
+    "path": "recipes\\recipes.mdx"
   },
   {
     "id": "recipes-rhythms",
@@ -1271,7 +1358,7 @@
       "cycle",
       "todo"
     ],
-    "path": "recipes/rhythms.mdx"
+    "path": "recipes\\rhythms.mdx"
   },
   {
     "id": "technical-manual-about",
@@ -1286,7 +1373,7 @@
       "started",
       "todo"
     ],
-    "path": "technical-manual/about.mdx"
+    "path": "technical-manual\\about.mdx"
   },
   {
     "id": "technical-manual-alignment",
@@ -1313,7 +1400,7 @@
       "javascript",
       "learn"
     ],
-    "path": "technical-manual/alignment.mdx"
+    "path": "technical-manual\\alignment.mdx"
   },
   {
     "id": "technical-manual-docs",
@@ -1342,7 +1429,36 @@
       "sidebar",
       "config"
     ],
-    "path": "technical-manual/docs.mdx"
+    "path": "technical-manual\\docs.mdx"
+  },
+  {
+    "id": "technical-manual-helix",
+    "title": "Helix Keybindings",
+    "content": "# Helix Keybindings in the REPL\n\nThe Strudel REPL supports [Helix editor](https://helix-editor.com/) keybindings through the `codemirror-helix` extension. Helix is a post-modern modal text editor with a focus on selection-first editing and multiple cursors.\n\n## Enabling Helix Mode\n\n1. Open the Settings panel in the REPL (click the settings icon or use the keyboard shortcut)\n2. Find the \"Keybindings\" section\n3. Select \"Helix\" from the available options\n\n## Key Differences from Vim\n\nHelix uses a selection-first approach, which means:\n\n- **Selection → Action** (Helix) vs **Action → Motion** (Vim)\n- For example, to delete a word in Helix: `w` (select word) → `d` (delete)\n- In Vim, it would be: `dw` (delete word)\n\n## Common Helix Commands\n\n### Normal Mode\n\n- `i` — Enter insert mode before selection\n- `a` — Enter insert mode after selection\n- `v` — Enter visual/select mode\n- `w` — Select next word\n- `e` — Select to end of word\n- `b` — Select previous word\n- `x` — Select/extend line\n- `d` — Delete selection\n- `c` — Change selection (delete and enter insert mode)\n- `y` — Yank (copy) selection\n- `p` — Paste after selection\n- `u` — Undo\n- `U` — Redo\n- `/` — Search\n- `n` — Select next search match\n- `N` — Select previous search match\n\n### Movement\n\n- `h, j, k, l` — Move left, down, up, right\n- `gg` — Go to start of document\n- `ge` — Go to end of document\n- `{` / `}` — Move to previous/next paragraph\n- `%` — Match bracket\n\n### Multi-cursor\n\n- `C` — Duplicate cursor to line below\n- `Alt-C` — Duplicate cursor to line above\n- `,` — Remove primary cursor\n- `Alt-,` — Remove all secondary cursors\n\n## Strudel-Specific Features\n\nCurrently, Helix mode in Strudel provides standard Helix keybindings. Unlike Vim mode, there are no custom Strudel-specific commands (like `:w` to evaluate) yet.\n\nTo evaluate code while in Helix mode, use the standard shortcuts:\n\n- `Ctrl+Enter` or `Alt+Enter` — Evaluate code\n- `Alt+.` — Stop playback\n\n## Resources\n\n- [Helix Documentation](https://docs.helix-editor.com/)\n- [Helix Keymap](https://docs.helix-editor.com/keymap.html)\n- [codemirror-helix on npm](https://www.npmjs.com/package/codemirror-helix)\n- [codemirror-helix on GitLab](https://gitlab.com/_rvidal/codemirror-helix)\n\n## Notes\n\n- The `codemirror-helix` extension is described as an \"initial version\" and may not implement all Helix features\n- Behavior may differ slightly from the native Helix editor\n- If you encounter issues, you can switch back to other keybinding modes in Settings\n- The keybinding preference is saved in your browser's local storage\n\n## Contributing\n\nIf you'd like to add Strudel-specific Helix commands (similar to Vim's `:w` for evaluate), contributions are welcome! See the implementation in `/packages/codemirror/keybindings.mjs` for reference.",
+    "category": "technical-manual",
+    "keywords": [
+      "helix",
+      "keybindings",
+      "repl",
+      "strudel",
+      "supports",
+      "editor",
+      "https",
+      "through",
+      "codemirror",
+      "extension",
+      "post",
+      "modern",
+      "modal",
+      "text",
+      "with",
+      "focus",
+      "selection",
+      "first",
+      "editing",
+      "multiple"
+    ],
+    "path": "technical-manual\\helix.mdx"
   },
   {
     "id": "technical-manual-internals",
@@ -1371,7 +1487,7 @@
       "innerbind",
       "innerjoin"
     ],
-    "path": "technical-manual/internals.mdx"
+    "path": "technical-manual\\internals.mdx"
   },
   {
     "id": "technical-manual-packages",
@@ -1400,7 +1516,7 @@
       "mini",
       "strudelmini"
     ],
-    "path": "technical-manual/packages.mdx"
+    "path": "technical-manual\\packages.mdx"
   },
   {
     "id": "technical-manual-patterns",
@@ -1424,7 +1540,7 @@
       "manual",
       "alignment"
     ],
-    "path": "technical-manual/patterns.mdx"
+    "path": "technical-manual\\patterns.mdx"
   },
   {
     "id": "technical-manual-project-start",
@@ -1453,7 +1569,7 @@
       "play",
       "hush"
     ],
-    "path": "technical-manual/project-start.mdx"
+    "path": "technical-manual\\project-start.mdx"
   },
   {
     "id": "technical-manual-repl",
@@ -1482,7 +1598,7 @@
       "connect",
       "https"
     ],
-    "path": "technical-manual/repl.mdx"
+    "path": "technical-manual\\repl.mdx"
   },
   {
     "id": "technical-manual-sounds",
@@ -1511,7 +1627,7 @@
       "context",
       "value"
     ],
-    "path": "technical-manual/sounds.mdx"
+    "path": "technical-manual\\sounds.mdx"
   },
   {
     "id": "technical-manual-testing",
@@ -1538,7 +1654,7 @@
       "pattern",
       "snapshots"
     ],
-    "path": "technical-manual/testing.mdx"
+    "path": "technical-manual\\testing.mdx"
   },
   {
     "id": "technical-manual-vim",
@@ -1561,7 +1677,7 @@
       "eval",
       "updated"
     ],
-    "path": "technical-manual/vim.mdx"
+    "path": "technical-manual\\vim.mdx"
   },
   {
     "id": "understand-cycles",
@@ -1578,7 +1694,7 @@
       "cycle",
       "pattern"
     ],
-    "path": "understand/cycles.mdx"
+    "path": "understand\\cycles.mdx"
   },
   {
     "id": "understand-pitch",
@@ -1605,7 +1721,7 @@
       "wikipedia",
       "wiki"
     ],
-    "path": "understand/pitch.mdx"
+    "path": "understand\\pitch.mdx"
   },
   {
     "id": "understand-voicings",
@@ -1634,7 +1750,7 @@
       "symbols",
       "used"
     ],
-    "path": "understand/voicings.mdx"
+    "path": "understand\\voicings.mdx"
   },
   {
     "id": "workshop-first-effects",
@@ -1663,7 +1779,7 @@
       "tidal",
       "workshop"
     ],
-    "path": "workshop/first-effects.mdx"
+    "path": "workshop\\first-effects.mdx"
   },
   {
     "id": "workshop-first-notes",
@@ -1683,7 +1799,7 @@
       "first",
       "effects"
     ],
-    "path": "workshop/first-notes.mdx"
+    "path": "workshop\\first-notes.mdx"
   },
   {
     "id": "workshop-first-sounds",
@@ -1712,7 +1828,7 @@
       "yellow",
       "magic"
     ],
-    "path": "workshop/first-sounds.mdx"
+    "path": "workshop\\first-sounds.mdx"
   },
   {
     "id": "workshop-getting-started",
@@ -1741,7 +1857,36 @@
       "anthropic",
       "google"
     ],
-    "path": "workshop/getting-started.mdx"
+    "path": "workshop\\getting-started.mdx"
+  },
+  {
+    "id": "workshop-motors",
+    "title": "Movement with Strudel",
+    "content": "# Controlling motors with Strudel\n\nStrudel is mainly made for making music, but it's possible to pattern other things with it, including motors.\n\nWe're going to use a microcontroller for this, called an \"[Inventor 2040W](https://shop.pimoroni.com/products/inventor-2040-w)\", which is\na [Pico W](https://shop.pimoroni.com/products/inventor-2040-w?variant=40053063155795) with extra ports added including some for controlling motors.\n\n![image](https://shop.pimoroni.com/cdn/shop/products/Inventor2040_1of3_1500x1500_crop_center.jpg?v=1656927927)\n\n## Technical details\n\nFeel free to gloss over these!\n\n- The Inventor 2040W connects to the internet wirelessly, and it can power from a battery or USB. Hopefully the batteries last!\n- It's running [some code](https://github.com/patternclub/alpacalab/blob/main/course/main.py) that listens for messages using an \"Internet of Things\" network protocol (called MQTT). When it receives a message, it moves a motor.\n- It connects to a small server (running software called 'mosquitto') on Alex's laptop.\n- Strudel can send these messages instead of triggering sounds - that's how we use it to pattern movement.\n\n## First movement\n\nLet's get a motor running!\n\n1. Note the letter drawn on a label on the back of the microcontroller.\n\n2. Plug a battery into your microcontroller.\n\n3. Plug a motor into 'servo' (not motor) plug numbered 1, with the yellow (lightest) cable closest to the '1', and the brown (darkest) cable outward\n\n4. Run the below to set up some values, changing the `x` in 'robot('x')` to the letter on your microcontroller.\n\n## Patterning movement\n\nMany strudel features for playing with sound patterns will work when\nplaying with motor patterns. Try playing with the mininotation in the\n`move` command:\n\nThe move instructions are in the range from -90 to 90.\n\n<box>\n  If your motors stop working at some point, and your code looks right, try pressing the 'reset' button on the\n  microcontroller.\n</box>\n\nIt's possible to make smooth movements based on different 'waveforms', for example a smooth sinewave:\n\nThe movement is still quite jerky, because the 'segment' command is\nonly taking 16 positions from the sinewave. Try increasing it to 32 or 64. It's best not too much higher than that, as the microcontroller\nmight get overwhelmed with a backlog of instructions!\n\n<box>\n  Try replacing `sine` with other waveforms: `saw` (sawtooth wave), `tri` (triangular wave) are good, and there is also\n  `rand` (random wave) and `perlin` (a kind of smoothed-out randomness).\n</box>\n\n## Patterning more than one motor\n\nYou can pattern the `motor` command separately from the `move` one:\n\nAlternatively, you can pattern two motors in separate patterns. The below sends the same pattern for the first two motors, but with the second one running slower:",
+    "category": "workshop",
+    "keywords": [
+      "movement",
+      "with",
+      "strudel",
+      "robot",
+      "controlling",
+      "motors",
+      "mainly",
+      "made",
+      "making",
+      "music",
+      "possible",
+      "pattern",
+      "other",
+      "things",
+      "including",
+      "going",
+      "microcontroller",
+      "this",
+      "called",
+      "inventor"
+    ],
+    "path": "workshop\\motors.mdx"
   },
   {
     "id": "workshop-pattern-effects",
@@ -1755,7 +1900,7 @@
       "pattern",
       "scale"
     ],
-    "path": "workshop/pattern-effects.mdx"
+    "path": "workshop\\pattern-effects.mdx"
   },
   {
     "id": "workshop-recap",
@@ -1781,6 +1926,6 @@
       "fast",
       "slow"
     ],
-    "path": "workshop/recap.mdx"
+    "path": "workshop\\recap.mdx"
   }
 ]

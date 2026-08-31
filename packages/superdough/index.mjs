@@ -10,6 +10,7 @@ export * from './helpers.mjs';
 export * from './synth.mjs';
 export * from './zzfx.mjs';
 export * from './logger.mjs';
+export * from './modulators.mjs';
 export * from './dspworklet.mjs';
 export * from './audioContext.mjs';
 export * from './wavetable.mjs';

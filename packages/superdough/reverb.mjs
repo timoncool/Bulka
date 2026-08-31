@@ -2,7 +2,7 @@ import reverbGen from './reverbGen.mjs';
 import { clamp } from './util.mjs';
 
 if (typeof AudioContext !== 'undefined') {
-  AudioContext.prototype.adjustLength = function (duration, buffer, speed = 1, offsetAmount = 0) {
+  BaseAudioContext.prototype.adjustLength = function (duration, buffer, speed = 1, offsetAmount = 0) {
     const sampleOffset = Math.floor(clamp(offsetAmount, 0, 1) * buffer.length);
     const newLength = buffer.sampleRate * duration;
     const newBuffer = this.createBuffer(buffer.numberOfChannels, buffer.length, buffer.sampleRate);
@@ -23,7 +23,7 @@ if (typeof AudioContext !== 'undefined') {
     return newBuffer;
   };
 
-  AudioContext.prototype.createReverb = function (duration, fade, lp, dim, ir, irspeed, irbegin) {
+  BaseAudioContext.prototype.createReverb = function (duration, fade, lp, dim, ir, irspeed, irbegin) {
     const convolver = this.createConvolver();
     convolver.generate = (d = 2, fade = 0.1, lp = 15000, dim = 1000, ir, irspeed, irbegin) => {
       convolver.duration = d;

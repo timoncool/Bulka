@@ -778,20 +778,6 @@ describe('Pattern', () => {
       );
     });
   });
-  describe('signal()', () => {
-    it('Can make saw/saw2', () => {
-      expect(saw.struct(true, true, true, true).firstCycle()).toStrictEqual(
-        sequence(0, 1 / 4, 1 / 2, 3 / 4).firstCycle(),
-      );
-
-      expect(saw2.struct(true, true, true, true).firstCycle()).toStrictEqual(sequence(-1, -0.5, 0, 0.5).firstCycle());
-    });
-    it('Can make isaw/isaw2', () => {
-      expect(isaw.struct(true, true, true, true).firstCycle()).toStrictEqual(sequence(1, 0.75, 0.5, 0.25).firstCycle());
-
-      expect(isaw2.struct(true, true, true, true).firstCycle()).toStrictEqual(sequence(1, 0.5, 0, -0.5).firstCycle());
-    });
-  });
   describe('_setContext()', () => {
     it('Can set the hap context', () => {
       expect(

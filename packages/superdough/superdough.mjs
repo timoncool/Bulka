@@ -349,6 +349,36 @@ export function connectToDestination(input, channels) {
   controller.output.connectToDestination(input, channels);
 }
 
+// --- Master volume + recording wrappers (Bulka features) ---
+/** Set the master volume (0-1) */
+export function setMasterVolume(volume) {
+  const ctrl = getSuperdoughAudioController();
+  if (ctrl?.output?.destinationGain) {
+    const clampedVolume = Math.max(0, Math.min(1, volume));
+    ctrl.output.destinationGain.gain.value = clampedVolume;
+  }
+}
+/** Get the current master volume (0-1) */
+export function getMasterVolume() {
+  const ctrl = getSuperdoughAudioController();
+  return ctrl?.output?.destinationGain?.gain?.value ?? 1;
+}
+/** Start recording audio output. onTimeUpdate(elapsedMs) is called periodically. */
+export function startRecording(onTimeUpdate) {
+  const ctrl = getSuperdoughAudioController();
+  ctrl?.output?.startRecording(onTimeUpdate);
+}
+/** Stop recording and trigger a WAV download (optional filename). */
+export function stopRecording(filename) {
+  const ctrl = getSuperdoughAudioController();
+  ctrl?.output?.stopRecording(filename);
+}
+/** Whether audio output is currently being recorded. */
+export function isRecording() {
+  const ctrl = getSuperdoughAudioController();
+  return ctrl?.output?.isRecording ?? false;
+}
+
 function getPhaser(begin, end, frequency = 1, depth = 0.5, centerFrequency = 1000, sweep = 2000) {
   const ac = getAudioContext();
   const lfo = getLfo(ac, { frequency, depth: sweep * 2, begin, end });

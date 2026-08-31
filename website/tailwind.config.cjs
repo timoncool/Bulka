@@ -24,7 +24,6 @@ module.exports = {
         background: 'var(--background)',
         lineBackground: 'var(--lineBackground)',
         foreground: 'var(--foreground)',
-        muted: 'var(--muted)',
         caret: 'var(--caret)',
         selection: 'var(--selection)',
         selectionMatch: 'var(--selectionMatch)',
@@ -47,28 +46,28 @@ module.exports = {
               'code::after': {
                 content: 'none',
               },
-              color: 'var(--foreground) !important',
+              color: 'var(--foreground)',
               a: {
-                color: 'var(--foreground) !important',
+                color: 'var(--foreground)',
               },
               h1: {
-                color: 'var(--foreground) !important',
+                color: 'var(--foreground)',
               },
               h2: {
-                color: 'var(--foreground) !important',
+                color: 'var(--foreground)',
               },
               h3: {
-                color: 'var(--foreground) !important',
+                color: 'var(--foreground)',
               },
               h4: {
-                color: 'var(--foreground) !important',
+                color: 'var(--foreground)',
               },
               pre: {
-                color: 'var(--foreground) !important',
-                background: 'var(--background) !important',
+                color: 'var(--foreground)',
+                background: 'var(--background)',
               },
               code: {
-                color: 'var(--foreground) !important',
+                color: 'var(--foreground)',
               },
             },
           },

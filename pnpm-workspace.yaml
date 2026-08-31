@@ -19,3 +19,11 @@ catalog:
   "@codemirror/view": "^6.36.2"
   "@codemirror/autocomplete": "^6.18.4"
   "@codemirror/search": "^6.5.8"
+
+allowBuilds:
+  '@serialport/bindings-cpp': set this to true or false
+  esbuild: set this to true or false
+  nx: set this to true or false
+  sharp: set this to true or false
+  tree-sitter: set this to true or false
+  tree-sitter-haskell: set this to true or false
