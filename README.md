@@ -9,7 +9,7 @@
 [![Last Commit](https://img.shields.io/github/last-commit/timoncool/Bulka?style=flat-square)](https://github.com/timoncool/Bulka/commits)
 [![Demo](https://img.shields.io/badge/demo-bulka.app-brightgreen?style=flat-square)](https://bulka.app/)
 
-[bulka.app](https://bulka.app/) · [Telegram](https://t.me/bulka_app) · [Скриншоты](SCREENSHOTS.md)
+[bulka.app](https://bulka.app/) · [⬇️ Скачать для Windows](https://github.com/timoncool/Bulka/releases/latest) · [Telegram](https://t.me/bulka_app) · [Скриншоты](SCREENSHOTS.md)
 
 <img src="screens/1.png" alt="Bulka REPL" width="800"/>
 
@@ -72,6 +72,15 @@ note("c2 e2 g2 a2").s("sawtooth").lpf(800)
 - Нажать **Record** чтобы записать трек в WAV
 - Открыть панель **Sounds** и выбрать другие сэмплы
 - Нажать `/` и начать вводить название функции для поиска по документации
+
+## Десктоп-версия для Windows
+
+Не хочешь браузер — есть **портативное приложение** (всё работает локально, в одной папке):
+
+- **Установщик:** скачай [`Bulka_x64-setup.exe`](https://github.com/timoncool/Bulka/releases/latest) → запусти → ярлык «Bulka». Ставится без прав администратора и **сам обновляется** с новых релизов.
+- **Портатив:** скачай `Bulka-portable.zip` → распакуй → запусти `Bulka.exe`. Ничего не пишется в систему — удалил папку, удалил приложение.
+
+Свои API-ключи вводятся в настройках и хранятся **в папке приложения**; либо используй **бесплатный режим (OVHcloud)** без ключа. Закрыл окно — всё закрылось. Требуется Windows 10/11 x64.
 
 ## Разработка
 
