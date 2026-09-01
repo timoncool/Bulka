@@ -14,6 +14,7 @@ import {
   resetLoadedSounds,
   initAudioOnFirstClick,
   resetDefaults,
+  renderPatternAudio,
 } from '@strudel/webaudio';
 import { setVersionDefaultsFrom } from './util.mjs';
 import { StrudelMirror, defaultSettings } from '@strudel/codemirror';
@@ -325,6 +326,30 @@ stack(
   const handleEvaluate = () => {
     editorRef.current.evaluate();
   };
+  // Offline (non-realtime) WAV export. renderPatternAudio closes the realtime
+  // AudioContext, so we re-arm audio on next click afterwards.
+  const handleExport = async (begin, end, sampleRate, maxPolyphony, multiChannelOrbits, downloadName = undefined) => {
+    await editorRef.current.evaluate(false);
+    editorRef.current.repl.scheduler.stop();
+    await renderPatternAudio(
+      editorRef.current.repl.state.pattern,
+      editorRef.current.repl.scheduler.cps,
+      begin,
+      end,
+      sampleRate,
+      maxPolyphony,
+      multiChannelOrbits,
+      downloadName,
+    ).finally(async () => {
+      const { maxPolyphony, audioDeviceName, multiChannelOrbits } = settingsMap.get();
+      initAudioOnFirstClick({
+        maxPolyphony,
+        audioDeviceName,
+        multiChannelOrbits: parseBoolean(multiChannelOrbits),
+      });
+      editorRef.current.repl.scheduler.stop();
+    });
+  };
   const handleShuffle = async () => {
     const patternData = await getRandomTune();
     const code = patternData.code;
@@ -353,6 +378,7 @@ stack(
     handleShuffle,
     handleShare,
     handleEvaluate,
+    handleExport,
     init,
     error,
     editorRef,

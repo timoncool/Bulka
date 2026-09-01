@@ -1,6 +1,7 @@
 import cx from '@src/cx.mjs';
 import { setPanelPinned, setActiveFooter as setTab, setIsPanelOpened, useSettings } from '../../../settings.mjs';
 import { ConsoleTab } from './ConsoleTab';
+import ExportTab from './ExportTab';
 import { FilesTab } from './FilesTab';
 import { Reference } from './Reference';
 import { SettingsTab } from './SettingsTab';
@@ -97,6 +98,7 @@ const tabNames = {
   звуки: 'sounds',
   справка: 'reference',
   консоль: 'console',
+  экспорт: 'export',
   настройки: 'settings',
 };
 if (TAURI) {
@@ -140,6 +142,8 @@ function PanelContent({ context, tab, isBottomPanel }) {
       return <PatternsTab context={context} />;
     case 'console':
       return <ConsoleTab />;
+    case 'export':
+      return <ExportTab handleExport={context.handleExport} />;
     case 'sounds':
       return <SoundsTab />;
     case 'reference':
