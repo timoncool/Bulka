@@ -392,6 +392,36 @@ export const TOOLS_OPENAI = [
       },
     },
   },
+  {
+    type: 'function' as const,
+    function: {
+      name: 'startRecording',
+      description: 'Начать запись аудио-выхода (того, что сейчас играет) в WAV. Убедись, что музыка запущена (playMusic). Останови через stopRecording. Для записи фиксированной длины удобнее recordSeconds.',
+      parameters: { type: 'object', properties: {} },
+    },
+  },
+  {
+    type: 'function' as const,
+    function: {
+      name: 'stopRecording',
+      description: 'Остановить запись и сохранить WAV. В десктопе файл кладётся в папку recordings рядом с приложением; имя берётся из // @title.',
+      parameters: { type: 'object', properties: {} },
+    },
+  },
+  {
+    type: 'function' as const,
+    function: {
+      name: 'recordSeconds',
+      description: 'Записать РОВНО указанное число секунд и автоматически остановить+сохранить WAV. Перед записью запускает воспроизведение. Чтобы записать полный круг трека — посчитай длительность: 1 цикл = 60/(cpm) секунд (setcpm(120/4) → 30 циклов/мин → 2 с на цикл), умножь на суммарную длину секций arrange().',
+      parameters: {
+        type: 'object',
+        properties: {
+          seconds: { type: 'number', description: 'Длительность записи в секундах' },
+        },
+        required: ['seconds'],
+      },
+    },
+  },
 ];
 
 // --- Tool-schema normalization (best practices, 2026) ---

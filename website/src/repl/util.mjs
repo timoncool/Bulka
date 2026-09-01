@@ -104,6 +104,7 @@ export function loadModules() {
     import('@strudel/motion'),
     import('@strudel/mqtt'),
     import('@strudel/mondo'),
+    import('./bulka-record.mjs'), // Bulka: метод паттерна `.record()` — запись партии/секции из кода
   ];
   if (isTauri()) {
     modules = modules.concat([

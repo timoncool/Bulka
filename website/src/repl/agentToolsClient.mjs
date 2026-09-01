@@ -6,14 +6,22 @@
 // Серверные тулзы (searchDocs, getExamples) сюда НЕ входят — они чистые функции и считаются
 // на сервере (api/chat.ts). Здесь — только то, что требует окна Bulka.
 
-import { soundMap } from '@strudel/webaudio';
+import { soundMap, startRecording, stopRecording } from '@strudel/webaudio';
 import { $strudel_log_history } from './components/useLogger.jsx';
 
 // Список клиентских тулзов (для маршрутизации: клиент vs сервер).
 export const CLIENT_TOOL_NAMES = [
   'readCode', 'setFullCode', 'editCode', 'appendCode', 'playMusic', 'stopMusic',
   'highlightCode', 'getAvailablePacks', 'getBankSamples', 'getConsole',
+  'startRecording', 'stopRecording', 'recordSeconds',
 ];
+
+// Имя файла записи из `// @title` кода.
+function titleFilename(code) {
+  const m = (code || '').match(/\/\/\s*@title\s+(.+?)(?:\n|$)/);
+  const t = m ? m[1].trim() : '';
+  return t ? t.replace(/[<>:"/\\|?*]/g, '_').slice(0, 100) : undefined;
+}
 
 // Вставить мета-тег // @model после блока мета-комментариев (// @...), если его ещё нет.
 function injectModelTag(code, modelTag) {
@@ -140,6 +148,24 @@ export function execClientTool(editor, name, args = {}) {
       editor.stop(); // остановить, чтобы прочитать свежие логи
       const data = formatConsole();
       return { ok: true, message: '📋 Консоль прочитана', data };
+    }
+    case 'startRecording': {
+      try { startRecording(); } catch (e) { /* нет аудио — игнор */ }
+      return { ok: true, message: '🔴 Запись начата', data: 'Запись аудио-выхода начата. Останови stopRecording.' };
+    }
+    case 'stopRecording': {
+      try { stopRecording(titleFilename(editor.code)); } catch (e) { /* игнор */ }
+      return { ok: true, message: '⏹ Запись сохранена', data: 'Запись остановлена и сохранена в WAV.' };
+    }
+    case 'recordSeconds': {
+      const sec = Math.max(1, Math.min(3600, Number(args.seconds) || 8));
+      editor.evaluate(); // убедиться, что играет
+      const fname = titleFilename(editor.code);
+      try {
+        startRecording();
+        setTimeout(() => { try { stopRecording(fname); } catch (e) {} }, sec * 1000);
+      } catch (e) { /* игнор */ }
+      return { ok: true, message: `🔴 Запись ${sec}с`, data: `Записываю ${sec} секунд; WAV сохранится автоматически.` };
     }
     default:
       throw new Error(`Неизвестный клиентский инструмент: ${name}`);

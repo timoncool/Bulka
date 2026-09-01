@@ -185,6 +185,21 @@ fn spawn_update_check(app: tauri::AppHandle) {
         if !yes {
             return;
         }
+        // ВАЖНО: убиваем дочерний node.exe ДО запуска установщика. NSIS гасит только
+        // сам bulka-desktop.exe, но не знает про наш дочерний Node-сервер — а тот держит
+        // `node/node.exe`, `dist` и лог. Пока он жив, установщик не может перезаписать файлы
+        // и спотыкается на «файл занят» (юзеру приходится убивать node вручную и жать «Повтор»).
+        if let Some(state) = app.try_state::<ServerProc>() {
+            if let Ok(mut guard) = state.0.lock() {
+                if let Some(mut c) = guard.take() {
+                    let _ = c.kill();
+                    let _ = c.wait(); // дождаться завершения, чтобы ОС отпустила файловые хендлы
+                }
+            }
+        }
+        // небольшая пауза — дать Windows фактически освободить хендлы перед перезаписью
+        std::thread::sleep(Duration::from_millis(500));
+
         match update.download_and_install(|_, _| {}, || {}).await {
             Ok(_) => app.restart(),
             Err(e) => {
