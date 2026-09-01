@@ -62,7 +62,7 @@ export const POST: APIRoute = async ({ request }) => {
       result: {
         protocolVersion: typeof clientProto === 'string' ? clientProto : '2024-11-05',
         capabilities: { tools: {} },
-        serverInfo: { name: 'bulka', version: '0.2.0' },
+        serverInfo: { name: 'bulka', version: '0.2.1' },
       },
     });
   }

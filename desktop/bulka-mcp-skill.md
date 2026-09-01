@@ -1,6 +1,6 @@
 ---
 name: bulka-live-coding
-description: Управление live-coding музыкой в приложении Bulka через MCP. Использовать, когда пользователь просит написать/изменить/запустить/остановить музыку, бит, мелодию, паттерн в Bulka (десктоп). Инструменты: set_code, set_code_and_play, append_code, get_code, play, stop.
+description: Управление live-coding музыкой в приложении Bulka через MCP. Использовать, когда пользователь просит написать/изменить/запустить/остановить музыку, бит, мелодию, паттерн в Bulka (десктоп). Инструменты те же, что у встроенного агента Bulka: setFullCode, setCodeAndPlay, appendCode, editCode, readCode, playMusic, stopMusic, highlightCode, searchDocs (RAG по докам), getExamples, getAvailablePacks, getBankSamples, getConsole + двусторонний чат (getNewMessages, sendChatMessage).
 ---
 
 # Bulka — live-coding музыки через MCP
@@ -18,14 +18,24 @@ Bulka (форк Strudel) — браузерный/десктопный реда�
 Приложение Bulka должно быть открыто (иначе тулы вернут «окно не подключено»).
 
 ## Инструменты
-- `set_code_and_play` — заменить весь код и сразу запустить (главный инструмент).
-- `set_code` — заменить код без запуска.
-- `append_code` — дописать партию к текущему коду.
-- `get_code` — прочитать текущий код (чтобы изменять аккуратно, а не с нуля).
-- `play` — запустить/переоценить, `stop` — остановить.
+Набор ТОЧНО такой же, как у встроенного агента Bulka (единый реестр). Редактор и звук:
+- `setCodeAndPlay` — заменить весь код и сразу запустить (главный инструмент).
+- `setFullCode` — заменить весь код без запуска; `playMusic` / `stopMusic` — запустить/остановить.
+- `appendCode` — дописать партию к текущему коду; `editCode` — точечно заменить фрагмент (search/replace).
+- `readCode` — прочитать текущий код (чтобы менять аккуратно, а не с нуля); `highlightCode` — подсветить фрагмент.
 
-**Рабочий цикл:** сначала `get_code` (узнать что играет) → правишь → `set_code_and_play`. Для новой
-идеи — сразу `set_code_and_play`. Пользователь слышит результат мгновенно.
+Знания и звуки (RAG — те же, что у встроенного агента):
+- `searchDocs` — поиск по документации Strudel/Bulka (функции, синтаксис, Hydra, эффекты).
+- `getExamples` — примеры кода по жанру (techno, hiphop, ambient, melody, hydra, sliders…).
+- `getAvailablePacks` — список сэмпл-паков; `getBankSamples` — содержимое конкретного банка.
+- `getConsole` — логи консоли для отладки (сначала остановит воспроизведение).
+
+Чат с пользователем (двусторонний):
+- `getNewMessages` — прочитать новые сообщения из чата Bulka; `sendChatMessage` — ответить в чат.
+
+**Рабочий цикл:** `readCode` (что играет) → при нужде `searchDocs`/`getExamples`/`getAvailablePacks` →
+правишь → `setCodeAndPlay`. Для новой идеи — сразу `setCodeAndPlay`. Пользователь слышит результат мгновенно.
+Жалуется на ошибку — `getConsole` + `readCode`, потом `editCode`.
 
 ## Язык Strudel (кратко)
 - Ударные: `s("bd sd hh")` — bd бочка, sd снейр, hh хэт. Повтор: `s("hh*8")`. Пауза: `~`.
