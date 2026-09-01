@@ -1,5 +1,5 @@
 import { closeBrackets } from '@codemirror/autocomplete';
-import { indentWithTab, toggleLineComment } from '@codemirror/commands';
+import { indentWithTab, toggleLineComment, undo, redo, undoDepth, redoDepth } from '@codemirror/commands';
 import { javascript, javascriptLanguage } from '@codemirror/lang-javascript';
 import { bracketMatching, defaultHighlightStyle, syntaxHighlighting } from '@codemirror/language';
 import { Compartment, EditorState, Prec } from '@codemirror/state';
@@ -480,6 +480,20 @@ export class StrudelMirror {
     const cursor = this.getCursorLocation();
     this.setCode(this.code + code);
     this.setCursorLocation(cursor);
+  }
+  // Встроенные undo/redo CodeMirror (history() уже в basicSetup). Программные правки —
+  // включая setCode агента — идут обычным dispatch и потому откатываются кнопкой «назад».
+  undo() {
+    return undo(this.editor);
+  }
+  redo() {
+    return redo(this.editor);
+  }
+  canUndo() {
+    return undoDepth(this.editor.state) > 0;
+  }
+  canRedo() {
+    return redoDepth(this.editor.state) > 0;
   }
 }
 

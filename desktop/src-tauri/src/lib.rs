@@ -108,6 +108,8 @@ fn spawn_server(app_dir: &PathBuf, port: u16) -> std::io::Result<Child> {
     cmd.arg(&entry)
         .env("HOST", "127.0.0.1")
         .env("PORT", port.to_string())
+        // Куда сохранять записи/экспорт (сервер кладёт файлы в <app_dir>/recordings и открывает папку).
+        .env("BULKA_APP_DIR", app_root_dir())
         .current_dir(app_dir);
 
     if let Ok(log) = File::create(&log_path) {

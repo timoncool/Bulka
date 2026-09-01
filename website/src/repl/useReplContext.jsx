@@ -69,6 +69,9 @@ export function useReplContext() {
   const defaultOutput = shouldUseWebaudio ? webaudioOutput : superdirtOutput;
   const getTime = shouldUseWebaudio ? getAudioContextCurrentTime : getPerformanceTimeSeconds;
   const init = useCallback(() => {
+    // Десктоп (Tauri): чиним blob-«скачивания» (запись/экспорт) — сохраняем через Node-сервер.
+    // На вебе (bulka.app) — no-op. Импорт динамический, чтобы не тянуть в SSR.
+    import('./desktopBridge.mjs').then((m) => m.installDesktopDownloadBridge()).catch(() => {});
     const drawTime = [-2, 2];
     const drawContext = getDrawContext();
     const editor = new StrudelMirror({
