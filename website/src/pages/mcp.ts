@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { callBridge } from '../../lib/mcpBus.mjs';
+import { callBridge, takeUserMessages, sendChatReply } from '../lib/mcpBus.mjs';
 
 export const prerender = false;
 
@@ -27,6 +27,17 @@ const TOOLS = [
   { name: 'get_code', description: 'Вернуть текущий код из редактора Bulka.', inputSchema: { type: 'object', properties: {} } },
   { name: 'play', description: 'Запустить/переоценить текущий код (воспроизвести музыку).', inputSchema: { type: 'object', properties: {} } },
   { name: 'stop', description: 'Остановить воспроизведение.', inputSchema: { type: 'object', properties: {} } },
+  {
+    name: 'get_new_messages',
+    description:
+      'Прочитать НОВЫЕ сообщения, которые пользователь написал в чате Bulka (когда в чате выбран провайдер «Внешний агент (MCP)»). Возвращает и очищает очередь. Опрашивай периодически, чтобы отвечать пользователю.',
+    inputSchema: { type: 'object', properties: {} },
+  },
+  {
+    name: 'send_chat_message',
+    description: 'Написать ответ (текст) в чат Bulka — пользователь увидит его как сообщение ассистента.',
+    inputSchema: { type: 'object', properties: { text: { type: 'string' } }, required: ['text'] },
+  },
 ];
 
 const TOOL_TO_BRIDGE: Record<string, string> = {
@@ -68,6 +79,22 @@ export const POST: APIRoute = async ({ request }) => {
   if (method === 'tools/call') {
     const name = params?.name;
     const args = params?.arguments || {};
+
+    // Чат через MCP — работают без окна-моста (кроме доставки ответа).
+    if (name === 'get_new_messages') {
+      const msgs = takeUserMessages();
+      const text = msgs.length ? msgs.map((m: any) => m.text).join('\n---\n') : '(новых сообщений от пользователя нет)';
+      return rpcJson({ jsonrpc: '2.0', id, result: { content: [{ type: 'text', text }] } });
+    }
+    if (name === 'send_chat_message') {
+      const ok = sendChatReply(args.text);
+      return rpcJson({
+        jsonrpc: '2.0',
+        id,
+        result: { content: [{ type: 'text', text: ok ? 'Отправлено в чат Bulka.' : 'Окно Bulka не подключено.' }], isError: !ok },
+      });
+    }
+
     const bridgeTool = TOOL_TO_BRIDGE[name];
     if (!bridgeTool) {
       return rpcJson({ jsonrpc: '2.0', id, result: { content: [{ type: 'text', text: `Неизвестный инструмент: ${name}` }], isError: true } });

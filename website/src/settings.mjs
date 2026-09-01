@@ -24,6 +24,7 @@ export const aiProviders = {
   zai: 'zai',
   openrouter: 'openrouter',
   free: 'free',
+  mcp: 'mcp',
 };
 
 export const defaultSettings = {
@@ -196,6 +197,7 @@ export const getApiKeyForProvider = (provider, settings) => {
     case 'zai': return settings.zaiApiKey;
     case 'openrouter': return settings.openrouterApiKey;
     case 'free': return null; // бесплатный провайдер (OVHcloud) — ключ не нужен
+    case 'mcp': return null; // внешний агент (MCP) — ключ не нужен
     default: return '';
   }
 };

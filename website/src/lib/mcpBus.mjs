@@ -48,3 +48,34 @@ export function deliverResult(id, result, error) {
   p.resolve({ result, error });
   return true;
 }
+
+// --- Чат через MCP: юзер пишет в чат Bulka -> внешний агент читает и отвечает ---
+
+const chatInbox = []; // сообщения юзера, ожидающие прочтения внешним агентом
+
+// Юзер отправил сообщение из чата Bulka (провайдер «Внешний агент (MCP)»).
+export function pushUserMessage(text) {
+  chatInbox.push({ text: String(text ?? ''), ts: Date.now() });
+  if (chatInbox.length > 100) chatInbox.shift();
+}
+
+// Внешний агент забирает новые сообщения юзера (и очищает очередь).
+export function takeUserMessages() {
+  const out = chatInbox.splice(0, chatInbox.length);
+  return out;
+}
+
+// Внешний агент пишет ответ в чат Bulka -> доставляем в окно как команду chatReply.
+export function sendChatReply(text) {
+  const cmd = { id: `chat${++seq}`, tool: 'chatReply', args: { text: String(text ?? '') } };
+  let delivered = 0;
+  for (const sub of subscribers) {
+    try {
+      sub.send(cmd);
+      delivered++;
+    } catch {
+      /* ignore */
+    }
+  }
+  return delivered > 0;
+}

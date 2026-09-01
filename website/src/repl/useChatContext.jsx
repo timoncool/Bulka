@@ -305,6 +305,18 @@ export function useChatContext(replContext) {
     };
   }, [lastAction]);
 
+  // Ответы внешнего агента (MCP) -> показываем как сообщения ассистента в чате.
+  useEffect(() => {
+    const onReply = (e) => {
+      const text = typeof e.detail === 'string' ? e.detail : '';
+      setMessages((prev) => [...prev, { id: generateId(), role: 'assistant', content: text }]);
+    };
+    if (typeof window !== 'undefined') window.addEventListener('bulka-mcp-chat-reply', onReply);
+    return () => {
+      if (typeof window !== 'undefined') window.removeEventListener('bulka-mcp-chat-reply', onReply);
+    };
+  }, []);
+
   /**
    * Apply code to editor
    */
@@ -372,6 +384,21 @@ export function useChatContext(replContext) {
     if (!content.trim() || isLoading) return;
 
     const { aiProvider, aiModel, openaiApiKey, anthropicApiKey, geminiApiKey } = settings;
+
+    // Провайдер «Внешний агент (MCP)»: сообщение уходит внешнему Claude/ChatGPT (через MCP),
+    // ответ придёт событием bulka-mcp-chat-reply. Внутренний LLM тут не вызывается.
+    if (aiProvider === 'mcp') {
+      const um = { id: generateId(), role: 'user', content: content.trim() };
+      setMessages((prev) => [...prev, um]);
+      setInput('');
+      fetch('/api/mcp/chat-in', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: content.trim() }),
+      }).catch(() => {});
+      setLastAction('📤 Отправлено внешнему агенту (MCP) — жду ответа…');
+      return;
+    }
 
     // free doesn't need API key
     const isFree = aiProvider === 'free';
@@ -944,8 +971,8 @@ export function useChatContext(replContext) {
     handleInputChange,
     handleSubmit,
     handleKeyDown,
-    // Settings for UI - check current provider's key (free doesn't need key)
-    hasApiKey: settings.aiProvider === 'free' ? true :
+    // Settings for UI - check current provider's key (free и mcp не нужен ключ)
+    hasApiKey: settings.aiProvider === 'free' || settings.aiProvider === 'mcp' ? true :
                !!(settings.aiProvider === 'openai' ? settings.openaiApiKey :
                   settings.aiProvider === 'anthropic' ? settings.anthropicApiKey :
                   settings.aiProvider === 'gemini' ? settings.geminiApiKey :

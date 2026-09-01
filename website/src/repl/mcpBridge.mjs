@@ -91,6 +91,13 @@ async function handleMessage(ev) {
 }
 
 async function exec(tool, args) {
+  // Ответ внешнего агента в чат Bulka — не требует редактора, просто прокидываем в UI чата.
+  if (tool === 'chatReply') {
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('bulka-mcp-chat-reply', { detail: String(args.text ?? '') }));
+    }
+    return 'ок';
+  }
   const editor = getEditorRef?.();
   if (!editor) throw new Error('Редактор Bulka ещё не готов');
   switch (tool) {

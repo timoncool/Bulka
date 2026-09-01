@@ -22,6 +22,7 @@ const PROVIDER_LABELS = {
   zai: 'Z.AI',
   openrouter: 'OpenRouter',
   free: 'Бесплатно (OVHcloud)',
+  mcp: 'Внешний агент (MCP)',
 };
 
 // Empty defaults - all models are fetched dynamically from provider APIs
@@ -403,6 +404,7 @@ function SettingsPanel({ onClose, isBottomPanel }) {
   const currentProviderHasKey = () => {
     switch (provider) {
       case 'free': return true; // No API key needed
+      case 'mcp': return true; // внешний агент — ключ не нужен
       case 'openai': return openaiKey.trim().length > 0;
       case 'anthropic': return anthropicKey.trim().length > 0;
       case 'gemini': return geminiKey.trim().length > 0;
@@ -414,6 +416,7 @@ function SettingsPanel({ onClose, isBottomPanel }) {
 
   // Check if current provider is free (no API key needed)
   const isFree = provider === 'free';
+  const isMcp = provider === 'mcp';
 
   // Get current models for selected provider
   const currentModels = models[provider] || EMPTY_MODELS[provider];
@@ -451,6 +454,7 @@ function SettingsPanel({ onClose, isBottomPanel }) {
           className={cx(selectClass, 'text-sm py-1.5')}
         >
           <option value="free">Бесплатно (OVHcloud) ✓</option>
+          <option value="mcp">Внешний агент (MCP)</option>
           <option value="openai">OpenAI {openaiKey ? '✓' : ''}</option>
           <option value="anthropic">Anthropic {anthropicKey ? '✓' : ''}</option>
           <option value="gemini">Gemini {geminiKey ? '✓' : ''}</option>
@@ -467,7 +471,21 @@ function SettingsPanel({ onClose, isBottomPanel }) {
         </div>
       )}
 
-      {/* Model selection */}
+      {/* Внешний агент (MCP) — инфо-подсказка */}
+      {isMcp && (
+        <div className="p-2 bg-blue-500/10 rounded-md border border-blue-500/30 space-y-1">
+          <p className="text-xs text-blue-300">
+            🔌 Сообщения из этого чата уходят внешнему агенту (Claude Desktop / ChatGPT / Cursor), подключённому к
+            MCP-серверу Bulka. Он читает их и отвечает прямо сюда, а также сам пишет код и запускает музыку.
+          </p>
+          <p className="text-xs text-blue-300/70">
+            Только в десктоп-версии. Подключение агента — в «Настройках» (панель MCP). Ключ и модель тут не нужны.
+          </p>
+        </div>
+      )}
+
+      {/* Model selection (не нужен для MCP) */}
+      {!isMcp && (
       <div className="grid gap-1">
         <label className="text-xs flex items-center gap-1">
           Модель
@@ -507,14 +525,15 @@ function SettingsPanel({ onClose, isBottomPanel }) {
           </button>
         </div>
       </div>
+      )}
 
       {/* Настройки конкретной модели OpenRouter (reasoning/temperature/top_p/max_tokens) */}
       {provider === 'openrouter' && model && (
         <OpenRouterModelSettings modelInfo={currentModels.find((m) => m.value === model)} />
       )}
 
-      {/* API Keys - скрываем для free */}
-      {!isFree && (
+      {/* API Keys - скрываем для free и mcp */}
+      {!isFree && !isMcp && (
         <div className="space-y-1">
           <h4 className="text-xs font-medium">API Ключи</h4>
           <div className={isBottomPanel ? 'flex gap-2 flex-wrap' : 'space-y-2'}>
@@ -587,12 +606,12 @@ function SettingsPanel({ onClose, isBottomPanel }) {
       <div className="flex items-center gap-3 flex-wrap">
         <button
           onClick={handleSave}
-          disabled={!currentProviderHasKey() || (currentModels.length === 0)}
+          disabled={!currentProviderHasKey() || (!isFree && !isMcp && currentModels.length === 0)}
           className={cx(buttonClass, 'text-sm py-1.5')}
         >
-          {isFree ? 'Использовать' : (currentProviderHasKey() ? 'Сохранить' : 'Введите ключ')}
+          {isFree || isMcp ? 'Использовать' : (currentProviderHasKey() ? 'Сохранить' : 'Введите ключ')}
         </button>
-        {!isFree && (
+        {!isFree && !isMcp && (
           <div className="text-xs opacity-70 flex gap-2">
             <span>Получить:</span>
             <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener" className="underline hover:opacity-50">OpenAI</a>
@@ -830,7 +849,7 @@ export function ChatTab({ context, isBottomPanel }) {
         <div className="flex items-center gap-2">
           <span>🤖</span>
           <span className="text-sm font-medium">Bulka AI {PROVIDER_LABELS[chat.provider] || chat.provider}</span>
-          <span className="text-xs opacity-50">({chat.model})</span>
+          {chat.model && <span className="text-xs opacity-50">({chat.model})</span>}
         </div>
         <div className="flex gap-2">
           {chat.messages.length > 0 && (
