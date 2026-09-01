@@ -14,6 +14,24 @@ import { $strudel_log_history } from './components/useLogger.jsx';
 // GPT4Free clients cache (lazy loaded from CDN)
 let g4fClientsCache = {};
 let g4fModule = null;
+let cakeBakerLoaded = false;
+
+// GPT4Free перешёл на proof-of-work «cakes» для анонимного доступа: cake-baker.js
+// печёт их в Web Worker (SHA-256 PoW) и вешает кредиты на cookie g4f.space. Грузим его,
+// как предписывает сам g4f (drop-in module), иначе completions отдают 402 No cake credits.
+async function ensureCakeBaker() {
+  if (cakeBakerLoaded || typeof window === 'undefined') return;
+  cakeBakerLoaded = true;
+  try {
+    await import('https://g4f.dev/dist/js/cake-baker.js');
+  } catch (e) {
+    console.warn('[gpt4free] cake-baker load failed:', e);
+  }
+}
+
+// Completion-запросы должны идти с credentials, иначе cookie с испечёнными cakes не
+// уходит на g4f.space и доступ не засчитывается.
+const g4fCredentialedFetch = (url, options) => fetch(url, { ...options, credentials: 'include' });
 
 /**
  * Get or create GPT4Free client for specific sub-provider
@@ -29,9 +47,13 @@ async function getG4fClient(subProvider = 'pollinations') {
     g4fModule = await import('https://g4f.dev/dist/js/providers.js');
   }
 
-  // Create client for this sub-provider (createClient is now async)
+  // Начинаем печь cakes (не блокируя) — к моменту чата кредиты уже будут
+  ensureCakeBaker();
+
+  // Create client for this sub-provider (createClient is now async).
+  // fetchFn добавляет credentials, чтобы cookie с cakes уходила на бэкенд.
   const { createClient } = g4fModule;
-  g4fClientsCache[subProvider] = await createClient(subProvider);
+  g4fClientsCache[subProvider] = await createClient(subProvider, { fetchFn: g4fCredentialedFetch });
   return g4fClientsCache[subProvider];
 }
 

@@ -148,9 +148,18 @@ async function fetchGpt4freeModels(subProvider = 'pollinations') {
     const module = await loadG4fProviders();
     const { createClient } = module;
 
-    // Get or create client for this provider (createClient is now async)
+    // Начинаем печь proof-of-work cakes заранее (как только открыли настройки gpt4free),
+    // чтобы к моменту чата кредиты уже были — иначе g4f отдаёт 402 No cake credits.
+    import('https://g4f.dev/dist/js/cake-baker.js').catch(() => {});
+
+    // Get or create client for this provider. fetchFn добавляет credentials, чтобы
+    // cookie с испечёнными cakes уходила на бэкенд g4f.space.
     if (!g4fClientsCache[subProvider]) {
-      g4fClientsCache[subProvider] = await g4fWithTimeout(createClient(subProvider), 15000, 'createClient');
+      g4fClientsCache[subProvider] = await g4fWithTimeout(
+        createClient(subProvider, { fetchFn: (url, opts) => fetch(url, { ...opts, credentials: 'include' }) }),
+        15000,
+        'createClient',
+      );
     }
     const client = g4fClientsCache[subProvider];
 
