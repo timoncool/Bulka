@@ -2669,6 +2669,7 @@ async function runOpenAICompatibleAgent(
     headers: Record<string, string>;
     handleThinking?: boolean;
     modelParams?: Record<string, any>;
+    strictTools?: boolean;
   },
   model: string,
   messages: any[],
@@ -2705,7 +2706,7 @@ async function runOpenAICompatibleAgent(
           model,
           messages: conversationMessages,
           stream: true,
-          tools: TOOLS_OPENAI_BASE,
+          tools: config.strictTools ? TOOLS_OPENAI_STRICT : TOOLS_OPENAI_BASE,
           tool_choice: 'auto',
         };
 
@@ -2901,7 +2902,7 @@ function truncateMessageContent(content: string, maxChars: number = 30000): stri
 export const POST: APIRoute = async ({ request }) => {
   try {
     const body = await request.json();
-    let { messages, apiKey, provider, model, currentCode, selectedCode, modelParams } = body;
+    let { messages, apiKey, provider, model, currentCode, selectedCode, modelParams, strictTools } = body;
 
     if (!apiKey) {
       return new Response(
@@ -2955,6 +2956,7 @@ export const POST: APIRoute = async ({ request }) => {
             'X-Title': 'Bulka AI',
           },
           modelParams: modelParams || {},
+          strictTools: !!strictTools, // включаем strict только если модель это умеет
         },
         model, messages, currentCode || '', selectedCode || null
       );

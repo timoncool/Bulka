@@ -536,6 +536,19 @@ export function useChatContext(replContext) {
       const maxRetries = 3;
       const baseDelay = 2000; // 2 seconds
 
+      // OpenRouter: strict-тулы только если выбранная модель поддерживает structured_outputs
+      // (метаданные модели лежат в кэше моделей ChatTab).
+      let openrouterStrictTools = false;
+      if (aiProvider === 'openrouter') {
+        try {
+          const cachedModels = JSON.parse(localStorage.getItem('bulka_cached_models') || '{}');
+          const mi = (cachedModels.openrouter || []).find((x) => x.value === aiModel);
+          openrouterStrictTools = !!(mi?.supportedParameters || []).includes('structured_outputs');
+        } catch {
+          /* no-op */
+        }
+      }
+
       while (retryCount <= maxRetries) {
         response = await fetch('/api/chat', {
           method: 'POST',
@@ -549,6 +562,8 @@ export function useChatContext(replContext) {
             selectedCode, // Send selected code if any
             // Параметры конкретной модели OpenRouter (temperature/reasoning_effort/top_p/max_tokens)
             modelParams: aiProvider === 'openrouter' ? (settings.openrouterModelParams?.[aiModel] || {}) : undefined,
+            // strict-тулы для OpenRouter — только для моделей с structured_outputs
+            strictTools: aiProvider === 'openrouter' ? openrouterStrictTools : undefined,
           }),
           signal: abortControllerRef.current.signal,
         });

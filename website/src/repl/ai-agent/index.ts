@@ -15,10 +15,8 @@
 
 export { SYSTEM_PROMPT } from './system-prompt';
 export {
-  toolSchemas,
   SOUND_CATEGORIES,
   DRUM_MACHINES,
-  type ToolName,
 } from './tools';
 export {
   KNOWLEDGE_BASE,
