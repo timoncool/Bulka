@@ -2798,8 +2798,9 @@ async function runOpenAICompatibleAgent(
               const delta = choice.delta;
               if (!delta) continue;
 
-              // Handle thinking/reasoning content (Z.AI GLM-5, GLM-4.7)
-              if (config.handleThinking && delta.reasoning_content) {
+              // Ризонинг: показываем всегда, когда модель шлёт reasoning_content
+              // (Z.AI GLM, OpenRouter reasoning-модели, локальные Qwen/DeepSeek через LM Studio).
+              if (delta.reasoning_content) {
                 if (!thinkingStarted) {
                   thinkingStarted = true;
                   controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'thinking_start' })}\n\n`));
