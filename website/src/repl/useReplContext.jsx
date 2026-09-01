@@ -273,6 +273,12 @@ stack(
     });
 
     editorRef.current = editor;
+
+    // Десктоп: MCP-мост — внешний Claude Desktop / ChatGPT управляют Bulka через наш /mcp.
+    // Авто-подъём вместе с приложением (ресурсов почти не ест); на вебе — no-op.
+    import('./mcpBridge.mjs')
+      .then((m) => m.installMcpBridge(() => editorRef.current, { autoStart: true }))
+      .catch(() => {});
   }, []);
 
   const [replState, setReplState] = useState({});

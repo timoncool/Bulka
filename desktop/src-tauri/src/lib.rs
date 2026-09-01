@@ -85,6 +85,18 @@ fn pick_free_port() -> std::io::Result<u16> {
     Ok(listener.local_addr()?.port())
 }
 
+/// Порт десктопа: фиксированный (для стабильного URL MCP в конфиге Claude Desktop), env BULKA_PORT
+/// или дефолт 4188. Если занят (второй экземпляр/чужой процесс) — берём свободный (MCP-конфиг тогда
+/// укажет на первый экземпляр — это ок, обычно приложение одно).
+fn desktop_port() -> u16 {
+    let fixed: u16 = std::env::var("BULKA_PORT").ok().and_then(|s| s.parse().ok()).unwrap_or(4188);
+    if TcpListener::bind(SocketAddrV4::new(Ipv4Addr::LOCALHOST, fixed)).is_ok() {
+        fixed
+    } else {
+        pick_free_port().unwrap_or(fixed)
+    }
+}
+
 /// Дождаться, пока сервер начнёт принимать соединения (или таймаут).
 fn wait_until_ready(port: u16, timeout: Duration) -> bool {
     let addr = SocketAddrV4::new(Ipv4Addr::LOCALHOST, port);
@@ -193,7 +205,7 @@ pub fn run() {
     }
 
     let app_dir = resolve_app_dir();
-    let port = pick_free_port().unwrap_or(4321);
+    let port = desktop_port();
     let child = spawn_server(&app_dir, port).ok();
 
     if !wait_until_ready(port, Duration::from_secs(40)) {
