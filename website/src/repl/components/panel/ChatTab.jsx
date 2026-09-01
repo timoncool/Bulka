@@ -624,24 +624,38 @@ function SettingsPanel({ onClose, isBottomPanel }) {
               />
             </div>
 
-            {/* Размышления (reasoning). LM Studio передаёт reasoning_effort только для моделей,
-                которые это умеют (напр. gpt-oss); у остальных управляется шаблоном модели.
-                Отдельного «бюджета токенов на размышление» у LM Studio нет — reasoning считается
-                в общий «Макс. токенов ответа» выше. */}
+            {/* Размышления (reasoning). ВАЖНО: OpenAI-совместимый API LM Studio НЕ принимает
+                параметры управления размышлениями (enable_thinking / reasoning_budget /
+                reasoning_effort — их нет в списке поддерживаемых полей). reasoning_effort реально
+                honored только у gpt-oss. Для «думающих» моделей (Qwen и т.п.) thinking управляется
+                ТОЛЬКО шаблоном промпта в самой LM Studio — см. подсказку ниже. */}
             <div className="grid gap-1">
-              <label className="text-xs">Уровень размышлений (reasoning_effort)</label>
+              <label className="text-xs">Уровень размышлений (reasoning_effort) · только gpt-oss</label>
               <select
                 value={localParams.reasoning_effort ?? ''}
                 onChange={(e) => setLP({ reasoning_effort: e.target.value })}
                 className={cx(selectClass, 'text-sm py-1')}
               >
-                <option value="">По умолчанию (как решит модель)</option>
-                <option value="low">Низкий — быстрее, короче думает</option>
-                <option value="medium">Средний</option>
-                <option value="high">Высокий — думает дольше и тщательнее</option>
+                <option value="">По умолчанию</option>
+                <option value="low">low — быстрее</option>
+                <option value="medium">medium</option>
+                <option value="high">high — тщательнее</option>
               </select>
-              <span className="text-[11px] opacity-50">Работает у моделей с поддержкой effort (gpt-oss и т.п.); иначе игнорируется. Общую длину размышлений ограничивает «Макс. токенов ответа».</span>
             </div>
+
+            <details className="text-[11px] rounded-md border border-yellow-500/30 bg-yellow-500/10 p-2">
+              <summary className="cursor-pointer text-yellow-400/90">Модель «думает» бесконечно? (Qwen и др.)</summary>
+              <div className="mt-1 space-y-1 text-yellow-400/80">
+                <p>LM Studio игнорирует управление размышлениями из API — оно зашито в шаблон промпта модели. Чтобы выключить thinking:</p>
+                <ol className="list-decimal ml-4 space-y-0.5">
+                  <li>LM Studio → <b>My Models</b> → выбери модель.</li>
+                  <li><b>Inference</b> → <b>Prompt Template (Jinja)</b>.</li>
+                  <li>В начало шаблона добавь: <code className="bg-black/30 px-1 rounded">{'{%- set enable_thinking = false %}'}</code></li>
+                  <li>Перезагрузи модель (Eject → Load).</li>
+                </ol>
+                <p>Либо возьми не-thinking вариант модели (Instruct). Сэмплинг для non-thinking: temp 0.7, top_p 0.8, top_k 20.</p>
+              </div>
+            </details>
 
             <button
               type="button"

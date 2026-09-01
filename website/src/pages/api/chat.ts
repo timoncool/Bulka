@@ -57,7 +57,11 @@ function searchAllDocs(query: string, maxResults: number = 5): string[] {
       score += 8;
     }
     for (const word of queryWords) {
-      const matches = (contentLower.match(new RegExp(word, 'g')) || []).length;
+      // Считаем вхождения БЕЗ RegExp: слово из запроса модели может содержать спецсимволы
+      // регэкспа (напр. "arrange(") — new RegExp(word) упадёт «Unterminated group» и уронит
+      // весь стрим (у пользователя — «network error»). Простой indexOf-подсчёт безопасен.
+      let matches = 0;
+      for (let i = contentLower.indexOf(word); i !== -1; i = contentLower.indexOf(word, i + word.length)) matches++;
       score += Math.min(matches, 5);
     }
 
@@ -1846,29 +1850,35 @@ function executeToolCall(
 
   const toolName = tc.name;
 
-  // Server-side tools
-  if (toolName === 'readCode') {
-    controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: '📖 Читаю код...' })}\n\n`));
-    return { role: 'tool', tool_call_id: tc.id, content: currentCode || '// Редактор пуст' };
-  }
-  if (toolName === 'searchDocs') {
-    controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: `🔍 Ищу в документации: "${toolArgs.query}"...` })}\n\n`));
-    const docs = searchAllDocs(toolArgs.query || '', 3);
-    return { role: 'tool', tool_call_id: tc.id, content: docs.join('\n\n---\n\n') || 'Ничего не найдено' };
-  }
-  if (toolName === 'getExamples') {
-    controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: '📝 Получаю примеры кода...' })}\n\n`));
-    const examples = getCodeExamples(toolArgs.category);
-    return { role: 'tool', tool_call_id: tc.id, content: examples };
-  }
+  // Любая ошибка инструмента должна вернуться модели как результат, а НЕ ронять весь стрим
+  // (иначе у пользователя «network error» и генерация обрывается).
+  try {
+    // Server-side tools
+    if (toolName === 'readCode') {
+      controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: '📖 Читаю код...' })}\n\n`));
+      return { role: 'tool', tool_call_id: tc.id, content: currentCode || '// Редактор пуст' };
+    }
+    if (toolName === 'searchDocs') {
+      controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: `🔍 Ищу в документации: "${toolArgs.query}"...` })}\n\n`));
+      const docs = searchAllDocs(toolArgs.query || '', 3);
+      return { role: 'tool', tool_call_id: tc.id, content: docs.join('\n\n---\n\n') || 'Ничего не найдено' };
+    }
+    if (toolName === 'getExamples') {
+      controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: '📝 Получаю примеры кода...' })}\n\n`));
+      const examples = getCodeExamples(toolArgs.category);
+      return { role: 'tool', tool_call_id: tc.id, content: examples };
+    }
 
-  // Client-side tools — emit status + tool_call event
-  const statusMessage = TOOL_STATUS_MESSAGES[toolName] || '';
-  if (statusMessage) {
-    controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: statusMessage })}\n\n`));
+    // Client-side tools — emit status + tool_call event
+    const statusMessage = TOOL_STATUS_MESSAGES[toolName] || '';
+    if (statusMessage) {
+      controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: statusMessage })}\n\n`));
+    }
+    controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'tool_call', name: toolName, args: toolArgs })}\n\n`));
+    return { role: 'tool', tool_call_id: tc.id, content: `OK: ${toolName} выполнено` };
+  } catch (e: any) {
+    return { role: 'tool', tool_call_id: tc.id, content: `Ошибка инструмента ${toolName}: ${e?.message || e}` };
   }
-  controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'tool_call', name: toolName, args: toolArgs })}\n\n`));
-  return { role: 'tool', tool_call_id: tc.id, content: `OK: ${toolName} выполнено` };
 }
 
 /**
