@@ -75,6 +75,9 @@ export const SIDEBAR: Sidebar = {
     'Ещё': [
       { text: 'Bulka AI Agent', link: 'learn/ai-agent' },
       { text: 'Бесплатный AI (OVHcloud)', link: 'learn/free-ai' },
+      { text: 'Десктоп-версия (Windows)', link: 'learn/desktop' },
+      { text: 'MCP — рулить из Claude Desktop', link: 'learn/mcp' },
+      { text: 'Локальные модели (LM Studio / Ollama)', link: 'learn/local-models' },
       { text: 'Поддержать проект 🍞', link: 'learn/donate' },
       { text: 'Рецепты', link: 'recipes/recipes' },
       { text: 'Mini-Notation', link: 'learn/mini-notation' },

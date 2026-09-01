@@ -28,9 +28,11 @@ function CopyRow({ label, value }) {
         </code>
         <button
           onClick={copy}
-          className="px-2 py-1 text-xs rounded border border-foreground/30 hover:bg-lineBackground whitespace-nowrap"
+          title="Копировать"
+          aria-label="Копировать"
+          className="px-2 py-1 text-sm rounded border border-foreground/30 hover:bg-lineBackground shrink-0"
         >
-          {copied ? '✓' : 'Копировать'}
+          {copied ? '✓' : '📋'}
         </button>
       </div>
     </div>
