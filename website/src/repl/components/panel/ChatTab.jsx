@@ -6,7 +6,7 @@ import { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import cx from '@src/cx.mjs';
 import ReactMarkdown from 'react-markdown';
 import { useChatContext } from '../../useChatContext';
-import { useSettings, setOpenaiApiKey, setAnthropicApiKey, setGeminiApiKey, setZaiApiKey, setOpenrouterApiKey, setAiProvider, setAiModel, setGpt4freeSubProvider, setOpenrouterModelParams, getApiKeyForProvider } from '../../../settings.mjs';
+import { useSettings, setOpenaiApiKey, setAnthropicApiKey, setGeminiApiKey, setZaiApiKey, setOpenrouterApiKey, setAiProvider, setAiModel, setOpenrouterModelParams, getApiKeyForProvider } from '../../../settings.mjs';
 import { getRandomSuggestions } from '../../data/suggestions.js';
 
 // Common input styles matching SettingsTab
@@ -21,7 +21,7 @@ const PROVIDER_LABELS = {
   gemini: 'Gemini',
   zai: 'Z.AI',
   openrouter: 'OpenRouter',
-  gpt4free: 'GPT4Free',
+  free: 'Бесплатно (OVHcloud)',
 };
 
 // Empty defaults - all models are fetched dynamically from provider APIs
@@ -31,7 +31,7 @@ const EMPTY_MODELS = {
   gemini: [],
   zai: [],
   openrouter: [],
-  gpt4free: [],
+  free: [],
 };
 
 const MODELS_STORAGE_KEY = 'bulka_cached_models';
@@ -50,7 +50,7 @@ function loadCachedModels() {
         gemini: parsed.gemini || [],
         zai: parsed.zai || [],
         openrouter: parsed.openrouter || [],
-        gpt4free: [],
+        free: [],
       };
     }
   } catch (e) {
@@ -74,9 +74,9 @@ function saveCachedModels(models) {
  * Fetch available models from provider API
  */
 async function fetchModels(provider, apiKey) {
-  // gpt4free: fetch models client-side from g4f.dev
-  if (provider === 'gpt4free') {
-    return fetchGpt4freeModels();
+  // Бесплатный провайдер (OVHcloud) — список моделей тянем на клиенте, без ключа
+  if (provider === 'free') {
+    return fetchFreeModels();
   }
 
   if (!apiKey) return null;
@@ -95,89 +95,58 @@ async function fetchModels(provider, apiKey) {
   }
 }
 
-// GPT4Free providers module (lazy loaded)
-let g4fProvidersModule = null;
-let g4fClientsCache = {};
+// Бесплатный AI без ключа/авторизации — OVHcloud AI Endpoints (OpenAI-совместимый).
+// Проверено из браузера: отвечает и стримит без ключа/капчи. Другие бесплатные варианты
+// отпали (требуют proof-of-work, вход в аккаунт или капчу из браузера).
+// Ограничение бесплатного тарифа — 2 запроса в минуту на IP.
+const FREE_AI_MODELS_ENDPOINT = 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1/models';
+const FREE_AI_DEFAULT_MODEL = 'gpt-oss-20b';
+
+// Не-чат модели OVHcloud (эмбеддинги, STT, TTS, картинки, модерация) — в чат не предлагаем.
+const FREE_AI_NON_CHAT = /embedding|bge-|whisper|nvr-tts|stable-diffusion|guard/i;
+
+// Человекочитаемые ярлыки ключевых моделей.
+const FREE_AI_LABELS = {
+  'gpt-oss-20b': 'GPT-OSS 20B (быстрая, по умолчанию)',
+  'gpt-oss-120b': 'GPT-OSS 120B (умнее, медленнее)',
+  'Meta-Llama-3_3-70B-Instruct': 'Llama 3.3 70B',
+  'Qwen3-32B': 'Qwen3 32B',
+  'Qwen3.6-27B': 'Qwen3.6 27B',
+  'Qwen3.5-397B-A17B': 'Qwen3.5 397B (MoE)',
+  'Qwen3.5-9B': 'Qwen3.5 9B',
+  'Qwen3-Coder-30B-A3B-Instruct': 'Qwen3 Coder 30B',
+  'Qwen2.5-VL-72B-Instruct': 'Qwen2.5-VL 72B',
+  'Mistral-Small-3.2-24B-Instruct-2506': 'Mistral Small 24B',
+  'Mistral-Nemo-Instruct-2407': 'Mistral Nemo 12B',
+  'Mistral-7B-Instruct-v0.3': 'Mistral 7B',
+};
 
 /**
- * Load g4f providers module from CDN
+ * Список бесплатных чат-моделей OVHcloud (без ключа). Живьём с /v1/models,
+ * дефолтная модель — первой. При недоступности отдаём разумный фолбэк.
  */
-async function loadG4fProviders() {
-  if (!g4fProvidersModule) {
-    g4fProvidersModule = await import('https://g4f.dev/dist/js/providers.js');
-  }
-  return g4fProvidersModule;
-}
-
-/**
- * Fetch list of gpt4free providers
- */
-async function fetchGpt4freeProviders() {
+async function fetchFreeModels() {
+  const fallback = [
+    { value: FREE_AI_DEFAULT_MODEL, label: FREE_AI_LABELS[FREE_AI_DEFAULT_MODEL] },
+    { value: 'gpt-oss-120b', label: FREE_AI_LABELS['gpt-oss-120b'] },
+  ];
   try {
-    const module = await loadG4fProviders();
-    const { loadProviders } = module;
-
-    // loadProviders() is now async - returns providers object
-    const providers = await loadProviders();
-
-    // Convert to array and format
-    return Object.keys(providers).map(key => ({
-      value: key,
-      label: key === 'default' ? 'Auto (default)' : key,
-    }));
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 12000);
+    const resp = await fetch(FREE_AI_MODELS_ENDPOINT, { signal: ctrl.signal });
+    clearTimeout(timer);
+    if (!resp.ok) return fallback;
+    const data = await resp.json();
+    const ids = (data.data || [])
+      .map((m) => m.id)
+      .filter((id) => id && !FREE_AI_NON_CHAT.test(id));
+    if (ids.length === 0) return fallback;
+    // Дефолтную модель — первой.
+    ids.sort((a, b) => (a === FREE_AI_DEFAULT_MODEL ? -1 : b === FREE_AI_DEFAULT_MODEL ? 1 : 0));
+    return ids.map((id) => ({ value: id, label: FREE_AI_LABELS[id] || id }));
   } catch (e) {
-    console.error('Error fetching gpt4free providers:', e);
-    return [{ value: 'default', label: 'Auto (default)' }];
-  }
-}
-
-/**
- * Fetch gpt4free models for specific provider
- */
-// Ограничиваем ожидание: бесплатный бэкенд GPT4Free (g4f.space) периодически лежит
-// (502) — без таймаута список моделей висит в «Загрузка...» бесконечно.
-function g4fWithTimeout(promise, ms, label) {
-  return Promise.race([
-    promise,
-    new Promise((_, reject) => setTimeout(() => reject(new Error(`GPT4Free ${label}: таймаут ${ms} мс`)), ms)),
-  ]);
-}
-
-async function fetchGpt4freeModels(subProvider = 'default') {
-  try {
-    const module = await loadG4fProviders();
-    const { createClient } = module;
-
-    // Начинаем печь proof-of-work cakes заранее (как только открыли настройки gpt4free),
-    // чтобы к моменту чата кредиты уже были — иначе g4f отдаёт 402 No cake credits.
-    import('https://g4f.dev/dist/js/cake-baker.js').catch(() => {});
-
-    // Get or create client for this provider. fetchFn добавляет credentials, чтобы
-    // cookie с испечёнными cakes уходила на бэкенд g4f.space.
-    if (!g4fClientsCache[subProvider]) {
-      g4fClientsCache[subProvider] = await g4fWithTimeout(
-        createClient(subProvider, { fetchFn: (url, opts) => fetch(url, { ...opts, credentials: 'include' }) }),
-        15000,
-        'createClient',
-      );
-    }
-    const client = g4fClientsCache[subProvider];
-
-    // Get models from client
-    const modelList = await g4fWithTimeout(client.models.list(), 15000, 'models.list');
-
-    // Format models - filter chat/text only
-    const models = modelList
-      .filter(m => !m.type || ['chat', 'text'].includes(m.type))
-      .map(m => ({
-        value: m.id,
-        label: m.label || m.id,
-      }));
-
-    return models;
-  } catch (e) {
-    console.error('Error fetching gpt4free models:', e);
-    return [];
+    console.error('Error fetching free AI models:', e);
+    return fallback;
   }
 }
 
@@ -298,11 +267,6 @@ function SettingsPanel({ onClose, isBottomPanel }) {
   const [openrouterKey, setOpenrouterKey] = useState(settings.openrouterApiKey || '');
   const [provider, setProvider] = useState(settings.aiProvider || 'openai');
 
-  // GPT4Free sub-provider state
-  const [gpt4freeSubProvider, setGpt4freeSubProviderLocal] = useState(settings.gpt4freeSubProvider || 'default');
-  const [gpt4freeProviders, setGpt4freeProviders] = useState([]); // Loaded dynamically
-  const [loadingProviders, setLoadingProviders] = useState(false);
-
   // Dynamic models state - load from cache (single parse)
   const initialModels = useMemo(() => loadCachedModels(), []);
   const [models, setModels] = useState(initialModels);
@@ -319,7 +283,7 @@ function SettingsPanel({ onClose, isBottomPanel }) {
     gemini: false,
     zai: false,
     openrouter: false,
-    gpt4free: false,
+    free: false,
   });
 
   // Get current API key for provider
@@ -334,23 +298,22 @@ function SettingsPanel({ onClose, isBottomPanel }) {
     }
   }, [openaiKey, anthropicKey, geminiKey, zaiKey, openrouterKey]);
 
-  // Fetch models when API key changes (or for gpt4free without key)
-  const loadModelsForProvider = useCallback(async (p, key, subProvider = 'default') => {
-    // gpt4free doesn't need API key
-    if (p !== 'gpt4free' && (!key || key.length < 10)) return;
+  // Fetch models when API key changes (or for free without key)
+  const loadModelsForProvider = useCallback(async (p, key) => {
+    // Бесплатный провайдер (free → OVHcloud) не требует ключ
+    if (p !== 'free' && (!key || key.length < 10)) return;
 
     setLoadingModels(prev => ({ ...prev, [p]: true }));
     try {
-      // For gpt4free, pass sub-provider to fetch models
-      const fetchedModels = p === 'gpt4free'
-        ? await fetchGpt4freeModels(subProvider)
+      const fetchedModels = p === 'free'
+        ? await fetchFreeModels()
         : await fetchModels(p, key);
 
       if (fetchedModels && fetchedModels.length > 0) {
         setModels(prev => {
           const updated = { ...prev, [p]: fetchedModels };
-          // Save to localStorage (except gpt4free which is dynamic)
-          if (p !== 'gpt4free') {
+          // Save to localStorage (except free which is dynamic)
+          if (p !== 'free') {
             saveCachedModels(updated);
           }
           return updated;
@@ -367,42 +330,28 @@ function SettingsPanel({ onClose, isBottomPanel }) {
     }
   }, [provider, model]);
 
-  // Load gpt4free providers list when selected
-  useEffect(() => {
-    if (provider === 'gpt4free' && gpt4freeProviders.length === 0) {
-      setLoadingProviders(true);
-      fetchGpt4freeProviders()
-        .then(providers => {
-          setGpt4freeProviders(providers);
-        })
-        .finally(() => setLoadingProviders(false));
-    }
-  }, [provider, gpt4freeProviders.length]);
-
-  // Load gpt4free models - called directly when sub-provider changes
-  const loadGpt4freeModels = useCallback(async (subProvider) => {
-    setLoadingModels(prev => ({ ...prev, gpt4free: true }));
-    setModels(prev => ({ ...prev, gpt4free: [] })); // Clear models, show "Loading..."
-
+  // Загрузка бесплатных моделей (OVHcloud) — при выборе провайдера/обновлении
+  const loadFreeModels = useCallback(async () => {
+    setLoadingModels(prev => ({ ...prev, free: true }));
+    setModels(prev => ({ ...prev, free: [] })); // очищаем, показываем «Загрузка…»
     try {
-      const fetchedModels = await fetchGpt4freeModels(subProvider);
+      const fetchedModels = await fetchFreeModels();
       if (fetchedModels && fetchedModels.length > 0) {
-        setModels(prev => ({ ...prev, gpt4free: fetchedModels }));
-        // Set first model as default
+        setModels(prev => ({ ...prev, free: fetchedModels }));
         setModel(fetchedModels[0].value);
       }
     } catch (e) {
-      console.error('Error loading gpt4free models:', e);
+      console.error('Error loading free AI models:', e);
     } finally {
-      setLoadingModels(prev => ({ ...prev, gpt4free: false }));
+      setLoadingModels(prev => ({ ...prev, free: false }));
     }
   }, []);
 
   // Load models on mount for current provider
   useEffect(() => {
-    if (provider === 'gpt4free') {
-      if (models.gpt4free.length === 0) {
-        loadGpt4freeModels(gpt4freeSubProvider);
+    if (provider === 'free') {
+      if (models.free.length === 0) {
+        loadFreeModels();
       }
     } else {
       const key = getKeyForProvider(provider);
@@ -447,16 +396,13 @@ function SettingsPanel({ onClose, isBottomPanel }) {
     setOpenrouterApiKey(openrouterKey);
     setAiProvider(provider);
     setAiModel(model);
-    if (provider === 'gpt4free') {
-      setGpt4freeSubProvider(gpt4freeSubProvider);
-    }
     onClose?.();
   };
 
-  // Check if current provider has API key (gpt4free doesn't need one)
+  // Check if current provider has API key (free doesn't need one)
   const currentProviderHasKey = () => {
     switch (provider) {
-      case 'gpt4free': return true; // No API key needed
+      case 'free': return true; // No API key needed
       case 'openai': return openaiKey.trim().length > 0;
       case 'anthropic': return anthropicKey.trim().length > 0;
       case 'gemini': return geminiKey.trim().length > 0;
@@ -466,8 +412,8 @@ function SettingsPanel({ onClose, isBottomPanel }) {
     }
   };
 
-  // Check if current provider is gpt4free (no API key needed)
-  const isGpt4free = provider === 'gpt4free';
+  // Check if current provider is free (no API key needed)
+  const isFree = provider === 'free';
 
   // Get current models for selected provider
   const currentModels = models[provider] || EMPTY_MODELS[provider];
@@ -487,8 +433,8 @@ function SettingsPanel({ onClose, isBottomPanel }) {
             setProvider(newProvider);
 
             // Always fetch models dynamically when provider changes
-            if (newProvider === 'gpt4free') {
-              loadGpt4freeModels(gpt4freeSubProvider);
+            if (newProvider === 'free') {
+              loadFreeModels();
             } else {
               const key = getKeyForProvider(newProvider);
               if (key && key.length >= 10) {
@@ -504,7 +450,7 @@ function SettingsPanel({ onClose, isBottomPanel }) {
           }}
           className={cx(selectClass, 'text-sm py-1.5')}
         >
-          <option value="gpt4free">GPT4Free (бесплатно) ✓</option>
+          <option value="free">Бесплатно (OVHcloud) ✓</option>
           <option value="openai">OpenAI {openaiKey ? '✓' : ''}</option>
           <option value="anthropic">Anthropic {anthropicKey ? '✓' : ''}</option>
           <option value="gemini">Gemini {geminiKey ? '✓' : ''}</option>
@@ -513,38 +459,11 @@ function SettingsPanel({ onClose, isBottomPanel }) {
         </select>
       </div>
 
-      {/* GPT4Free sub-provider - показываем сразу после провайдера */}
-      {isGpt4free && (
-        <div className="space-y-2">
-          <div className="p-2 bg-yellow-500/10 rounded-md border border-yellow-500/30">
-            <p className="text-xs text-yellow-400">✓ Бесплатный доступ - API ключ не требуется, но могут работать не все функции и инструменты</p>
-          </div>
-
-          <div className="grid gap-1">
-            <label className="text-xs flex items-center gap-1">
-              Провайдер g4f
-              {loadingProviders && <span className="opacity-50">загрузка...</span>}
-            </label>
-            <select
-              value={gpt4freeSubProvider}
-              onChange={(e) => {
-                const newSubProvider = e.target.value;
-                setGpt4freeSubProviderLocal(newSubProvider);
-                // Load models for new sub-provider immediately (like g4f.dev)
-                loadGpt4freeModels(newSubProvider);
-              }}
-              className={cx(selectClass, 'text-sm py-1.5')}
-              disabled={loadingProviders}
-            >
-              {gpt4freeProviders.length === 0 ? (
-                <option value="default">Auto (default)</option>
-              ) : (
-                gpt4freeProviders.map((p) => (
-                  <option key={p.value} value={p.value}>{p.label}</option>
-                ))
-              )}
-            </select>
-          </div>
+      {/* Бесплатный провайдер (OVHcloud) — инфо-подсказка */}
+      {isFree && (
+        <div className="p-2 bg-yellow-500/10 rounded-md border border-yellow-500/30 space-y-1">
+          <p className="text-xs text-yellow-400">✓ Бесплатно, без ключа и регистрации — работает прямо из браузера (OVHcloud AI).</p>
+          <p className="text-xs text-yellow-400/80">Лимит бесплатного тарифа — 2 запроса в минуту. Если упрётесь, подождите ~30 секунд или укажите свой ключ / OpenRouter. Инструменты (автозапуск, правка кода) могут поддерживаться не всеми моделями.</p>
         </div>
       )}
 
@@ -574,13 +493,13 @@ function SettingsPanel({ onClose, isBottomPanel }) {
           <button
             type="button"
             onClick={() => {
-              if (isGpt4free) {
-                loadGpt4freeModels(gpt4freeSubProvider);
+              if (isFree) {
+                loadFreeModels();
               } else {
                 loadModelsForProvider(provider, getKeyForProvider(provider));
               }
             }}
-            disabled={isLoadingCurrentModels || (!isGpt4free && !currentProviderHasKey())}
+            disabled={isLoadingCurrentModels || (!isFree && !currentProviderHasKey())}
             className="px-2 text-sm rounded border border-foreground/30 hover:bg-lineBackground disabled:opacity-30"
             title="Обновить модели"
           >
@@ -594,8 +513,8 @@ function SettingsPanel({ onClose, isBottomPanel }) {
         <OpenRouterModelSettings modelInfo={currentModels.find((m) => m.value === model)} />
       )}
 
-      {/* API Keys - скрываем для gpt4free */}
-      {!isGpt4free && (
+      {/* API Keys - скрываем для free */}
+      {!isFree && (
         <div className="space-y-1">
           <h4 className="text-xs font-medium">API Ключи</h4>
           <div className={isBottomPanel ? 'flex gap-2 flex-wrap' : 'space-y-2'}>
@@ -671,9 +590,9 @@ function SettingsPanel({ onClose, isBottomPanel }) {
           disabled={!currentProviderHasKey() || (currentModels.length === 0)}
           className={cx(buttonClass, 'text-sm py-1.5')}
         >
-          {isGpt4free ? 'Использовать' : (currentProviderHasKey() ? 'Сохранить' : 'Введите ключ')}
+          {isFree ? 'Использовать' : (currentProviderHasKey() ? 'Сохранить' : 'Введите ключ')}
         </button>
-        {!isGpt4free && (
+        {!isFree && (
           <div className="text-xs opacity-70 flex gap-2">
             <span>Получить:</span>
             <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener" className="underline hover:opacity-50">OpenAI</a>

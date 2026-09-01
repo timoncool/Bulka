@@ -23,7 +23,7 @@ export const aiProviders = {
   gemini: 'gemini',
   zai: 'zai',
   openrouter: 'openrouter',
-  gpt4free: 'gpt4free',
+  free: 'free',
 };
 
 export const defaultSettings = {
@@ -37,7 +37,6 @@ export const defaultSettings = {
   openrouterApiKey: '',
   aiProvider: aiProviders.openai,
   aiModel: '', // Loaded dynamically from provider API
-  gpt4freeSubProvider: 'default', // g4f Auto-провайдер (сам выбирает бэкенд)
   // Per-model параметры OpenRouter, ключ = id модели: { temperature, reasoning_effort, top_p, max_tokens }.
   // Пусто → на UI подтягиваются дефолты модели с OpenRouter (default_parameters).
   openrouterModelParams: {},
@@ -181,7 +180,6 @@ export const setZaiApiKey = (key) => settingsMap.setKey('zaiApiKey', key);
 export const setOpenrouterApiKey = (key) => settingsMap.setKey('openrouterApiKey', key);
 export const setAiProvider = (provider) => settingsMap.setKey('aiProvider', provider);
 export const setAiModel = (model) => settingsMap.setKey('aiModel', model);
-export const setGpt4freeSubProvider = (provider) => settingsMap.setKey('gpt4freeSubProvider', provider);
 // Сохранить параметры конкретной OpenRouter-модели (merge в общий словарь по id модели)
 export const setOpenrouterModelParams = (modelId, params) => {
   const cur = settingsMap.get().openrouterModelParams || {};
@@ -189,7 +187,7 @@ export const setOpenrouterModelParams = (modelId, params) => {
   settingsMap.setKey('openrouterModelParams', next);
 };
 
-// Helper to get API key for current provider (gpt4free doesn't need a key)
+// Helper to get API key for current provider (free doesn't need a key)
 export const getApiKeyForProvider = (provider, settings) => {
   switch (provider) {
     case 'openai': return settings.openaiApiKey;
@@ -197,7 +195,7 @@ export const getApiKeyForProvider = (provider, settings) => {
     case 'gemini': return settings.geminiApiKey;
     case 'zai': return settings.zaiApiKey;
     case 'openrouter': return settings.openrouterApiKey;
-    case 'gpt4free': return null; // GPT4Free is free, no key needed
+    case 'free': return null; // бесплатный провайдер (OVHcloud) — ключ не нужен
     default: return '';
   }
 };

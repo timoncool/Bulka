@@ -27,7 +27,8 @@ Bulka — squash-снимок, **общего git-предка с Codeberg не�
 ## AI-агент
 - Системный промпт: `website/src/repl/ai-agent/system-prompt.ts`; база знаний: `.../knowledge.ts`; инструменты: `.../tools.ts`.
 - RAG-поиск (`searchDocs`) идёт по `website/src/data/docs-index.json` — регенерируется `node website/scripts/build-docs-index.js` (сканирует все `.mdx`). После добавления страниц/фич — обновить и его, и промпт/базу знаний, иначе агент не узнает о новом.
-- Провайдеры (OpenAI/Anthropic/Gemini/Z.AI/OpenRouter/GPT4Free) вызываются **сырым REST** в `website/src/pages/api/chat.ts`; список моделей тянется живьём (`.../api/models.ts`). Модель выбирается динамически (не захардкожена).
+- Провайдеры с ключом (OpenAI/Anthropic/Gemini/Z.AI/OpenRouter) вызываются **сырым REST** в `website/src/pages/api/chat.ts`; список моделей тянется живьём (`.../api/models.ts`). Модель выбирается динамически (не захардкожена).
+- Бесплатный провайдер (`'free'`) — **OVHcloud AI Endpoints**, OpenAI-совместимый, вызывается **прямым fetch из браузера** в `website/src/repl/useChatContext.jsx` (без ключа/регистрации, минуя сервер и RU-прокси — IP=юзера). Лимит бесплатного тарифа 2 запроса/мин на IP. Другие бесплатные варианты (proof-of-work / вход в аккаунт / Turnstile-капча) не подошли. Doc-страница: `website/src/pages/learn/free-ai.mdx`.
 
 ## Supabase (сохранение/шеринг паттернов)
 - Клиент — `website/src/repl/util.mjs` (+ SSR в `website/src/pages/index.astro`), таблица `code_v1`, RLS на anon select/insert/update.

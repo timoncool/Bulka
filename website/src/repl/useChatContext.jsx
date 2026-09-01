@@ -3,7 +3,7 @@
  *
  * Uses server-side RAG for documentation search.
  * API key stored in localStorage and sent with each request.
- * GPT4Free uses client-side library (no API key needed).
+ * бесплатный AI (OVHcloud) uses client-side library (no API key needed).
  */
 
 import { useState, useCallback, useRef, useEffect } from 'react';
@@ -11,83 +11,73 @@ import { useSettings } from '../settings.mjs';
 import { soundMap } from '@strudel/webaudio';
 import { $strudel_log_history } from './components/useLogger.jsx';
 
-// GPT4Free clients cache (lazy loaded from CDN)
-let g4fClientsCache = {};
-let g4fModule = null;
-let cakeBakerLoaded = false;
-
-// GPT4Free перешёл на proof-of-work «cakes» для анонимного доступа: cake-baker.js
-// печёт их в Web Worker (SHA-256 PoW) и вешает кредиты на cookie g4f.space. Грузим его,
-// как предписывает сам g4f (drop-in module), иначе completions отдают 402 No cake credits.
-async function ensureCakeBaker() {
-  if (cakeBakerLoaded || typeof window === 'undefined') return;
-  cakeBakerLoaded = true;
-  try {
-    await import('https://g4f.dev/dist/js/cake-baker.js');
-  } catch (e) {
-    console.warn('[gpt4free] cake-baker load failed:', e);
-  }
-}
-
-// Completion-запросы должны идти с credentials, иначе cookie с испечёнными cakes не
-// уходит на g4f.space и доступ не засчитывается.
-const g4fCredentialedFetch = (url, options) => fetch(url, { ...options, credentials: 'include' });
+// Бесплатный AI БЕЗ авторизации/ключа: OVHcloud AI Endpoints (OpenAI-совместимый,
+// открытый CORS, стриминг). Проверено из браузера — gpt-oss отвечает и стримит.
+// Другие бесплатные варианты отпали (требуют proof-of-work, вход в аккаунт
+// или капчу из браузера). OVHcloud — единственный рабочий без авторизации.
+// Ограничение бесплатного тарифа: 2 запроса в минуту на IP (отдаём понятную ошибку при 429).
+export const FREE_AI_ENDPOINT = 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1/chat/completions';
+export const FREE_AI_MODELS_ENDPOINT = 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1/models';
+export const FREE_AI_DEFAULT_MODEL = 'gpt-oss-20b';
 
 /**
- * Get or create GPT4Free client for specific sub-provider
+ * Бесплатный чат без ключа/авторизации (OVHcloud AI Endpoints, OpenAI-совместимый, стриминг).
+ * @param {Array} messages
+ * @param {string} model
+ * @param {string} subProvider — не используется (оставлен для совместимости сигнатуры)
+ * @param {Function} onStatus
  */
-async function getG4fClient(subProvider = 'default') {
-  // Check cache first
-  if (g4fClientsCache[subProvider]) {
-    return g4fClientsCache[subProvider];
-  }
-
-  // Load module if not loaded
-  if (!g4fModule) {
-    g4fModule = await import('https://g4f.dev/dist/js/providers.js');
-  }
-
-  // Начинаем печь cakes (не блокируя) — к моменту чата кредиты уже будут
-  ensureCakeBaker();
-
-  // Create client for this sub-provider (createClient is now async).
-  // fetchFn добавляет credentials, чтобы cookie с cakes уходила на бэкенд.
-  const { createClient } = g4fModule;
-  g4fClientsCache[subProvider] = await createClient(subProvider, { fetchFn: g4fCredentialedFetch });
-  return g4fClientsCache[subProvider];
-}
-
-/**
- * GPT4Free client-side chat handler
- * Uses official g4f.dev JS SDK - pure client-side, no backend
- * @param {Array} messages - Chat messages
- * @param {string} model - Model to use
- * @param {string} subProvider - g4f sub-provider (default, nectar, pollinations, etc.)
- * @param {Function} onStatus - Status callback
- */
-async function* runGpt4freeClientChat(messages, model, subProvider, onStatus) {
-  onStatus?.(`🔗 Подключение к GPT4Free (${subProvider})...`);
-
+async function* runFreeClientChat(messages, model, subProvider, onStatus) {
+  onStatus?.('🔗 Бесплатный AI (OVHcloud)...');
   try {
-    const client = await getG4fClient(subProvider);
-    onStatus?.('📡 Отправляю запрос...');
-
-    // Use streaming API
-    const stream = await client.chat.completions.create({
-      model: model || 'gpt-4o',
-      messages: messages.map(m => ({ role: m.role, content: m.content })),
-      stream: true,
+    const resp = await fetch(FREE_AI_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: model || FREE_AI_DEFAULT_MODEL,
+        messages: messages.map((m) => ({ role: m.role, content: m.content })),
+        stream: true,
+      }),
     });
 
-    // Stream response
-    for await (const chunk of stream) {
-      const content = chunk.choices?.[0]?.delta?.content;
-      if (content) {
-        yield { type: 'text', content };
+    if (resp.status === 429) {
+      yield {
+        type: 'error',
+        error: 'Бесплатный лимит: не больше 2 запросов в минуту на этот IP. Подожди ~30 секунд и попробуй снова — либо укажи свой ключ / выбери OpenRouter.',
+      };
+      return;
+    }
+    if (!resp.ok || !resp.body) {
+      yield { type: 'error', error: `Бесплатный AI недоступен (${resp.status}). Попробуй позже или используй свой ключ / OpenRouter.` };
+      return;
+    }
+
+    onStatus?.('📡 Получаю ответ...');
+    const reader = resp.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop() || '';
+      for (const line of lines) {
+        const s = line.trim();
+        if (!s.startsWith('data:')) continue;
+        const data = s.slice(5).trim();
+        if (data === '[DONE]') return;
+        try {
+          const j = JSON.parse(data);
+          const content = j.choices?.[0]?.delta?.content;
+          if (content) yield { type: 'text', content };
+        } catch {
+          /* пропускаем незавершённый чанк */
+        }
       }
     }
   } catch (error) {
-    yield { type: 'error', error: error.message || 'Ошибка GPT4Free' };
+    yield { type: 'error', error: error?.message || 'Ошибка бесплатного AI' };
   }
 }
 
@@ -209,12 +199,12 @@ function extractCodeBlocks(text) {
 }
 
 /**
- * GPT4Free System Prompt with action descriptors
- * Since GPT4Free doesn't support tools, we use text-based action markers
+ * бесплатный AI (OVHcloud) System Prompt with action descriptors
+ * Since бесплатный AI (OVHcloud) doesn't support tools, we use text-based action markers
  */
-const GPT4FREE_SYSTEM_PROMPT = `Ты Bulka AI - помощник для музыкального live-coding на Strudel.
+const FREE_SYSTEM_PROMPT = `Ты Bulka AI - помощник для музыкального live-coding на Strudel.
 
-ВАЖНО: Ты работаешь через GPT4Free без поддержки инструментов. Используй специальные маркеры действий:
+ВАЖНО: Ты работаешь через бесплатный AI (OVHcloud) без поддержки инструментов. Используй специальные маркеры действий:
 
 ## ДОСТУПНЫЕ ДЕЙСТВИЯ:
 
@@ -248,10 +238,10 @@ stack(
 `;
 
 /**
- * Parse GPT4Free action markers from response
+ * Parse бесплатный AI (OVHcloud) action markers from response
  * Returns: { actions: Array<{type, args}>, cleanContent: string }
  */
-function parseGpt4freeActions(content) {
+function parseFreeActions(content) {
   const actions = [];
   let cleanContent = content;
 
@@ -381,20 +371,20 @@ export function useChatContext(replContext) {
   const sendMessage = useCallback(async (content) => {
     if (!content.trim() || isLoading) return;
 
-    const { aiProvider, aiModel, openaiApiKey, anthropicApiKey, geminiApiKey, gpt4freeSubProvider } = settings;
+    const { aiProvider, aiModel, openaiApiKey, anthropicApiKey, geminiApiKey } = settings;
 
-    // gpt4free doesn't need API key
-    const isGpt4free = aiProvider === 'gpt4free';
+    // free doesn't need API key
+    const isFree = aiProvider === 'free';
 
-    // Get API key for current provider (not needed for gpt4free)
-    const aiApiKey = isGpt4free ? null :
+    // Get API key for current provider (not needed for free)
+    const aiApiKey = isFree ? null :
                      aiProvider === 'openai' ? openaiApiKey :
                      aiProvider === 'anthropic' ? anthropicApiKey :
                      aiProvider === 'gemini' ? geminiApiKey :
                      aiProvider === 'zai' ? settings.zaiApiKey :
                      aiProvider === 'openrouter' ? settings.openrouterApiKey : '';
 
-    if (!isGpt4free && !aiApiKey) {
+    if (!isFree && !aiApiKey) {
       setError(`API ключ для ${aiProvider} не установлен. Откройте настройки и добавьте ключ.`);
       return;
     }
@@ -437,8 +427,8 @@ export function useChatContext(replContext) {
       let isThinking = false;
       let actionsExecuted = [];
 
-      // GPT4Free: use client-side handler with real-time action parsing
-      if (isGpt4free) {
+      // бесплатный AI (OVHcloud): use client-side handler with real-time action parsing
+      if (isFree) {
         // Build system prompt with code context
         const codeContext = currentCode
           ? (selectedCode
@@ -446,14 +436,14 @@ export function useChatContext(replContext) {
               : `\n\n## ТЕКУЩИЙ КОД В РЕДАКТОРЕ:\n\`\`\`javascript\n${currentCode}\n\`\`\``)
           : '';
 
-        const gpt4freeMessages = [
-          { role: 'system', content: GPT4FREE_SYSTEM_PROMPT + codeContext },
+        const freeMessages = [
+          { role: 'system', content: FREE_SYSTEM_PROMPT + codeContext },
           ...apiMessages,
         ];
 
         const editor = replContext?.editorRef?.current;
 
-        for await (const message of runGpt4freeClientChat(gpt4freeMessages, aiModel, gpt4freeSubProvider || 'default', setLastAction)) {
+        for await (const message of runFreeClientChat(freeMessages, aiModel, null, setLastAction)) {
           if (message.type === 'text' && message.content) {
             fullContent += message.content;
 
@@ -546,7 +536,7 @@ export function useChatContext(replContext) {
           });
         }
 
-        // Done with gpt4free
+        // Done with free
         setIsLoading(false);
         return;
       }
@@ -954,8 +944,8 @@ export function useChatContext(replContext) {
     handleInputChange,
     handleSubmit,
     handleKeyDown,
-    // Settings for UI - check current provider's key (gpt4free doesn't need key)
-    hasApiKey: settings.aiProvider === 'gpt4free' ? true :
+    // Settings for UI - check current provider's key (free doesn't need key)
+    hasApiKey: settings.aiProvider === 'free' ? true :
                !!(settings.aiProvider === 'openai' ? settings.openaiApiKey :
                   settings.aiProvider === 'anthropic' ? settings.anthropicApiKey :
                   settings.aiProvider === 'gemini' ? settings.geminiApiKey :
