@@ -6,7 +6,7 @@ import { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import cx from '@src/cx.mjs';
 import ReactMarkdown from 'react-markdown';
 import { useChatContext } from '../../useChatContext';
-import { useSettings, setOpenaiApiKey, setAnthropicApiKey, setGeminiApiKey, setZaiApiKey, setOpenrouterApiKey, setLocalBaseUrl, setLocalApiKey, setAiProvider, setAiModel, setOpenrouterModelParams, getApiKeyForProvider } from '../../../settings.mjs';
+import { useSettings, setOpenaiApiKey, setAnthropicApiKey, setGeminiApiKey, setZaiApiKey, setOpenrouterApiKey, setLocalBaseUrl, setLocalApiKey, setLocalModelParams, setAiProvider, setAiModel, setOpenrouterModelParams, getApiKeyForProvider } from '../../../settings.mjs';
 import { getRandomSuggestions } from '../../data/suggestions.js';
 
 // Common input styles matching SettingsTab
@@ -271,6 +271,8 @@ function SettingsPanel({ onClose, isBottomPanel }) {
   const [openrouterKey, setOpenrouterKey] = useState(settings.openrouterApiKey || '');
   const [localUrl, setLocalUrl] = useState(settings.localBaseUrl || 'http://localhost:1234/v1');
   const [localKey, setLocalKey] = useState(settings.localApiKey || '');
+  const [localParams, setLocalParams] = useState(settings.localModelParams || { temperature: 0.7, max_tokens: 8192 });
+  const setLP = (patch) => setLocalParams((p) => ({ ...p, ...patch }));
   const [provider, setProvider] = useState(settings.aiProvider || 'openai');
 
   // Dynamic models state - load from cache (single parse)
@@ -429,6 +431,7 @@ function SettingsPanel({ onClose, isBottomPanel }) {
     setOpenrouterApiKey(openrouterKey);
     setLocalBaseUrl(localUrl);
     setLocalApiKey(localKey);
+    setLocalModelParams(localParams);
     setAiProvider(provider);
     setAiModel(model);
     onClose?.();
@@ -540,6 +543,63 @@ function SettingsPanel({ onClose, isBottomPanel }) {
           >
             Загрузить модели
           </button>
+
+          {/* Параметры генерации локальной модели */}
+          <div className="grid gap-2 mt-1 pt-2 border-t border-foreground/15">
+            <p className="text-xs font-medium opacity-80">Параметры генерации</p>
+
+            <div className="grid gap-1">
+              <label className="text-xs flex justify-between">
+                <span>Температура</span>
+                <span className="opacity-60 tabular-nums">{Number(localParams.temperature ?? 0.7).toFixed(2)}</span>
+              </label>
+              <input
+                type="range"
+                min="0" max="2" step="0.05"
+                value={localParams.temperature ?? 0.7}
+                onChange={(e) => setLP({ temperature: parseFloat(e.target.value) })}
+                className="w-full accent-foreground"
+              />
+              <span className="text-[11px] opacity-50">Ниже — точнее и стабильнее, выше — разнообразнее.</span>
+            </div>
+
+            <div className="grid gap-1">
+              <label className="text-xs flex justify-between">
+                <span>Макс. токенов ответа</span>
+                <span className="opacity-60 tabular-nums">{localParams.max_tokens ?? 8192}</span>
+              </label>
+              <input
+                type="number"
+                min="256" max="131072" step="256"
+                value={localParams.max_tokens ?? 8192}
+                onChange={(e) => setLP({ max_tokens: Math.max(1, parseInt(e.target.value) || 0) })}
+                className={cx(inputClass, 'text-sm py-1')}
+              />
+              <span className="text-[11px] opacity-50">Ограничивает длину ответа. Для «думающих» моделей — потолок размышлений (меньше = быстрее отвечает, не зацикливается).</span>
+            </div>
+
+            <div className="grid gap-1">
+              <label className="text-xs flex justify-between">
+                <span>top_p</span>
+                <span className="opacity-60 tabular-nums">{Number(localParams.top_p ?? 1).toFixed(2)}</span>
+              </label>
+              <input
+                type="range"
+                min="0" max="1" step="0.05"
+                value={localParams.top_p ?? 1}
+                onChange={(e) => setLP({ top_p: parseFloat(e.target.value) })}
+                className="w-full accent-foreground"
+              />
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setLocalParams({ temperature: 0.7, max_tokens: 8192, top_p: 1 })}
+              className="text-[11px] underline opacity-60 hover:opacity-100 w-fit"
+            >
+              Сбросить к дефолтам
+            </button>
+          </div>
         </div>
       )}
 
@@ -720,7 +780,7 @@ function Message({ message }) {
     <div className={cx('flex w-full mb-3', isUser ? 'justify-end' : 'justify-start')}>
       <div
         className={cx(
-          'max-w-[85%] rounded-lg px-3 py-2 text-sm',
+          'max-w-[85%] rounded-lg px-3 py-2 text-sm break-words overflow-hidden [overflow-wrap:anywhere]',
           isUser
             ? 'bg-selection text-foreground'
             : 'bg-background text-foreground border border-foreground/20',
@@ -750,7 +810,7 @@ function Message({ message }) {
             {message.content || '...'}
           </div>
         ) : (
-          <div className="markdown-content prose prose-sm prose-invert max-w-none">
+          <div className="markdown-content prose prose-sm prose-invert max-w-none break-words [overflow-wrap:anywhere]">
             <ReactMarkdown
               components={{
                 // Code blocks

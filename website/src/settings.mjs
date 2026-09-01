@@ -42,6 +42,9 @@ export const defaultSettings = {
   // Локальная модель (LM Studio / Ollama): OpenAI-совместимый сервер на localhost.
   localBaseUrl: 'http://localhost:1234/v1', // LM Studio по умолчанию (Ollama: http://localhost:11434/v1)
   localApiKey: '', // обычно не нужен
+  // Параметры генерации локальной модели: { temperature, max_tokens, top_p }.
+  // max_tokens ограничивает длину ответа (важно для reasoning-моделей, чтобы не «думали» бесконечно).
+  localModelParams: { temperature: 0.7, max_tokens: 8192 },
   // Per-model параметры OpenRouter, ключ = id модели: { temperature, reasoning_effort, top_p, max_tokens }.
   // Пусто → на UI подтягиваются дефолты модели с OpenRouter (default_parameters).
   openrouterModelParams: {},
@@ -187,6 +190,10 @@ export const setAiProvider = (provider) => settingsMap.setKey('aiProvider', prov
 export const setAiModel = (model) => settingsMap.setKey('aiModel', model);
 export const setLocalBaseUrl = (url) => settingsMap.setKey('localBaseUrl', url);
 export const setLocalApiKey = (key) => settingsMap.setKey('localApiKey', key);
+export const setLocalModelParams = (params) => {
+  const cur = settingsMap.get().localModelParams || {};
+  settingsMap.setKey('localModelParams', { ...cur, ...params });
+};
 // Сохранить параметры конкретной OpenRouter-модели (merge в общий словарь по id модели)
 export const setOpenrouterModelParams = (modelId, params) => {
   const cur = settingsMap.get().openrouterModelParams || {};

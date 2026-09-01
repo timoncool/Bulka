@@ -602,7 +602,9 @@ export function useChatContext(replContext) {
             currentCode,
             selectedCode, // Send selected code if any
             // Параметры конкретной модели OpenRouter (temperature/reasoning_effort/top_p/max_tokens)
-            modelParams: aiProvider === 'openrouter' ? (settings.openrouterModelParams?.[aiModel] || {}) : undefined,
+            modelParams: aiProvider === 'openrouter' ? (settings.openrouterModelParams?.[aiModel] || {})
+              : aiProvider === 'local' ? (settings.localModelParams || {})
+              : undefined,
             // strict-тулы для OpenRouter — только для моделей с structured_outputs
             strictTools: aiProvider === 'openrouter' ? openrouterStrictTools : undefined,
             // Локальная модель: адрес OpenAI-совместимого сервера (LM Studio / Ollama)

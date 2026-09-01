@@ -1893,6 +1893,9 @@ async function runOpenAIAgent(
   const noTemperatureSupport = isOSeriesReasoning || isGPT5Model; // Both don't support temperature!
   const isReasoningModel = isOSeriesReasoning; // Only o-series can't use tools
 
+  // Abort апстрим-запроса, когда клиент нажал «стоп» (стрим отменяется -> cancel()).
+  const abortController = new AbortController();
+
   return new ReadableStream({
     async start(controller) {
       // Prepend code context to first user message to keep system prompt static
@@ -1944,6 +1947,7 @@ async function runOpenAIAgent(
               'Authorization': `Bearer ${apiKey}`,
             },
             body: JSON.stringify(requestBody),
+            signal: abortController.signal,
           },
           3 // maxRetries
         );
@@ -2058,6 +2062,7 @@ async function runOpenAIAgent(
       controller.enqueue(encoder.encode('data: [DONE]\n\n'));
       controller.close();
     },
+    cancel() { console.log('[chat] stream cancelled by client → aborting upstream'); try { abortController.abort(); } catch {} },
   });
 }
 
@@ -2088,6 +2093,9 @@ async function runAnthropicAgent(
                            model.includes('claude-4') ||
                            model.includes('claude-sonnet-4') ||
                            model.includes('claude-opus-4');
+
+  // Abort апстрим-запроса, когда клиент нажал «стоп» (стрим отменяется -> cancel()).
+  const abortController = new AbortController();
 
   return new ReadableStream({
     async start(controller) {
@@ -2145,6 +2153,7 @@ async function runAnthropicAgent(
               'anthropic-beta': 'prompt-caching-2024-07-31', // Enable prompt caching to reduce rate limit impact
             },
             body: JSON.stringify(requestBody),
+            signal: abortController.signal,
           },
           3 // maxRetries
         );
@@ -2381,6 +2390,7 @@ async function runAnthropicAgent(
       controller.enqueue(encoder.encode('data: [DONE]\n\n'));
       controller.close();
     },
+    cancel() { console.log('[chat] stream cancelled by client → aborting upstream'); try { abortController.abort(); } catch {} },
   });
 }
 
@@ -2425,6 +2435,9 @@ async function runGeminiAgent(
   // Match patterns: gemini-2.5-xxx, gemini-3-xxx, gemini-3.0-xxx, etc.
   const supportsThinking = /gemini-(2\.5|3(\.[0-9])?|exp|deep)/i.test(model);
 
+  // Abort апстрим-запроса, когда клиент нажал «стоп» (стрим отменяется -> cancel()).
+  const abortController = new AbortController();
+
   return new ReadableStream({
     async start(controller) {
       let conversationContents = [...geminiContents];
@@ -2456,6 +2469,7 @@ async function runGeminiAgent(
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            signal: abortController.signal,
             body: JSON.stringify({
               contents: conversationContents,
               systemInstruction: { parts: [{ text: systemPrompt }] },
@@ -2655,6 +2669,7 @@ async function runGeminiAgent(
       controller.enqueue(encoder.encode('data: [DONE]\n\n'));
       controller.close();
     },
+    cancel() { console.log('[chat] stream cancelled by client → aborting upstream'); try { abortController.abort(); } catch {} },
   });
 }
 
@@ -2678,6 +2693,8 @@ async function runOpenAICompatibleAgent(
 ): Promise<ReadableStream> {
   const codeContext = buildCodeContext(currentCode, selectedCode);
   const encoder = new TextEncoder();
+  // Abort апстрим-запроса к LLM, когда клиент нажал «стоп» (стрим отменяется -> cancel()).
+  const abortController = new AbortController();
 
   return new ReadableStream({
     async start(controller) {
@@ -2701,6 +2718,7 @@ async function runOpenAICompatibleAgent(
 
       while (maxIterations > 0) {
         maxIterations--;
+        if (abortController.signal.aborted) { try { controller.close(); } catch {} return; }
 
         const requestBody: any = {
           model,
@@ -2725,6 +2743,12 @@ async function runOpenAICompatibleAgent(
           requestBody.temperature = 0.7;
         }
 
+        // Безопасный потолок длины ответа: без него локальные модели (LM Studio/Ollama) могут
+        // генерить бесконечно, пока не переполнят контекст и не «зациклятся».
+        if (!(typeof requestBody.max_tokens === 'number' && requestBody.max_tokens > 0)) {
+          requestBody.max_tokens = 16384;
+        }
+
         const response = await fetchWithRetry(
           config.apiUrl,
           {
@@ -2734,6 +2758,7 @@ async function runOpenAICompatibleAgent(
               ...config.headers,
             },
             body: JSON.stringify(requestBody),
+            signal: abortController.signal,
           },
           3
         );
@@ -2871,6 +2896,7 @@ async function runOpenAICompatibleAgent(
       controller.enqueue(encoder.encode('data: [DONE]\n\n'));
       controller.close();
     },
+    cancel() { console.log('[chat] stream cancelled by client → aborting upstream'); try { abortController.abort(); } catch {} },
   });
 }
 
@@ -2971,6 +2997,7 @@ export const POST: APIRoute = async ({ request }) => {
           apiUrl: `${base}/chat/completions`,
           providerName: 'Local',
           headers: apiKey ? { Authorization: `Bearer ${apiKey}` } : {},
+          modelParams: modelParams || {},
         },
         model, messages, currentCode || '', selectedCode || null
       );
