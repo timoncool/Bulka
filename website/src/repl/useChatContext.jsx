@@ -402,16 +402,18 @@ export function useChatContext(replContext) {
 
     // free doesn't need API key
     const isFree = aiProvider === 'free';
+    const isLocal = aiProvider === 'local';
 
-    // Get API key for current provider (not needed for free)
+    // Get API key for current provider (не нужен для free; для local опционален)
     const aiApiKey = isFree ? null :
+                     isLocal ? (settings.localApiKey || '') :
                      aiProvider === 'openai' ? openaiApiKey :
                      aiProvider === 'anthropic' ? anthropicApiKey :
                      aiProvider === 'gemini' ? geminiApiKey :
                      aiProvider === 'zai' ? settings.zaiApiKey :
                      aiProvider === 'openrouter' ? settings.openrouterApiKey : '';
 
-    if (!isFree && !aiApiKey) {
+    if (!isFree && !isLocal && !aiApiKey) {
       setError(`API ключ для ${aiProvider} не установлен. Откройте настройки и добавьте ключ.`);
       return;
     }
@@ -603,6 +605,8 @@ export function useChatContext(replContext) {
             modelParams: aiProvider === 'openrouter' ? (settings.openrouterModelParams?.[aiModel] || {}) : undefined,
             // strict-тулы для OpenRouter — только для моделей с structured_outputs
             strictTools: aiProvider === 'openrouter' ? openrouterStrictTools : undefined,
+            // Локальная модель: адрес OpenAI-совместимого сервера (LM Studio / Ollama)
+            localBaseUrl: aiProvider === 'local' ? (settings.localBaseUrl || 'http://localhost:1234/v1') : undefined,
           }),
           signal: abortControllerRef.current.signal,
         });
@@ -972,7 +976,7 @@ export function useChatContext(replContext) {
     handleSubmit,
     handleKeyDown,
     // Settings for UI - check current provider's key (free и mcp не нужен ключ)
-    hasApiKey: settings.aiProvider === 'free' || settings.aiProvider === 'mcp' ? true :
+    hasApiKey: settings.aiProvider === 'free' || settings.aiProvider === 'mcp' || settings.aiProvider === 'local' ? true :
                !!(settings.aiProvider === 'openai' ? settings.openaiApiKey :
                   settings.aiProvider === 'anthropic' ? settings.anthropicApiKey :
                   settings.aiProvider === 'gemini' ? settings.geminiApiKey :

@@ -25,6 +25,7 @@ export const aiProviders = {
   openrouter: 'openrouter',
   free: 'free',
   mcp: 'mcp',
+  local: 'local',
 };
 
 export const defaultSettings = {
@@ -38,6 +39,9 @@ export const defaultSettings = {
   openrouterApiKey: '',
   aiProvider: aiProviders.openai,
   aiModel: '', // Loaded dynamically from provider API
+  // Локальная модель (LM Studio / Ollama): OpenAI-совместимый сервер на localhost.
+  localBaseUrl: 'http://localhost:1234/v1', // LM Studio по умолчанию (Ollama: http://localhost:11434/v1)
+  localApiKey: '', // обычно не нужен
   // Per-model параметры OpenRouter, ключ = id модели: { temperature, reasoning_effort, top_p, max_tokens }.
   // Пусто → на UI подтягиваются дефолты модели с OpenRouter (default_parameters).
   openrouterModelParams: {},
@@ -181,6 +185,8 @@ export const setZaiApiKey = (key) => settingsMap.setKey('zaiApiKey', key);
 export const setOpenrouterApiKey = (key) => settingsMap.setKey('openrouterApiKey', key);
 export const setAiProvider = (provider) => settingsMap.setKey('aiProvider', provider);
 export const setAiModel = (model) => settingsMap.setKey('aiModel', model);
+export const setLocalBaseUrl = (url) => settingsMap.setKey('localBaseUrl', url);
+export const setLocalApiKey = (key) => settingsMap.setKey('localApiKey', key);
 // Сохранить параметры конкретной OpenRouter-модели (merge в общий словарь по id модели)
 export const setOpenrouterModelParams = (modelId, params) => {
   const cur = settingsMap.get().openrouterModelParams || {};
@@ -198,6 +204,7 @@ export const getApiKeyForProvider = (provider, settings) => {
     case 'openrouter': return settings.openrouterApiKey;
     case 'free': return null; // бесплатный провайдер (OVHcloud) — ключ не нужен
     case 'mcp': return null; // внешний агент (MCP) — ключ не нужен
+    case 'local': return settings.localApiKey || null; // локальная модель — ключ опционален
     default: return '';
   }
 };

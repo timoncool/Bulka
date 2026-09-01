@@ -6,7 +6,7 @@ import { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import cx from '@src/cx.mjs';
 import ReactMarkdown from 'react-markdown';
 import { useChatContext } from '../../useChatContext';
-import { useSettings, setOpenaiApiKey, setAnthropicApiKey, setGeminiApiKey, setZaiApiKey, setOpenrouterApiKey, setAiProvider, setAiModel, setOpenrouterModelParams, getApiKeyForProvider } from '../../../settings.mjs';
+import { useSettings, setOpenaiApiKey, setAnthropicApiKey, setGeminiApiKey, setZaiApiKey, setOpenrouterApiKey, setLocalBaseUrl, setLocalApiKey, setAiProvider, setAiModel, setOpenrouterModelParams, getApiKeyForProvider } from '../../../settings.mjs';
 import { getRandomSuggestions } from '../../data/suggestions.js';
 
 // Common input styles matching SettingsTab
@@ -23,6 +23,7 @@ const PROVIDER_LABELS = {
   openrouter: 'OpenRouter',
   free: 'Бесплатно (OVHcloud)',
   mcp: 'Внешний агент (MCP)',
+  local: 'Локально',
 };
 
 // Empty defaults - all models are fetched dynamically from provider APIs
@@ -33,6 +34,7 @@ const EMPTY_MODELS = {
   zai: [],
   openrouter: [],
   free: [],
+  local: [],
 };
 
 const MODELS_STORAGE_KEY = 'bulka_cached_models';
@@ -52,6 +54,7 @@ function loadCachedModels() {
         zai: parsed.zai || [],
         openrouter: parsed.openrouter || [],
         free: [],
+        local: [],
       };
     }
   } catch (e) {
@@ -266,6 +269,8 @@ function SettingsPanel({ onClose, isBottomPanel }) {
   const [geminiKey, setGeminiKey] = useState(settings.geminiApiKey || '');
   const [zaiKey, setZaiKey] = useState(settings.zaiApiKey || '');
   const [openrouterKey, setOpenrouterKey] = useState(settings.openrouterApiKey || '');
+  const [localUrl, setLocalUrl] = useState(settings.localBaseUrl || 'http://localhost:1234/v1');
+  const [localKey, setLocalKey] = useState(settings.localApiKey || '');
   const [provider, setProvider] = useState(settings.aiProvider || 'openai');
 
   // Dynamic models state - load from cache (single parse)
@@ -285,6 +290,7 @@ function SettingsPanel({ onClose, isBottomPanel }) {
     zai: false,
     openrouter: false,
     free: false,
+    local: false,
   });
 
   // Get current API key for provider
@@ -348,11 +354,37 @@ function SettingsPanel({ onClose, isBottomPanel }) {
     }
   }, []);
 
+  // Загрузка списка моделей с локального OpenAI-совместимого сервера (LM Studio / Ollama).
+  const loadLocalModels = useCallback(async (url, key) => {
+    setLoadingModels(prev => ({ ...prev, local: true }));
+    setModels(prev => ({ ...prev, local: [] }));
+    try {
+      const r = await fetch('/api/models', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ provider: 'local', localBaseUrl: url, apiKey: key || undefined }),
+      });
+      const data = await r.json();
+      if (data.models && data.models.length > 0) {
+        setModels(prev => ({ ...prev, local: data.models }));
+        setModel(data.models[0].value);
+      }
+    } catch (e) {
+      console.error('Error loading local models:', e);
+    } finally {
+      setLoadingModels(prev => ({ ...prev, local: false }));
+    }
+  }, []);
+
   // Load models on mount for current provider
   useEffect(() => {
     if (provider === 'free') {
       if (models.free.length === 0) {
         loadFreeModels();
+      }
+    } else if (provider === 'local') {
+      if (models.local.length === 0) {
+        loadLocalModels(localUrl, localKey);
       }
     } else {
       const key = getKeyForProvider(provider);
@@ -395,6 +427,8 @@ function SettingsPanel({ onClose, isBottomPanel }) {
     setGeminiApiKey(geminiKey);
     setZaiApiKey(zaiKey);
     setOpenrouterApiKey(openrouterKey);
+    setLocalBaseUrl(localUrl);
+    setLocalApiKey(localKey);
     setAiProvider(provider);
     setAiModel(model);
     onClose?.();
@@ -405,6 +439,7 @@ function SettingsPanel({ onClose, isBottomPanel }) {
     switch (provider) {
       case 'free': return true; // No API key needed
       case 'mcp': return true; // внешний агент — ключ не нужен
+      case 'local': return true; // локальная модель — ключ опционален, адрес с дефолтом
       case 'openai': return openaiKey.trim().length > 0;
       case 'anthropic': return anthropicKey.trim().length > 0;
       case 'gemini': return geminiKey.trim().length > 0;
@@ -417,6 +452,7 @@ function SettingsPanel({ onClose, isBottomPanel }) {
   // Check if current provider is free (no API key needed)
   const isFree = provider === 'free';
   const isMcp = provider === 'mcp';
+  const isLocal = provider === 'local';
 
   // Get current models for selected provider
   const currentModels = models[provider] || EMPTY_MODELS[provider];
@@ -438,6 +474,8 @@ function SettingsPanel({ onClose, isBottomPanel }) {
             // Always fetch models dynamically when provider changes
             if (newProvider === 'free') {
               loadFreeModels();
+            } else if (newProvider === 'local') {
+              loadLocalModels(localUrl, localKey);
             } else {
               const key = getKeyForProvider(newProvider);
               if (key && key.length >= 10) {
@@ -454,6 +492,7 @@ function SettingsPanel({ onClose, isBottomPanel }) {
           className={cx(selectClass, 'text-sm py-1.5')}
         >
           <option value="free">Бесплатно (OVHcloud) ✓</option>
+          <option value="local">Локально (LM Studio / Ollama)</option>
           <option value="mcp">Внешний агент (MCP)</option>
           <option value="openai">OpenAI {openaiKey ? '✓' : ''}</option>
           <option value="anthropic">Anthropic {anthropicKey ? '✓' : ''}</option>
@@ -462,6 +501,47 @@ function SettingsPanel({ onClose, isBottomPanel }) {
           <option value="openrouter">OpenRouter {openrouterKey ? '✓' : ''}</option>
         </select>
       </div>
+
+      {/* Локальная модель (LM Studio / Ollama) — адрес сервера + опц. ключ */}
+      {isLocal && (
+        <div className="grid gap-2 p-2 rounded-md border border-foreground/20">
+          <p className="text-xs opacity-70">
+            Локальный OpenAI-совместимый сервер. Запусти LM Studio (Local Server) или Ollama и укажи адрес. Запрос
+            идёт через приложение (работает в десктоп-версии; ключ обычно не нужен).
+          </p>
+          <div className="grid gap-1">
+            <label className="text-xs">Адрес сервера (base URL)</label>
+            <input
+              type="text"
+              value={localUrl}
+              onChange={(e) => setLocalUrl(e.target.value)}
+              placeholder="http://localhost:1234/v1"
+              className={cx(inputClass, 'text-sm py-1')}
+            />
+            <div className="flex gap-2 text-xs opacity-60">
+              <button type="button" className="underline" onClick={() => setLocalUrl('http://localhost:1234/v1')}>LM Studio</button>
+              <button type="button" className="underline" onClick={() => setLocalUrl('http://localhost:11434/v1')}>Ollama</button>
+            </div>
+          </div>
+          <div className="grid gap-1">
+            <label className="text-xs">API-ключ (опционально)</label>
+            <input
+              type="password"
+              value={localKey}
+              onChange={(e) => setLocalKey(e.target.value)}
+              placeholder="обычно не нужен"
+              className={cx(inputClass, 'text-sm py-1')}
+            />
+          </div>
+          <button
+            type="button"
+            onClick={() => loadLocalModels(localUrl, localKey)}
+            className="px-2 py-1 text-sm rounded border border-foreground/30 hover:bg-lineBackground w-fit"
+          >
+            Загрузить модели
+          </button>
+        </div>
+      )}
 
       {/* Бесплатный провайдер (OVHcloud) — инфо-подсказка */}
       {isFree && (
@@ -513,6 +593,8 @@ function SettingsPanel({ onClose, isBottomPanel }) {
             onClick={() => {
               if (isFree) {
                 loadFreeModels();
+              } else if (isLocal) {
+                loadLocalModels(localUrl, localKey);
               } else {
                 loadModelsForProvider(provider, getKeyForProvider(provider));
               }
@@ -532,8 +614,8 @@ function SettingsPanel({ onClose, isBottomPanel }) {
         <OpenRouterModelSettings modelInfo={currentModels.find((m) => m.value === model)} />
       )}
 
-      {/* API Keys - скрываем для free и mcp */}
-      {!isFree && !isMcp && (
+      {/* API Keys - скрываем для free, mcp и local (у local свой ввод адреса/ключа) */}
+      {!isFree && !isMcp && !isLocal && (
         <div className="space-y-1">
           <h4 className="text-xs font-medium">API Ключи</h4>
           <div className={isBottomPanel ? 'flex gap-2 flex-wrap' : 'space-y-2'}>
@@ -609,9 +691,9 @@ function SettingsPanel({ onClose, isBottomPanel }) {
           disabled={!currentProviderHasKey() || (!isFree && !isMcp && currentModels.length === 0)}
           className={cx(buttonClass, 'text-sm py-1.5')}
         >
-          {isFree || isMcp ? 'Использовать' : (currentProviderHasKey() ? 'Сохранить' : 'Введите ключ')}
+          {isFree || isMcp || isLocal ? 'Использовать' : (currentProviderHasKey() ? 'Сохранить' : 'Введите ключ')}
         </button>
-        {!isFree && !isMcp && (
+        {!isFree && !isMcp && !isLocal && (
           <div className="text-xs opacity-70 flex gap-2">
             <span>Получить:</span>
             <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener" className="underline hover:opacity-50">OpenAI</a>

@@ -2902,9 +2902,10 @@ function truncateMessageContent(content: string, maxChars: number = 30000): stri
 export const POST: APIRoute = async ({ request }) => {
   try {
     const body = await request.json();
-    let { messages, apiKey, provider, model, currentCode, selectedCode, modelParams, strictTools } = body;
+    let { messages, apiKey, provider, model, currentCode, selectedCode, modelParams, strictTools, localBaseUrl } = body;
 
-    if (!apiKey) {
+    // Локальная модель (local) не требует ключ (он опционален).
+    if (!apiKey && provider !== 'local') {
       return new Response(
         JSON.stringify({ error: 'API ключ не указан' }),
         { status: 400, headers: { 'Content-Type': 'application/json' } }
@@ -2957,6 +2958,18 @@ export const POST: APIRoute = async ({ request }) => {
           },
           modelParams: modelParams || {},
           strictTools: !!strictTools, // включаем strict только если модель это умеет
+        },
+        model, messages, currentCode || '', selectedCode || null
+      );
+    } else if (provider === 'local') {
+      // Локальная модель (LM Studio / Ollama и пр.) — OpenAI-совместимый сервер на localhost.
+      // Ходит наш Node-сервер (server-to-server, без CORS). Ключ обычно не нужен.
+      const base = String(localBaseUrl || 'http://localhost:1234/v1').replace(/\/+$/, '');
+      stream = await runOpenAICompatibleAgent(
+        {
+          apiUrl: `${base}/chat/completions`,
+          providerName: 'Local',
+          headers: apiKey ? { Authorization: `Bearer ${apiKey}` } : {},
         },
         model, messages, currentCode || '', selectedCode || null
       );

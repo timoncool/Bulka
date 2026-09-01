@@ -138,9 +138,29 @@ async function fetchOpenRouterModels(apiKey: string): Promise<ModelInfo[]> {
   }
 }
 
+// Локальный OpenAI-совместимый сервер (LM Studio / Ollama / llama.cpp и пр.).
+async function fetchLocalModels(baseUrl: string, apiKey?: string): Promise<ModelInfo[]> {
+  const base = String(baseUrl || 'http://localhost:1234/v1').replace(/\/+$/, '');
+  const headers: Record<string, string> = {};
+  if (apiKey) headers['Authorization'] = `Bearer ${apiKey}`;
+  try {
+    const r = await fetch(`${base}/models`, { headers });
+    if (!r.ok) return [];
+    const data = await r.json();
+    const list = Array.isArray(data?.data) ? data.data : [];
+    // отсеиваем не-чат модели (эмбеддинги и т.п.) по имени — эвристика
+    return list
+      .map((m: any) => ({ value: m.id, label: m.id }))
+      .filter((m: any) => m.value && !/embed|embedding|rerank/i.test(m.value));
+  } catch (e) {
+    console.error('Error fetching local models:', e);
+    return [];
+  }
+}
+
 export const POST: APIRoute = async ({ request }) => {
   try {
-    const { provider, apiKey } = await request.json();
+    const { provider, apiKey, localBaseUrl } = await request.json();
 
     // free doesn't need server-side model fetching - uses client-side only
     if (provider === 'free') {
@@ -148,6 +168,12 @@ export const POST: APIRoute = async ({ request }) => {
         JSON.stringify({ error: 'free uses client-side models' }),
         { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
+    }
+
+    // Локальная модель (LM Studio / Ollama): список с localhost, ключ не нужен.
+    if (provider === 'local') {
+      const models = await fetchLocalModels(localBaseUrl, apiKey);
+      return new Response(JSON.stringify({ models }), { headers: { 'Content-Type': 'application/json' } });
     }
 
     if (!apiKey) {
