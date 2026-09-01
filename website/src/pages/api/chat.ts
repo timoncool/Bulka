@@ -390,10 +390,52 @@ const TOOLS_OPENAI = [
   },
 ];
 
+// --- Tool-schema normalization (best practices, 2026) ---
+// Reject unknown args everywhere (improves argument accuracy, and is required by
+// OpenAI/Anthropic strict mode). For STRICT mode every property must be listed in
+// `required`; optional properties are made nullable so they stay effectively optional.
+function normalizeParams(params: any, strict: boolean) {
+  const out: any = { ...params, additionalProperties: false };
+  if (out.properties && Object.keys(out.properties).length > 0) {
+    const keys = Object.keys(out.properties);
+    if (strict) {
+      const required = new Set(out.required || []);
+      const props: any = {};
+      for (const k of keys) {
+        const prop = out.properties[k];
+        if (!required.has(k)) {
+          const t = prop.type;
+          props[k] = { ...prop, type: Array.isArray(t) ? t : [t, 'null'] };
+        } else {
+          props[k] = prop;
+        }
+      }
+      out.properties = props;
+      out.required = keys; // all keys required (optional ones are nullable)
+    }
+  }
+  return out;
+}
+
+// OpenRouter / Z.AI — arbitrary models: additionalProperties:false, но БЕЗ strict
+// (не все модели поддерживают constrained decoding — strict мог бы их сломать).
+const TOOLS_OPENAI_BASE = TOOLS_OPENAI.map(t => ({
+  ...t,
+  function: { ...t.function, parameters: normalizeParams(t.function.parameters, false) },
+}));
+
+// OpenAI — нативный strict function calling (gpt-4o/4.1/5): гарантия соответствия схеме.
+const TOOLS_OPENAI_STRICT = TOOLS_OPENAI.map(t => ({
+  ...t,
+  function: { ...t.function, strict: true, parameters: normalizeParams(t.function.parameters, true) },
+}));
+
+// Anthropic strict tool use — вход инструмента гарантированно соответствует схеме.
 const TOOLS_ANTHROPIC = TOOLS_OPENAI.map(t => ({
   name: t.function.name,
   description: t.function.description,
-  input_schema: t.function.parameters,
+  strict: true,
+  input_schema: normalizeParams(t.function.parameters, true),
 }));
 
 /**
@@ -1884,7 +1926,7 @@ async function runOpenAIAgent(
 
         // Add tools only for non-reasoning models (o-series can't use tools)
         if (!isReasoningModel) {
-          requestBody.tools = TOOLS_OPENAI;
+          requestBody.tools = TOOLS_OPENAI_STRICT;
           requestBody.tool_choice = 'auto';
         }
 
@@ -2663,7 +2705,7 @@ async function runOpenAICompatibleAgent(
           model,
           messages: conversationMessages,
           stream: true,
-          tools: TOOLS_OPENAI,
+          tools: TOOLS_OPENAI_BASE,
           tool_choice: 'auto',
         };
 
