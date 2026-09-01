@@ -154,15 +154,28 @@ async function fetchFreeModels() {
   }
 }
 
+// Канонический порядок уровней reasoning (OpenRouter): minimal < low < medium < high < xhigh < max.
+const EFFORT_ORDER = ['minimal', 'low', 'medium', 'high', 'xhigh', 'max'];
+const sortEfforts = (arr) =>
+  [...(arr || [])].filter((e) => typeof e === 'string').sort((a, b) => EFFORT_ORDER.indexOf(a) - EFFORT_ORDER.indexOf(b));
+
 /**
- * Настройки конкретной OpenRouter-модели: показываем только поддерживаемые ею параметры,
- * дефолты подтягиваются с OpenRouter (supported_parameters / default_parameters).
+ * Настройки конкретной OpenRouter-модели. Источник истины — метаданные модели из /models:
+ *  • supported_parameters — какие параметры показывать;
+ *  • reasoning{ supported_efforts, default_effort, mandatory, supports_max_tokens } — реальная схема
+ *    рассуждений: допустимые уровни, дефолтный, можно ли выключить, есть ли бюджет токенов;
+ *  • default_parameters — реальные дефолты (temp/top_p/top_k) там, где модель их публикует;
+ *  • top_provider.max_completion_tokens — реальный лимит ответа.
+ * OpenRouter НЕ инжектит дефолты: не послал параметр → провайдер применяет свой (см. доку parameters),
+ * поэтому шлём ТОЛЬКО то, что пользователь явно переопределил.
  */
 function OpenRouterModelSettings({ modelInfo }) {
   const settings = useSettings();
   const modelId = modelInfo?.value;
   const supported = modelInfo?.supportedParameters || [];
   const defaults = modelInfo?.defaultParameters || {};
+  const reasoning = modelInfo?.reasoning || null;
+  const maxLimit = modelInfo?.maxCompletionTokens ?? modelInfo?.contextLength;
   const saved = (settings.openrouterModelParams || {})[modelId] || {};
 
   if (!modelId) return null;
@@ -170,87 +183,106 @@ function OpenRouterModelSettings({ modelInfo }) {
   const supportsTemp = supported.includes('temperature');
   const supportsTopP = supported.includes('top_p');
   const supportsMaxTokens = supported.includes('max_tokens');
-  const supportsReasoning =
-    supported.includes('reasoning') || supported.includes('reasoning_effort') || supported.includes('include_reasoning');
 
-  if (!(supportsTemp || supportsTopP || supportsMaxTokens || supportsReasoning)) return null;
+  // Реальные уровни reasoning модели. Уровнями управляем, только если модель их публикует.
+  const efforts = sortEfforts(reasoning?.supported_efforts);
+  const supportsEffort = (supported.includes('reasoning') || supported.includes('reasoning_effort')) && efforts.length > 0;
+  const supportsReasoningBudget = !!reasoning?.supports_max_tokens;
+  // reasoning есть, но без настраиваемых уровней/бюджета (напр. mandatory без supported_efforts)
+  const reasoningFixed = !!reasoning && !supportsEffort && !supportsReasoningBudget;
 
+  if (!(supportsTemp || supportsTopP || supportsMaxTokens || supportsEffort || supportsReasoningBudget || reasoningFixed)) {
+    return <div className="text-xs opacity-60 p-2">У этой модели нет настраиваемых параметров.</div>;
+  }
+
+  // Значения: сохранённое пользователем → опубликованный дефолт модели → общепринятое.
   const temp = saved.temperature ?? defaults.temperature ?? 1;
   const topP = saved.top_p ?? defaults.top_p ?? 1;
   const reasoningEffort = saved.reasoning_effort ?? '';
+  const reasoningBudget = saved.reasoning_max_tokens ?? '';
   const maxTokens = saved.max_tokens ?? '';
 
   const update = (patch) => setOpenrouterModelParams(modelId, patch);
   const reset = () =>
     setOpenrouterModelParams(modelId, {
-      temperature: undefined,
-      top_p: undefined,
-      max_tokens: undefined,
-      reasoning_effort: undefined,
+      temperature: undefined, top_p: undefined, max_tokens: undefined,
+      reasoning_effort: undefined, reasoning_max_tokens: undefined,
     });
+
+  const hasPublishedDefaults = defaults && Object.keys(defaults).some((k) => defaults[k] != null);
 
   return (
     <div className="grid gap-2 p-2 rounded-md border border-foreground/20">
-      <div className="text-xs opacity-70">Параметры модели (дефолты — с OpenRouter)</div>
-      {supportsReasoning && (
+      <div className="text-xs opacity-70">
+        Параметры модели {hasPublishedDefaults ? '(дефолты — с OpenRouter)' : '(пустое = дефолт провайдера)'}
+      </div>
+
+      {supportsEffort && (
         <label className="grid gap-1 text-xs">
-          Уровень рассуждений (reasoning)
+          Уровень рассуждений (reasoning){reasoning?.mandatory ? ' · нельзя выключить' : ''}
           <select
             className={cx(selectClass, 'text-sm py-1')}
             value={reasoningEffort}
             onChange={(e) => update({ reasoning_effort: e.target.value || undefined })}
           >
-            <option value="">по умолчанию</option>
-            <option value="low">low</option>
-            <option value="medium">medium</option>
-            <option value="high">high</option>
+            <option value="">
+              по умолчанию{reasoning?.default_effort ? ` (${reasoning.default_effort})` : ''}
+            </option>
+            {efforts.map((e) => (
+              <option key={e} value={e}>{e}</option>
+            ))}
           </select>
         </label>
       )}
-      {supportsTemp && (
+
+      {supportsReasoningBudget && (
         <label className="grid gap-1 text-xs">
-          <span>Температура: {Number(temp).toFixed(2)}</span>
-          <input
-            type="range"
-            min="0"
-            max="2"
-            step="0.05"
-            value={temp}
-            onChange={(e) => update({ temperature: parseFloat(e.target.value) })}
-          />
-        </label>
-      )}
-      {supportsTopP && (
-        <label className="grid gap-1 text-xs">
-          <span>top_p: {Number(topP).toFixed(2)}</span>
-          <input
-            type="range"
-            min="0"
-            max="1"
-            step="0.01"
-            value={topP}
-            onChange={(e) => update({ top_p: parseFloat(e.target.value) })}
-          />
-        </label>
-      )}
-      {supportsMaxTokens && (
-        <label className="grid gap-1 text-xs">
-          <span>Макс. токенов ответа{modelInfo.contextLength ? ` (лимит модели ${modelInfo.contextLength})` : ''}</span>
+          <span>Бюджет токенов на размышление{maxLimit ? ` (до ${maxLimit})` : ''}</span>
           <input
             type="number"
             min="1"
+            max={maxLimit || undefined}
             className={cx(inputClass, 'text-sm py-1')}
-            value={maxTokens}
+            value={reasoningBudget}
             placeholder="по умолчанию"
-            onChange={(e) => update({ max_tokens: e.target.value ? parseInt(e.target.value) : undefined })}
+            onChange={(e) => update({ reasoning_max_tokens: e.target.value ? parseInt(e.target.value) : undefined })}
           />
         </label>
       )}
-      <button
-        type="button"
-        className="text-xs opacity-60 hover:opacity-100 underline justify-self-start"
-        onClick={reset}
-      >
+
+      {reasoningFixed && (
+        <div className="text-[11px] opacity-60">
+          Рассуждения включены{reasoning?.mandatory ? ' (обязательны, не отключаются)' : ''}; уровень у этой модели не настраивается.
+        </div>
+      )}
+
+      {supportsTemp && (
+        <label className="grid gap-1 text-xs">
+          <span>Температура: {Number(temp).toFixed(2)}{saved.temperature == null ? ' (дефолт)' : ''}</span>
+          <input type="range" min="0" max="2" step="0.05" value={temp}
+            onChange={(e) => update({ temperature: parseFloat(e.target.value) })} />
+        </label>
+      )}
+
+      {supportsTopP && (
+        <label className="grid gap-1 text-xs">
+          <span>top_p: {Number(topP).toFixed(2)}{saved.top_p == null ? ' (дефолт)' : ''}</span>
+          <input type="range" min="0" max="1" step="0.01" value={topP}
+            onChange={(e) => update({ top_p: parseFloat(e.target.value) })} />
+        </label>
+      )}
+
+      {supportsMaxTokens && (
+        <label className="grid gap-1 text-xs">
+          <span>Макс. токенов ответа{maxLimit ? ` (лимит ${maxLimit})` : ''}</span>
+          <input type="number" min="1" max={maxLimit || undefined}
+            className={cx(inputClass, 'text-sm py-1')}
+            value={maxTokens} placeholder="по умолчанию"
+            onChange={(e) => update({ max_tokens: e.target.value ? parseInt(e.target.value) : undefined })} />
+        </label>
+      )}
+
+      <button type="button" className="text-xs opacity-60 hover:opacity-100 underline justify-self-start" onClick={reset}>
         Сбросить к дефолтам
       </button>
     </div>
@@ -592,9 +624,28 @@ function SettingsPanel({ onClose, isBottomPanel }) {
               />
             </div>
 
+            {/* Размышления (reasoning). LM Studio передаёт reasoning_effort только для моделей,
+                которые это умеют (напр. gpt-oss); у остальных управляется шаблоном модели.
+                Отдельного «бюджета токенов на размышление» у LM Studio нет — reasoning считается
+                в общий «Макс. токенов ответа» выше. */}
+            <div className="grid gap-1">
+              <label className="text-xs">Уровень размышлений (reasoning_effort)</label>
+              <select
+                value={localParams.reasoning_effort ?? ''}
+                onChange={(e) => setLP({ reasoning_effort: e.target.value })}
+                className={cx(selectClass, 'text-sm py-1')}
+              >
+                <option value="">По умолчанию (как решит модель)</option>
+                <option value="low">Низкий — быстрее, короче думает</option>
+                <option value="medium">Средний</option>
+                <option value="high">Высокий — думает дольше и тщательнее</option>
+              </select>
+              <span className="text-[11px] opacity-50">Работает у моделей с поддержкой effort (gpt-oss и т.п.); иначе игнорируется. Общую длину размышлений ограничивает «Макс. токенов ответа».</span>
+            </div>
+
             <button
               type="button"
-              onClick={() => setLocalParams({ temperature: 0.7, max_tokens: 8192, top_p: 1 })}
+              onClick={() => setLocalParams({ temperature: 0.7, max_tokens: 8192, top_p: 1, reasoning_effort: '' })}
               className="text-[11px] underline opacity-60 hover:opacity-100 w-fit"
             >
               Сбросить к дефолтам

@@ -14,6 +14,17 @@ interface ModelInfo {
   supportedParameters?: string[];
   defaultParameters?: Record<string, any>;
   contextLength?: number;
+  // Реальный лимит ответа (top_provider.max_completion_tokens) и схема reasoning модели:
+  // supported_efforts — допустимые уровни; default_effort — дефолтный; mandatory — нельзя выключить;
+  // supports_max_tokens — принимает бюджет токенов на размышление вместо/вместе с уровнем.
+  maxCompletionTokens?: number;
+  reasoning?: {
+    mandatory?: boolean;
+    default_enabled?: boolean;
+    supported_efforts?: string[];
+    default_effort?: string;
+    supports_max_tokens?: boolean;
+  } | null;
 }
 
 /**
@@ -126,11 +137,14 @@ async function fetchOpenRouterModels(apiKey: string): Promise<ModelInfo[]> {
     return (data.data || []).map((m: any) => ({
       value: m.id,
       label: m.name || m.id,
-      // OpenRouter exposes which params a model supports and their defaults —
-      // used to render only relevant controls, pre-filled with the model's defaults.
+      // OpenRouter публикует по каждой модели: какие параметры поддерживаются, их дефолты,
+      // схему reasoning (допустимые уровни/дефолт/можно ли выключить) и реальный лимит ответа.
+      // Используем это, чтобы показать ТОЛЬКО реальные настройки с реальными значениями.
       supportedParameters: Array.isArray(m.supported_parameters) ? m.supported_parameters : [],
       defaultParameters: m.default_parameters || {},
       contextLength: m.context_length,
+      maxCompletionTokens: m.top_provider?.max_completion_tokens || undefined,
+      reasoning: m.reasoning || null,
     }));
   } catch (e) {
     console.error('Error fetching OpenRouter models:', e);

@@ -2737,8 +2737,22 @@ async function runOpenAICompatibleAgent(
           if (typeof mp.top_p === 'number') requestBody.top_p = mp.top_p;
           if (typeof mp.top_k === 'number') requestBody.top_k = mp.top_k;
           if (typeof mp.max_tokens === 'number' && mp.max_tokens > 0) requestBody.max_tokens = mp.max_tokens;
-          // Единый параметр reasoning у OpenRouter для reasoning-моделей
-          if (mp.reasoning_effort) requestBody.reasoning = { effort: mp.reasoning_effort };
+          // Управление «размышлениями» (reasoning) — формат РАЗНЫЙ у провайдеров (по их докам):
+          //  • OpenRouter: только объект reasoning:{ effort, max_tokens } (effort:
+          //    none/minimal/low/medium/high/max); top-level reasoning_effort НЕ поддерживается.
+          //  • LM Studio (local) / OpenAI: top-level reasoning_effort (low/medium/high); своего
+          //    бюджета токенов на размышление у LM Studio нет — управляется уровнем.
+          const hasReasoningMax = typeof mp.reasoning_max_tokens === 'number' && mp.reasoning_max_tokens > 0;
+          if (mp.reasoning_effort || hasReasoningMax) {
+            if (config.providerName === 'OpenRouter') {
+              const reasoning: any = {};
+              if (mp.reasoning_effort) reasoning.effort = mp.reasoning_effort;
+              if (hasReasoningMax) reasoning.max_tokens = mp.reasoning_max_tokens;
+              requestBody.reasoning = reasoning;
+            } else if (mp.reasoning_effort) {
+              requestBody.reasoning_effort = mp.reasoning_effort;
+            }
+          }
         } else {
           requestBody.temperature = 0.7;
         }
@@ -2823,14 +2837,18 @@ async function runOpenAICompatibleAgent(
               const delta = choice.delta;
               if (!delta) continue;
 
-              // Ризонинг: показываем всегда, когда модель шлёт reasoning_content
-              // (Z.AI GLM, OpenRouter reasoning-модели, локальные Qwen/DeepSeek через LM Studio).
-              if (delta.reasoning_content) {
+              // Ризонинг приходит под разными именами: reasoning_content (Z.AI GLM, Qwen/DeepSeek
+              // через LM Studio) и reasoning (OpenRouter, gpt-oss/o3-mini-стиль в LM Studio).
+              const reasoningDelta =
+                (typeof delta.reasoning_content === 'string' && delta.reasoning_content) ||
+                (typeof delta.reasoning === 'string' && delta.reasoning) ||
+                '';
+              if (reasoningDelta) {
                 if (!thinkingStarted) {
                   thinkingStarted = true;
                   controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'thinking_start' })}\n\n`));
                 }
-                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'thinking', content: delta.reasoning_content })}\n\n`));
+                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'thinking', content: reasoningDelta })}\n\n`));
               }
 
               // Stream text content

@@ -44,10 +44,11 @@ export const defaultSettings = {
   localApiKey: '', // обычно не нужен
   // Параметры генерации локальной модели: { temperature, max_tokens, top_p }.
   // max_tokens ограничивает длину ответа (важно для reasoning-моделей, чтобы не «думали» бесконечно).
-  localModelParams: { temperature: 0.7, max_tokens: 8192 },
+  // Хранится JSON-строкой (persistentMap умеет только строки; объект превратился бы в "[object Object]").
+  localModelParams: '{"temperature":0.7,"max_tokens":8192}',
   // Per-model параметры OpenRouter, ключ = id модели: { temperature, reasoning_effort, top_p, max_tokens }.
-  // Пусто → на UI подтягиваются дефолты модели с OpenRouter (default_parameters).
-  openrouterModelParams: {},
+  // Пусто → на UI подтягиваются дефолты модели с OpenRouter (default_parameters). Тоже JSON-строка.
+  openrouterModelParams: '{}',
   isBracketMatchingEnabled: true,
   isBracketClosingEnabled: true,
   isLineNumbersDisplayed: true,
@@ -119,6 +120,20 @@ export function useSettings() {
     }
   }
 
+  // Параметры моделей хранятся JSON-строкой — парсим в объект (терпимо к старым/битым значениям)
+  let localModelParams = {};
+  try {
+    localModelParams = typeof state.localModelParams === 'string' ? JSON.parse(state.localModelParams) : (state.localModelParams || {});
+  } catch (e) {
+    localModelParams = { temperature: 0.7, max_tokens: 8192 };
+  }
+  let openrouterModelParams = {};
+  try {
+    openrouterModelParams = typeof state.openrouterModelParams === 'string' ? JSON.parse(state.openrouterModelParams) : (state.openrouterModelParams || {});
+  } catch (e) {
+    openrouterModelParams = {};
+  }
+
   return {
     ...state,
     isZen: parseBoolean(state.isZen),
@@ -141,6 +156,8 @@ export function useSettings() {
     isPanelPinned: parseBoolean(state.isPanelPinned),
     isPanelOpen: parseBoolean(state.isPanelOpen),
     userPatterns: userPatterns,
+    localModelParams: localModelParams,
+    openrouterModelParams: openrouterModelParams,
     multiChannelOrbits: parseBoolean(state.multiChannelOrbits),
     includePrebakeScriptInShare: parseBoolean(state.includePrebakeScriptInShare),
     enabledPacks: enabledPacks,
@@ -191,14 +208,16 @@ export const setAiModel = (model) => settingsMap.setKey('aiModel', model);
 export const setLocalBaseUrl = (url) => settingsMap.setKey('localBaseUrl', url);
 export const setLocalApiKey = (key) => settingsMap.setKey('localApiKey', key);
 export const setLocalModelParams = (params) => {
-  const cur = settingsMap.get().localModelParams || {};
-  settingsMap.setKey('localModelParams', { ...cur, ...params });
+  let cur = {};
+  try { cur = JSON.parse(settingsMap.get().localModelParams || '{}'); } catch (e) { cur = {}; }
+  settingsMap.setKey('localModelParams', JSON.stringify({ ...cur, ...params }));
 };
 // Сохранить параметры конкретной OpenRouter-модели (merge в общий словарь по id модели)
 export const setOpenrouterModelParams = (modelId, params) => {
-  const cur = settingsMap.get().openrouterModelParams || {};
+  let cur = {};
+  try { cur = JSON.parse(settingsMap.get().openrouterModelParams || '{}'); } catch (e) { cur = {}; }
   const next = { ...cur, [modelId]: { ...(cur[modelId] || {}), ...params } };
-  settingsMap.setKey('openrouterModelParams', next);
+  settingsMap.setKey('openrouterModelParams', JSON.stringify(next));
 };
 
 // Helper to get API key for current provider (free doesn't need a key)
