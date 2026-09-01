@@ -5,6 +5,7 @@ import ExportTab from './ExportTab';
 import { FilesTab } from './FilesTab';
 import { Reference } from './Reference';
 import { SettingsTab } from './SettingsTab';
+import { SupportTab } from './SupportTab';
 import { SoundsTab } from './SoundsTab';
 import { useLogger } from '../useLogger';
 import { WelcomeTab } from './WelcomeTab';
@@ -100,6 +101,7 @@ const tabNames = {
   консоль: 'console',
   экспорт: 'export',
   настройки: 'settings',
+  поддержать: 'support',
 };
 if (TAURI) {
   tabNames['файлы'] = 'files';
@@ -150,6 +152,8 @@ function PanelContent({ context, tab, isBottomPanel }) {
       return <Reference />;
     case 'settings':
       return <SettingsTab started={context.started} />;
+    case 'support':
+      return <SupportTab />;
     case 'files':
       return <FilesTab />;
     default:

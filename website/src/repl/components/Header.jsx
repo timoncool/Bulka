@@ -30,6 +30,9 @@ export function Header({ context, embedded = false }) {
   const [shareHash, setShareHash] = useState(null);
   const [isPublic, setIsPublic] = useState(true);
   const shareButtonRef = useRef(null);
+  // Десктоп: «поделиться» бесполезна (шеринг — это публичная ссылка bulka.app), прячем.
+  const isDesktopApp =
+    typeof window !== 'undefined' && (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost');
 
   // Handle share button click
   const handleShareClick = useCallback(async () => {
@@ -352,7 +355,7 @@ export function Header({ context, embedded = false }) {
           >
             {!isEmbedded && <span>обновить</span>}
           </button>
-          {!isEmbedded && (
+          {!isEmbedded && !isDesktopApp && (
             <div className="relative">
               <button
                 ref={shareButtonRef}
