@@ -2626,6 +2626,7 @@ async function runOpenAICompatibleAgent(
     providerName: string;
     headers: Record<string, string>;
     handleThinking?: boolean;
+    modelParams?: Record<string, any>;
   },
   model: string,
   messages: any[],
@@ -2664,8 +2665,22 @@ async function runOpenAICompatibleAgent(
           stream: true,
           tools: TOOLS_OPENAI,
           tool_choice: 'auto',
-          temperature: 0.7,
         };
+
+        // Per-model параметры. Для OpenRouter (config.modelParams задан) отправляем ТОЛЬКО
+        // то, что пользователь явно выставил — иначе применяются дефолты модели на стороне
+        // OpenRouter (default_parameters). Для остальных (Z.AI) — прежний дефолт 0.7.
+        const mp = config.modelParams;
+        if (mp) {
+          if (typeof mp.temperature === 'number') requestBody.temperature = mp.temperature;
+          if (typeof mp.top_p === 'number') requestBody.top_p = mp.top_p;
+          if (typeof mp.top_k === 'number') requestBody.top_k = mp.top_k;
+          if (typeof mp.max_tokens === 'number' && mp.max_tokens > 0) requestBody.max_tokens = mp.max_tokens;
+          // Единый параметр reasoning у OpenRouter для reasoning-моделей
+          if (mp.reasoning_effort) requestBody.reasoning = { effort: mp.reasoning_effort };
+        } else {
+          requestBody.temperature = 0.7;
+        }
 
         const response = await fetchWithRetry(
           config.apiUrl,
@@ -2844,7 +2859,7 @@ function truncateMessageContent(content: string, maxChars: number = 30000): stri
 export const POST: APIRoute = async ({ request }) => {
   try {
     const body = await request.json();
-    let { messages, apiKey, provider, model, currentCode, selectedCode } = body;
+    let { messages, apiKey, provider, model, currentCode, selectedCode, modelParams } = body;
 
     if (!apiKey) {
       return new Response(
@@ -2897,6 +2912,7 @@ export const POST: APIRoute = async ({ request }) => {
             'HTTP-Referer': 'https://bulka.app',
             'X-Title': 'Bulka AI',
           },
+          modelParams: modelParams || {},
         },
         model, messages, currentCode || '', selectedCode || null
       );

@@ -37,7 +37,10 @@ export const defaultSettings = {
   openrouterApiKey: '',
   aiProvider: aiProviders.openai,
   aiModel: '', // Loaded dynamically from provider API
-  gpt4freeSubProvider: 'default', // gpt4free sub-provider (default, nectar, pollinations, etc.)
+  gpt4freeSubProvider: 'pollinations', // gpt4free sub-provider. 'default'/Auto часто отдаёт 502 — берём стабильный pollinations
+  // Per-model параметры OpenRouter, ключ = id модели: { temperature, reasoning_effort, top_p, max_tokens }.
+  // Пусто → на UI подтягиваются дефолты модели с OpenRouter (default_parameters).
+  openrouterModelParams: {},
   isBracketMatchingEnabled: true,
   isBracketClosingEnabled: true,
   isLineNumbersDisplayed: true,
@@ -179,6 +182,12 @@ export const setOpenrouterApiKey = (key) => settingsMap.setKey('openrouterApiKey
 export const setAiProvider = (provider) => settingsMap.setKey('aiProvider', provider);
 export const setAiModel = (model) => settingsMap.setKey('aiModel', model);
 export const setGpt4freeSubProvider = (provider) => settingsMap.setKey('gpt4freeSubProvider', provider);
+// Сохранить параметры конкретной OpenRouter-модели (merge в общий словарь по id модели)
+export const setOpenrouterModelParams = (modelId, params) => {
+  const cur = settingsMap.get().openrouterModelParams || {};
+  const next = { ...cur, [modelId]: { ...(cur[modelId] || {}), ...params } };
+  settingsMap.setKey('openrouterModelParams', next);
+};
 
 // Helper to get API key for current provider (gpt4free doesn't need a key)
 export const getApiKeyForProvider = (provider, settings) => {

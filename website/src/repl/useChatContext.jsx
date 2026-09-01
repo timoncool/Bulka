@@ -18,7 +18,7 @@ let g4fModule = null;
 /**
  * Get or create GPT4Free client for specific sub-provider
  */
-async function getG4fClient(subProvider = 'default') {
+async function getG4fClient(subProvider = 'pollinations') {
   // Check cache first
   if (g4fClientsCache[subProvider]) {
     return g4fClientsCache[subProvider];
@@ -431,7 +431,7 @@ export function useChatContext(replContext) {
 
         const editor = replContext?.editorRef?.current;
 
-        for await (const message of runGpt4freeClientChat(gpt4freeMessages, aiModel, gpt4freeSubProvider || 'default', setLastAction)) {
+        for await (const message of runGpt4freeClientChat(gpt4freeMessages, aiModel, (gpt4freeSubProvider === 'default' ? 'pollinations' : (gpt4freeSubProvider || 'pollinations')), setLastAction)) {
           if (message.type === 'text' && message.content) {
             fullContent += message.content;
 
@@ -547,6 +547,8 @@ export function useChatContext(replContext) {
             model: aiModel,
             currentCode,
             selectedCode, // Send selected code if any
+            // Параметры конкретной модели OpenRouter (temperature/reasoning_effort/top_p/max_tokens)
+            modelParams: aiProvider === 'openrouter' ? (settings.openrouterModelParams?.[aiModel] || {}) : undefined,
           }),
           signal: abortControllerRef.current.signal,
         });

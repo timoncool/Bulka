@@ -6,7 +6,7 @@ import { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import cx from '@src/cx.mjs';
 import ReactMarkdown from 'react-markdown';
 import { useChatContext } from '../../useChatContext';
-import { useSettings, setOpenaiApiKey, setAnthropicApiKey, setGeminiApiKey, setZaiApiKey, setOpenrouterApiKey, setAiProvider, setAiModel, setGpt4freeSubProvider, getApiKeyForProvider } from '../../../settings.mjs';
+import { useSettings, setOpenaiApiKey, setAnthropicApiKey, setGeminiApiKey, setZaiApiKey, setOpenrouterApiKey, setAiProvider, setAiModel, setGpt4freeSubProvider, setOpenrouterModelParams, getApiKeyForProvider } from '../../../settings.mjs';
 import { getRandomSuggestions } from '../../data/suggestions.js';
 
 // Common input styles matching SettingsTab
@@ -134,19 +134,28 @@ async function fetchGpt4freeProviders() {
 /**
  * Fetch gpt4free models for specific provider
  */
-async function fetchGpt4freeModels(subProvider = 'default') {
+// Ограничиваем ожидание: бесплатный бэкенд GPT4Free (g4f.space) периодически лежит
+// (502) — без таймаута список моделей висит в «Загрузка...» бесконечно.
+function g4fWithTimeout(promise, ms, label) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error(`GPT4Free ${label}: таймаут ${ms} мс`)), ms)),
+  ]);
+}
+
+async function fetchGpt4freeModels(subProvider = 'pollinations') {
   try {
     const module = await loadG4fProviders();
     const { createClient } = module;
 
     // Get or create client for this provider (createClient is now async)
     if (!g4fClientsCache[subProvider]) {
-      g4fClientsCache[subProvider] = await createClient(subProvider);
+      g4fClientsCache[subProvider] = await g4fWithTimeout(createClient(subProvider), 15000, 'createClient');
     }
     const client = g4fClientsCache[subProvider];
 
     // Get models from client
-    const modelList = await client.models.list();
+    const modelList = await g4fWithTimeout(client.models.list(), 15000, 'models.list');
 
     // Format models - filter chat/text only
     const models = modelList
@@ -164,6 +173,109 @@ async function fetchGpt4freeModels(subProvider = 'default') {
 }
 
 /**
+ * Настройки конкретной OpenRouter-модели: показываем только поддерживаемые ею параметры,
+ * дефолты подтягиваются с OpenRouter (supported_parameters / default_parameters).
+ */
+function OpenRouterModelSettings({ modelInfo }) {
+  const settings = useSettings();
+  const modelId = modelInfo?.value;
+  const supported = modelInfo?.supportedParameters || [];
+  const defaults = modelInfo?.defaultParameters || {};
+  const saved = (settings.openrouterModelParams || {})[modelId] || {};
+
+  if (!modelId) return null;
+
+  const supportsTemp = supported.includes('temperature');
+  const supportsTopP = supported.includes('top_p');
+  const supportsMaxTokens = supported.includes('max_tokens');
+  const supportsReasoning =
+    supported.includes('reasoning') || supported.includes('reasoning_effort') || supported.includes('include_reasoning');
+
+  if (!(supportsTemp || supportsTopP || supportsMaxTokens || supportsReasoning)) return null;
+
+  const temp = saved.temperature ?? defaults.temperature ?? 1;
+  const topP = saved.top_p ?? defaults.top_p ?? 1;
+  const reasoningEffort = saved.reasoning_effort ?? '';
+  const maxTokens = saved.max_tokens ?? '';
+
+  const update = (patch) => setOpenrouterModelParams(modelId, patch);
+  const reset = () =>
+    setOpenrouterModelParams(modelId, {
+      temperature: undefined,
+      top_p: undefined,
+      max_tokens: undefined,
+      reasoning_effort: undefined,
+    });
+
+  return (
+    <div className="grid gap-2 p-2 rounded-md border border-foreground/20">
+      <div className="text-xs opacity-70">Параметры модели (дефолты — с OpenRouter)</div>
+      {supportsReasoning && (
+        <label className="grid gap-1 text-xs">
+          Уровень рассуждений (reasoning)
+          <select
+            className={cx(selectClass, 'text-sm py-1')}
+            value={reasoningEffort}
+            onChange={(e) => update({ reasoning_effort: e.target.value || undefined })}
+          >
+            <option value="">по умолчанию</option>
+            <option value="low">low</option>
+            <option value="medium">medium</option>
+            <option value="high">high</option>
+          </select>
+        </label>
+      )}
+      {supportsTemp && (
+        <label className="grid gap-1 text-xs">
+          <span>Температура: {Number(temp).toFixed(2)}</span>
+          <input
+            type="range"
+            min="0"
+            max="2"
+            step="0.05"
+            value={temp}
+            onChange={(e) => update({ temperature: parseFloat(e.target.value) })}
+          />
+        </label>
+      )}
+      {supportsTopP && (
+        <label className="grid gap-1 text-xs">
+          <span>top_p: {Number(topP).toFixed(2)}</span>
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.01"
+            value={topP}
+            onChange={(e) => update({ top_p: parseFloat(e.target.value) })}
+          />
+        </label>
+      )}
+      {supportsMaxTokens && (
+        <label className="grid gap-1 text-xs">
+          <span>Макс. токенов ответа{modelInfo.contextLength ? ` (лимит модели ${modelInfo.contextLength})` : ''}</span>
+          <input
+            type="number"
+            min="1"
+            className={cx(inputClass, 'text-sm py-1')}
+            value={maxTokens}
+            placeholder="по умолчанию"
+            onChange={(e) => update({ max_tokens: e.target.value ? parseInt(e.target.value) : undefined })}
+          />
+        </label>
+      )}
+      <button
+        type="button"
+        className="text-xs opacity-60 hover:opacity-100 underline justify-self-start"
+        onClick={reset}
+      >
+        Сбросить к дефолтам
+      </button>
+    </div>
+  );
+}
+
+/**
  * Settings panel for API configuration - all keys stored separately
  * Models are fetched dynamically from provider APIs
  * Adapts layout for bottom panel (horizontal) vs right panel (vertical)
@@ -178,7 +290,7 @@ function SettingsPanel({ onClose, isBottomPanel }) {
   const [provider, setProvider] = useState(settings.aiProvider || 'openai');
 
   // GPT4Free sub-provider state
-  const [gpt4freeSubProvider, setGpt4freeSubProviderLocal] = useState(settings.gpt4freeSubProvider || 'default');
+  const [gpt4freeSubProvider, setGpt4freeSubProviderLocal] = useState(settings.gpt4freeSubProvider === 'default' ? 'pollinations' : (settings.gpt4freeSubProvider || 'pollinations'));
   const [gpt4freeProviders, setGpt4freeProviders] = useState([]); // Loaded dynamically
   const [loadingProviders, setLoadingProviders] = useState(false);
 
@@ -214,7 +326,7 @@ function SettingsPanel({ onClose, isBottomPanel }) {
   }, [openaiKey, anthropicKey, geminiKey, zaiKey, openrouterKey]);
 
   // Fetch models when API key changes (or for gpt4free without key)
-  const loadModelsForProvider = useCallback(async (p, key, subProvider = 'default') => {
+  const loadModelsForProvider = useCallback(async (p, key, subProvider = 'pollinations') => {
     // gpt4free doesn't need API key
     if (p !== 'gpt4free' && (!key || key.length < 10)) return;
 
@@ -467,6 +579,11 @@ function SettingsPanel({ onClose, isBottomPanel }) {
           </button>
         </div>
       </div>
+
+      {/* Настройки конкретной модели OpenRouter (reasoning/temperature/top_p/max_tokens) */}
+      {provider === 'openrouter' && model && (
+        <OpenRouterModelSettings modelInfo={currentModels.find((m) => m.value === model)} />
+      )}
 
       {/* API Keys - скрываем для gpt4free */}
       {!isGpt4free && (

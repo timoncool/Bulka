@@ -10,6 +10,10 @@ export const prerender = false;
 interface ModelInfo {
   value: string;
   label: string;
+  // OpenRouter per-model metadata (used to build the model-specific settings UI)
+  supportedParameters?: string[];
+  defaultParameters?: Record<string, any>;
+  contextLength?: number;
 }
 
 /**
@@ -122,6 +126,11 @@ async function fetchOpenRouterModels(apiKey: string): Promise<ModelInfo[]> {
     return (data.data || []).map((m: any) => ({
       value: m.id,
       label: m.name || m.id,
+      // OpenRouter exposes which params a model supports and their defaults —
+      // used to render only relevant controls, pre-filled with the model's defaults.
+      supportedParameters: Array.isArray(m.supported_parameters) ? m.supported_parameters : [],
+      defaultParameters: m.default_parameters || {},
+      contextLength: m.context_length,
     }));
   } catch (e) {
     console.error('Error fetching OpenRouter models:', e);
