@@ -1,6 +1,6 @@
 [package]
 name = "bulka-desktop"
-version = "0.2.1"
+version = "0.2.2"
 edition = "2021"
 description = "Tauri-оболочка Bulka: поднимает Node-сервер Astro на 127.0.0.1:<порт> и открывает окно"
 
@@ -16,6 +16,9 @@ tauri = { version = "2", features = [] }
 tauri-plugin-dialog = "2"
 tauri-plugin-opener = "2"
 tauri-plugin-updater = "2"
+# Node-сервер поднимаем через shell-плагин: Tauri сам трекает дочерний процесс и убивает его
+# при выходе приложения (kill children on App drop) — без осиротевших node.exe. Это штатный путь.
+tauri-plugin-shell = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 

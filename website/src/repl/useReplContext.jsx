@@ -110,6 +110,11 @@ export function useReplContext() {
         setLatestCode(code);
         window.location.hash = '#' + code2hash(code);
         setDocumentTitle(code);
+        // Заголовок трека для записей: десктоп кладёт WAV в папку `recordings/<название трека>/`.
+        try {
+          const m = code.match(/\/\/\s*@title\s+(.+?)(?:\n|$)/);
+          window.__bulkaTrackTitle = m ? m[1].trim().replace(/[<>:"/\\|?*]/g, '_').slice(0, 100) : '';
+        } catch { /* ignore */ }
         const viewingPatternData = getViewingPatternData();
         setVersionDefaultsFrom(code);
         const data = { ...viewingPatternData, code };

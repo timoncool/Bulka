@@ -38,10 +38,12 @@ async function saveViaServer(href, filename) {
       fr.readAsDataURL(blob); // корректно кодирует и большие файлы
     });
     const dataBase64 = String(dataUrl).split(',')[1] || '';
+    // Название трека (из // @title) — чтобы записи легли в recordings/<трек>/.
+    const subfolder = (typeof window !== 'undefined' && window.__bulkaTrackTitle) || '';
     const r = await fetch('/api/save-file', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ filename, dataBase64 }),
+      body: JSON.stringify({ filename, dataBase64, subfolder }),
     });
     const j = await r.json();
     toast(j.ok ? `💾 Сохранено в папку приложения: ${shorten(j.path)}` : `Ошибка сохранения: ${j.error || ''}`);

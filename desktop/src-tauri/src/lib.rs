@@ -1,26 +1,29 @@
 //! Tauri-оболочка Bulka (десктоп). Сама ничего тяжёлого не делает: поднимает автономный
-//! Astro Node-сервер (`website/dist/server/entry.mjs`) на 127.0.0.1:<свободный порт> дочерним
-//! процессом `node.exe` и открывает окно на этот URL. Сервер сам раздаёт SPA и API (`/api/chat`,
-//! `/api/models`) на одном origin — фронт работает с относительными путями без правок.
+//! Astro Node-сервер (`website/dist/server/entry.mjs`) на 127.0.0.1:<порт> и открывает окно.
+//! Сервер сам раздаёт SPA и API (`/api/chat`, `/api/models`, `/mcp`) на одном origin.
 //!
-//! Паттерн портативности и авто-обновления взят из эталона dub-studio (desktop/src-tauri/src/lib.rs):
-//! app_root_dir = каталог рядом с exe; WEBVIEW2_USER_DATA_FOLDER (там же localStorage — т.е. ключи
-//! и настройки пользователя) держим рядом с exe. Удалил папку — удалил приложение.
+//! Node поднимаем через ШТАТНЫЙ shell-плагин Tauri (`app.shell().command(...)`), а НЕ raw
+//! std::process::Command — тогда Tauri сам трекает дочерний процесс и убивает его при выходе
+//! приложения (kill children on App drop), без осиротевших node.exe. Спавн — в `setup()`
+//! (только там доступен AppHandle), окно создаётся после готовности сервера.
 //!
-//! Отличие от dub-studio: их сервер — Rust-крейт в этом же процессе; наш агент на Node, поэтому
-//! поднимаем node.exe как дочерний процесс и УБИВАЕМ его при выходе (RunEvent::Exit).
+//! Портативность/апдейт — как в эталоне dub-studio: app_root_dir = каталог рядом с exe;
+//! WEBVIEW2_USER_DATA_FOLDER (localStorage → ключи/настройки) держим рядом с exe.
 
-use std::fs::File;
+use std::io::Write;
 use std::net::{Ipv4Addr, SocketAddrV4, TcpListener, TcpStream};
 use std::path::PathBuf;
-use std::process::{Child, Command, Stdio};
 use std::sync::Mutex;
 use std::time::{Duration, Instant};
 
 use tauri::{Manager, RunEvent, WebviewUrl, WebviewWindowBuilder};
+use tauri_plugin_shell::process::{CommandChild, CommandEvent};
+use tauri_plugin_shell::ShellExt;
 
-/// Хендл дочернего Node-процесса, чтобы убить его при выходе приложения.
-struct ServerProc(Mutex<Option<Child>>);
+/// Хендл дочернего Node-процесса (управляется shell-плагином). Нужен, чтобы принудительно
+/// убить его ПЕРЕД установкой апдейта (при апдейте приложение не закрывается до рестарта,
+/// поэтому авто-очистка Tauri на выходе тут не срабатывает вовремя).
+struct ServerProc(Mutex<Option<CommandChild>>);
 
 /// Страница релизов (фолбэк-обновление для портативной сборки).
 const RELEASES_URL: &str = "https://github.com/timoncool/Bulka/releases/latest";
@@ -65,12 +68,12 @@ fn resolve_app_dir() -> PathBuf {
 }
 
 /// Путь к node.exe: бандлёный (`<app>/node/node.exe`), иначе системный `node` из PATH (дев).
-fn node_exe(app_dir: &PathBuf) -> PathBuf {
+fn node_exe(app_dir: &PathBuf) -> String {
     let bundled = app_dir.join("node").join("node.exe");
     if bundled.is_file() {
-        return bundled;
+        return bundled.to_string_lossy().into_owned();
     }
-    PathBuf::from("node")
+    "node".to_string()
 }
 
 /// Установленная (NSIS) сборка? У неё рядом лежит деинсталлятор. Иначе — портатив (просто папка).
@@ -86,8 +89,7 @@ fn pick_free_port() -> std::io::Result<u16> {
 }
 
 /// Порт десктопа: фиксированный (для стабильного URL MCP в конфиге Claude Desktop), env BULKA_PORT
-/// или дефолт 4188. Если занят (второй экземпляр/чужой процесс) — берём свободный (MCP-конфиг тогда
-/// укажет на первый экземпляр — это ок, обычно приложение одно).
+/// или дефолт 4188. Если занят — берём свободный.
 fn desktop_port() -> u16 {
     let fixed: u16 = std::env::var("BULKA_PORT").ok().and_then(|s| s.parse().ok()).unwrap_or(4188);
     if TcpListener::bind(SocketAddrV4::new(Ipv4Addr::LOCALHOST, fixed)).is_ok() {
@@ -110,39 +112,54 @@ fn wait_until_ready(port: u16, timeout: Duration) -> bool {
     false
 }
 
-/// Поднять автономный Astro Node-сервер дочерним процессом. Лог сервера — рядом с exe.
-fn spawn_server(app_dir: &PathBuf, port: u16) -> std::io::Result<Child> {
+/// Поднять Node-сервер через shell-плагин Tauri. Возвращает хендл дочернего процесса.
+/// Tauri сам убьёт его при выходе приложения; вывод сервера сливаем в `<exe>/bulka-server.log`.
+fn spawn_server(app: &tauri::AppHandle, app_dir: &PathBuf, port: u16) -> Option<CommandChild> {
     let node = node_exe(app_dir);
-    let entry = app_dir.join("dist").join("server").join("entry.mjs");
+    let entry = app_dir
+        .join("dist")
+        .join("server")
+        .join("entry.mjs")
+        .to_string_lossy()
+        .into_owned();
     let log_path = app_root_dir().join("bulka-server.log");
 
-    let mut cmd = Command::new(node);
-    cmd.arg(&entry)
+    let cmd = app
+        .shell()
+        .command(node)
+        .args([entry])
         .env("HOST", "127.0.0.1")
         .env("PORT", port.to_string())
         // Куда сохранять записи/экспорт (сервер кладёт файлы в <app_dir>/recordings и открывает папку).
-        .env("BULKA_APP_DIR", app_root_dir())
-        .current_dir(app_dir);
+        .env("BULKA_APP_DIR", app_root_dir().to_string_lossy().into_owned())
+        .current_dir(app_dir.clone());
 
-    if let Ok(log) = File::create(&log_path) {
-        if let Ok(log2) = log.try_clone() {
-            cmd.stdout(Stdio::from(log)).stderr(Stdio::from(log2));
+    let (mut rx, child) = match cmd.spawn() {
+        Ok(v) => v,
+        Err(e) => {
+            eprintln!("Не удалось запустить node-сервер: {e}");
+            return None;
         }
-    }
+    };
 
-    #[cfg(windows)]
-    {
-        use std::os::windows::process::CommandExt;
-        const CREATE_NO_WINDOW: u32 = 0x0800_0000;
-        cmd.creation_flags(CREATE_NO_WINDOW);
-    }
+    // Сливаем stdout/stderr сервера в лог-файл (и не даём буферу канала переполниться).
+    tauri::async_runtime::spawn(async move {
+        let mut log = std::fs::File::create(&log_path).ok();
+        while let Some(event) = rx.recv().await {
+            let line = match event {
+                CommandEvent::Stdout(b) | CommandEvent::Stderr(b) => b,
+                _ => continue,
+            };
+            if let Some(f) = log.as_mut() {
+                let _ = f.write_all(&line);
+            }
+        }
+    });
 
-    cmd.spawn()
+    Some(child)
 }
 
 /// Проверка обновления на GitHub-релизе и (по согласию юзера) установка через setup.exe.
-/// Установленная сборка — авто-скачивание+установка+перезапуск; портатив — открыть страницу релиза.
-/// Тихо выходит при отсутствии апдейта/сети.
 fn spawn_update_check(app: tauri::AppHandle) {
     use tauri_plugin_dialog::{DialogExt, MessageDialogButtons, MessageDialogKind};
     use tauri_plugin_updater::UpdaterExt;
@@ -185,20 +202,17 @@ fn spawn_update_check(app: tauri::AppHandle) {
         if !yes {
             return;
         }
-        // ВАЖНО: убиваем дочерний node.exe ДО запуска установщика. NSIS гасит только
-        // сам bulka-desktop.exe, но не знает про наш дочерний Node-сервер — а тот держит
-        // `node/node.exe`, `dist` и лог. Пока он жив, установщик не может перезаписать файлы
-        // и спотыкается на «файл занят» (юзеру приходится убивать node вручную и жать «Повтор»).
+        // Убиваем дочерний node.exe ДО установщика: при апдейте приложение не закрывается
+        // (перезапустится сами), поэтому авто-очистка Tauri на выходе не срабатывает — а живой
+        // node держит `node/node.exe`/`dist`, и NSIS спотыкается на «файл занят».
         if let Some(state) = app.try_state::<ServerProc>() {
             if let Ok(mut guard) = state.0.lock() {
-                if let Some(mut c) = guard.take() {
+                if let Some(c) = guard.take() {
                     let _ = c.kill();
-                    let _ = c.wait(); // дождаться завершения, чтобы ОС отпустила файловые хендлы
                 }
             }
         }
-        // небольшая пауза — дать Windows фактически освободить хендлы перед перезаписью
-        std::thread::sleep(Duration::from_millis(500));
+        std::thread::sleep(Duration::from_millis(500)); // дать ОС отпустить файловые хендлы
 
         match update.download_and_install(|_, _| {}, || {}).await {
             Ok(_) => app.restart(),
@@ -219,22 +233,29 @@ pub fn run() {
         std::env::set_var("WEBVIEW2_USER_DATA_FOLDER", app_root_dir().join("webview-data"));
     }
 
-    let app_dir = resolve_app_dir();
-    let port = desktop_port();
-    let child = spawn_server(&app_dir, port).ok();
-
-    if !wait_until_ready(port, Duration::from_secs(40)) {
-        eprintln!("Node-сервер Bulka не поднялся на 127.0.0.1:{port} за 40с");
-    }
-
-    let url = format!("http://127.0.0.1:{port}/");
-
     tauri::Builder::default()
+        .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
-        .manage(ServerProc(Mutex::new(child)))
+        .manage(ServerProc(Mutex::new(None)))
         .setup(move |app| {
+            let handle = app.handle().clone();
+            let app_dir = resolve_app_dir();
+            let port = desktop_port();
+
+            // Поднимаем node-сервер (Tauri трекает дочерний процесс и убьёт его на выходе).
+            let child = spawn_server(&handle, &app_dir, port);
+            if let Some(state) = app.try_state::<ServerProc>() {
+                if let Ok(mut g) = state.0.lock() {
+                    *g = child;
+                }
+            }
+            if !wait_until_ready(port, Duration::from_secs(40)) {
+                eprintln!("Node-сервер Bulka не поднялся на 127.0.0.1:{port} за 40с");
+            }
+
+            let url = format!("http://127.0.0.1:{port}/");
             let icon = app.default_window_icon().cloned();
             let win = WebviewWindowBuilder::new(
                 app,
@@ -250,17 +271,18 @@ pub fn run() {
             if let Some(ic) = icon {
                 let _ = win.set_icon(ic);
             }
+
             spawn_update_check(app.handle().clone());
             Ok(())
         })
         .build(tauri::generate_context!())
         .expect("ошибка запуска Tauri")
         .run(|app, event| {
-            // Закрыли приложение -> убиваем дочерний Node-сервер.
+            // Штатно Tauri сам убивает дочерний процесс на выходе; дублируем на всякий случай.
             if let RunEvent::Exit = event {
                 if let Some(state) = app.try_state::<ServerProc>() {
                     if let Ok(mut guard) = state.0.lock() {
-                        if let Some(mut c) = guard.take() {
+                        if let Some(c) = guard.take() {
                             let _ = c.kill();
                         }
                     }
