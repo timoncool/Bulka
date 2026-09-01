@@ -25,7 +25,7 @@ interface DocEntry {
  * Search ALL documentation from pre-built index (70+ MDX files)
  * This works in Vercel serverless because the index is bundled at build time
  */
-function searchAllDocs(query: string, maxResults: number = 5): string[] {
+export function searchAllDocs(query: string, maxResults: number = 5): string[] {
   const queryLower = query.toLowerCase();
   const queryWords = queryLower.split(/\s+/).filter(w => w.length > 2);
 
@@ -166,7 +166,7 @@ s("bd sd bd sd")
 /**
  * Get code examples by category
  */
-function getCodeExamples(category?: string): string {
+export function getCodeExamples(category?: string): string {
   if (category && CODE_EXAMPLES[category.toLowerCase()]) {
     return CODE_EXAMPLES[category.toLowerCase()];
   }
@@ -253,7 +253,7 @@ async function fetchWithRetry(
  * Tool definitions for the agent
  * Artifact-style editing: read, edit specific parts, append
  */
-const TOOLS_OPENAI = [
+export const TOOLS_OPENAI = [
   {
     type: 'function' as const,
     function: {

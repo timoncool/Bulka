@@ -3,6 +3,8 @@
 // (через mcp-remote → /mcp → эта шина) реально управляют живым приложением.
 // Активно ТОЛЬКО когда сайт раздаётся локально (десктоп: 127.0.0.1/localhost). На bulka.app — no-op.
 
+import { execClientTool } from './agentToolsClient.mjs';
+
 let es = null;
 let getEditorRef = null;
 let installed = false;
@@ -100,28 +102,13 @@ async function exec(tool, args) {
   }
   const editor = getEditorRef?.();
   if (!editor) throw new Error('Редактор Bulka ещё не готов');
-  switch (tool) {
-    case 'setCode':
-      editor.setCode(String(args.code ?? ''));
-      return 'Код установлен в редактор.';
-    case 'setCodeAndPlay':
-      editor.setCode(String(args.code ?? ''));
-      editor.evaluate();
-      return 'Код установлен и запущен.';
-    case 'appendCode': {
-      const cur = editor.code || '';
-      editor.setCode(cur + (cur.endsWith('\n') ? '' : '\n') + String(args.code ?? ''));
-      return 'Код дописан.';
-    }
-    case 'getCode':
-      return editor.code || '';
-    case 'play':
-      editor.evaluate();
-      return 'Воспроизведение запущено.';
-    case 'stop':
-      editor.stop();
-      return 'Остановлено.';
-    default:
-      throw new Error(`Неизвестная команда: ${tool}`);
+  // Удобная связка set+play (в реестре её нет — это MCP-only комбинация двух тулзов).
+  if (tool === 'setCodeAndPlay') {
+    execClientTool(editor, 'setFullCode', args);
+    execClientTool(editor, 'playMusic', {});
+    return 'Код установлен и запущен.';
   }
+  // Все остальные клиентские тулзы — через ЕДИНЫЙ исполнитель (тот же, что у встроенного агента).
+  const res = execClientTool(editor, tool, args);
+  return res.data ?? res.message;
 }

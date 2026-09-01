@@ -10,6 +10,7 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import { useSettings } from '../settings.mjs';
 import { soundMap } from '@strudel/webaudio';
 import { $strudel_log_history } from './components/useLogger.jsx';
+import { execClientTool } from './agentToolsClient.mjs';
 
 // Бесплатный AI БЕЗ авторизации/ключа: OVHcloud AI Endpoints (OpenAI-совместимый,
 // открытый CORS, стриминг). Проверено из браузера — gpt-oss отвечает и стримит.
@@ -702,159 +703,18 @@ export function useChatContext(replContext) {
 
           if (!editor) continue;
 
-          // setFullCode - полная замена кода
-          if (name === 'setFullCode' && args?.code) {
-            let code = args.code;
-            // Add @model meta tag if not already present
-            if (!code.includes('// @model')) {
-              const modelTag = `// @model ${aiProvider}/${aiModel}`;
-              // Insert after last meta comment line (// @...)
-              const lines = code.split('\n');
-              let lastMetaIdx = -1;
-              for (let i = 0; i < lines.length; i++) {
-                if (/^\s*\/\/\s*@\w+/.test(lines[i])) {
-                  lastMetaIdx = i;
-                } else if (lines[i].trim() !== '' && lastMetaIdx >= 0) {
-                  break;
-                }
-              }
-              if (lastMetaIdx >= 0) {
-                lines.splice(lastMetaIdx + 1, 0, modelTag);
-                code = lines.join('\n');
-              }
-            }
-            editor.setCode(code);
-            setLastAction('✓ Код установлен в редактор');
-            actionsExecuted.push('Код установлен');
-          }
-          // editCode - найти и заменить фрагмент
-          else if (name === 'editCode' && args?.search && args?.replace !== undefined) {
-            const currentCode = editor.code || '';
-            if (currentCode.includes(args.search)) {
-              const newCode = currentCode.replace(args.search, args.replace);
-              editor.setCode(newCode);
-              setLastAction('✓ Код отредактирован');
-              actionsExecuted.push('Код отредактирован');
-            } else {
-              setLastAction('⚠ Фрагмент не найден для замены');
-              actionsExecuted.push('Фрагмент не найден');
-            }
-          }
-          // appendCode - добавить в конец
-          else if (name === 'appendCode' && args?.code) {
-            const currentCode = editor.code || '';
-            const newCode = currentCode + '\n' + args.code;
-            editor.setCode(newCode);
-            setLastAction('✓ Код добавлен');
-            actionsExecuted.push('Код добавлен');
-          }
-          // playMusic - запустить
-          else if (name === 'playMusic') {
-            editor.evaluate();
-            setLastAction('▶ Воспроизведение запущено');
-            actionsExecuted.push('Воспроизведение запущено');
-          }
-          // stopMusic - остановить
-          else if (name === 'stopMusic') {
-            editor.stop();
-            setLastAction('⏹ Воспроизведение остановлено');
-            actionsExecuted.push('Воспроизведение остановлено');
-          }
-          // highlightCode - выделить фрагмент кода
-          else if (name === 'highlightCode' && args?.search) {
-            const found = editor.selectText?.(args.search);
-            if (found) {
-              setLastAction('🔍 Код выделен');
-              actionsExecuted.push('Код выделен');
-            } else {
-              setLastAction('⚠ Фрагмент не найден');
-              actionsExecuted.push('Фрагмент не найден');
-            }
-          }
-          // getAvailablePacks - получить список всех паков
-          else if (name === 'getAvailablePacks') {
-            const sounds = soundMap.get();
-            const packs = {};
-            Object.entries(sounds || {})
-              .filter(([key]) => !key.startsWith('_'))
-              .forEach(([soundName, { data }]) => {
-                const pack = data?.pack || 'other';
-                if (!packs[pack]) {
-                  packs[pack] = { banks: [], type: data?.type || 'sample', tag: data?.tag };
-                }
-                packs[pack].banks.push(soundName);
-              });
-            // Формируем читаемый ответ для агента с названиями банков
-            const packsList = Object.entries(packs)
-              .map(([packName, info]) => {
-                const bankNames = info.banks.sort();
-                // Для небольших паков (до 30 банков) показываем все названия
-                // Для больших - только первые 10 + счётчик
-                let banksStr;
-                if (bankNames.length <= 30) {
-                  banksStr = bankNames.join(', ');
-                } else {
-                  banksStr = bankNames.slice(0, 10).join(', ') + `, ... и ещё ${bankNames.length - 10}`;
-                }
-                return `• ${packName} (${info.banks.length} банков, ${info.type}${info.tag ? ', ' + info.tag : ''}):\n  Банки: ${banksStr}`;
-              })
-              .join('\n\n');
-            setLastAction(`📦 Найдено ${Object.keys(packs).length} паков`);
-            actionsExecuted.push(`Паки: ${Object.keys(packs).join(', ')}`);
-            // Store pack info for agent context
-            message.packResult = packsList;
-          }
-          // getBankSamples - получить содержимое конкретного банка
-          else if (name === 'getBankSamples' && args?.bankName) {
-            const sounds = soundMap.get();
-            const bankData = sounds?.[args.bankName];
-            if (bankData?.data) {
-              const { data } = bankData;
-              let samplesInfo = '';
-              if (data.type === 'sample' && data.samples) {
-                const samplesList = Array.isArray(data.samples) ? data.samples : Object.values(data.samples).flat();
-                samplesInfo = `Банк "${args.bankName}" (${data.pack || 'unknown'}):\n`;
-                samplesInfo += `Тип: ${data.type}\n`;
-                samplesInfo += `Семплов: ${samplesList.length}\n`;
-                samplesInfo += `Файлы:\n${samplesList.slice(0, 20).map((s, i) => `  ${i}: ${s}`).join('\n')}`;
-                if (samplesList.length > 20) {
-                  samplesInfo += `\n  ... и ещё ${samplesList.length - 20} файлов`;
-                }
-              } else {
-                samplesInfo = `Банк "${args.bankName}": тип ${data.type}, пак ${data.pack || 'unknown'}`;
-              }
-              setLastAction(`🎵 Банк ${args.bankName} найден`);
-              actionsExecuted.push(`Банк ${args.bankName}: ${data.samples?.length || 0} семплов`);
-              message.bankResult = samplesInfo;
-            } else {
-              setLastAction(`⚠ Банк ${args.bankName} не найден`);
-              actionsExecuted.push(`Банк ${args.bankName} не найден`);
-            }
-          }
-          // getConsole - получить логи консоли для отладки
-          else if (name === 'getConsole') {
-            // Сначала останавливаем воспроизведение
-            editor.stop();
-            setLastAction('⏹ Остановлено для чтения консоли');
-
-            // Получаем логи из истории
-            const logs = $strudel_log_history.get() || [];
-
-            if (logs.length === 0) {
-              message.consoleResult = 'Консоль пуста - нет логов.';
-              actionsExecuted.push('Консоль: пуста');
-            } else {
-              // Форматируем логи для агента
-              const formattedLogs = logs.map((log, i) => {
-                const countStr = log.count && log.count > 1 ? ` (x${log.count})` : '';
-                const typeStr = log.type ? `[${log.type}]` : '';
-                return `${i + 1}. ${typeStr} ${log.message}${countStr}`;
-              }).join('\n');
-
-              message.consoleResult = `Логи консоли (последние ${logs.length}):\n${formattedLogs}`;
-              setLastAction(`📋 Консоль: ${logs.length} записей`);
-              actionsExecuted.push(`Консоль: ${logs.length} записей`);
-            }
+          // ЕДИНЫЙ исполнитель клиентских тулзов — тот же код, что у MCP-моста (agentToolsClient.mjs).
+          try {
+            const injectArgs = name === 'setFullCode' ? { ...(args || {}), modelTag: `${aiProvider}/${aiModel}` } : (args || {});
+            const res = execClientTool(editor, name, injectArgs);
+            setLastAction(res.message);
+            actionsExecuted.push(res.message);
+            if (name === 'getAvailablePacks') message.packResult = res.data;
+            else if (name === 'getBankSamples') message.bankResult = res.data;
+            else if (name === 'getConsole') message.consoleResult = res.data;
+          } catch (e) {
+            setLastAction('⚠ ' + (e?.message || String(e)));
+            actionsExecuted.push('Ошибка инструмента');
           }
         }
         // Handle text content
