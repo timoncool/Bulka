@@ -1,0 +1,16 @@
+# Rust build
+src-tauri/target/
+src-tauri/gen/
+
+# Сгенерированный staging (ресурсы для бандла: dist + node.exe)
+src-tauri/staging/
+
+# Бандлёный portable Node (качается build-скриптом)
+src-tauri/node/
+
+# Node-модули CLI
+node_modules/
+
+# Логи/выхлопы
+*.log
+dist-portable/

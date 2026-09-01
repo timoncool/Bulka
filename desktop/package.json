@@ -1,0 +1,13 @@
+{
+  "name": "bulka-desktop",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Tauri-оболочка Bulka (поднимает автономный Astro Node-сервер и открывает окно)",
+  "scripts": {
+    "tauri": "tauri",
+    "build": "tauri build"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2"
+  }
+}
