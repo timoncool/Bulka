@@ -286,6 +286,26 @@ stack(
   const editorRef = useRef();
   const containerRef = useRef();
 
+  // Автосохранение текущего кода. latestCode обновлялся только на afterEval (запуск), поэтому
+  // код, поставленный агентом/руками и НЕ запущенный, терялся при обновлении страницы (undo тоже
+  // не помогал — его история в памяти стирается при reload). Пишем текущий код каждые ~2с.
+  useEffect(() => {
+    const iv = setInterval(() => {
+      const code = editorRef.current?.code;
+      if (code && code !== '// LOADING' && code.length > 3 && code !== settingsMap.get().latestCode) {
+        setLatestCode(code);
+        // Загрузка при старте проверяет URL-хэш РАНЬШЕ latestCode — держим хэш в актуальном
+        // состоянии (replaceState, чтобы не плодить записи в истории браузера).
+        try {
+          window.history.replaceState(null, '', '#' + code2hash(code));
+        } catch {
+          /* ignore */
+        }
+      }
+    }, 2000);
+    return () => clearInterval(iv);
+  }, []);
+
   // this can be simplified once SettingsTab has been refactored to change codemirrorSettings directly!
   // this will be the case when the main repl is being replaced
   const _settings = useStore(settingsMap, { keys: Object.keys(defaultSettings) });
