@@ -37,7 +37,7 @@ export const defaultSettings = {
   openrouterApiKey: '',
   aiProvider: aiProviders.openai,
   aiModel: '', // Loaded dynamically from provider API
-  gpt4freeSubProvider: 'pollinations', // gpt4free sub-provider. 'default'/Auto часто отдаёт 502 — берём стабильный pollinations
+  gpt4freeSubProvider: 'default', // g4f Auto-провайдер (сам выбирает бэкенд)
   // Per-model параметры OpenRouter, ключ = id модели: { temperature, reasoning_effort, top_p, max_tokens }.
   // Пусто → на UI подтягиваются дефолты модели с OpenRouter (default_parameters).
   openrouterModelParams: {},

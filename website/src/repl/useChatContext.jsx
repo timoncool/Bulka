@@ -36,7 +36,7 @@ const g4fCredentialedFetch = (url, options) => fetch(url, { ...options, credenti
 /**
  * Get or create GPT4Free client for specific sub-provider
  */
-async function getG4fClient(subProvider = 'pollinations') {
+async function getG4fClient(subProvider = 'default') {
   // Check cache first
   if (g4fClientsCache[subProvider]) {
     return g4fClientsCache[subProvider];
@@ -453,7 +453,7 @@ export function useChatContext(replContext) {
 
         const editor = replContext?.editorRef?.current;
 
-        for await (const message of runGpt4freeClientChat(gpt4freeMessages, aiModel, (gpt4freeSubProvider === 'default' ? 'pollinations' : (gpt4freeSubProvider || 'pollinations')), setLastAction)) {
+        for await (const message of runGpt4freeClientChat(gpt4freeMessages, aiModel, gpt4freeSubProvider || 'default', setLastAction)) {
           if (message.type === 'text' && message.content) {
             fullContent += message.content;
 

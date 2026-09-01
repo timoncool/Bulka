@@ -143,7 +143,7 @@ function g4fWithTimeout(promise, ms, label) {
   ]);
 }
 
-async function fetchGpt4freeModels(subProvider = 'pollinations') {
+async function fetchGpt4freeModels(subProvider = 'default') {
   try {
     const module = await loadG4fProviders();
     const { createClient } = module;
@@ -299,7 +299,7 @@ function SettingsPanel({ onClose, isBottomPanel }) {
   const [provider, setProvider] = useState(settings.aiProvider || 'openai');
 
   // GPT4Free sub-provider state
-  const [gpt4freeSubProvider, setGpt4freeSubProviderLocal] = useState(settings.gpt4freeSubProvider === 'default' ? 'pollinations' : (settings.gpt4freeSubProvider || 'pollinations'));
+  const [gpt4freeSubProvider, setGpt4freeSubProviderLocal] = useState(settings.gpt4freeSubProvider || 'default');
   const [gpt4freeProviders, setGpt4freeProviders] = useState([]); // Loaded dynamically
   const [loadingProviders, setLoadingProviders] = useState(false);
 
@@ -335,7 +335,7 @@ function SettingsPanel({ onClose, isBottomPanel }) {
   }, [openaiKey, anthropicKey, geminiKey, zaiKey, openrouterKey]);
 
   // Fetch models when API key changes (or for gpt4free without key)
-  const loadModelsForProvider = useCallback(async (p, key, subProvider = 'pollinations') => {
+  const loadModelsForProvider = useCallback(async (p, key, subProvider = 'default') => {
     // gpt4free doesn't need API key
     if (p !== 'gpt4free' && (!key || key.length < 10)) return;
 
