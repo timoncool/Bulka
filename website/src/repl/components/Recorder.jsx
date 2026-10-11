@@ -1,6 +1,7 @@
-import React, { useState, useCallback } from 'react';
+import React, { useCallback } from 'react';
+import { useStore } from '@nanostores/react';
 import cx from '@src/cx.mjs';
-import { startRecording, stopRecording } from '@strudel/webaudio';
+import { $isRecording, $recordingElapsed, beginRecording, endRecording } from '../recordingState.mjs';
 
 // Custom record icon component - matches heroicons style
 const RecordIcon = ({ className, filled = false }) => (
@@ -42,23 +43,17 @@ function sanitizeFilename(name) {
 }
 
 export function Recorder({ started, activeCode }) {
-  const [isRecording, setIsRecording] = useState(false);
-  const [recordingTime, setRecordingTime] = useState(0);
+  // Единый стор записи: индикатор загорается независимо от источника старта
+  // (кнопка REC, тулзы агента/MCP, метод паттерна .record()).
+  const isRecording = useStore($isRecording);
+  const recordingTime = useStore($recordingElapsed);
 
   const handleToggleRecording = useCallback(() => {
     if (isRecording) {
-      // Stop recording - pass title for filename
       const title = extractTitle(activeCode);
-      const filename = title ? sanitizeFilename(title) : null;
-      stopRecording(filename);
-      setIsRecording(false);
-      setRecordingTime(0);
+      endRecording(title ? sanitizeFilename(title) : undefined);
     } else {
-      // Start recording
-      startRecording((elapsed) => {
-        setRecordingTime(elapsed);
-      });
-      setIsRecording(true);
+      beginRecording();
     }
   }, [isRecording, activeCode]);
 

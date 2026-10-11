@@ -25,7 +25,7 @@ interface DocEntry {
  * Search ALL documentation from pre-built index (70+ MDX files)
  * This works in Vercel serverless because the index is bundled at build time
  */
-function searchAllDocs(query: string, maxResults: number = 5): string[] {
+export function searchAllDocs(query: string, maxResults: number = 5): string[] {
   const queryLower = query.toLowerCase();
   const queryWords = queryLower.split(/\s+/).filter(w => w.length > 2);
 
@@ -57,7 +57,11 @@ function searchAllDocs(query: string, maxResults: number = 5): string[] {
       score += 8;
     }
     for (const word of queryWords) {
-      const matches = (contentLower.match(new RegExp(word, 'g')) || []).length;
+      // Считаем вхождения БЕЗ RegExp: слово из запроса модели может содержать спецсимволы
+      // регэкспа (напр. "arrange(") — new RegExp(word) упадёт «Unterminated group» и уронит
+      // весь стрим (у пользователя — «network error»). Простой indexOf-подсчёт безопасен.
+      let matches = 0;
+      for (let i = contentLower.indexOf(word); i !== -1; i = contentLower.indexOf(word, i + word.length)) matches++;
       score += Math.min(matches, 5);
     }
 
@@ -162,7 +166,7 @@ s("bd sd bd sd")
 /**
  * Get code examples by category
  */
-function getCodeExamples(category?: string): string {
+export function getCodeExamples(category?: string): string {
   if (category && CODE_EXAMPLES[category.toLowerCase()]) {
     return CODE_EXAMPLES[category.toLowerCase()];
   }
@@ -249,7 +253,7 @@ async function fetchWithRetry(
  * Tool definitions for the agent
  * Artifact-style editing: read, edit specific parts, append
  */
-const TOOLS_OPENAI = [
+export const TOOLS_OPENAI = [
   {
     type: 'function' as const,
     function: {
@@ -388,12 +392,84 @@ const TOOLS_OPENAI = [
       },
     },
   },
+  {
+    type: 'function' as const,
+    function: {
+      name: 'startRecording',
+      description: 'Начать запись аудио-выхода (того, что сейчас играет) в WAV. Убедись, что музыка запущена (playMusic). Останови через stopRecording. Для записи фиксированной длины удобнее recordSeconds.',
+      parameters: { type: 'object', properties: {} },
+    },
+  },
+  {
+    type: 'function' as const,
+    function: {
+      name: 'stopRecording',
+      description: 'Остановить запись и сохранить WAV. В десктопе файл кладётся в папку recordings рядом с приложением; имя берётся из // @title.',
+      parameters: { type: 'object', properties: {} },
+    },
+  },
+  {
+    type: 'function' as const,
+    function: {
+      name: 'recordSeconds',
+      description: 'Записать РОВНО указанное число секунд и автоматически остановить+сохранить WAV. Перед записью запускает воспроизведение. Чтобы записать полный круг трека — посчитай длительность: 1 цикл = 60/(cpm) секунд (setcpm(120/4) → 30 циклов/мин → 2 с на цикл), умножь на суммарную длину секций arrange().',
+      parameters: {
+        type: 'object',
+        properties: {
+          seconds: { type: 'number', description: 'Длительность записи в секундах' },
+        },
+        required: ['seconds'],
+      },
+    },
+  },
 ];
 
+// --- Tool-schema normalization (best practices, 2026) ---
+// Reject unknown args everywhere (improves argument accuracy, and is required by
+// OpenAI/Anthropic strict mode). For STRICT mode every property must be listed in
+// `required`; optional properties are made nullable so they stay effectively optional.
+function normalizeParams(params: any, strict: boolean) {
+  const out: any = { ...params, additionalProperties: false };
+  if (out.properties && Object.keys(out.properties).length > 0) {
+    const keys = Object.keys(out.properties);
+    if (strict) {
+      const required = new Set(out.required || []);
+      const props: any = {};
+      for (const k of keys) {
+        const prop = out.properties[k];
+        if (!required.has(k)) {
+          const t = prop.type;
+          props[k] = { ...prop, type: Array.isArray(t) ? t : [t, 'null'] };
+        } else {
+          props[k] = prop;
+        }
+      }
+      out.properties = props;
+      out.required = keys; // all keys required (optional ones are nullable)
+    }
+  }
+  return out;
+}
+
+// OpenRouter / Z.AI — arbitrary models: additionalProperties:false, но БЕЗ strict
+// (не все модели поддерживают constrained decoding — strict мог бы их сломать).
+const TOOLS_OPENAI_BASE = TOOLS_OPENAI.map(t => ({
+  ...t,
+  function: { ...t.function, parameters: normalizeParams(t.function.parameters, false) },
+}));
+
+// OpenAI — нативный strict function calling (gpt-4o/4.1/5): гарантия соответствия схеме.
+const TOOLS_OPENAI_STRICT = TOOLS_OPENAI.map(t => ({
+  ...t,
+  function: { ...t.function, strict: true, parameters: normalizeParams(t.function.parameters, true) },
+}));
+
+// Anthropic strict tool use — вход инструмента гарантированно соответствует схеме.
 const TOOLS_ANTHROPIC = TOOLS_OPENAI.map(t => ({
   name: t.function.name,
   description: t.function.description,
-  input_schema: t.function.parameters,
+  strict: true,
+  input_schema: normalizeParams(t.function.parameters, true),
 }));
 
 /**
@@ -1804,29 +1880,35 @@ function executeToolCall(
 
   const toolName = tc.name;
 
-  // Server-side tools
-  if (toolName === 'readCode') {
-    controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: '📖 Читаю код...' })}\n\n`));
-    return { role: 'tool', tool_call_id: tc.id, content: currentCode || '// Редактор пуст' };
-  }
-  if (toolName === 'searchDocs') {
-    controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: `🔍 Ищу в документации: "${toolArgs.query}"...` })}\n\n`));
-    const docs = searchAllDocs(toolArgs.query || '', 3);
-    return { role: 'tool', tool_call_id: tc.id, content: docs.join('\n\n---\n\n') || 'Ничего не найдено' };
-  }
-  if (toolName === 'getExamples') {
-    controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: '📝 Получаю примеры кода...' })}\n\n`));
-    const examples = getCodeExamples(toolArgs.category);
-    return { role: 'tool', tool_call_id: tc.id, content: examples };
-  }
+  // Любая ошибка инструмента должна вернуться модели как результат, а НЕ ронять весь стрим
+  // (иначе у пользователя «network error» и генерация обрывается).
+  try {
+    // Server-side tools
+    if (toolName === 'readCode') {
+      controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: '📖 Читаю код...' })}\n\n`));
+      return { role: 'tool', tool_call_id: tc.id, content: currentCode || '// Редактор пуст' };
+    }
+    if (toolName === 'searchDocs') {
+      controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: `🔍 Ищу в документации: "${toolArgs.query}"...` })}\n\n`));
+      const docs = searchAllDocs(toolArgs.query || '', 3);
+      return { role: 'tool', tool_call_id: tc.id, content: docs.join('\n\n---\n\n') || 'Ничего не найдено' };
+    }
+    if (toolName === 'getExamples') {
+      controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: '📝 Получаю примеры кода...' })}\n\n`));
+      const examples = getCodeExamples(toolArgs.category);
+      return { role: 'tool', tool_call_id: tc.id, content: examples };
+    }
 
-  // Client-side tools — emit status + tool_call event
-  const statusMessage = TOOL_STATUS_MESSAGES[toolName] || '';
-  if (statusMessage) {
-    controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: statusMessage })}\n\n`));
+    // Client-side tools — emit status + tool_call event
+    const statusMessage = TOOL_STATUS_MESSAGES[toolName] || '';
+    if (statusMessage) {
+      controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: statusMessage })}\n\n`));
+    }
+    controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'tool_call', name: toolName, args: toolArgs })}\n\n`));
+    return { role: 'tool', tool_call_id: tc.id, content: `OK: ${toolName} выполнено` };
+  } catch (e: any) {
+    return { role: 'tool', tool_call_id: tc.id, content: `Ошибка инструмента ${toolName}: ${e?.message || e}` };
   }
-  controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'tool_call', name: toolName, args: toolArgs })}\n\n`));
-  return { role: 'tool', tool_call_id: tc.id, content: `OK: ${toolName} выполнено` };
 }
 
 /**
@@ -1850,6 +1932,9 @@ async function runOpenAIAgent(
   const isGPT5Model = model.startsWith('gpt-5');
   const noTemperatureSupport = isOSeriesReasoning || isGPT5Model; // Both don't support temperature!
   const isReasoningModel = isOSeriesReasoning; // Only o-series can't use tools
+
+  // Abort апстрим-запроса, когда клиент нажал «стоп» (стрим отменяется -> cancel()).
+  const abortController = new AbortController();
 
   return new ReadableStream({
     async start(controller) {
@@ -1884,7 +1969,7 @@ async function runOpenAIAgent(
 
         // Add tools only for non-reasoning models (o-series can't use tools)
         if (!isReasoningModel) {
-          requestBody.tools = TOOLS_OPENAI;
+          requestBody.tools = TOOLS_OPENAI_STRICT;
           requestBody.tool_choice = 'auto';
         }
 
@@ -1902,6 +1987,7 @@ async function runOpenAIAgent(
               'Authorization': `Bearer ${apiKey}`,
             },
             body: JSON.stringify(requestBody),
+            signal: abortController.signal,
           },
           3 // maxRetries
         );
@@ -2016,6 +2102,7 @@ async function runOpenAIAgent(
       controller.enqueue(encoder.encode('data: [DONE]\n\n'));
       controller.close();
     },
+    cancel() { console.log('[chat] stream cancelled by client → aborting upstream'); try { abortController.abort(); } catch {} },
   });
 }
 
@@ -2046,6 +2133,9 @@ async function runAnthropicAgent(
                            model.includes('claude-4') ||
                            model.includes('claude-sonnet-4') ||
                            model.includes('claude-opus-4');
+
+  // Abort апстрим-запроса, когда клиент нажал «стоп» (стрим отменяется -> cancel()).
+  const abortController = new AbortController();
 
   return new ReadableStream({
     async start(controller) {
@@ -2103,6 +2193,7 @@ async function runAnthropicAgent(
               'anthropic-beta': 'prompt-caching-2024-07-31', // Enable prompt caching to reduce rate limit impact
             },
             body: JSON.stringify(requestBody),
+            signal: abortController.signal,
           },
           3 // maxRetries
         );
@@ -2339,6 +2430,7 @@ async function runAnthropicAgent(
       controller.enqueue(encoder.encode('data: [DONE]\n\n'));
       controller.close();
     },
+    cancel() { console.log('[chat] stream cancelled by client → aborting upstream'); try { abortController.abort(); } catch {} },
   });
 }
 
@@ -2383,6 +2475,9 @@ async function runGeminiAgent(
   // Match patterns: gemini-2.5-xxx, gemini-3-xxx, gemini-3.0-xxx, etc.
   const supportsThinking = /gemini-(2\.5|3(\.[0-9])?|exp|deep)/i.test(model);
 
+  // Abort апстрим-запроса, когда клиент нажал «стоп» (стрим отменяется -> cancel()).
+  const abortController = new AbortController();
+
   return new ReadableStream({
     async start(controller) {
       let conversationContents = [...geminiContents];
@@ -2414,6 +2509,7 @@ async function runGeminiAgent(
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            signal: abortController.signal,
             body: JSON.stringify({
               contents: conversationContents,
               systemInstruction: { parts: [{ text: systemPrompt }] },
@@ -2613,6 +2709,7 @@ async function runGeminiAgent(
       controller.enqueue(encoder.encode('data: [DONE]\n\n'));
       controller.close();
     },
+    cancel() { console.log('[chat] stream cancelled by client → aborting upstream'); try { abortController.abort(); } catch {} },
   });
 }
 
@@ -2626,6 +2723,8 @@ async function runOpenAICompatibleAgent(
     providerName: string;
     headers: Record<string, string>;
     handleThinking?: boolean;
+    modelParams?: Record<string, any>;
+    strictTools?: boolean;
   },
   model: string,
   messages: any[],
@@ -2634,6 +2733,8 @@ async function runOpenAICompatibleAgent(
 ): Promise<ReadableStream> {
   const codeContext = buildCodeContext(currentCode, selectedCode);
   const encoder = new TextEncoder();
+  // Abort апстрим-запроса к LLM, когда клиент нажал «стоп» (стрим отменяется -> cancel()).
+  const abortController = new AbortController();
 
   return new ReadableStream({
     async start(controller) {
@@ -2657,15 +2758,50 @@ async function runOpenAICompatibleAgent(
 
       while (maxIterations > 0) {
         maxIterations--;
+        if (abortController.signal.aborted) { try { controller.close(); } catch {} return; }
 
         const requestBody: any = {
           model,
           messages: conversationMessages,
           stream: true,
-          tools: TOOLS_OPENAI,
+          tools: config.strictTools ? TOOLS_OPENAI_STRICT : TOOLS_OPENAI_BASE,
           tool_choice: 'auto',
-          temperature: 0.7,
         };
+
+        // Per-model параметры. Для OpenRouter (config.modelParams задан) отправляем ТОЛЬКО
+        // то, что пользователь явно выставил — иначе применяются дефолты модели на стороне
+        // OpenRouter (default_parameters). Для остальных (Z.AI) — прежний дефолт 0.7.
+        const mp = config.modelParams;
+        if (mp) {
+          if (typeof mp.temperature === 'number') requestBody.temperature = mp.temperature;
+          if (typeof mp.top_p === 'number') requestBody.top_p = mp.top_p;
+          if (typeof mp.top_k === 'number') requestBody.top_k = mp.top_k;
+          if (typeof mp.max_tokens === 'number' && mp.max_tokens > 0) requestBody.max_tokens = mp.max_tokens;
+          // Управление «размышлениями» (reasoning) — формат РАЗНЫЙ у провайдеров (по их докам):
+          //  • OpenRouter: только объект reasoning:{ effort, max_tokens } (effort:
+          //    none/minimal/low/medium/high/max); top-level reasoning_effort НЕ поддерживается.
+          //  • LM Studio (local) / OpenAI: top-level reasoning_effort (low/medium/high); своего
+          //    бюджета токенов на размышление у LM Studio нет — управляется уровнем.
+          const hasReasoningMax = typeof mp.reasoning_max_tokens === 'number' && mp.reasoning_max_tokens > 0;
+          if (mp.reasoning_effort || hasReasoningMax) {
+            if (config.providerName === 'OpenRouter') {
+              const reasoning: any = {};
+              if (mp.reasoning_effort) reasoning.effort = mp.reasoning_effort;
+              if (hasReasoningMax) reasoning.max_tokens = mp.reasoning_max_tokens;
+              requestBody.reasoning = reasoning;
+            } else if (mp.reasoning_effort) {
+              requestBody.reasoning_effort = mp.reasoning_effort;
+            }
+          }
+        } else {
+          requestBody.temperature = 0.7;
+        }
+
+        // Безопасный потолок длины ответа: без него локальные модели (LM Studio/Ollama) могут
+        // генерить бесконечно, пока не переполнят контекст и не «зациклятся».
+        if (!(typeof requestBody.max_tokens === 'number' && requestBody.max_tokens > 0)) {
+          requestBody.max_tokens = 16384;
+        }
 
         const response = await fetchWithRetry(
           config.apiUrl,
@@ -2676,6 +2812,7 @@ async function runOpenAICompatibleAgent(
               ...config.headers,
             },
             body: JSON.stringify(requestBody),
+            signal: abortController.signal,
           },
           3
         );
@@ -2740,13 +2877,18 @@ async function runOpenAICompatibleAgent(
               const delta = choice.delta;
               if (!delta) continue;
 
-              // Handle thinking/reasoning content (Z.AI GLM-5, GLM-4.7)
-              if (config.handleThinking && delta.reasoning_content) {
+              // Ризонинг приходит под разными именами: reasoning_content (Z.AI GLM, Qwen/DeepSeek
+              // через LM Studio) и reasoning (OpenRouter, gpt-oss/o3-mini-стиль в LM Studio).
+              const reasoningDelta =
+                (typeof delta.reasoning_content === 'string' && delta.reasoning_content) ||
+                (typeof delta.reasoning === 'string' && delta.reasoning) ||
+                '';
+              if (reasoningDelta) {
                 if (!thinkingStarted) {
                   thinkingStarted = true;
                   controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'thinking_start' })}\n\n`));
                 }
-                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'thinking', content: delta.reasoning_content })}\n\n`));
+                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'thinking', content: reasoningDelta })}\n\n`));
               }
 
               // Stream text content
@@ -2812,6 +2954,7 @@ async function runOpenAICompatibleAgent(
       controller.enqueue(encoder.encode('data: [DONE]\n\n'));
       controller.close();
     },
+    cancel() { console.log('[chat] stream cancelled by client → aborting upstream'); try { abortController.abort(); } catch {} },
   });
 }
 
@@ -2844,9 +2987,10 @@ function truncateMessageContent(content: string, maxChars: number = 30000): stri
 export const POST: APIRoute = async ({ request }) => {
   try {
     const body = await request.json();
-    let { messages, apiKey, provider, model, currentCode, selectedCode } = body;
+    let { messages, apiKey, provider, model, currentCode, selectedCode, modelParams, strictTools, localBaseUrl } = body;
 
-    if (!apiKey) {
+    // Локальная модель (local) не требует ключ (он опционален).
+    if (!apiKey && provider !== 'local') {
       return new Response(
         JSON.stringify({ error: 'API ключ не указан' }),
         { status: 400, headers: { 'Content-Type': 'application/json' } }
@@ -2897,6 +3041,21 @@ export const POST: APIRoute = async ({ request }) => {
             'HTTP-Referer': 'https://bulka.app',
             'X-Title': 'Bulka AI',
           },
+          modelParams: modelParams || {},
+          strictTools: !!strictTools, // включаем strict только если модель это умеет
+        },
+        model, messages, currentCode || '', selectedCode || null
+      );
+    } else if (provider === 'local') {
+      // Локальная модель (LM Studio / Ollama и пр.) — OpenAI-совместимый сервер на localhost.
+      // Ходит наш Node-сервер (server-to-server, без CORS). Ключ обычно не нужен.
+      const base = String(localBaseUrl || 'http://localhost:1234/v1').replace(/\/+$/, '');
+      stream = await runOpenAICompatibleAgent(
+        {
+          apiUrl: `${base}/chat/completions`,
+          providerName: 'Local',
+          headers: apiKey ? { Authorization: `Bearer ${apiKey}` } : {},
+          modelParams: modelParams || {},
         },
         model, messages, currentCode || '', selectedCode || null
       );

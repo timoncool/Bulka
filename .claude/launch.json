@@ -1,0 +1,6 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    { "name": "bulka-web", "runtimeExecutable": "pnpm", "runtimeArgs": ["--filter", "website", "dev"], "port": 4321 }
+  ]
+}

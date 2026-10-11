@@ -27,3 +27,6 @@ allowBuilds:
   sharp: set this to true or false
   tree-sitter: set this to true or false
   tree-sitter-haskell: set this to true or false
+
+minimumReleaseAgeExclude:
+  - '@typescript-eslint/visitor-keys@8.69.0'

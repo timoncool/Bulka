@@ -14,6 +14,7 @@ import {
   resetLoadedSounds,
   initAudioOnFirstClick,
   resetDefaults,
+  renderPatternAudio,
 } from '@strudel/webaudio';
 import { setVersionDefaultsFrom } from './util.mjs';
 import { StrudelMirror, defaultSettings } from '@strudel/codemirror';
@@ -68,6 +69,9 @@ export function useReplContext() {
   const defaultOutput = shouldUseWebaudio ? webaudioOutput : superdirtOutput;
   const getTime = shouldUseWebaudio ? getAudioContextCurrentTime : getPerformanceTimeSeconds;
   const init = useCallback(() => {
+    // Десктоп (Tauri): чиним blob-«скачивания» (запись/экспорт) — сохраняем через Node-сервер.
+    // На вебе (bulka.app) — no-op. Импорт динамический, чтобы не тянуть в SSR.
+    import('./desktopBridge.mjs').then((m) => m.installDesktopDownloadBridge()).catch(() => {});
     const drawTime = [-2, 2];
     const drawContext = getDrawContext();
     const editor = new StrudelMirror({
@@ -106,6 +110,11 @@ export function useReplContext() {
         setLatestCode(code);
         window.location.hash = '#' + code2hash(code);
         setDocumentTitle(code);
+        // Заголовок трека для записей: десктоп кладёт WAV в папку `recordings/<название трека>/`.
+        try {
+          const m = code.match(/\/\/\s*@title\s+(.+?)(?:\n|$)/);
+          window.__bulkaTrackTitle = m ? m[1].trim().replace(/[<>:"/\\|?*]/g, '_').slice(0, 100) : '';
+        } catch { /* ignore */ }
         const viewingPatternData = getViewingPatternData();
         setVersionDefaultsFrom(code);
         const data = { ...viewingPatternData, code };
@@ -269,12 +278,38 @@ stack(
     });
 
     editorRef.current = editor;
+
+    // Десктоп: MCP-мост — внешний Claude Desktop / ChatGPT управляют Bulka через наш /mcp.
+    // Авто-подъём вместе с приложением (ресурсов почти не ест); на вебе — no-op.
+    import('./mcpBridge.mjs')
+      .then((m) => m.installMcpBridge(() => editorRef.current, { autoStart: true }))
+      .catch(() => {});
   }, []);
 
   const [replState, setReplState] = useState({});
   const { started, isDirty, error, activeCode, pending } = replState;
   const editorRef = useRef();
   const containerRef = useRef();
+
+  // Автосохранение текущего кода. latestCode обновлялся только на afterEval (запуск), поэтому
+  // код, поставленный агентом/руками и НЕ запущенный, терялся при обновлении страницы (undo тоже
+  // не помогал — его история в памяти стирается при reload). Пишем текущий код каждые ~2с.
+  useEffect(() => {
+    const iv = setInterval(() => {
+      const code = editorRef.current?.code;
+      if (code && code !== '// LOADING' && code.length > 3 && code !== settingsMap.get().latestCode) {
+        setLatestCode(code);
+        // Загрузка при старте проверяет URL-хэш РАНЬШЕ latestCode — держим хэш в актуальном
+        // состоянии (replaceState, чтобы не плодить записи в истории браузера).
+        try {
+          window.history.replaceState(null, '', '#' + code2hash(code));
+        } catch {
+          /* ignore */
+        }
+      }
+    }, 2000);
+    return () => clearInterval(iv);
+  }, []);
 
   // this can be simplified once SettingsTab has been refactored to change codemirrorSettings directly!
   // this will be the case when the main repl is being replaced
@@ -325,6 +360,30 @@ stack(
   const handleEvaluate = () => {
     editorRef.current.evaluate();
   };
+  // Offline (non-realtime) WAV export. renderPatternAudio closes the realtime
+  // AudioContext, so we re-arm audio on next click afterwards.
+  const handleExport = async (begin, end, sampleRate, maxPolyphony, multiChannelOrbits, downloadName = undefined) => {
+    await editorRef.current.evaluate(false);
+    editorRef.current.repl.scheduler.stop();
+    await renderPatternAudio(
+      editorRef.current.repl.state.pattern,
+      editorRef.current.repl.scheduler.cps,
+      begin,
+      end,
+      sampleRate,
+      maxPolyphony,
+      multiChannelOrbits,
+      downloadName,
+    ).finally(async () => {
+      const { maxPolyphony, audioDeviceName, multiChannelOrbits } = settingsMap.get();
+      initAudioOnFirstClick({
+        maxPolyphony,
+        audioDeviceName,
+        multiChannelOrbits: parseBoolean(multiChannelOrbits),
+      });
+      editorRef.current.repl.scheduler.stop();
+    });
+  };
   const handleShuffle = async () => {
     const patternData = await getRandomTune();
     const code = patternData.code;
@@ -353,6 +412,7 @@ stack(
     handleShuffle,
     handleShare,
     handleEvaluate,
+    handleExport,
     init,
     error,
     editorRef,

@@ -10,6 +10,21 @@ export const prerender = false;
 interface ModelInfo {
   value: string;
   label: string;
+  // OpenRouter per-model metadata (used to build the model-specific settings UI)
+  supportedParameters?: string[];
+  defaultParameters?: Record<string, any>;
+  contextLength?: number;
+  // Реальный лимит ответа (top_provider.max_completion_tokens) и схема reasoning модели:
+  // supported_efforts — допустимые уровни; default_effort — дефолтный; mandatory — нельзя выключить;
+  // supports_max_tokens — принимает бюджет токенов на размышление вместо/вместе с уровнем.
+  maxCompletionTokens?: number;
+  reasoning?: {
+    mandatory?: boolean;
+    default_enabled?: boolean;
+    supported_efforts?: string[];
+    default_effort?: string;
+    supports_max_tokens?: boolean;
+  } | null;
 }
 
 /**
@@ -122,6 +137,14 @@ async function fetchOpenRouterModels(apiKey: string): Promise<ModelInfo[]> {
     return (data.data || []).map((m: any) => ({
       value: m.id,
       label: m.name || m.id,
+      // OpenRouter публикует по каждой модели: какие параметры поддерживаются, их дефолты,
+      // схему reasoning (допустимые уровни/дефолт/можно ли выключить) и реальный лимит ответа.
+      // Используем это, чтобы показать ТОЛЬКО реальные настройки с реальными значениями.
+      supportedParameters: Array.isArray(m.supported_parameters) ? m.supported_parameters : [],
+      defaultParameters: m.default_parameters || {},
+      contextLength: m.context_length,
+      maxCompletionTokens: m.top_provider?.max_completion_tokens || undefined,
+      reasoning: m.reasoning || null,
     }));
   } catch (e) {
     console.error('Error fetching OpenRouter models:', e);
@@ -129,16 +152,42 @@ async function fetchOpenRouterModels(apiKey: string): Promise<ModelInfo[]> {
   }
 }
 
+// Локальный OpenAI-совместимый сервер (LM Studio / Ollama / llama.cpp и пр.).
+async function fetchLocalModels(baseUrl: string, apiKey?: string): Promise<ModelInfo[]> {
+  const base = String(baseUrl || 'http://localhost:1234/v1').replace(/\/+$/, '');
+  const headers: Record<string, string> = {};
+  if (apiKey) headers['Authorization'] = `Bearer ${apiKey}`;
+  try {
+    const r = await fetch(`${base}/models`, { headers });
+    if (!r.ok) return [];
+    const data = await r.json();
+    const list = Array.isArray(data?.data) ? data.data : [];
+    // отсеиваем не-чат модели (эмбеддинги и т.п.) по имени — эвристика
+    return list
+      .map((m: any) => ({ value: m.id, label: m.id }))
+      .filter((m: any) => m.value && !/embed|embedding|rerank/i.test(m.value));
+  } catch (e) {
+    console.error('Error fetching local models:', e);
+    return [];
+  }
+}
+
 export const POST: APIRoute = async ({ request }) => {
   try {
-    const { provider, apiKey } = await request.json();
+    const { provider, apiKey, localBaseUrl } = await request.json();
 
-    // gpt4free doesn't need server-side model fetching - uses client-side only
-    if (provider === 'gpt4free') {
+    // free doesn't need server-side model fetching - uses client-side only
+    if (provider === 'free') {
       return new Response(
-        JSON.stringify({ error: 'gpt4free uses client-side models' }),
+        JSON.stringify({ error: 'free uses client-side models' }),
         { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
+    }
+
+    // Локальная модель (LM Studio / Ollama): список с localhost, ключ не нужен.
+    if (provider === 'local') {
+      const models = await fetchLocalModels(localBaseUrl, apiKey);
+      return new Response(JSON.stringify({ models }), { headers: { 'Content-Type': 'application/json' } });
     }
 
     if (!apiKey) {

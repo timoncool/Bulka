@@ -3363,6 +3363,18 @@ export const shrinklist = (amount, pat) => pat.shrinklist(amount);
 Pattern.prototype.growlist = function (amount) {
   return this.shrinklist(amount).reverse();
 };
+/**
+ * *Experimental*
+ *
+ * Progressively grows the pattern by `n` steps, cycle by cycle, until the whole pattern
+ * is playing. The opposite of `shrinklist` (it is `shrinklist` reversed). A positive number
+ * grows from the start, a negative number from the end.
+ *
+ * @name growlist
+ * @param {number} amount number of steps to grow per cycle
+ * @example
+ * "tha dhi thom nam".growlist("1").sound().bank("mridangam").pace(4)
+ */
 export const growlist = (amount, pat) => pat.growlist(amount);
 
 /**

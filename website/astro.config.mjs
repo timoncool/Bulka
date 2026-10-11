@@ -1,4 +1,4 @@
-import { defineConfig } from 'astro/config';
+import { defineConfig, passthroughImageService } from 'astro/config';
 import react from '@astrojs/react';
 import mdx from '@astrojs/mdx';
 import remarkToc from 'remark-toc';
@@ -7,7 +7,11 @@ import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import rehypeUrls from 'rehype-urls';
 import bundleAudioWorkletPlugin from 'vite-plugin-bundle-audioworklet';
 import vercel from '@astrojs/vercel';
+import node from '@astrojs/node';
 import { execSync } from 'child_process';
+
+// DESKTOP=1 собирает автономный Node-сервер (для Electron-десктопа), иначе — Vercel.
+const isDesktop = !!process.env.DESKTOP;
 
 import tailwind from '@astrojs/tailwind';
 import AstroPWA from '@vite-pwa/astro';
@@ -78,7 +82,9 @@ const options = {
 // https://astro.build/config
 export default defineConfig({
   output: 'server',
-  adapter: vercel(),
+  adapter: isDesktop ? node({ mode: 'standalone' }) : vercel(),
+  // Десктоп: sharp (нативный) не нужен — раздаём картинки как есть, чтобы сервер бандлился автономно.
+  ...(isDesktop ? { image: { service: passthroughImageService() } } : {}),
   integrations: [
     react(),
     mdx(options),

@@ -9,6 +9,7 @@ import { confirmDialog } from '../../util.mjs';
 import { DEFAULT_MAX_POLYPHONY, setMaxPolyphony, setMultiChannelOrbits } from '@strudel/webaudio';
 import { ActionButton, SpecialActionButton } from '../button/action-button.jsx';
 import { ImportPrebakeScriptButton } from './ImportPrebakeScriptButton.jsx';
+import { McpPanel } from './McpPanel.jsx';
 
 function Checkbox({ label, value, onChange, disabled = false }) {
   return (
@@ -121,6 +122,7 @@ export function SettingsTab({ started }) {
   const canChangeAudioDevice = AudioContext.prototype.setSinkId != null;
   return (
     <div className="text-foreground p-4 space-y-4 w-full" style={{ fontFamily }}>
+      <McpPanel />
       {canChangeAudioDevice && (
         <FormItem label="Аудио устройство">
           <AudioDeviceSelector

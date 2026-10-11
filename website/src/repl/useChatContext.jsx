@@ -3,69 +3,82 @@
  *
  * Uses server-side RAG for documentation search.
  * API key stored in localStorage and sent with each request.
- * GPT4Free uses client-side library (no API key needed).
+ * бесплатный AI (OVHcloud) uses client-side library (no API key needed).
  */
 
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { useSettings } from '../settings.mjs';
 import { soundMap } from '@strudel/webaudio';
 import { $strudel_log_history } from './components/useLogger.jsx';
+import { execClientTool } from './agentToolsClient.mjs';
 
-// GPT4Free clients cache (lazy loaded from CDN)
-let g4fClientsCache = {};
-let g4fModule = null;
-
-/**
- * Get or create GPT4Free client for specific sub-provider
- */
-async function getG4fClient(subProvider = 'default') {
-  // Check cache first
-  if (g4fClientsCache[subProvider]) {
-    return g4fClientsCache[subProvider];
-  }
-
-  // Load module if not loaded
-  if (!g4fModule) {
-    g4fModule = await import('https://g4f.dev/dist/js/providers.js');
-  }
-
-  // Create client for this sub-provider (createClient is now async)
-  const { createClient } = g4fModule;
-  g4fClientsCache[subProvider] = await createClient(subProvider);
-  return g4fClientsCache[subProvider];
-}
+// Бесплатный AI БЕЗ авторизации/ключа: OVHcloud AI Endpoints (OpenAI-совместимый,
+// открытый CORS, стриминг). Проверено из браузера — gpt-oss отвечает и стримит.
+// Другие бесплатные варианты отпали (требуют proof-of-work, вход в аккаунт
+// или капчу из браузера). OVHcloud — единственный рабочий без авторизации.
+// Ограничение бесплатного тарифа: 2 запроса в минуту на IP (отдаём понятную ошибку при 429).
+export const FREE_AI_ENDPOINT = 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1/chat/completions';
+export const FREE_AI_MODELS_ENDPOINT = 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1/models';
+export const FREE_AI_DEFAULT_MODEL = 'gpt-oss-20b';
 
 /**
- * GPT4Free client-side chat handler
- * Uses official g4f.dev JS SDK - pure client-side, no backend
- * @param {Array} messages - Chat messages
- * @param {string} model - Model to use
- * @param {string} subProvider - g4f sub-provider (default, nectar, pollinations, etc.)
- * @param {Function} onStatus - Status callback
+ * Бесплатный чат без ключа/авторизации (OVHcloud AI Endpoints, OpenAI-совместимый, стриминг).
+ * @param {Array} messages
+ * @param {string} model
+ * @param {string} subProvider — не используется (оставлен для совместимости сигнатуры)
+ * @param {Function} onStatus
  */
-async function* runGpt4freeClientChat(messages, model, subProvider, onStatus) {
-  onStatus?.(`🔗 Подключение к GPT4Free (${subProvider})...`);
-
+async function* runFreeClientChat(messages, model, subProvider, onStatus) {
+  onStatus?.('🔗 Бесплатный AI (OVHcloud)...');
   try {
-    const client = await getG4fClient(subProvider);
-    onStatus?.('📡 Отправляю запрос...');
-
-    // Use streaming API
-    const stream = await client.chat.completions.create({
-      model: model || 'gpt-4o',
-      messages: messages.map(m => ({ role: m.role, content: m.content })),
-      stream: true,
+    const resp = await fetch(FREE_AI_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: model || FREE_AI_DEFAULT_MODEL,
+        messages: messages.map((m) => ({ role: m.role, content: m.content })),
+        stream: true,
+      }),
     });
 
-    // Stream response
-    for await (const chunk of stream) {
-      const content = chunk.choices?.[0]?.delta?.content;
-      if (content) {
-        yield { type: 'text', content };
+    if (resp.status === 429) {
+      yield {
+        type: 'error',
+        error: 'Бесплатный лимит: не больше 2 запросов в минуту на этот IP. Подожди ~30 секунд и попробуй снова — либо укажи свой ключ / выбери OpenRouter.',
+      };
+      return;
+    }
+    if (!resp.ok || !resp.body) {
+      yield { type: 'error', error: `Бесплатный AI недоступен (${resp.status}). Попробуй позже или используй свой ключ / OpenRouter.` };
+      return;
+    }
+
+    onStatus?.('📡 Получаю ответ...');
+    const reader = resp.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop() || '';
+      for (const line of lines) {
+        const s = line.trim();
+        if (!s.startsWith('data:')) continue;
+        const data = s.slice(5).trim();
+        if (data === '[DONE]') return;
+        try {
+          const j = JSON.parse(data);
+          const content = j.choices?.[0]?.delta?.content;
+          if (content) yield { type: 'text', content };
+        } catch {
+          /* пропускаем незавершённый чанк */
+        }
       }
     }
   } catch (error) {
-    yield { type: 'error', error: error.message || 'Ошибка GPT4Free' };
+    yield { type: 'error', error: error?.message || 'Ошибка бесплатного AI' };
   }
 }
 
@@ -187,12 +200,12 @@ function extractCodeBlocks(text) {
 }
 
 /**
- * GPT4Free System Prompt with action descriptors
- * Since GPT4Free doesn't support tools, we use text-based action markers
+ * бесплатный AI (OVHcloud) System Prompt with action descriptors
+ * Since бесплатный AI (OVHcloud) doesn't support tools, we use text-based action markers
  */
-const GPT4FREE_SYSTEM_PROMPT = `Ты Bulka AI - помощник для музыкального live-coding на Strudel.
+const FREE_SYSTEM_PROMPT = `Ты Bulka AI - помощник для музыкального live-coding на Strudel.
 
-ВАЖНО: Ты работаешь через GPT4Free без поддержки инструментов. Используй специальные маркеры действий:
+ВАЖНО: Ты работаешь через бесплатный AI (OVHcloud) без поддержки инструментов. Используй специальные маркеры действий:
 
 ## ДОСТУПНЫЕ ДЕЙСТВИЯ:
 
@@ -226,10 +239,10 @@ stack(
 `;
 
 /**
- * Parse GPT4Free action markers from response
+ * Parse бесплатный AI (OVHcloud) action markers from response
  * Returns: { actions: Array<{type, args}>, cleanContent: string }
  */
-function parseGpt4freeActions(content) {
+function parseFreeActions(content) {
   const actions = [];
   let cleanContent = content;
 
@@ -292,6 +305,18 @@ export function useChatContext(replContext) {
       }
     };
   }, [lastAction]);
+
+  // Ответы внешнего агента (MCP) -> показываем как сообщения ассистента в чате.
+  useEffect(() => {
+    const onReply = (e) => {
+      const text = typeof e.detail === 'string' ? e.detail : '';
+      setMessages((prev) => [...prev, { id: generateId(), role: 'assistant', content: text }]);
+    };
+    if (typeof window !== 'undefined') window.addEventListener('bulka-mcp-chat-reply', onReply);
+    return () => {
+      if (typeof window !== 'undefined') window.removeEventListener('bulka-mcp-chat-reply', onReply);
+    };
+  }, []);
 
   /**
    * Apply code to editor
@@ -359,20 +384,37 @@ export function useChatContext(replContext) {
   const sendMessage = useCallback(async (content) => {
     if (!content.trim() || isLoading) return;
 
-    const { aiProvider, aiModel, openaiApiKey, anthropicApiKey, geminiApiKey, gpt4freeSubProvider } = settings;
+    const { aiProvider, aiModel, openaiApiKey, anthropicApiKey, geminiApiKey } = settings;
 
-    // gpt4free doesn't need API key
-    const isGpt4free = aiProvider === 'gpt4free';
+    // Провайдер «Внешний агент (MCP)»: сообщение уходит внешнему Claude/ChatGPT (через MCP),
+    // ответ придёт событием bulka-mcp-chat-reply. Внутренний LLM тут не вызывается.
+    if (aiProvider === 'mcp') {
+      const um = { id: generateId(), role: 'user', content: content.trim() };
+      setMessages((prev) => [...prev, um]);
+      setInput('');
+      fetch('/api/mcp/chat-in', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: content.trim() }),
+      }).catch(() => {});
+      setLastAction('📤 Отправлено внешнему агенту (MCP) — жду ответа…');
+      return;
+    }
 
-    // Get API key for current provider (not needed for gpt4free)
-    const aiApiKey = isGpt4free ? null :
+    // free doesn't need API key
+    const isFree = aiProvider === 'free';
+    const isLocal = aiProvider === 'local';
+
+    // Get API key for current provider (не нужен для free; для local опционален)
+    const aiApiKey = isFree ? null :
+                     isLocal ? (settings.localApiKey || '') :
                      aiProvider === 'openai' ? openaiApiKey :
                      aiProvider === 'anthropic' ? anthropicApiKey :
                      aiProvider === 'gemini' ? geminiApiKey :
                      aiProvider === 'zai' ? settings.zaiApiKey :
                      aiProvider === 'openrouter' ? settings.openrouterApiKey : '';
 
-    if (!isGpt4free && !aiApiKey) {
+    if (!isFree && !isLocal && !aiApiKey) {
       setError(`API ключ для ${aiProvider} не установлен. Откройте настройки и добавьте ключ.`);
       return;
     }
@@ -415,8 +457,8 @@ export function useChatContext(replContext) {
       let isThinking = false;
       let actionsExecuted = [];
 
-      // GPT4Free: use client-side handler with real-time action parsing
-      if (isGpt4free) {
+      // бесплатный AI (OVHcloud): use client-side handler with real-time action parsing
+      if (isFree) {
         // Build system prompt with code context
         const codeContext = currentCode
           ? (selectedCode
@@ -424,14 +466,14 @@ export function useChatContext(replContext) {
               : `\n\n## ТЕКУЩИЙ КОД В РЕДАКТОРЕ:\n\`\`\`javascript\n${currentCode}\n\`\`\``)
           : '';
 
-        const gpt4freeMessages = [
-          { role: 'system', content: GPT4FREE_SYSTEM_PROMPT + codeContext },
+        const freeMessages = [
+          { role: 'system', content: FREE_SYSTEM_PROMPT + codeContext },
           ...apiMessages,
         ];
 
         const editor = replContext?.editorRef?.current;
 
-        for await (const message of runGpt4freeClientChat(gpt4freeMessages, aiModel, gpt4freeSubProvider || 'default', setLastAction)) {
+        for await (const message of runFreeClientChat(freeMessages, aiModel, null, setLastAction)) {
           if (message.type === 'text' && message.content) {
             fullContent += message.content;
 
@@ -524,7 +566,7 @@ export function useChatContext(replContext) {
           });
         }
 
-        // Done with gpt4free
+        // Done with free
         setIsLoading(false);
         return;
       }
@@ -535,6 +577,19 @@ export function useChatContext(replContext) {
       let retryCount = 0;
       const maxRetries = 3;
       const baseDelay = 2000; // 2 seconds
+
+      // OpenRouter: strict-тулы только если выбранная модель поддерживает structured_outputs
+      // (метаданные модели лежат в кэше моделей ChatTab).
+      let openrouterStrictTools = false;
+      if (aiProvider === 'openrouter') {
+        try {
+          const cachedModels = JSON.parse(localStorage.getItem('bulka_cached_models') || '{}');
+          const mi = (cachedModels.openrouter || []).find((x) => x.value === aiModel);
+          openrouterStrictTools = !!(mi?.supportedParameters || []).includes('structured_outputs');
+        } catch {
+          /* no-op */
+        }
+      }
 
       while (retryCount <= maxRetries) {
         response = await fetch('/api/chat', {
@@ -547,6 +602,14 @@ export function useChatContext(replContext) {
             model: aiModel,
             currentCode,
             selectedCode, // Send selected code if any
+            // Параметры конкретной модели OpenRouter (temperature/reasoning_effort/top_p/max_tokens)
+            modelParams: aiProvider === 'openrouter' ? (settings.openrouterModelParams?.[aiModel] || {})
+              : aiProvider === 'local' ? (settings.localModelParams || {})
+              : undefined,
+            // strict-тулы для OpenRouter — только для моделей с structured_outputs
+            strictTools: aiProvider === 'openrouter' ? openrouterStrictTools : undefined,
+            // Локальная модель: адрес OpenAI-совместимого сервера (LM Studio / Ollama)
+            localBaseUrl: aiProvider === 'local' ? (settings.localBaseUrl || 'http://localhost:1234/v1') : undefined,
           }),
           signal: abortControllerRef.current.signal,
         });
@@ -640,159 +703,18 @@ export function useChatContext(replContext) {
 
           if (!editor) continue;
 
-          // setFullCode - полная замена кода
-          if (name === 'setFullCode' && args?.code) {
-            let code = args.code;
-            // Add @model meta tag if not already present
-            if (!code.includes('// @model')) {
-              const modelTag = `// @model ${aiProvider}/${aiModel}`;
-              // Insert after last meta comment line (// @...)
-              const lines = code.split('\n');
-              let lastMetaIdx = -1;
-              for (let i = 0; i < lines.length; i++) {
-                if (/^\s*\/\/\s*@\w+/.test(lines[i])) {
-                  lastMetaIdx = i;
-                } else if (lines[i].trim() !== '' && lastMetaIdx >= 0) {
-                  break;
-                }
-              }
-              if (lastMetaIdx >= 0) {
-                lines.splice(lastMetaIdx + 1, 0, modelTag);
-                code = lines.join('\n');
-              }
-            }
-            editor.setCode(code);
-            setLastAction('✓ Код установлен в редактор');
-            actionsExecuted.push('Код установлен');
-          }
-          // editCode - найти и заменить фрагмент
-          else if (name === 'editCode' && args?.search && args?.replace !== undefined) {
-            const currentCode = editor.code || '';
-            if (currentCode.includes(args.search)) {
-              const newCode = currentCode.replace(args.search, args.replace);
-              editor.setCode(newCode);
-              setLastAction('✓ Код отредактирован');
-              actionsExecuted.push('Код отредактирован');
-            } else {
-              setLastAction('⚠ Фрагмент не найден для замены');
-              actionsExecuted.push('Фрагмент не найден');
-            }
-          }
-          // appendCode - добавить в конец
-          else if (name === 'appendCode' && args?.code) {
-            const currentCode = editor.code || '';
-            const newCode = currentCode + '\n' + args.code;
-            editor.setCode(newCode);
-            setLastAction('✓ Код добавлен');
-            actionsExecuted.push('Код добавлен');
-          }
-          // playMusic - запустить
-          else if (name === 'playMusic') {
-            editor.evaluate();
-            setLastAction('▶ Воспроизведение запущено');
-            actionsExecuted.push('Воспроизведение запущено');
-          }
-          // stopMusic - остановить
-          else if (name === 'stopMusic') {
-            editor.stop();
-            setLastAction('⏹ Воспроизведение остановлено');
-            actionsExecuted.push('Воспроизведение остановлено');
-          }
-          // highlightCode - выделить фрагмент кода
-          else if (name === 'highlightCode' && args?.search) {
-            const found = editor.selectText?.(args.search);
-            if (found) {
-              setLastAction('🔍 Код выделен');
-              actionsExecuted.push('Код выделен');
-            } else {
-              setLastAction('⚠ Фрагмент не найден');
-              actionsExecuted.push('Фрагмент не найден');
-            }
-          }
-          // getAvailablePacks - получить список всех паков
-          else if (name === 'getAvailablePacks') {
-            const sounds = soundMap.get();
-            const packs = {};
-            Object.entries(sounds || {})
-              .filter(([key]) => !key.startsWith('_'))
-              .forEach(([soundName, { data }]) => {
-                const pack = data?.pack || 'other';
-                if (!packs[pack]) {
-                  packs[pack] = { banks: [], type: data?.type || 'sample', tag: data?.tag };
-                }
-                packs[pack].banks.push(soundName);
-              });
-            // Формируем читаемый ответ для агента с названиями банков
-            const packsList = Object.entries(packs)
-              .map(([packName, info]) => {
-                const bankNames = info.banks.sort();
-                // Для небольших паков (до 30 банков) показываем все названия
-                // Для больших - только первые 10 + счётчик
-                let banksStr;
-                if (bankNames.length <= 30) {
-                  banksStr = bankNames.join(', ');
-                } else {
-                  banksStr = bankNames.slice(0, 10).join(', ') + `, ... и ещё ${bankNames.length - 10}`;
-                }
-                return `• ${packName} (${info.banks.length} банков, ${info.type}${info.tag ? ', ' + info.tag : ''}):\n  Банки: ${banksStr}`;
-              })
-              .join('\n\n');
-            setLastAction(`📦 Найдено ${Object.keys(packs).length} паков`);
-            actionsExecuted.push(`Паки: ${Object.keys(packs).join(', ')}`);
-            // Store pack info for agent context
-            message.packResult = packsList;
-          }
-          // getBankSamples - получить содержимое конкретного банка
-          else if (name === 'getBankSamples' && args?.bankName) {
-            const sounds = soundMap.get();
-            const bankData = sounds?.[args.bankName];
-            if (bankData?.data) {
-              const { data } = bankData;
-              let samplesInfo = '';
-              if (data.type === 'sample' && data.samples) {
-                const samplesList = Array.isArray(data.samples) ? data.samples : Object.values(data.samples).flat();
-                samplesInfo = `Банк "${args.bankName}" (${data.pack || 'unknown'}):\n`;
-                samplesInfo += `Тип: ${data.type}\n`;
-                samplesInfo += `Семплов: ${samplesList.length}\n`;
-                samplesInfo += `Файлы:\n${samplesList.slice(0, 20).map((s, i) => `  ${i}: ${s}`).join('\n')}`;
-                if (samplesList.length > 20) {
-                  samplesInfo += `\n  ... и ещё ${samplesList.length - 20} файлов`;
-                }
-              } else {
-                samplesInfo = `Банк "${args.bankName}": тип ${data.type}, пак ${data.pack || 'unknown'}`;
-              }
-              setLastAction(`🎵 Банк ${args.bankName} найден`);
-              actionsExecuted.push(`Банк ${args.bankName}: ${data.samples?.length || 0} семплов`);
-              message.bankResult = samplesInfo;
-            } else {
-              setLastAction(`⚠ Банк ${args.bankName} не найден`);
-              actionsExecuted.push(`Банк ${args.bankName} не найден`);
-            }
-          }
-          // getConsole - получить логи консоли для отладки
-          else if (name === 'getConsole') {
-            // Сначала останавливаем воспроизведение
-            editor.stop();
-            setLastAction('⏹ Остановлено для чтения консоли');
-
-            // Получаем логи из истории
-            const logs = $strudel_log_history.get() || [];
-
-            if (logs.length === 0) {
-              message.consoleResult = 'Консоль пуста - нет логов.';
-              actionsExecuted.push('Консоль: пуста');
-            } else {
-              // Форматируем логи для агента
-              const formattedLogs = logs.map((log, i) => {
-                const countStr = log.count && log.count > 1 ? ` (x${log.count})` : '';
-                const typeStr = log.type ? `[${log.type}]` : '';
-                return `${i + 1}. ${typeStr} ${log.message}${countStr}`;
-              }).join('\n');
-
-              message.consoleResult = `Логи консоли (последние ${logs.length}):\n${formattedLogs}`;
-              setLastAction(`📋 Консоль: ${logs.length} записей`);
-              actionsExecuted.push(`Консоль: ${logs.length} записей`);
-            }
+          // ЕДИНЫЙ исполнитель клиентских тулзов — тот же код, что у MCP-моста (agentToolsClient.mjs).
+          try {
+            const injectArgs = name === 'setFullCode' ? { ...(args || {}), modelTag: `${aiProvider}/${aiModel}` } : (args || {});
+            const res = execClientTool(editor, name, injectArgs);
+            setLastAction(res.message);
+            actionsExecuted.push(res.message);
+            if (name === 'getAvailablePacks') message.packResult = res.data;
+            else if (name === 'getBankSamples') message.bankResult = res.data;
+            else if (name === 'getConsole') message.consoleResult = res.data;
+          } catch (e) {
+            setLastAction('⚠ ' + (e?.message || String(e)));
+            actionsExecuted.push('Ошибка инструмента');
           }
         }
         // Handle text content
@@ -915,8 +837,8 @@ export function useChatContext(replContext) {
     handleInputChange,
     handleSubmit,
     handleKeyDown,
-    // Settings for UI - check current provider's key (gpt4free doesn't need key)
-    hasApiKey: settings.aiProvider === 'gpt4free' ? true :
+    // Settings for UI - check current provider's key (free и mcp не нужен ключ)
+    hasApiKey: settings.aiProvider === 'free' || settings.aiProvider === 'mcp' || settings.aiProvider === 'local' ? true :
                !!(settings.aiProvider === 'openai' ? settings.openaiApiKey :
                   settings.aiProvider === 'anthropic' ? settings.anthropicApiKey :
                   settings.aiProvider === 'gemini' ? settings.geminiApiKey :

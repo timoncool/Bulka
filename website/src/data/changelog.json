@@ -22,7 +22,7 @@
         "type": "docs",
         "typeLabel": "Документация",
         "emoji": "📚",
-        "description": "update ai-agent page - dynamic model list, add gpt4free link",
+        "description": "update ai-agent page - dynamic model list, add бесплатный AI link",
         "scope": null,
         "author": "Claude",
         "hash": "1a35d36"
@@ -31,7 +31,7 @@
         "type": "docs",
         "typeLabel": "Документация",
         "emoji": "📚",
-        "description": "update ai-agent page - dynamic model list, add gpt4free link",
+        "description": "update ai-agent page - dynamic model list, add бесплатный AI link",
         "scope": null,
         "author": "Claude",
         "hash": "b763275"
@@ -40,7 +40,7 @@
         "type": "docs",
         "typeLabel": "Документация",
         "emoji": "📚",
-        "description": "clarify gpt4free is a simulation, not real agent",
+        "description": "clarify бесплатный AI is a simulation, not real agent",
         "scope": null,
         "author": "Claude",
         "hash": "419ad87"
@@ -49,7 +49,7 @@
         "type": "docs",
         "typeLabel": "Документация",
         "emoji": "📚",
-        "description": "clarify gpt4free is a simulation, not real agent",
+        "description": "clarify бесплатный AI is a simulation, not real agent",
         "scope": null,
         "author": "Claude",
         "hash": "09afd61"
@@ -58,7 +58,7 @@
         "type": "fix",
         "typeLabel": "Исправления",
         "emoji": "🐛",
-        "description": "add gpt4free to navigation, remove outdated model list",
+        "description": "add бесплатный AI to navigation, remove outdated model list",
         "scope": null,
         "author": "Claude",
         "hash": "ec7fc9e"
@@ -76,7 +76,7 @@
         "type": "docs",
         "typeLabel": "Документация",
         "emoji": "📚",
-        "description": "add GPT4Free integration blog post and documentation",
+        "description": "add бесплатный AI integration blog post and documentation",
         "scope": null,
         "author": "Claude",
         "hash": "8da9e95"
@@ -94,7 +94,7 @@
         "type": "docs",
         "typeLabel": "Документация",
         "emoji": "📚",
-        "description": "add GPT4Free integration blog post and documentation",
+        "description": "add бесплатный AI integration blog post and documentation",
         "scope": null,
         "author": "Claude",
         "hash": "50bb39c"
@@ -103,7 +103,7 @@
         "type": "docs",
         "typeLabel": "Документация",
         "emoji": "📚",
-        "description": "add GPT4Free integration blog post and documentation",
+        "description": "add бесплатный AI integration blog post and documentation",
         "scope": null,
         "author": "Claude",
         "hash": "e68c605"
@@ -194,7 +194,7 @@
         "typeLabel": "Новые возможности",
         "emoji": "✨",
         "description": "real-time парсинг действий во время стриминга",
-        "scope": "gpt4free",
+        "scope": "free-ai",
         "author": "Claude",
         "hash": "0f5ebb2"
       },
@@ -203,7 +203,7 @@
         "typeLabel": "Новые возможности",
         "emoji": "✨",
         "description": "добавить дескрипторы действий и улучшить интеграцию",
-        "scope": "gpt4free",
+        "scope": "free-ai",
         "author": "Claude",
         "hash": "4b9a0fb"
       },
@@ -212,7 +212,7 @@
         "typeLabel": "Исправления",
         "emoji": "🐛",
         "description": "исправить порядок UI и автоприменение кода",
-        "scope": "gpt4free",
+        "scope": "free-ai",
         "author": "Claude",
         "hash": "ab9f51c"
       },
@@ -220,8 +220,8 @@
         "type": "fix",
         "typeLabel": "Исправления",
         "emoji": "🐛",
-        "description": "динамическая загрузка моделей как на g4f.dev",
-        "scope": "gpt4free",
+        "description": "динамическая загрузка моделей как на OVHcloud",
+        "scope": "free-ai",
         "author": "Claude",
         "hash": "e34e01f"
       },
@@ -230,7 +230,7 @@
         "typeLabel": "Исправления",
         "emoji": "🐛",
         "description": "исправить загрузку моделей и UI",
-        "scope": "gpt4free",
+        "scope": "free-ai",
         "author": "Claude",
         "hash": "bc796ee"
       },
@@ -239,7 +239,7 @@
         "typeLabel": "Новые возможности",
         "emoji": "✨",
         "description": "динамический выбор провайдера и моделей",
-        "scope": "gpt4free",
+        "scope": "free-ai",
         "author": "Claude",
         "hash": "a969ac9"
       },
@@ -248,7 +248,7 @@
         "typeLabel": "Исправления",
         "emoji": "🐛",
         "description": "использовать официальный JS SDK для моделей и чата",
-        "scope": "gpt4free",
+        "scope": "free-ai",
         "author": "Claude",
         "hash": "c3c67d1"
       },
@@ -257,7 +257,7 @@
         "typeLabel": "Исправления",
         "emoji": "🐛",
         "description": "динамическая загрузка моделей через client.models.list()",
-        "scope": "gpt4free",
+        "scope": "free-ai",
         "author": "Claude",
         "hash": "966ae49"
       },
@@ -265,8 +265,8 @@
         "type": "fix",
         "typeLabel": "Исправления",
         "emoji": "🐛",
-        "description": "захардкодить модели - API g4f.dev не работает",
-        "scope": "gpt4free",
+        "description": "захардкодить модели - API OVHcloud не работает",
+        "scope": "free-ai",
         "author": "Claude",
         "hash": "3a03a26"
       },
@@ -274,7 +274,7 @@
         "type": "feat",
         "typeLabel": "Новые возможности",
         "emoji": "✨",
-        "description": "добавить GPT4Free провайдер с клиентским JS",
+        "description": "добавить бесплатный AI провайдер с клиентским JS",
         "scope": "ai",
         "author": "Claude",
         "hash": "9e33e66"
