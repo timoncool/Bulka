@@ -84,6 +84,22 @@ describe('mini', () => {
   it('supports patterning euclidean rhythms', () => {
     expect(minS('[a(<3 5>, <8 16>)]*2')).toEqual(minS('a(3,8) a(5,16)'));
   });
+  it('supports inverted euclidean rhythms', () => {
+    expect(minS('a(-3, 8)')).toEqual(['a: 1/8 - 1/4', 'a: 1/4 - 3/8', 'a: 1/2 - 5/8', 'a: 5/8 - 3/4', 'a: 7/8 - 1']);
+  });
+  it('supports euclidean legato rhythms', () => {
+    expect(minS('a(3, -8)')).toEqual(['a: 0 - 3/8', 'a: 3/8 - 3/4', 'a: 3/4 - 1']);
+  });
+  it('supports inverted euclidean legato rhythms', () => {
+    expect(minS('a(-3, -8)')).toEqual([
+      'a: -1/8 - 1/8',
+      'a: 1/8 - 1/4',
+      'a: 1/4 - 1/2',
+      'a: 1/2 - 5/8',
+      'a: 5/8 - 7/8',
+      'a: 7/8 - 9/8',
+    ]);
+  });
   it("reproduces Toussaint's example euclidean algorithms", () => {
     const checkEuclid = function (spec, target) {
       expect(minS(`x(${spec[0]},${spec[1]})`)).toEqual(minS(target));
@@ -117,6 +133,40 @@ describe('mini', () => {
     checkEuclid([9, 16], 'x ~ x x ~ x ~ x ~ x x ~ x ~ x ~');
     checkEuclid([11, 24], 'x ~ ~ x ~ x ~ x ~ x ~ x ~ ~ x ~ x ~ x ~ x ~ x ~');
     checkEuclid([13, 24], 'x ~ x x ~ x ~ x ~ x ~ x ~ x x ~ x ~ x ~ x ~ x ~');
+  });
+  it("reproduces Toussaint's example euclidean legato algorithms", () => {
+    const checkEuclid = function (spec, target) {
+      expect(minS(`x(${spec[0]},${spec[1]})`)).toEqual(minS(target));
+    };
+    checkEuclid([1, -2], 'x _');
+    checkEuclid([1, -3], 'x _ _');
+    checkEuclid([1, -4], 'x _ _ _');
+    checkEuclid([4, -12], 'x _ _ x _ _ x _ _ x _ _');
+    checkEuclid([2, -5], 'x _ x _ _');
+    // checkEuclid([3, 4], "x _ x x"); // Toussaint is wrong..
+    checkEuclid([3, -4], 'x x x _'); // correction
+    checkEuclid([3, -5], 'x _ x _ x');
+    checkEuclid([3, -7], 'x _ x _ x _ _');
+    checkEuclid([3, -8], 'x _ _ x _ _ x _');
+    checkEuclid([4, -7], 'x _ x _ x _ x');
+    checkEuclid([4, -9], 'x _ x _ x _ x _ _');
+    checkEuclid([4, -11], 'x _ _ x _ _ x _ _ x _');
+    // checkEuclid([5, 6], "x _ x x x x"); // Toussaint is wrong..
+    checkEuclid([5, -6], 'x x x x x _'); // correction
+    checkEuclid([5, -7], 'x _ x x _ x x');
+    checkEuclid([5, -8], 'x _ x x _ x x _');
+    checkEuclid([5, -9], 'x _ x _ x _ x _ x');
+    checkEuclid([5, -11], 'x _ x _ x _ x _ x _ _');
+    checkEuclid([5, -12], 'x _ _ x _ x _ _ x _ x _');
+    // checkEuclid([5, 16], "x _ _ x _ _ x _ _ x _ _ x _ _ _ _");  // Toussaint is wrong..
+    checkEuclid([5, -16], 'x _ _ x _ _ x _ _ x _ _ x _ _ _'); // correction
+    // checkEuclid([7, 8], "x _ x x x x x x"); // Toussaint is wrong..
+    checkEuclid([7, -8], 'x x x x x x x _'); // Correction
+    checkEuclid([7, -12], 'x _ x x _ x _ x x _ x _');
+    checkEuclid([7, -16], 'x _ _ x _ x _ x _ _ x _ x _ x _');
+    checkEuclid([9, -16], 'x _ x x _ x _ x _ x x _ x _ x _');
+    checkEuclid([11, -24], 'x _ _ x _ x _ x _ x _ x _ _ x _ x _ x _ x _ x _');
+    checkEuclid([13, -24], 'x _ x x _ x _ x _ x _ x _ x x _ x _ x _ x _ x _');
   });
   it('supports the - alias for ~', () => {
     expect(minS('a - b [- c]')).toEqual(minS('a ~ b [~ c]'));

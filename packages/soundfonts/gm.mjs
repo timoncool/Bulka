@@ -479,7 +479,7 @@ export default {
   gm_electric_bass_finger: [
     // Electric Bass (finger): Bass
     '0330_JCLive_sf2_file',
-    '0330_FluidR3_GM_sf2_fible',
+    '0330_FluidR3_GM_sf2_file',
     '0330_Aspirin_sf2_file',
     //0330_Chaos_sf2_file // same as last
     '0330_GeneralUserGS_sf2_file',
@@ -527,7 +527,7 @@ export default {
     '0370_Aspirin_sf2_file',
     // 0370_Chaos_sf2_file // same as last
     '0370_FluidR3_GM_sf2_file',
-    '0370_GeneralUserGS_sf2_fil e',
+    '0370_GeneralUserGS_sf2_file',
     '0370_JCLive_sf2_file',
     //0370_SBLive_sf2
     //0370_SoundBlasterOld_sf2
@@ -1782,6 +1782,5 @@ export default {
     '1272_GeneralUserGS_sf2_file',
     '1273_GeneralUserGS_sf2_file',
     '1274_GeneralUserGS_sf2_file',
-    '',
   ],
 };

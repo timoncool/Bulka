@@ -9,6 +9,12 @@ let cpsFunc;
 let pattern;
 let triggerFunc;
 let isStarted;
+
+/**
+ * @name getTime
+ * @tags internals
+ * @returns {Number} the current cycle time as a number
+ */
 export function getTime() {
   if (!time) {
     throw new Error('no time set! use setTime to define a time source');
@@ -24,6 +30,11 @@ export function setCpsFunc(func) {
   cpsFunc = func;
 }
 
+/**
+ * @name getCps
+ * @tags internals
+ * @returns {Number} the current cycles per second
+ */
 export function getCps() {
   return cpsFunc?.();
 }

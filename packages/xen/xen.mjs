@@ -4,7 +4,7 @@ Copyright (C) 2022 Strudel contributors - see <https://codeberg.org/uzu/strudel/
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more details. You should have received a copy of the GNU Affero General Public License along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { register, _mod, parseNumeral, removeUndefineds } from '@strudel/core';
+import { register, _mod, parseNumeral, removeUndefineds, Pattern, parray, State } from '@strudel/core';
 import Tune from './tunejs.js';
 
 // returns a list of frequency ratios for given edo scale
@@ -61,14 +61,8 @@ function xenOffset(xenScale, offset, index = 0) {
 
 const trimFreq = (freq) => parseFloat(freq.toPrecision(10));
 
-// accepts a scale name such as 31edo, and a pattern
-// pattern expected to follow format such that a value can be mapped
-// to an edostep within the scale. Returns the pattern with
-// values mapped to the frequencies associated with the given edosteps
-// scaleNameOrRatios: string || number[], steps?: number
-
 /**
- * Assumes a numerical pattern of scale steps, and a scale. Scales accepted are all preset scale names of `tune`, arbitrary edos such as 31edo, or an array of frequency ratios. Assumes scales repeat at octave (2/1). Returns a new pattern with all values mapped to their associated frequency, assuming a base frequency of 220hz.
+ * Assumes a numerical pattern of scale steps, and a scale. Scales accepted are all preset scale names of `tune`, arbitrary edos such as 31edo, or an array of frequency ratios. Assumes scales repeat at octave (2/1). Returns a new pattern with all values mapped to their associated frequency, assuming a base frequency of 220hz. See first 4 examples for the different ways you can input a scale into `xen`
  *
  * @name xen
  * @returns Pattern
@@ -87,6 +81,15 @@ const trimFreq = (freq) => parseFloat(freq.toPrecision(10));
  *   Math.pow(2, 18/31),
  * ]).piano()
  * @example
+ * // However, with the above you won't get highlighting of the scale indices,
+ * // instead you could do something like:
+ * i("[<2 ->, 0 1 <- 2> 3]*2").xen([
+ *   "1:1", // tonic
+ *   "5:4", // Major 3rd
+ *   "[3:2 4:3]", // Perfect 5th, 4th
+ *   "5:3" // Major 6th
+ * ]).s("tri")
+ * @example
  * // xen also supports all scale names that
  * // tune does:
  * i("0 1 2 3 4 5").xen("hexany15")
@@ -96,27 +99,100 @@ const trimFreq = (freq) => parseFloat(freq.toPrecision(10));
  * i("0 1 2 3 4 5 6 7").xen("<5edo 10edo 15edo hexany15>")
  */
 
-export const xen = register('xen', function (scaleNameOrRatios, pat) {
-  return pat.withHaps((haps) => {
-    haps = haps.map((hap) => {
-      let hVal = hap.value;
-      const isObject = typeof hVal === 'object';
-      if (!isObject) {
-        throw new Error(`Expected hap to have control 'i' set, but received ${hap.value.i}, try wrapping input in i()`);
-      }
-      const { i, ...otherValues } = hVal;
-      const scale = getXenScale(scaleNameOrRatios);
-      let freq = xenOffset(scale, parseNumeral(hVal.i));
-      // 10 is somewhat arbitrary
-      freq = trimFreq(freq);
-      hap.value = { ...otherValues, freq };
-      return isEdo(scaleNameOrRatios)
-        ? hap.setContext({ ...hap.context, edoSize: scaleNameOrRatios.match(/^([1-9]+[0-9]*)edo$/)[1] })
-        : hap;
-    });
-    return removeUndefineds(haps);
-  });
-});
+export const xen = register(
+  'xen',
+  function (scaleNameOrRatios, pat) {
+    const JIsc2 = (input) => {
+      let k = parray(input);
+
+      return new Pattern((state) => {
+        let res = k.withValue((x) => x.map((y) => eval(y.join('/')))).query(state);
+        return res;
+      });
+    };
+
+    const query = (state) => {
+      let haps = pat.query(state);
+      let resHaps = [];
+
+      haps.forEach((hap) => {
+        let hVal = hap.value;
+        const isObject = typeof hVal === 'object';
+        if (!isObject) {
+          throw new Error(
+            `Expected hap to have control 'i' set, but received ${hap.value.i}, try wrapping input in i()`,
+          );
+        }
+        const { i, ...otherValues } = hVal;
+        let edo = false;
+        let st = new State(hap.wholeOrPart().intersection(state.span), state.controls);
+
+        // Format: An array of values
+        // Each value is a pattern, representing an index on the scale
+        let sc = scaleNameOrRatios.query(st);
+        // Check to see if input is attempting to be a named scale or a raw scale
+        let isStr = typeof sc[0].value == 'string';
+        let isRawScale = Array.isArray(sc[0].value) && sc[0].value.every((x) => typeof x == 'number');
+        if (!isStr && !isRawScale) {
+          sc = sc[0].value;
+        } else if (isRawScale) {
+          sc = getXenScale(sc[0].value);
+        }
+
+        if (!isStr && !isRawScale) {
+          let scaleByIndices = [];
+          for (let j = 0; j < sc.length; j++) {
+            scaleByIndices[j] = sc[j].query(st);
+          }
+          /* 
+          Format: An array of 1 or more Haps, each Hap has an array of values of 
+            one or more scale index definitions (contains whole scale)
+          Assumption: inner value array should be same length between each
+          */
+          let sc2 = JIsc2(sc).query(st);
+
+          let index = _mod(i, sc.length);
+          for (let j = 0; j < scaleByIndices[index].length; j++) {
+            let scale = getXenScale(sc2[j].value);
+            let freq = xenOffset(scale, parseNumeral(i));
+            let newHap = hap;
+            freq = trimFreq(freq);
+            newHap.value = { ...otherValues, freq };
+            newHap = newHap.setContext(newHap.combineContext(scaleByIndices[index][j]));
+            resHaps.push(newHap);
+          }
+        } else if (isRawScale) {
+          let freq = xenOffset(sc, parseNumeral(i));
+          let newHap = hap;
+          freq = trimFreq(freq);
+          newHap.value = { ...otherValues, freq };
+          resHaps.push(newHap);
+        } else if (isStr) {
+          // scale is named scale(s)
+          for (let j = 0; j < sc.length; j++) {
+            let scaleName = sc[j].value;
+            let scale = getXenScale(scaleName);
+            let freq = xenOffset(scale, parseNumeral(i));
+            let newHap = hap;
+            freq = trimFreq(freq);
+            newHap.value = { ...otherValues, freq };
+            newHap = newHap.setContext(newHap.combineContext(sc[j]));
+            if (isEdo(scaleName)) {
+              edo = scaleName.match(/^([1-9]+[0-9]*)edo$/)[1];
+              newHap = newHap.setContext({ ...newHap.context, edoSize: edo });
+            }
+            resHaps.push(newHap);
+          }
+        } else {
+          throw new Error('failed to parse scale');
+        }
+      });
+      return resHaps;
+    };
+    return new Pattern(query);
+  },
+  false,
+);
 
 /**
  * Assumes pattern of frequencies tuned to some `base` frequency, such as the output of `xen`

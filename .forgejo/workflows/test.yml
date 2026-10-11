@@ -5,6 +5,7 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: docker
+    container: node:22-bookworm
     strategy:
       matrix:
         node-version: [20]

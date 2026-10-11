@@ -58,7 +58,7 @@ import {
   arp,
 } from '../index.mjs';
 
-import { log, logValues } from '../pattern.mjs';
+import { log, logValues, stackCenter } from '../pattern.mjs';
 
 import { steady } from '../signal.mjs';
 
@@ -73,6 +73,10 @@ const twothirds = Fraction(2, 3);
 
 const sameFirst = (a, b) => {
   return expect(a.sortHapsByPart().firstCycle()).toStrictEqual(b.sortHapsByPart().firstCycle());
+};
+
+const sameFirstX = (x, a, b) => {
+  return expect(a.fast(x).sortHapsByPart().firstCycle()).toStrictEqual(b.fast(x).sortHapsByPart().firstCycle());
 };
 
 describe('TimeSpan', () => {
@@ -1215,6 +1219,7 @@ describe('Pattern', () => {
       expect(stackRight(fastcat(0, 1, 2), fastcat(3, 4))._steps).toStrictEqual(Fraction(3));
       // maybe this should double when they are either all even or all odd
       expect(stackCentre(fastcat(0, 1, 2), fastcat(3, 4))._steps).toStrictEqual(Fraction(3));
+      expect(stackCenter(fastcat(0, 1, 2), fastcat(3, 4))._steps).toStrictEqual(Fraction(3));
       expect(fastcat(0, 1).ply(3)._steps).toStrictEqual(Fraction(6));
       expect(fastcat(0, 1).setSteps(undefined).ply(3)._steps).toStrictEqual(undefined);
       expect(fastcat(0, 1).fast(3)._steps).toStrictEqual(Fraction(2));
@@ -1317,6 +1322,21 @@ describe('Pattern', () => {
           .bite(2, stepcat(pure(0), pure(1).expand(2)))
           .fast(5),
         stepcat(slowcat('a', 'b', 'c', 'd', 'e'), slowcat(1, 2, 3, 4, 5).expand(2)).fast(5),
+      );
+    });
+  });
+  describe('isobite', () => {
+    it('can play a melody with a structure', () => {
+      sameFirst(
+        slowcat(0, 1, 2, 3, 4, 5).isobite(fastcat(true, silence, [true, true]).fast(2)),
+        fastcat(0, silence, [1, 2], 3, silence, [4, 5]),
+      );
+    });
+    it('syncopates over multiple cycles if the number of haps in the patterns differ', () => {
+      sameFirstX(
+        4,
+        slowcat(0, 1, 2, 3).isobite(fastcat(true, [true, true])),
+        slowcat(0, [1, 2], 3, [0, 1], 2, [3, 0], 1, [2, 3]).fast(2),
       );
     });
   });

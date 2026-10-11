@@ -346,3 +346,11 @@ s   increase by one semitone, i.e. sharp, works for steps of scales, note names 
 $:  at the start of a line, defines a member of the stack. is the only stack name that should occur multiple names
 _   before a stack name: mutes the stack, i.e. hush(), for example _$: s("bd"), see above for a different usage.
 ```
+
+## What is a 'hap'?
+
+A 'hap' is a name for a thing that happens, e.g. `note("c3 -")` playing a note and then stopping after a while. Haps have a start and an end. Every separate sound that is produced by strudel is a hap on its own.
+
+We would have called it 'event' if this particular name wasn't used by JavaScript to describe things that happen on html pages, like clicking on a button or hovering over a line of text.
+
+Since strudel is written in JavaScript, this confusion of having the same name for different things is avoided by calling events 'haps'.

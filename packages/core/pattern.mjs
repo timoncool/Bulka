@@ -504,10 +504,25 @@ export class Pattern {
 
   /**
    * Returns a new pattern with the given function applied to the list of haps returned by every query.
+   *
+   * As an end user, you will most likely not need to use this; look at `withContext`, `withHapSpan`, etc. instead.
    * @tags internals
    * @param {Function} func
    * @returns Pattern
    * @noAutocomplete
+   * @example
+   * note("[a b, c d] a b c d").s("gm_piano").withHaps(x=>{
+   *   if (x.length > 1) {
+   *     x = x.map(hap => hap.withValue(val => {
+   *       return {
+   *         n: 1,
+   *         // select gm_piano:1 sample
+   *         ...val
+   *       }
+   *     }));
+   *   }
+   *   return x
+   * })
    */
   withHaps(func) {
     const result = new Pattern((state) => func(this.query(state), state));
@@ -517,10 +532,23 @@ export class Pattern {
 
   /**
    * As with `withHaps`, but applies the function to every hap, rather than every list of haps.
+   *
+   * As an end user, you will most likely not need to use this; look at `withContext`, `withHapSpan`, etc. instead.
    * @tags internals
    * @param {Function} func
    * @returns Pattern
    * @noAutocomplete
+   * @example
+   * note("c a f e").withHap(x=>{
+   *   if (x.value.note == 'c') {
+   *     x.value.s = 'gm_piano'
+   *   }
+   *   else {
+   *     x.value.s = 'gm_piano'
+   *     x.value.n = 2
+   *   }
+   *   return x
+   * })
    */
   withHap(func) {
     return this.withHaps((haps) => haps.map(func));
@@ -850,6 +878,26 @@ export class Pattern {
     return stack(this, ...pats);
   }
 
+  stackLeft(...pats) {
+    return stackLeft(this, ...pats);
+  }
+
+  stackRight(...pats) {
+    return stackRight(this, ...pats);
+  }
+
+  stackCenter(...pats) {
+    return stackCenter(this, ...pats);
+  }
+
+  stackCentre(...pats) {
+    return stackCentre(this, ...pats);
+  }
+
+  stackRepeat(...pats) {
+    return stackRepeat(this, ...pats);
+  }
+
   sequence(...pats) {
     return sequence(this, ...pats);
   }
@@ -1074,7 +1122,7 @@ const COMPOSERS = {
    * @param {Pattern} pat
    * @returns {Pattern}
    * @memberof Pattern
-   * @tags internal, combiners
+   * @tags internals, combiners
    * @example
    * // because input pattern has `s` set,
    * // it overrides the "sine" declared earlier
@@ -1099,7 +1147,7 @@ const COMPOSERS = {
    * @param {Pattern} pat
    * @memberof Pattern
    * @returns {Pattern}
-   * @tags internal, combiners
+   * @tags internals, combiners
    * @example
    * // notes, already defined, will stay "c a f e",
    * // while "s", not defined, will be set to "piano"
@@ -1156,24 +1204,163 @@ const COMPOSERS = {
    * @tags math
    */
   div: [numeralArgs((a, b) => a / b)],
+  /**
+   *
+   * Divides each number by the given factor and returns the remainder
+   * @name mod
+   * @memberof Pattern
+   * @tags math
+   */
   mod: [numeralArgs(_mod)],
+  /**
+   *
+   * Raises each number to the power of the given factor
+   * @name pow
+   * @memberof Pattern
+   * @tags math
+   */
   pow: [numeralArgs(Math.pow)],
+  /**
+   *
+   * Performs a bitwise `and` on each number and the given factor
+   * @name band
+   * @memberof Pattern
+   * @tags math
+   */
   band: [numeralArgs((a, b) => a & b)],
+  /**
+   *
+   * Performs a bitwise `or` on each number and the given factor
+   * @name bor
+   * @memberof Pattern
+   * @tags math
+   */
   bor: [numeralArgs((a, b) => a | b)],
+  /**
+   *
+   * Performs a bitwise `xor` on each number and the given factor
+   * @name bxor
+   * @memberof Pattern
+   * @tags math
+   */
   bxor: [numeralArgs((a, b) => a ^ b)],
+  /**
+   *
+   * Performs a bitwise `left shift` on each number by the given factor
+   * @name blshift
+   * @memberof Pattern
+   * @tags math
+   */
   blshift: [numeralArgs((a, b) => a << b)],
+  /**
+   *
+   * Performs a bitwise `right shift` on each number by the given factor
+   * @name brshift
+   * @memberof Pattern
+   * @tags math
+   */
   brshift: [numeralArgs((a, b) => a >> b)],
 
   // TODO - force numerical comparison if both look like numbers?
+  /**
+   * performs a < b
+   * @name lt
+   * @memberof Pattern
+   * @tags math
+   * @param {any} a
+   * @param {any} b
+   * @returns Pattern with boolean value(s)
+   */
   lt: [(a, b) => a < b],
+  /**
+   * performs a > b
+   * @name gt
+   * @memberof Pattern
+   * @tags math
+   * @param {any} a
+   * @param {any} b
+   * @returns Pattern with boolean value(s)
+   */
   gt: [(a, b) => a > b],
+  /**
+   * performs a <= b
+   * @name lte
+   * @memberof Pattern
+   * @tags math
+   * @param {any} a
+   * @param {any} b
+   * @returns Pattern with boolean value(s)
+   */
   lte: [(a, b) => a <= b],
+  /**
+   * performs a >= b
+   * @name gte
+   * @memberof Pattern
+   * @tags math
+   * @param {any} a
+   * @param {any} b
+   * @returns Pattern with boolean value(s)
+   */
   gte: [(a, b) => a >= b],
+  /**
+   * performs a == b
+   * @name eq
+   * @memberof Pattern
+   * @tags math
+   * @param {any} a
+   * @param {any} b
+   * @returns Pattern with boolean value(s)
+   */
   eq: [(a, b) => a == b],
+  /**
+   * performs a === b (strictly equal)
+   * @name eqt
+   * @memberof Pattern
+   * @tags math
+   * @param {any} a
+   * @param {any} b
+   * @returns Pattern with boolean value(s)
+   */
   eqt: [(a, b) => a === b],
+  /**
+   * performs a != b
+   * @name ne
+   * @memberof Pattern
+   * @tags math
+   * @param {any} a
+   * @param {any} b
+   * @returns Pattern with boolean value(s)
+   */
   ne: [(a, b) => a != b],
+  /**
+   * performs a !== b (strictly not equal)
+   * @name net
+   * @memberof Pattern
+   * @tags math
+   * @param {any} a
+   * @param {any} b
+   * @returns Pattern with boolean value(s)
+   */
   net: [(a, b) => a !== b],
+  /**
+   * performs a && b
+   * @name and
+   * @memberof Pattern
+   * @tags math
+   * @param {any} a
+   * @param {any} b
+   * @returns Pattern with boolean value(s)
+   */
   and: [(a, b) => a && b],
+  /**
+   * performs a || b
+   * @name or
+   * @memberof Pattern
+   * @tags math
+   * @param {any} a
+   * @param {any} b
+   * @returns Pattern with boolean value(s)
+   */
   or: [(a, b) => a || b],
 
   //  bitwise ops
@@ -1449,7 +1636,19 @@ export function sequenceP(pats) {
 export function stack(...pats) {
   // Array test here is to avoid infinite recursions..
   pats = pats.map((pat) => (Array.isArray(pat) ? sequence(...pat) : reify(pat)));
-  const query = (state) => flatten(pats.map((pat) => pat.query(state)));
+  const query = (state) =>
+    flatten(
+      pats.map((pat) => {
+        try {
+          // An error occurring in one part of the stack should not break
+          // playback of the other parts of the stack.
+          return pat.query(state);
+        } catch (e) {
+          errorLogger(e);
+          return [];
+        }
+      }),
+    );
   const result = new Pattern(query);
   if (__steps) {
     result._steps = lcm(...pats.map((pat) => pat._steps));
@@ -1470,6 +1669,18 @@ function _stackWith(func, pats) {
   return stack(...func(steps, pats));
 }
 
+/**
+ * The input patterns are aligned to the left, with silence padded to the shorter pattern(s) in the final steps if there's a stepcount disparity. See also `stackRight` and `stackCenter/stackCentre`
+ *
+ * @name stackLeft
+ * @tags temporal, stepwise, combiners
+ * @return {Pattern}
+ * @example
+ * stackLeft("0 1 2 3", "3 4", "[4 5 6] 7 8 9 10").scale("c:minor").note()
+ * @example
+ * // chainable
+ * "0 1 2 3".stackLeft("3 4", "[4 5 6] 7 8 9 10").scale("c:minor").note()
+ */
 export function stackLeft(...pats) {
   return _stackWith(
     (steps, pats) => pats.map((pat) => (pat._steps.eq(steps) ? pat : stepcat(pat, gap(steps.sub(pat._steps))))),
@@ -1477,6 +1688,18 @@ export function stackLeft(...pats) {
   );
 }
 
+/**
+ * The input patterns are aligned to the right, with silence padded to the shorter pattern(s) in the initial steps if there's a stepcount disparity. See also `stackLeft` and `stackCenter/stackCentre`
+ *
+ * @name stackRight
+ * @tags temporal, stepwise, combiners
+ * @return {Pattern}
+ * @example
+ * stackRight("0 1 2 3", "3 4", "[4 5 6] 7 8 9 10").scale("c:minor").note()
+ * @example
+ * // chainable
+ * "0 1 2 3".stackRight("3 4", "[4 5 6] 7 8 9 10").scale("c:minor").note()
+ */
 export function stackRight(...pats) {
   return _stackWith(
     (steps, pats) => pats.map((pat) => (pat._steps.eq(steps) ? pat : stepcat(gap(steps.sub(pat._steps)), pat))),
@@ -1484,7 +1707,19 @@ export function stackRight(...pats) {
   );
 }
 
-export function stackCentre(...pats) {
+/**
+ * The input patterns are aligned to the right, with silence padded to the shorter pattern(s) in the initial steps if there's a stepcount disparity. See also `stackLeft` and `stackRight`
+ * @name stackCenter
+ * @tags temporal, stepwise, combiners
+ * @synonyms stackCentre
+ * @return {Pattern}
+ * @example
+ * stackCenter("0 1 2 3", "3 4", "[4 5 6] 7 8 9 10").scale("c:minor").note()
+ * @example
+ * // chainable
+ * "0 1 2 3".stackCenter("3 4", "[4 5 6] 7 8 9 10").scale("c:minor").note()
+ */
+export function stackCenter(...pats) {
   return _stackWith(
     (steps, pats) =>
       pats.map((pat) => {
@@ -1496,6 +1731,25 @@ export function stackCentre(...pats) {
       }),
     pats,
   );
+}
+
+export function stackCentre(...pats) {
+  return stackCenter(...pats);
+}
+
+/**
+ * Shorthand for `pm(patterns).pace(m)` where m is the max step count in the input patterns
+ * @name stackRepeat
+ * @tags temporal, stepwise, combiners
+ * @return {Pattern}
+ * @example
+ * stackRepeat("0 1 2 3", "3 4", "[4 5 6] 7 8 9 10").scale("c:minor").note()
+ * @example
+ * // chainable
+ * "0 1 2 3".stackRepeat("3 4", "[4 5 6] 7 8 9 10").scale("c:minor").note()
+ */
+export function stackRepeat(...pats) {
+  return stackBy(reify('repeat'), ...pats);
 }
 
 export function stackBy(by, ...pats) {
@@ -1612,10 +1866,10 @@ export function arrange(...sections) {
  * @tags combiners
  * @return {Pattern}
  * @example
-seqPLoop(
-  [0, 2, "bd(3,8)"],
-  [1, 3, "cp(3,8)"]
-).sound()
+ * seqPLoop(
+ * [0, 2, "bd(3,8)"],
+ * [1, 3, "cp(3,8)"]
+ * ).sound()
  */
 export function seqPLoop(...parts) {
   let total = Fraction(0);
@@ -2292,11 +2546,11 @@ export const { zoomArc, zoomarc } = register(['zoomArc', 'zoomarc'], function (a
  * @param {number} slices to play
  * @example
  * note("0 1 2 3 4 5 6 7".scale('c:mixolydian'))
- *.bite(4, "3 2 1 0")
+ * .bite(4, "3 2 1 0")
  * @example
  * sound("bd - bd bd*2, - sd:6 - sd:5 sd:1 - [- sd:2] -, hh [- cp:7]")
-  .bank("RolandTR909").speed(1.2)
-  .bite(4, "0 0 [1 2] <3 2> 0 0 [2 1] 3")
+ * .bank("RolandTR909").speed(1.2)
+ * .bite(4, "0 0 [1 2] <3 2> 0 0 [2 1] 3")
  */
 export const bite = register(
   'bite',
@@ -2309,6 +2563,74 @@ export const bite = register(
       })
       .appLeft(npat)
       .squeezeJoin();
+  },
+  false,
+);
+
+/**
+ * Similar to `struct`, but every hap in the structure pattern plays the next
+ * cycle of the main pattern.
+ * With a different number of cycles in the main pattern and haps in the
+ * structure pattern, this creates an isorhythm.
+ *
+ * Note: This function works on the assumption that the structure pattern
+ * repeats every cycle. If the structure pattern only repeats after multiple
+ * cycles, it may skip or repeat certain parts of the melody.
+ * @tags temporal
+ * @name isobite
+ * @synonyms cycleStruct, cyclestruct
+ * @memberof Pattern
+ * @param {Pattern} structure structure of the pattern
+ * @example
+ * "<0 1 2 3 4 5>".isobite("[x - x*2]*2").n().scale("c:major")
+ * // the same as "0 - [1 2] 3 - [4 5]".n().scale("c:major")
+ *
+ * @example
+ * "<0 1 2 3 4>".isobite("x - x").n().scale("c:major")
+ * // the same as "<[0 - 1] [2 - 3] [4 - 0] [1 - 2] [3 - 4]>".n().scale("c:major")
+ *
+ * @example
+ * // Here the structure pattern repeats after 2 cycles,
+ * // so certain haps from the melody are skipped.
+ * "<0 1 2 3>".isobite("x x*2".slow(2)).n().scale("c:major")
+ * // the same as "<[0] [2 3] [2] [2 3]>".n().scale("c:major")
+ *
+ * @example
+ * // This can be avoided by making the struct pattern 1 cycle,
+ * // and slowing the whole pattern down as follows:
+ * "<0 1 2 3>".isobite("x x*2").slow(2).n().scale("c:major")
+ * // the same as "<[0] [1 2] [3] [0 1] [2] [3 0] [1] [2 3]>".n().scale("c:major")
+ */
+export const { isobite, cyclestruct, cycleStruct } = register(
+  ['isobite', 'cyclestruct', 'cycleStruct'],
+  (structure, pat) => {
+    const structPat = new Pattern((state) => {
+      const haps_cycle = structure
+        .withQuerySpan((span) => span.begin.wholeCycle())
+        .query(state)
+        .filter((hap) => hap.value != 0)
+        .sort((a, b) => a.whole.begin - b.whole.begin)
+        .map((hap, i) => hap.withValue((_) => i));
+
+      const haps = [];
+      for (const hap of haps_cycle) {
+        const new_part = state.span.intersection(hap.part);
+        if (new_part) {
+          haps.push(new Hap(hap.whole, new_part, hap.value, hap.context));
+        }
+      }
+      return haps;
+    }).splitQueries();
+
+    const stepsPattern = new Pattern((state) => {
+      const nrHaps = structure
+        .withQuerySpan((span) => span.begin.wholeCycle())
+        .query(state)
+        .filter((hap) => hap.value != 0).length;
+      return [new Hap(state.span.begin.wholeCycle(), state.span, nrHaps, {})];
+    }).splitQueries();
+
+    return pat.fast(stepsPattern).bite(stepsPattern, structPat);
   },
   false,
 );
@@ -2419,8 +2741,12 @@ export const off = register('off', function (time_pat, func, pat) {
  * Returns a new pattern where every other cycle is played once, twice as
  * fast, and offset in time by one quarter of a cycle. Creates a kind of
  * breakbeat feel.
+ * @name brak
  * @tags temporal
  * @returns Pattern
+ * @memberof Pattern
+ * @example
+ * s("bd hh!2 rim").brak()
  */
 export const brak = register('brak', function (pat) {
   return pat.when(slowcat(false, true), (x) => fastcat(x, silence)._late(0.25));
@@ -2909,10 +3235,29 @@ export const { ribbon, rib } = register(['ribbon', 'rib'], (offset, cycles, pat)
   pat.early(offset).restart(pure(1).slow(cycles)),
 );
 
+/**
+ * Sets the pattern's color to the given [hsla](https://www.w3schools.com/htmL/html_colors_hsl.asp)
+ *
+ * @name hsla
+ * @param {Number} hue (0 - 360)
+ * @param {Number} saturation percentage (0 - 100)
+ * @param {Number} lightness percentage (0 - 100)
+ * @param {Number} alpha (transparency) (0.0 - 1.0)
+ * @tags visualization
+ */
 export const hsla = register('hsla', (h, s, l, a, pat) => {
   return pat.color(`hsla(${h}turn,${s * 100}%,${l * 100}%,${a})`);
 });
 
+/**
+ * Sets the pattern's color to the given [hsl](https://www.w3schools.com/htmL/html_colors_hsl.asp)
+ *
+ * @name hsl
+ * @param {Number} hue (0 - 360)
+ * @param {Number} saturation percentage (0 - 100)
+ * @param {Number} lightness percentage (0 - 100)
+ * @tags visualization
+ */
 export const hsl = register('hsl', (h, s, l, pat) => {
   return pat.color(`hsl(${h}turn,${s * 100}%,${l * 100}%)`);
 });
@@ -3268,7 +3613,7 @@ export const drop = stepRegister('drop', function (i, pat) {
  * @tags stepwise
  * @example
  * stepcat(
- *   sound("bd bd - cp").extend(2),
+ *   sound("bd bd - <cp hh>").extend(2),
  *   sound("bd - sd -")
  * ).pace(8)
  */
@@ -3279,15 +3624,12 @@ export const extend = stepRegister('extend', function (factor, pat) {
 /**
  * *Experimental*
  *
- * `replicate` is similar to `fast` in that it increases its density, but it also increases the step count
- * accordingly. So `stepcat("a b".replicate(2), "c d")` would be the same as `"a b a b c d"`, whereas
- * `stepcat("a b".fast(2), "c d")` would be the same as `"[a b] [a b] c d"`.
+ * `replicate` is similar to `extend`, except that `replicate` will "replicate" the thing being extended. This will only differ from `extend` when the input pattern differs from cycle to cycle.
  *
- * TODO: find out how this function differs from extend
  * @tags stepwise
  * @example
  * stepcat(
- *   sound("bd bd - cp").replicate(2),
+ *   sound("bd bd - <cp hh>").replicate(2),
  *   sound("bd - sd -")
  * ).pace(8)
  */
@@ -3395,8 +3737,8 @@ export const growlist = (amount, pat) => pat.growlist(amount);
  * "tha dhi thom nam".shrink("1 -1").sound().bank("mridangam").pace(4)
  * @example
  * note("0 1 2 3 4 5 6 7".scale("C:ritusen")).sound("folkharp")
-   .shrink("1 -1").pace(8)
-
+ * .shrink("1 -1").pace(8)
+ *
  */
 
 export const shrink = register(
@@ -3435,7 +3777,7 @@ export const shrink = register(
  * "tha dhi thom nam".grow("1 -1").sound().bank("mridangam").pace(4)
  * @example
  * note("0 1 2 3 4 5 6 7".scale("C:ritusen")).sound("folkharp")
-   .grow("1 -1").pace(8)
+ * .grow("1 -1").pace(8)
  */
 
 export const grow = register(
@@ -3459,17 +3801,17 @@ export const grow = register(
 
 /**
  * *Experimental*
- * 
- * Inserts a pattern into a list of patterns. On the first repetition it will be inserted at the end of the list, then moved backwards through the list 
- * on successive repetitions. The patterns are added together stepwise, with all repetitions taking place over a single cycle. Using `pace` to set the 
+ *
+ * Inserts a pattern into a list of patterns. On the first repetition it will be inserted at the end of the list, then moved backwards through the list
+ * on successive repetitions. The patterns are added together stepwise, with all repetitions taking place over a single cycle. Using `pace` to set the
  * number of steps per cycle is therefore usually recommended.
  *
  * @tags stepwise
  * @return {Pattern}
  * @example
  * "[c g]".tour("e f", "e f g", "g f e c").note()
-   .sound("folkharp")
-   .pace(8)
+ * .sound("folkharp")
+ * .pace(8)
  */
 export const tour = function (pat, ...many) {
   return pat.tour(...many);
@@ -3487,16 +3829,16 @@ Pattern.prototype.tour = function (...many) {
 
 /**
  * *Experimental*
- * 
- * 'zips' together the steps of the provided patterns. This can create a long repetition, taking place over a single, dense cycle. 
+ *
+ * 'zips' together the steps of the provided patterns. This can create a long repetition, taking place over a single, dense cycle.
  * Using `pace` to set the number of steps per cycle is therefore usually recommended.
- * 
+ *
  * @tags stepwise
  * @returns {Pattern}
  * @example
  * zip("e f", "e f g", "g [f e] a f4 c").note()
-   .sound("folkharp")
-   .pace(8)
+ * .sound("folkharp")
+ * .pace(8)
  */
 export const zip = function (...pats) {
   pats = pats.filter((pat) => pat.hasSteps);

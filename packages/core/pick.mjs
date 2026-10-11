@@ -104,6 +104,8 @@ export const pickmodF = register('pickmodF', function (pickPattern, lookup, pat)
  * @param {Pattern} pat
  * @param {*} xs
  * @returns {Pattern}
+ * @example
+ * note("<0*4 1 2*2 3*3>".pickOut(["g a", "e f", "f g f g" , "g c d"]))
  */
 export const pickOut = register('pickOut', function (lookup, pat) {
   return _pick(lookup, pat, false).outerJoin();

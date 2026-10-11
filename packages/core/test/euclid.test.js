@@ -29,6 +29,44 @@ describe('euclid', () => {
         .map((a) => a.showWhole(true)),
     ).toStrictEqual(['0/1 → 1/8: a', '1/4 → 3/8: a', '3/8 → 1/2: a', '5/8 → 3/4: a', '3/4 → 7/8: a']);
   });
+  it('Can create euclidLegato using negative steps', () => {
+    expect(
+      fastcat('a')
+        .euclid(3, -8)
+        .firstCycle()
+        .sort((a, b) => a.part.begin.sub(b.part.begin))
+        .map((a) => a.showWhole(true)),
+    ).toStrictEqual(
+      fastcat('a')
+        .euclidLegato(3, 8)
+        .firstCycle()
+        .sort((a, b) => a.part.begin.sub(b.part.begin))
+        .map((a) => a.showWhole(true)),
+    );
+    expect(
+      fastcat('a')
+        .euclid(5, -8)
+        .firstCycle()
+        .sort((a, b) => a.part.begin.sub(b.part.begin))
+        .map((a) => a.showWhole(true)),
+    ).toStrictEqual(
+      fastcat('a')
+        .euclidLegato(5, 8)
+        .firstCycle()
+        .sort((a, b) => a.part.begin.sub(b.part.begin))
+        .map((a) => a.showWhole(true)),
+    );
+  });
+  it('stretches over multiple cycles if pulses is greater than steps', () => {
+    expect(
+      fastcat('a')
+        .euclid(5, 4)
+        .fast(2)
+        .firstCycle()
+        .sort((a, b) => a.part.begin.sub(b.part.begin))
+        .map((a) => a.showWhole(true)),
+    ).toStrictEqual(['0/1 → 1/8: a', '1/4 → 3/8: a', '3/8 → 1/2: a', '5/8 → 3/4: a', '3/4 → 7/8: a']);
+  });
 });
 
 describe('euclidRot', () => {
@@ -63,6 +101,45 @@ describe('euclidLegato', () => {
       fastcat('a')
         .euclidLegato(5, 8)
         .firstCycle()
+        .sort((a, b) => a.part.begin.sub(b.part.begin))
+        .map((a) => a.showWhole(true)),
+    ).toStrictEqual(['0/1 → 1/4: a', '1/4 → 3/8: a', '3/8 → 5/8: a', '5/8 → 3/4: a', '3/4 → 1/1: a']);
+  });
+  it('Can create euclid using negative steps', () => {
+    expect(
+      fastcat('a')
+        .euclidLegato(3, -8)
+        .firstCycle()
+        .sort((a, b) => a.part.begin.sub(b.part.begin))
+        .map((a) => a.showWhole(true)),
+    ).toStrictEqual(
+      fastcat('a')
+        .euclid(3, 8)
+        .firstCycle()
+        .sort((a, b) => a.part.begin.sub(b.part.begin))
+        .map((a) => a.showWhole(true)),
+    );
+    expect(
+      fastcat('a')
+        .euclidLegato(5, -8)
+        .firstCycle()
+        .sort((a, b) => a.part.begin.sub(b.part.begin))
+        .map((a) => a.showWhole(true)),
+    ).toStrictEqual(
+      fastcat('a')
+        .euclid(5, 8)
+        .firstCycle()
+        .sort((a, b) => a.part.begin.sub(b.part.begin))
+        .map((a) => a.showWhole(true)),
+    );
+  });
+  it('stretches over multiple cycles if pulses is greater than steps', () => {
+    expect(
+      fastcat('a')
+        .euclidLegato(5, 4)
+        .fast(2)
+        .firstCycle()
+        .filter((hap) => hap.hasOnset())
         .sort((a, b) => a.part.begin.sub(b.part.begin))
         .map((a) => a.showWhole(true)),
     ).toStrictEqual(['0/1 → 1/4: a', '1/4 → 3/8: a', '3/8 → 5/8: a', '5/8 → 3/4: a', '3/4 → 1/1: a']);

@@ -5,7 +5,7 @@ This program is free software: you can redistribute it and/or modify it under th
 */
 
 import { Hap } from './hap.mjs';
-import { Pattern, fastcat, pure, register, reify, silence, stack, sequenceP } from './pattern.mjs';
+import { Pattern, fastcat, pure, register, reify, silence, stack, sequenceP, isPattern } from './pattern.mjs';
 import { _mod } from './util.mjs';
 import Fraction from './fraction.mjs';
 
@@ -16,6 +16,24 @@ export function steady(value) {
   return new Pattern((state) => [new Hap(undefined, state.span, value)]);
 }
 
+/**
+ * Creates a signal given by the input function
+ *
+ * @name signal
+ * @param {*} func
+ * @returns {Pattern} signal
+ * @tags generators
+ * @example
+ * // sawtooth signal definition
+ * signal(t=>t%1).segment(16).range(30,40).note()
+ * @example
+ * signal(t=>Math.pow(t,2)%1).range(40, 60).add(5).segment(16)
+ * .off(0, x=>x.add(7))
+ * .note()
+ * .s("gm_electric_guitar_jazz,gm_epiano")
+ *   .gain(1.7)
+ * .pianoroll()
+ */
 export const signal = (func) => {
   const query = (state) => [new Hap(undefined, state.span, func(state.span.begin, state.controls))];
   return new Pattern(query);
@@ -189,6 +207,7 @@ export const time = signal(id);
 /**
  *  The mouse's x position value ranges from 0 to 1.
  * @name mousex
+ * @synonyms mouseX
  * @return {Pattern}
  * @tags external_io
  * @example
@@ -199,6 +218,7 @@ export const time = signal(id);
 /**
  *  The mouse's y position value ranges from 0 to 1.
  * @name mousey
+ * @synonyms mouseY
  * @return {Pattern}
  * @tags external_io
  * @example
@@ -559,6 +579,9 @@ export const __chooseWith = (pat, xs) => {
  * @returns {Pattern}
  * @example
  * note("c2 g2!2 d2 f1").s(chooseWith(sine.fast(2), ["sawtooth", "triangle", "bd:6"]))
+ * @example
+ * // Compare with chooseInWith
+ * note(chooseWith("<0 0.5 1>*3", ["c3", "b3", "d3"]))
  */
 export const chooseWith = (pat, xs) => {
   return __chooseWith(pat, xs).outerJoin();
@@ -570,6 +593,13 @@ export const chooseWith = (pat, xs) => {
  * @tags temporal
  * @param {Pattern} pat
  * @param {*} xs
+ * @example
+ * // Because the structure comes from the chosen values (the notes, here)
+ * // The choosing pattern will only advance once per cycle (not 3 times per cycle)
+ * note(chooseInWith("<0 0.5 1>*3", ["c3", "b3", "d3"]))
+ * @example
+ * // Here, the chosen values have a structure such that the choosing pattern will advance 3 times per cycle
+ * note(chooseInWith("<0 0.5 1>*3", ["c3*3", "b3*3", "d3*3"]))
  * @returns {Pattern}
  */
 export const chooseInWith = (pat, xs) => {
@@ -586,9 +616,7 @@ export const chooseInWith = (pat, xs) => {
  */
 export const choose = (...xs) => chooseWith(rand, xs);
 
-// todo: doc
 export const chooseIn = (...xs) => chooseInWith(rand, xs);
-export const chooseOut = choose;
 
 /**
  * Chooses from the given list of values (or patterns of values), according
@@ -734,12 +762,30 @@ export const perlin = signal((t, controls) => _perlin(t, controls.randSeed));
  */
 export const berlin = signal((t, controls) => _berlin(t, controls.randSeed));
 
-export const degradeByWith = register(
-  'degradeByWith',
-  (withPat, x, pat) => pat.fmap((a) => (_) => a).appLeft(withPat.filterValues((v) => v > x)),
-  true,
-  true,
-);
+/**
+ * `degradeByWith` is like `degradeBy`, but with control over the random or other signal used to filter out the events.
+ *
+ * `degradeBy(x)` is essentially `degradeByWith(rand, x)`
+ *
+ * This allows you to do things other than with `rand`, see examples below
+ *
+ * @name degradeByWith
+ * @param {Pattern|number} test
+ * @param {Pattern|number} testAgainst
+ * @memberof Pattern
+ * @tags temporal
+ * @returns {Pattern}
+ * @example
+ * note("c a f e").degradeByWith(sine, .1)
+ * @example
+ * note("c a f e").degradeByWith(perlin, .5)
+ * @example
+ * note("c a f e").degradeByWith(sine, cosine)
+ */
+export const degradeByWith = register('degradeByWith', (withPat, x, pat) => {
+  if (!isPattern(withPat)) withPat = pure(withPat);
+  return pat.fmap((a) => (_) => a).appLeft(withPat.filterValues((v) => v > x));
+});
 
 /**
  * Randomly removes events from the pattern by a given amount.
