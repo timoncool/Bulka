@@ -41,7 +41,7 @@ function noticeEvents(on) {
 /** The hub of this page, or null where statistics are not wired (local dev without PUBLIC_STUDIO_HUB_URL). */
 export function initBulkaHub() {
   if (hub || typeof window === 'undefined') return hub;
-  const { desktop, version, hubUrl } = build();
+  const { desktop, version, hubUrl, machine } = build();
   if (import.meta.env.DEV && !hubUrl) {
     console.info('[studio hub] dev: statistics are off; set PUBLIC_STUDIO_HUB_URL to send them to a local hub');
     return null;
@@ -56,6 +56,7 @@ export function initBulkaHub() {
     storage: window.localStorage,
     fetch: window.fetch.bind(window),
     onTelemetry: noticeEvents,
+    machine,
   });
   noticeEvents(hub.telemetryOn());
   window.__bulkaHub = hub;

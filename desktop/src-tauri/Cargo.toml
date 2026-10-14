@@ -21,6 +21,8 @@ tauri-plugin-updater = "2"
 tauri-plugin-shell = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+# только machine::id — номер компьютера, общий со студиями
+studio-hub-client = { git = "https://github.com/timoncool/studio-hub-client", rev = "987e7bd3fadc6530cd6b2940592ed8a0b917ea39" }
 
 [profile.release]
 opt-level = "s"

@@ -13,6 +13,15 @@
         "type": "other",
         "typeLabel": "Прочее",
         "emoji": "📦",
+        "description": "Welcome tab: report a problem through the issue forms, with the browser filled in",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "68f997854"
+      },
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
         "description": "Issue forms: bug, idea, question",
         "scope": null,
         "author": "Nerual Dreming",
