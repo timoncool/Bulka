@@ -171,8 +171,14 @@ export function getSound(s) {
 }
 
 export const getAudioDevices = async () => {
-  await navigator.mediaDevices.getUserMedia({ audio: true });
-  let mediaDevices = await navigator.mediaDevices.enumerateDevices();
+  // the microphone is asked for only so the outputs are named: it is released at once
+  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  let mediaDevices;
+  try {
+    mediaDevices = await navigator.mediaDevices.enumerateDevices();
+  } finally {
+    stream.getTracks().forEach((track) => track.stop());
+  }
   mediaDevices = mediaDevices.filter((device) => device.kind === 'audiooutput' && device.deviceId !== 'default');
   const devicesMap = new Map();
   devicesMap.set(DEFAULT_AUDIO_DEVICE_NAME, '');

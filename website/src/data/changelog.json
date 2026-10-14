@@ -6,6 +6,21 @@
     "changes": []
   },
   {
+    "date": "2026-10-15",
+    "dateFormatted": "15 октября 2026",
+    "changes": [
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "The window's own page gets the microphone WebView2 left unanswered, so the sound outputs are listed",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "758013ac4"
+      }
+    ]
+  },
+  {
     "date": "2026-10-14",
     "dateFormatted": "14 октября 2026",
     "changes": [
