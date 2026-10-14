@@ -6,9 +6,33 @@
     "changes": []
   },
   {
+    "date": "2026-10-14",
+    "dateFormatted": "14 октября 2026",
+    "changes": [
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "Issue forms: bug, idea, question",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "cd53c2308"
+      }
+    ]
+  },
+  {
     "date": "2026-10-12",
     "dateFormatted": "12 октября 2026",
     "changes": [
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "make-release.sh works from Git Bash (node for Windows got /d/... paths)",
+        "scope": "desktop",
+        "author": "Nerual Dreming",
+        "hash": "6ec511f59"
+      },
       {
         "type": "fix",
         "typeLabel": "Исправления",
