@@ -161,7 +161,7 @@ fn spawn_server(app: &tauri::AppHandle, app_dir: &PathBuf, data: &PathBuf, port:
         // Куда сохранять записи/экспорт (сервер кладёт файлы в <данные>/recordings и открывает папку).
         .env("BULKA_APP_DIR", data.to_string_lossy().into_owned())
         // номер компьютера, общий со студиями: статистика считает одного человека один раз
-        .env("BULKA_MACHINE", studio_hub_client::machine::id().unwrap_or_default())
+        .env("BULKA_MACHINE", studio_hub_client::machine::system_id().unwrap_or_default())
         .current_dir(app_dir.clone());
 
     let (mut rx, child) = cmd.spawn().map_err(|e| format!("node не запустился: {e}"))?;
