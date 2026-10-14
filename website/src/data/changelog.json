@@ -13,6 +13,15 @@
         "type": "other",
         "typeLabel": "Прочее",
         "emoji": "📦",
+        "description": "Ревью: номер компьютера для окна — только системный (machine::system_id), без записи общего файла до согласия; studio-hub-client 68d95f8",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "79fe8b8ac"
+      },
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
         "description": "The desktop app sends the computer number the studios send, so one person with Bulka and a studio counts once",
         "scope": null,
         "author": "Nerual Dreming",
