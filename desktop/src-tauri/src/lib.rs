@@ -160,6 +160,8 @@ fn spawn_server(app: &tauri::AppHandle, app_dir: &PathBuf, data: &PathBuf, port:
         .env("BULKA_DESKTOP", "1")
         // Куда сохранять записи/экспорт (сервер кладёт файлы в <данные>/recordings и открывает папку).
         .env("BULKA_APP_DIR", data.to_string_lossy().into_owned())
+        // номер компьютера, общий со студиями: статистика считает одного человека один раз
+        .env("BULKA_MACHINE", studio_hub_client::machine::system_id().unwrap_or_default())
         .current_dir(app_dir.clone());
 
     let (mut rx, child) = cmd.spawn().map_err(|e| format!("node не запустился: {e}"))?;
@@ -337,6 +339,16 @@ pub fn run() {
                 .min_inner_size(1100.0, 700.0)
                 .resizable(true)
                 .disable_drag_drop_handler()
+                // WebView2 оставляет запрос микрофона без ответа и без окна согласия: getUserMedia своей страницы
+                // (названия звуковых выходов, запись) висел, и список устройств вывода оставался пустым
+                .on_permission_request(move |webview, kind| match kind {
+                    tauri::webview::PermissionKind::Microphone
+                        if webview.url().is_ok_and(|url| url.host_str() == Some("127.0.0.1") && url.port() == Some(port)) =>
+                    {
+                        tauri::webview::PermissionResponse::Allow
+                    }
+                    _ => tauri::webview::PermissionResponse::Default,
+                })
                 .build()?;
             if let Some(ic) = icon {
                 win.set_icon(ic)?;

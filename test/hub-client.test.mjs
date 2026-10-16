@@ -11,8 +11,9 @@ function memoryStorage() {
   return { getItem: (k) => data.get(k) ?? null, setItem: (k, v) => data.set(k, String(v)), data };
 }
 
-function hubWith(fetchImpl, storage = memoryStorage()) {
+function hubWith(fetchImpl, storage = memoryStorage(), extra = {}) {
   return new StudioHub({
+    ...extra,
     app: 'bulka',
     version: '0.6.0',
     os: 'web Windows Chrome',
@@ -150,5 +151,20 @@ describe('studio hub client', () => {
     const hub = hubWith(vi.fn(ok));
     hub.acknowledge(true);
     expect(() => hub.count('Bad-Name')).toThrow();
+  });
+});
+
+describe('computer id', () => {
+  it('goes with the report of the desktop app and is absent on the web', async () => {
+    const machine = '041bb722-6c3b-4ebe-be3a-7ed023dab1b9';
+    const desktop = hubWith(vi.fn(ok), memoryStorage(), { machine });
+    desktop.acknowledge(true);
+    desktop.count('pattern_play_done');
+    const day = new Date().toISOString().slice(0, 10);
+    expect(desktop.reportFor(day).machine).toBe(machine);
+    const web = hubWith(vi.fn(ok));
+    web.acknowledge(true);
+    web.count('pattern_play_done');
+    expect('machine' in web.reportFor(day)).toBe(false);
   });
 });

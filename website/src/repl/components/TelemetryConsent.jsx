@@ -8,6 +8,7 @@ export function TelemetryPreview({ hub }) {
   const report = hub.reportFor(day) ?? {
     schema: 1,
     install: t('telemetry.previewInstall'),
+    ...(hub.config.machine ? { machine: hub.config.machine } : {}),
     app: hub.config.app,
     version: hub.config.version,
     day,
