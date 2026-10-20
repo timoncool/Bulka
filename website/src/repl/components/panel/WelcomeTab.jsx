@@ -46,6 +46,11 @@ function WelcomeRu() {
           Telegram-сообществу
         </a>
         !
+        {' '}Нашли ошибку?{' '}
+        <a href={issueReportUrl()} target="_blank">
+          Сообщите о проблеме
+        </a>
+        .
       </p>
       <p>
         🌐 Официальный сайт:{' '}
@@ -110,6 +115,11 @@ function WelcomeEn() {
           Telegram community
         </a>
         !
+        {' '}Found a bug?{' '}
+        <a href={issueReportUrl()} target="_blank">
+          Report a problem
+        </a>
+        .
       </p>
       <p>
         🌐 Website:{' '}
@@ -134,6 +144,22 @@ function WelcomeEn() {
       </p>
     </>
   );
+}
+
+/**
+ * GitHub's choice of forms (bug, idea, question) with the browser and system passed along: the key is the `id` of
+ * the text field in `.github/ISSUE_TEMPLATE/*.yml`, and the chosen form fills it from the query parameter.
+ */
+function issueReportUrl() {
+  const agent = navigator.userAgent;
+  const known = [['Edg', 'Edge'], ['OPR', 'Opera'], ['YaBrowser', 'Yandex'], ['Firefox', 'Firefox'], ['Chrome', 'Chrome'], ['Version', 'Safari']];
+  const found = known.map(([token, label]) => [label, agent.match(new RegExp(`${token}/(\\d+)`))]).find(([, m]) => m);
+  const name = found ? `${found[0]} ${found[1][1]}` : '';
+  const os = /Windows/.test(agent) ? 'Windows' : /Mac OS X|Macintosh/.test(agent) ? 'macOS' : /Android/.test(agent) ? 'Android' : /Linux/.test(agent) ? 'Linux' : '';
+  const query = new URLSearchParams();
+  const described = [name, os].filter(Boolean).join(', ');
+  if (described) query.set('browser', described);
+  return `https://github.com/timoncool/Bulka/issues/new/choose?${query.toString()}`;
 }
 
 export function WelcomeTab() {

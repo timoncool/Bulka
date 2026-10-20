@@ -31,7 +31,8 @@ export function shortName(text) {
 export class StudioHub {
   /**
    * @param {{ app: string, version: string, os: string, backend: string, lang: () => string,
-   *   urls: string[], storage: Storage, fetch: typeof fetch, now?: () => number }} config
+   *   urls: string[], storage: Storage, fetch: typeof fetch, now?: () => number, machine?: string }} config
+   *   `machine`: the computer id the desktop shell derives, the same in every program of timoncool's; none on the web.
    */
   constructor(config) {
     this.config = config;
@@ -129,6 +130,7 @@ export class StudioHub {
     return {
       schema: 1,
       install: this.state.install,
+      ...(this.config.machine ? { machine: this.config.machine } : {}),
       app: this.config.app,
       version: this.config.version,
       day: dayKey,

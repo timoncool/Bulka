@@ -15,7 +15,9 @@ const lang = langFromPath(Astro.url.pathname);
 const desktop = process.env.BULKA_DESKTOP === '1';
 const hubUrl = import.meta.env.PUBLIC_STUDIO_HUB_URL || process.env.STUDIO_HUB_URL || '';
 const hubTest = import.meta.env.DEV || process.env.STUDIO_HUB_TEST === '1';
-const build = { desktop, version: desktop ? desktopConf.version : websitePackage.version, hubUrl };
+// the computer id the shell derives (studio-hub-client `machine::id`), so Bulka and the studios count one person once
+const machine = desktop && process.env.BULKA_MACHINE ? process.env.BULKA_MACHINE : undefined;
+const build = { desktop, version: desktop ? desktopConf.version : websitePackage.version, hubUrl, machine };
 const notice = { app: 'bulka', lang, version: build.version, ...(hubTest ? { test: '1' } : {}) };
 ---
 
