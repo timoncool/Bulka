@@ -17,7 +17,7 @@ import { MiniRepl } from '../../docs/MiniRepl';
 
 1. Пользователь пишет и обновляет код. Каждое обновление транспилирует и оценивает его для создания экземпляра `Pattern`
 2. Пока REPL работает, `Scheduler` запрашивает активный `Pattern` с регулярным интервалом, генерируя `Events` (также известные как `Haps` в Strudel) для следующего временного диапазона.
-3. Для каждого тика планирования все сгенерированные `Events` запускаются путем вызова их метода `onTrigger`, который устанавливается выходом.
+3. Для каждого тика планирования все сгенерированные `Events` запускаются вызовом их метода `onSchedule`, который задаётся выходом.
 
 <img src="https://codeberg.org/uzu/strudel/raw/branch/talk/talk/public/strudelflow.png" width="600" />
 
@@ -117,10 +117,6 @@ seq(
 
 который переводится в `seq(c3, seq(e3, g3))`
 
-## Vim горячие клавиши
-
-См. отдельную страницу о горячих клавишах Vim для быстрого справочника: [/technical-manual/vim](/technical-manual/vim)
-
 ## Планирование событий
 
 После получения экземпляра `Pattern` из пользовательского кода, он используется планировщиком для запроса событий. После запуска планировщик выполняется с фиксированным интервалом для запроса активного pattern на предмет событий в пределах временного диапазона текущего интервала. Упрощенная реализация выглядит так:
@@ -133,10 +129,7 @@ let minLatency = 0.1; // минимальное время до того, как
 setInterval(() => {
   const haps = pattern.queryArc(time, time + interval);
   time += interval; // увеличить время
-  haps.forEach((hap) => {
-    const deadline = hap.whole.begin - time + minLatency;
-    onTrigger(hap, deadline, duration);
-  });
+  haps.forEach((hap) => onSchedule(hap, hap.whole.begin + minLatency));
 }, interval * 1000); // запрос каждые "interval" секунд
 ```
 
@@ -180,16 +173,15 @@ x(sine.range(0, 200)).y(cosine.range(0, 200));
 
 ### Выходы
 
-Теперь, когда мы знаем, как значение события манипулируется с помощью контрольных параметров, мы можем посмотреть, как выходы могут использовать это значение для генерации чего угодно. Планировщик выше вызывал функцию `onTrigger`, которая используется для реализации вывода. Очень простая версия вывода web audio может выглядеть так:
+Теперь, когда мы знаем, как значение события манипулируется с помощью контрольных параметров, мы можем посмотреть, как выходы могут использовать это значение для генерации чего угодно. Планировщик выше вызывал функцию `onSchedule`, которая используется для реализации вывода. Очень простая версия вывода web audio может выглядеть так:
 
 ```js
-function onTrigger(hap, deadline, duration) {
+function onSchedule(hap, time, cps) {
   const { note } = hap.value;
-  const time = getAudioContext().currentTime + deadline;
   const o = getAudioContext().createOscillator();
   o.frequency.value = getFreq(note);
   o.start(time);
-  o.stop(time + event.duration);
+  o.stop(time + hap.duration / cps);
   o.connect(getAudioContext().destination);
 }
 ```

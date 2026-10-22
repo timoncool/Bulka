@@ -23,7 +23,7 @@ export const csound = register('csound', (instrument, pat) => {
   instrument = instrument || 'triangle';
   init(); // not async to support csound inside other patterns + to be able to call pattern methods after it
   // TODO: find a alternative way to wait for csound to load (to wait with first time playback)
-  return pat.onTrigger((hap, currentTime, _cps, targetTime) => {
+  return pat.onSchedule((hap, targetTime) => {
     if (!_csound) {
       logger('[csound] not loaded yet', 'warning');
       return;
@@ -36,9 +36,10 @@ export const csound = register('csound', (instrument, pat) => {
     const controls = Object.entries({ ...hap.value, freq })
       .flat()
       .join('/');
+
     // TODO: find out how to send a precise ctx based time
     // http://www.csounds.com/manual/html/i.html
-    const timeOffset = targetTime - currentTime; // latency ?
+    const timeOffset = targetTime - getAudioContext().currentTime; // latency ?
     //const timeOffset = time_deprecate - getAudioContext().currentTime
     const params = [
       `"${instrument}"`, // p1: instrument name
@@ -144,7 +145,7 @@ export const csoundm = register('csoundm', (instrument, pat) => {
     p1 = `"${instrument}"`;
   }
   init(); // not async to support csound inside other patterns + to be able to call pattern methods after it
-  return pat.onTrigger((hap, currentTime, _cps, targetTime) => {
+  return pat.onSchedule((hap, targetTime) => {
     if (!_csound) {
       logger('[csound] not loaded yet', 'warning');
       return;
@@ -152,6 +153,7 @@ export const csoundm = register('csoundm', (instrument, pat) => {
     if (typeof hap.value !== 'object') {
       throw new Error('csound only support objects as hap values');
     }
+    const currentTime = getAudioContext().currentTime;
     // Time in seconds counting from now.
     const p2 = targetTime - currentTime;
     const p3 = hap.duration.valueOf() + 0;

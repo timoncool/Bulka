@@ -70,7 +70,7 @@ const initialCode = `// LOADING`;
 export function useReplContext() {
   const { isSyncEnabled, audioEngineTarget, prebakeScript, includePrebakeScriptInShare } = useSettings();
   const shouldUseWebaudio = audioEngineTarget !== audioEngineTargets.osc;
-  const defaultOutput = shouldUseWebaudio ? webaudioOutput : superdirtOutput;
+  const onSchedule = shouldUseWebaudio ? webaudioOutput : superdirtOutput;
   const getTime = shouldUseWebaudio ? getAudioContextCurrentTime : getPerformanceTimeSeconds;
   const init = useCallback(() => {
     // Десктоп (Tauri): чиним blob-«скачивания» (запись/экспорт) — сохраняем через Node-сервер.
@@ -83,7 +83,7 @@ export function useReplContext() {
     const drawContext = getDrawContext();
     const editor = new StrudelMirror({
       sync: isSyncEnabled,
-      defaultOutput,
+      onSchedule,
       getTime,
       setInterval,
       clearInterval,
@@ -117,7 +117,11 @@ export function useReplContext() {
         window.parent?.postMessage(code);
 
         setLatestCode(code);
-        window.location.hash = '#' + code2hash(code);
+        try {
+          window.location.hash = '#' + code2hash(code);
+        } catch (e) {
+          console.warn('[useReplContext] Failed to update hash:', e.message);
+        }
         setDocumentTitle(code);
         // Заголовок трека для записей: десктоп кладёт WAV в папку `recordings/<название трека>/`.
         try {

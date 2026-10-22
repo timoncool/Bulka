@@ -25,8 +25,16 @@ export class ClockBridge {
     }
     const offset = performanceTime - contextTime * 1000; // clock offset in ms
     const dt = performanceTime - (this.lastTime ?? performanceTime); // delta time since last hap
-    const decay = 1 / 10000; // how fast offset changes have an effect
-    this.p = expDecay(this.p ?? offset, offset, decay, dt); // smooth clock offset
+    const deprivation = offset - this.p;
+    // when the system sleeps, the audio and system clock get jumbled
+    // so we dont smooth if the jump is too high, to snap the offset
+    if (Math.abs(deprivation) > 20) {
+      console.log(`[ClockBridge] snap with ${(deprivation / 1000).toFixed(2)}s deprivation`);
+      this.p = offset;
+    } else {
+      const decay = 1 / 10000; // how fast offset changes have an effect
+      this.p = expDecay(this.p ?? offset, offset, decay, dt); // smooth clock offset
+    }
     this.lastTime = performanceTime;
     return this.p;
   }

@@ -46,7 +46,6 @@ const BOOL_SETTINGS = [
   'isPatternHighlightingEnabled',
   'isTabIndentationEnabled',
   'isMultiCursorEnabled',
-  'isBlockBasedEvalEnabled',
   'isZen',
   'isPanelPinned',
   'isPanelOpen',
@@ -57,7 +56,7 @@ const BOOL_SETTINGS = [
 ];
 const CHOICE_SETTINGS = {
   theme: () => Object.keys(themes),
-  keybindings: () => ['codemirror', 'vim', 'emacs', 'helix', 'vscode'],
+  keybindings: () => ['codemirror', 'vim', 'emacs', 'vscode'],
   panelPosition: () => ['bottom', 'right'],
   togglePanelTrigger: () => ['click', 'hover'],
   fontFamily: () => [
