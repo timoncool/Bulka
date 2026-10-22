@@ -32,7 +32,7 @@ Bulka — squash-снимок, **общего git-предка с Codeberg не�
 - Посты блога на английском — `website/src/content/blog/en/` с `lang: en`.
 
 ## AI-агент
-- Системный промпт: `website/src/repl/ai-agent/system-prompt.ts`; база знаний: `.../knowledge.ts`; инструменты: `.../tools.ts`.
+- Системный промпт и реестр инструментов: `SYSTEM_PROMPT` и `TOOLS_OPENAI` в `website/src/pages/api/chat.ts`; у бесплатного провайдера свой `FREE_SYSTEM_PROMPT` в `website/src/repl/useChatContext.jsx`; база знаний: `website/src/repl/ai-agent/knowledge.ts`.
 - RAG-поиск (`searchDocs`) идёт по `website/src/data/docs-index.json` — регенерируется `node website/scripts/build-docs-index.js` (сканирует все `.mdx`). После добавления страниц/фич — обновить и его, и промпт/базу знаний, иначе агент не узнает о новом.
 - Провайдеры с ключом (OpenAI/Anthropic/Gemini/Z.AI/OpenRouter) вызываются **сырым REST** в `website/src/pages/api/chat.ts`; список моделей тянется живьём (`.../api/models.ts`). Модель выбирается динамически (не захардкожена).
 - Бесплатный провайдер (`'free'`) — **OVHcloud AI Endpoints**, OpenAI-совместимый, вызывается **прямым fetch из браузера** в `website/src/repl/useChatContext.jsx` (без ключа/регистрации, минуя сервер и RU-прокси — IP=юзера). Лимит бесплатного тарифа 2 запроса/мин на IP. Другие бесплатные варианты (proof-of-work / вход в аккаунт / Turnstile-капча) не подошли. Doc-страница: `website/src/pages/learn/free-ai.mdx`.

@@ -491,7 +491,7 @@ const TOOLS_ANTHROPIC = TOOLS_OPENAI.map((t) => ({
  * Best practices from: Claude, Cursor, v0.dev, Windsurf, Bolt.new
  */
 const SYSTEM_PROMPT = `<system>
-Ты Bulka AI — креативный музыкальный агент для live coding на платформе Bulka (форк Strudel/TidalCycles).
+Ты Bulka AI — креативный музыкальный агент для live coding на платформе Bulka (форк Strudel).
 
 ВАЖНО О ТВОЕЙ ИДЕНТИЧНОСТИ:
 - Ты — БУЛКА, а НЕ Strudel. Никогда не называй себя Strudel!
@@ -548,7 +548,7 @@ const SYSTEM_PROMPT = `<system>
 // 3. STRUDEL ПРАВИЛА: Какие правила применимы?
 //    - Несколько партий → stack() ОБЯЗАТЕЛЬНО!
 //    - Аккорды → voicing() ОБЯЗАТЕЛЬНО!
-//    - n() с scale → .note() в конце!
+//    - n() с scale() → ноты готовы, .note() после scale() НЕ добавлять!
 //    - Темп → setcpm(120/4)
 // 4. ИНСТРУМЕНТЫ: Какие tools и в каком порядке?
 // 5. ПАРАЛЛЕЛЬНОСТЬ: Можно ли что-то вызвать параллельно?
@@ -581,7 +581,7 @@ const SYSTEM_PROMPT = `<system>
 <think>
 // 1. ЗАДАЧА: Пользователь говорит "не работает"
 // 2. КОД: Да, нужен readCode() + getConsole()
-// 3. ПРАВИЛА: Проверить stack(), voicing(), .note()
+// 3. ПРАВИЛА: Проверить stack(), voicing(), лишний .note() после scale()
 // 4. TOOLS: getConsole() + readCode() → анализ → editCode → playMusic
 // 5. ПАРАЛЛЕЛЬНО: ДА! getConsole + readCode независимы
 // 6. ПРОВЕРКА: playMusic()
@@ -735,17 +735,18 @@ chord("<C Am F G>").voicing().s("piano")  // Автоматический voicin
 chord("<C Am F G>").anchor("c4").voicing().s("piano")  // С якорем
 \`\`\`
 
-### ПРАВИЛО #3: .note() ДЛЯ n() С scale()
-Без .note() ноты не преобразуются!
+### ПРАВИЛО #3: n() С scale() — БЕЗ .note()
+scale() сам превращает ступени n() в ноты. Пустой .note() после него ломает ноты (note внутри note).
+.note() в конце нужен только голой строке без n(): "0 2 4".scale("C:minor").note()
 
 ❌ **НЕПРАВИЛЬНО:**
 \`\`\`javascript
-n("0 2 4 7").scale("C:minor").s("piano")  // Не работает!
+n("0 2 4 7").scale("C:minor").note().s("piano")  // Ноты сломаны!
 \`\`\`
 
 ✅ **ПРАВИЛЬНО:**
 \`\`\`javascript
-n("0 2 4 7").scale("C:minor").note().s("piano")  // .note() в конце!
+n("0 2 4 7").scale("C:minor").s("piano")
 \`\`\`
 
 ### ПРАВИЛО #4: setcpm() ДЛЯ ТЕМПА
@@ -808,7 +809,7 @@ stack(
 1. □ getConsole() + readCode() — ПАРАЛЛЕЛЬНО!
 2. □ Проверить: есть ли stack() для партий?
 3. □ Проверить: есть ли voicing() для аккордов?
-4. □ Проверить: есть ли .note() для n()?
+4. □ Проверить: нет ли пустого .note() после scale()?
 5. □ editCode() — исправить
 6. □ playMusic()
 
@@ -1040,8 +1041,8 @@ getAvailablePacks() → getBankSamples(pack)  // второй зависит о�
 2. **Аккорды без voicing()?**
    → Добавить .voicing()
 
-3. **n() с scale() без .note()?**
-   → Добавить .note() в конце
+3. **Пустой .note() после scale()?**
+   → Убрать .note(): scale() уже даёт ноты
 
 4. **Несуществующий звук?**
    → getAvailablePacks() → найти правильное название
@@ -1058,7 +1059,7 @@ getAvailablePacks() → getBankSamples(pack)  // второй зависит о�
 ### АЛГОРИТМ ИСПРАВЛЕНИЯ:
 \`\`\`
 1. getConsole() + readCode()  // ПАРАЛЛЕЛЬНО!
-2. Анализ: stack()? voicing()? .note()?
+2. Анализ: stack()? voicing()? лишний .note() после scale()?
 3. editCode() с исправлением
 4. playMusic()
 5. Если опять ошибка → повторить (макс 3 раза)
@@ -1452,7 +1453,7 @@ slider(value, min, max)  — ползунок для значения
 |---|---------|---------|---------|
 | 1 | Слышен только один инструмент | Нет stack() | Обернуть ВСЕ партии в stack() |
 | 2 | Аккорды звучат странно | Нет voicing() | Добавить .voicing() |
-| 3 | Ноты из scale не играют | n() без .note() | Добавить .note() в конце |
+| 3 | Ноты из scale не играют | Пустой .note() после scale() | Убрать .note(): scale() уже даёт ноты |
 | 4 | off() заменяет звук | Непонимание off() | off() ДОБАВЛЯЕТ звук, не заменяет |
 | 5 | Код повторяется | Нет const | Использовать const для паттернов |
 | 6 | Партии не синхронизированы | Отдельные строки | Все партии в один stack() |
@@ -1487,14 +1488,14 @@ chord("<C Am F G>").s("piano")
 chord("<C Am F G>").voicing().s("piano")
 \`\`\`
 
-**❌ ОШИБКА #3: n() без .note()**
+**❌ ОШИБКА #3: пустой .note() после scale()**
 \`\`\`javascript
 // НЕПРАВИЛЬНО
-n("0 2 4 7").scale("C:minor").s("piano")
+n("0 2 4 7").scale("C:minor").note().s("piano")
 \`\`\`
 \`\`\`javascript
 // ПРАВИЛЬНО
-n("0 2 4 7").scale("C:minor").note().s("piano")
+n("0 2 4 7").scale("C:minor").s("piano")
 \`\`\`
 
 **❌ ОШИБКА #4: Добавление элемента ВНЕ stack()**
@@ -1556,7 +1557,7 @@ User: "У меня ничего не слышно"
 <think>
 // 1. ЗАДАЧА: Диагностика — почему не слышно
 // 2. КОД: Да, нужен readCode() + getConsole()
-// 3. ПРАВИЛА: Проверить stack(), voicing(), .note()
+// 3. ПРАВИЛА: Проверить stack(), voicing(), лишний .note() после scale()
 // 4. TOOLS: getConsole() + readCode() ПАРАЛЛЕЛЬНО → анализ → editCode
 // 5. ПАРАЛЛЕЛЬНО: ДА!
 </think>
@@ -1764,10 +1765,24 @@ stack(
 ПРАВИЛЬНО: chord("<C Am F G>").voicing().s("piano")
 ПОЧЕМУ: Без voicing() аккорды не звучат правильно!
 
-#### ❌ #14: n() с scale() без .note()
-НЕПРАВИЛЬНО: n("0 2 4").scale("C:minor").s("piano")
-ПРАВИЛЬНО: n("0 2 4").scale("C:minor").note().s("piano")
-ПОЧЕМУ: Без .note() ноты не преобразуются!
+#### ❌ #14: Пустой .note() после scale()
+НЕПРАВИЛЬНО: n("0 2 4").scale("C:minor").note().s("piano")
+ПРАВИЛЬНО: n("0 2 4").scale("C:minor").s("piano")
+ПОЧЕМУ: scale() уже превращает ступени n() в ноты; пустой .note() кладёт ноту внутрь ноты, и она ломается. .note() в конце нужен только голой строке без n(): "0 2 4".scale("C:minor").note()
+
+#### ❌ #15: Синтаксис TidalCycles
+НЕПРАВИЛЬНО: d1 $ sound "bd*2" # speed 2
+НЕПРАВИЛЬНО: note("c3 e3 g3").add(up(12))
+НЕПРАВИЛЬНО: n("0 2 4").toScale([0, 2, 4, 5, 7, 9, 11]) / .euclidOff(3, 8, 2)
+ПРАВИЛЬНО: s("bd*2").speed(2)
+ПРАВИЛЬНО: note("c3 e3 g3").add(note(12)) или note("c3 e3 g3").transpose(12)
+ПРАВИЛЬНО: n("0 2 4").scale("C:major") / .euclidRot(3, 8, 2)
+ПОЧЕМУ: Bulka — это Strudel на JavaScript, а не TidalCycles на Haskell. Функций up, toScale, euclidOff, каналов d1…d16 и операторов $ и # в Strudel НЕТ — код падает с «up is not defined».
+
+#### ❌ #16: Функции из prebake-скрипта Switch Angel
+НЕПРАВИЛЬНО: note("c2*8").s("sawtooth").acidenv(.5) / .trancegate(1.5, 45, 1) / .rlpf(.5) / .dly(.3)
+ПРАВИЛЬНО: note("c2*8").s("sawtooth").lpf(100).lpenv(4.5).lps(.2).lpd(.12).lpq(2) — это и есть acidenv(.5)
+ПОЧЕМУ: acidenv, acid, trancegate, tgate, rlpf, rhpf, dly, pg, accent, grab, mpan, vstruct, stxt, voc и прочие из его видео — не Strudel, а его личный prebake-скрипт. В Bulka их НЕТ — код падает с «….acidenv is not a function». Пиши штатными функциями.
 
 </workflow_examples>
 
@@ -1859,6 +1874,24 @@ const TOOL_STATUS_MESSAGES: Record<string, string> = {
   getBankSamples: '🎵 Получаю содержимое банка...',
 };
 
+// A provider that refuses the key (401/403) gets the same answer from every runner: what it said and where to fix it.
+function providerHttpError(provider: string, status: number, message: string, lang: Lang): string {
+  const text = `${provider}: ${String(message).replace(/[.\s]+$/, '')}`;
+  if (status !== 401 && status !== 403) return text;
+  return lang === 'en'
+    ? `${text}. The key was not accepted: paste a valid one in the AI settings.`
+    : `${text}. Ключ не принят: вставьте действующий в настройках AI.`;
+}
+
+// The browser runs client tools after this answer is streamed, so the model cannot learn here whether the code ran;
+// an eval error reaches it as the next user message.
+function clientToolResult(toolName: string): string {
+  if (toolName === 'playMusic' || toolName === 'recordSeconds') {
+    return `${toolName} отправлен в редактор: код запускается в браузере пользователя. Если он упадёт, текст ошибки придёт следующим сообщением пользователя — тогда исправь код.`;
+  }
+  return `OK: ${toolName} выполнено`;
+}
+
 /**
  * Execute a single tool call: handle server-side tools and emit client-side tool calls
  * Returns the tool result message to append to conversationMessages
@@ -1910,7 +1943,7 @@ function executeToolCall(
     controller.enqueue(
       encoder.encode(`data: ${JSON.stringify({ type: 'tool_call', name: toolName, args: toolArgs })}\n\n`),
     );
-    return { role: 'tool', tool_call_id: tc.id, content: `OK: ${toolName} выполнено` };
+    return { role: 'tool', tool_call_id: tc.id, content: clientToolResult(toolName) };
   } catch (e: any) {
     return { role: 'tool', tool_call_id: tc.id, content: `Ошибка инструмента ${toolName}: ${e?.message || e}` };
   }
@@ -2006,7 +2039,9 @@ async function runOpenAIAgent(
             errMsg = errJson.error?.message || errJson.error || errText;
           } catch (e) {}
           controller.enqueue(
-            encoder.encode(`data: ${JSON.stringify({ type: 'error', error: `OpenAI: ${errMsg}` })}\n\n`),
+            encoder.encode(
+              `data: ${JSON.stringify({ type: 'error', error: providerHttpError('OpenAI', response.status, errMsg, lang) })}\n\n`,
+            ),
           );
           controller.enqueue(encoder.encode('data: [DONE]\n\n'));
           controller.close();
@@ -2225,7 +2260,9 @@ async function runAnthropicAgent(
             errMsg = errJson.error?.message || errJson.error || errText;
           } catch (e) {}
           controller.enqueue(
-            encoder.encode(`data: ${JSON.stringify({ type: 'error', error: `Anthropic: ${errMsg}` })}\n\n`),
+            encoder.encode(
+              `data: ${JSON.stringify({ type: 'error', error: providerHttpError('Anthropic', response.status, errMsg, lang) })}\n\n`,
+            ),
           );
           controller.enqueue(encoder.encode('data: [DONE]\n\n'));
           controller.close();
@@ -2443,7 +2480,7 @@ async function runAnthropicAgent(
               toolResults.push({
                 type: 'tool_result',
                 tool_use_id: block.id,
-                content: `OK: ${toolName} выполнено`,
+                content: clientToolResult(toolName),
               });
             }
           }
@@ -2573,7 +2610,9 @@ async function runGeminiAgent(
             errMsg = errJson.error?.message || errJson.error?.status || errText;
           } catch (e) {}
           controller.enqueue(
-            encoder.encode(`data: ${JSON.stringify({ type: 'error', error: `Gemini: ${errMsg}` })}\n\n`),
+            encoder.encode(
+              `data: ${JSON.stringify({ type: 'error', error: providerHttpError('Gemini', response.status, errMsg, lang) })}\n\n`,
+            ),
           );
           controller.enqueue(encoder.encode('data: [DONE]\n\n'));
           controller.close();
@@ -2753,7 +2792,7 @@ async function runGeminiAgent(
               functionResponses.push({
                 functionResponse: {
                   name: toolName,
-                  response: { content: `OK: ${toolName} выполнено` },
+                  response: { content: clientToolResult(toolName) },
                 },
               });
             }
@@ -2903,7 +2942,7 @@ async function runOpenAICompatibleAgent(
           } catch (e) {}
           controller.enqueue(
             encoder.encode(
-              `data: ${JSON.stringify({ type: 'error', error: `${config.providerName}: ${errMsg}` })}\n\n`,
+              `data: ${JSON.stringify({ type: 'error', error: providerHttpError(config.providerName, response.status, errMsg, lang) })}\n\n`,
             ),
           );
           controller.enqueue(encoder.encode('data: [DONE]\n\n'));

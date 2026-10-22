@@ -358,6 +358,20 @@ export default {
   'importSounds.button': 'import sounds folder',
   'error.prefix': 'Error:',
   'error.unknown': 'Unknown error :-/',
+  'hint.syntax':
+    'The code is not written right at line {line}, character {column}: check the brackets, commas and quotes around it.',
+  'hint.prebake':
+    "{name} comes from Switch Angel's prebake script; Strudel has no such function. How to load his script: the FAQ, /en/learn/faq (the question about trancegate).",
+  'hint.prebake.acidenv':
+    "acidenv comes from Switch Angel's prebake script; Strudel has no such function. The same in Strudel: .lpf(100).lpenv(x * 9).lps(.2).lpd(.12).lpq(2), where x is the number from acidenv(x).",
+  'hint.tidal.up':
+    'up is a TidalCycles function; Strudel has none. Transpose by semitones with .add(note(12)) or .transpose(12).',
+  'hint.tidal.toScale':
+    'toScale is a TidalCycles function; Strudel has none. Scale degrees: n("0 2 4").scale("C:major").',
+  'hint.tidal.euclidOff':
+    'euclidOff is a TidalCycles function; Strudel has none. Rotated Euclidean rhythm: .euclidRot(3, 8, 2).',
+  'hint.tidal.channel':
+    '{name} is a TidalCycles channel; Strudel has none: write the pattern itself, several parts with stack(...) or lines starting with $: ...',
   'summary.codeSet': 'Code set',
   'summary.stopped': 'Playback stopped',
   'summary.playing': 'Playback started',

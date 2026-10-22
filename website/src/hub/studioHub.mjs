@@ -13,10 +13,13 @@ const REPORT_SOON_MS = 120_000;
 const REQUEST_TIMEOUT_MS = 10_000;
 const REPORT_DAYS = 14;
 const MAX_COUNTERS = 40;
-const MAX_MODELS = 20;
+const MAX_SETS = 20;
+const MAX_COMPONENTS = 64;
+const MAX_NAME = 80;
 const MAX_FAILURES = 20;
 const COUNTER = /^[a-z][a-z0-9_]{0,31}$/;
-const SHORT = /^[A-Za-z0-9 ._+-]{1,40}$/;
+// eslint-disable-next-line no-control-regex
+const CONTROL = /[\u0000-\u001f\u007f-\u009f]/g;
 
 const today = (now = Date.now()) => new Date(now).toISOString().slice(0, 10);
 
@@ -43,8 +46,17 @@ export class StudioHub {
 
   load() {
     const raw = this.config.storage.getItem(STORE_KEY);
-    const state = raw ? JSON.parse(raw) : {};
-    return { install: null, acknowledged: false, telemetry: true, days: {}, lastSource: null, ...state };
+    const state = {
+      install: null,
+      acknowledged: false,
+      telemetry: true,
+      days: {},
+      lastSource: null,
+      ...(raw ? JSON.parse(raw) : {}),
+    };
+    // days stored before model sets were reported
+    for (const day of Object.values(state.days)) day.model_sets ??= [];
+    return state;
   }
 
   save() {
@@ -76,7 +88,7 @@ export class StudioHub {
 
   day() {
     const key = today(this.now());
-    this.state.days[key] ??= { counts: {}, models: [], failures: {}, dirty: false };
+    this.state.days[key] ??= { counts: {}, model_sets: [], failures: {}, dirty: false };
     return this.state.days[key];
   }
 
@@ -95,15 +107,28 @@ export class StudioHub {
     this.reportSoon();
   }
 
-  /** A model used today, as a short name (`free gpt-oss-20b`), at most 20 a day. */
-  usedModel(model) {
-    const name = shortName(model);
-    if (!this.telemetryOn() || !SHORT.test(name)) return;
+  /**
+   * The model set a piece of work ran on, as studio-hub-client `used_models`: `set` names it (null for none) and
+   * `components` lists its parts; names keep any printable text up to 80, the same parts in any order are one set.
+   */
+  usedModels(set, components, count = 1) {
+    if (!this.telemetryOn() || count === 0) return;
+    const clean = (name) => {
+      const text = String(name).trim().replace(CONTROL, '');
+      return text && text.length <= MAX_NAME ? text : null;
+    };
+    const name = set == null ? null : clean(set);
+    const parts = [...new Set(components.map(clean).filter(Boolean))].sort().slice(0, MAX_COMPONENTS);
+    if (name === null && parts.length === 0) return;
     const day = this.day();
-    if (day.models.includes(name) || day.models.length >= MAX_MODELS) return;
-    day.models.push(name);
+    const same = (known) => known.set === name && known.components.join('\n') === parts.join('\n');
+    const known = day.model_sets.find(same);
+    if (known) known.count += count;
+    else if (day.model_sets.length < MAX_SETS) day.model_sets.push({ set: name, components: parts, count });
+    else return;
     day.dirty = true;
     this.save();
+    this.reportSoon();
   }
 
   /** Something failed: counted with its reason, scrubbed here before it is stored. Up to 20 reasons a day. */
@@ -138,8 +163,9 @@ export class StudioHub {
       ui_lang: this.config.lang(),
       gpu: { vendor: 'none', vram_gb: '?', backend: this.config.backend },
       counts: day.counts,
-      models: day.models,
+      models: [],
       notices: {},
+      ...(day.model_sets.length ? { model_sets: day.model_sets } : {}),
       ...(failures.length ? { failures } : {}),
     };
   }
