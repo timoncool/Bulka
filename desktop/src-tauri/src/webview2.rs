@@ -40,10 +40,10 @@ pub fn installed_version() -> Option<String> {
     )
 }
 
-/// Downloads the Evergreen bootstrapper to %TEMP% and runs it. Started without elevation it installs the Runtime for
-/// this user. Returns the installed version.
-pub fn install(log: &mut impl Write) -> Result<String, String> {
-    let setup = std::env::temp_dir().join(BOOTSTRAPPER_FILE);
+/// Downloads the Evergreen bootstrapper into `dir` (%TEMP% at start) and runs it. Started without elevation it
+/// installs the Runtime for this user. Returns the installed version.
+pub fn install(log: &mut impl Write, dir: &Path) -> Result<String, String> {
+    let setup = dir.join(BOOTSTRAPPER_FILE);
     match std::fs::remove_file(&setup) {
         Ok(()) => {}
         Err(e) if e.kind() == std::io::ErrorKind::NotFound => {}
@@ -101,6 +101,26 @@ fn download(url: &str, to: &Path) -> Result<(), String> {
 #[cfg(test)]
 mod tests {
     use super::runtime_version;
+
+    /// Microsoft's real bootstrapper on this computer, run by hand:
+    /// `BULKA_WEBVIEW2_TEST_DIR=<folder> cargo test --release --lib webview2 -- --ignored --nocapture`.
+    /// With the Runtime already here it must finish with code 0 and leave the registry version as it was.
+    #[test]
+    #[ignore]
+    fn real_bootstrapper_finishes_and_the_runtime_stays() {
+        let dir = std::path::PathBuf::from(
+            std::env::var("BULKA_WEBVIEW2_TEST_DIR").expect("BULKA_WEBVIEW2_TEST_DIR"),
+        );
+        std::fs::create_dir_all(&dir).expect("test folder");
+        let before = super::installed_version().expect("WebView2 is installed before the test");
+        let log_path = dir.join("webview2-install.log");
+        let mut log = std::fs::File::create(&log_path).expect("log");
+        let after = super::install(&mut log, &dir).expect("bootstrapper");
+        assert_eq!(after, before);
+        let text = std::fs::read_to_string(&log_path).expect("log");
+        assert!(text.contains("[OK] WebView2"), "{text}");
+        println!("WebView2 {before} -> {after}\n{text}");
+    }
 
     fn pv(s: &str) -> Option<String> {
         Some(s.to_string())

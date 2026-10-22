@@ -291,7 +291,7 @@ fn ensure_webview2(app: &tauri::AppHandle) -> Result<(), String> {
     }
     let log_path = data_dir(app)?.join("webview2-install.log");
     let mut log = std::fs::File::create(&log_path).map_err(|e| format!("{}: {e}", log_path.display()))?;
-    webview2::install(&mut log).map(|_| ()).map_err(|e| {
+    webview2::install(&mut log, &std::env::temp_dir()).map(|_| ()).map_err(|e| {
         let _ = writeln!(log, "[ERROR] {e}");
         e
     })
