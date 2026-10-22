@@ -8,7 +8,6 @@
 set -euo pipefail
 
 PNPM_VER=11.22.0
-NODE_VER=v24.21.0
 
 # Every library the binaries need comes with the .deb dependencies (glibc and libstdc++ are always there).
 check_needed_libs() {
@@ -31,6 +30,8 @@ check_needed_libs() {
 }
 
 if [ "${1:-}" = "--inside" ]; then
+  # shellcheck source=node-pins.sh
+  . /src/desktop/node-pins.sh
   export DEBIAN_FRONTEND=noninteractive APPIMAGE_EXTRACT_AND_RUN=1 RUSTUP_TOOLCHAIN=stable CARGO_TERM_COLOR=never
   export CARGO_HOME=/cache/cargo RUSTUP_HOME=/cache/rustup PATH=/cache/cargo/bin:/cache/node/bin:$PATH
   echo "[..] packages"
@@ -40,8 +41,9 @@ if [ "${1:-}" = "--inside" ]; then
     gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-libav >/dev/null
   if [ ! -x /cache/node/bin/node ] || [ "$(/cache/node/bin/node -v)" != "$NODE_VER" ]; then
     echo "[..] node $NODE_VER"
+    archive="$(fetch_node_archive linux-x64 /cache/node-dist)"
     rm -rf /cache/node && mkdir -p /cache/node
-    curl -fsSL "https://nodejs.org/dist/$NODE_VER/node-$NODE_VER-linux-x64.tar.xz" | tar -xJ -C /cache/node --strip-components=1
+    tar -xJf "$archive" -C /cache/node --strip-components=1
   fi
   if [ ! -x /cache/node/bin/pnpm ] || [ "$(/cache/node/bin/pnpm -v)" != "$PNPM_VER" ]; then
     echo "[..] pnpm $PNPM_VER"

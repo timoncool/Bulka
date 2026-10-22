@@ -11,7 +11,8 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 DESK="$ROOT/desktop"
 STAGE="$DESK/src-tauri/staging/app"
-NODE_VER="${BULKA_NODE_VER:-v24.21.0}"
+# shellcheck source=node-pins.sh
+. "$DESK/node-pins.sh"
 
 case "$(uname -s)" in
   MINGW* | MSYS* | CYGWIN*) OS=win ;;
@@ -26,7 +27,7 @@ case "$(uname -m)" in
 esac
 NODE_BIN=node
 [ "$OS" = win ] && NODE_BIN=node.exe
-NODE_CACHE="$DESK/src-tauri/node/$NODE_VER-$OS-$ARCH/$NODE_BIN"
+NODE_CACHE="$DESK/src-tauri/node"
 
 # Ключ апдейтера нужен до долгой сборки: без него tauri build падает в самом конце.
 if [ "$OS" != darwin ]; then
@@ -48,31 +49,12 @@ echo "[2/5] Staging: dist + node $NODE_VER ($OS-$ARCH)"
 rm -rf "$DESK/src-tauri/staging"
 mkdir -p "$STAGE/node"
 cp -r "$ROOT/website/dist" "$STAGE/dist"
-if [ ! -f "$NODE_CACHE" ]; then
-  echo "  качаю node $NODE_VER с nodejs.org"
-  DL="$(mktemp -d)"
-  if [ "$OS" = win ]; then
-    PKG="node-$NODE_VER-win-$ARCH.zip"
-  elif [ "$OS" = linux ]; then
-    PKG="node-$NODE_VER-linux-$ARCH.tar.xz"
-  else
-    PKG="node-$NODE_VER-darwin-$ARCH.tar.gz"
-  fi
-  curl -fsSL "https://nodejs.org/dist/$NODE_VER/$PKG" -o "$DL/$PKG"
-  curl -fsSL "https://nodejs.org/dist/$NODE_VER/SHASUMS256.txt" -o "$DL/SHASUMS256.txt"
-  WANT="$(grep " $PKG\$" "$DL/SHASUMS256.txt" | cut -d' ' -f1)"
-  GOT="$(sha256sum "$DL/$PKG" 2>/dev/null | cut -d' ' -f1 || shasum -a 256 "$DL/$PKG" | cut -d' ' -f1)"
-  [ -n "$WANT" ] && [ "$WANT" = "$GOT" ] || { echo "[ERROR] контрольная сумма $PKG не сошлась"; exit 1; }
-  mkdir -p "$(dirname "$NODE_CACHE")"
-  if [ "$OS" = win ]; then
-    unzip -q -j "$DL/$PKG" "node-$NODE_VER-win-$ARCH/node.exe" -d "$(dirname "$NODE_CACHE")"
-  else
-    tar -xf "$DL/$PKG" -C "$DL" "node-$NODE_VER-$OS-$ARCH/bin/node"
-    cp "$DL/node-$NODE_VER-$OS-$ARCH/bin/node" "$NODE_CACHE"
-  fi
-  rm -rf "$DL"
+NODE_ARCHIVE="$(fetch_node_archive "$OS-$ARCH" "$NODE_CACHE")"
+if [ "$OS" = win ]; then
+  unzip -q -o -j "$NODE_ARCHIVE" "node-$NODE_VER-win-$ARCH/node.exe" -d "$STAGE/node"
+else
+  tar -xOf "$NODE_ARCHIVE" "node-$NODE_VER-$OS-$ARCH/bin/node" > "$STAGE/node/$NODE_BIN"
 fi
-cp "$NODE_CACHE" "$STAGE/node/$NODE_BIN"
 chmod +x "$STAGE/node/$NODE_BIN"
 
 echo "[3/5] Production node_modules (плоский, hoisted — иначе node не резолвит транзитивные)"

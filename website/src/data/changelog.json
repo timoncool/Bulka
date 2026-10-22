@@ -10,6 +10,15 @@
     "dateFormatted": "22 октября 2026",
     "changes": [
       {
+        "type": "webview2",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "the install decision is a pure function over the two registry values, unit-tested on missing, empty, 0.0.0.0 and real versions; the bootstrapper call is its own function with installer.nsi's arguments",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "af6871199"
+      },
+      {
         "type": "other",
         "typeLabel": "Прочее",
         "emoji": "📦",
