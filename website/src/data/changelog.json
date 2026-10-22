@@ -6,6 +6,21 @@
     "changes": []
   },
   {
+    "date": "2026-10-22",
+    "dateFormatted": "22 октября 2026",
+    "changes": [
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "TidalCycles words in code (up, toScale, euclidOff, d1) get the Strudel way under the error; the agent prompts stop calling Bulka a Tidal fork and say what Strudel lacks; an editor error goes back to the agent again after a run that worked; the server no longer tells the model playMusic succeeded",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "eb58bf900"
+      }
+    ]
+  },
+  {
     "date": "2026-10-15",
     "dateFormatted": "15 октября 2026",
     "changes": [
