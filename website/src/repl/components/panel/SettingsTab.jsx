@@ -10,7 +10,7 @@ import { DEFAULT_MAX_POLYPHONY, setMaxPolyphony, setMultiChannelOrbits } from '@
 import { ActionButton, SpecialActionButton } from '../button/action-button.jsx';
 import { exportScript, ImportPrebakeScriptButton } from './ImportPrebakeScriptButton.jsx';
 import { PrebakeCodeMirror } from '../../prebakeCodeMirror.mjs';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { getBulkaHub } from '../../../hub/bulkaHub.mjs';
 import { TelemetryPreview } from '../TelemetryConsent';
 import { McpPanel } from './McpPanel.jsx';
@@ -97,7 +97,6 @@ const reloadMessage = () => t('settings.reloadConfirm');
 function PrebakeEditor() {
   const { includePrebakeScriptInShare, prebakeScript } = useSettings();
   const editorRef = useRef();
-  useEffect(() => () => editorRef.current?.cleanup(), []);
   return (
     <div className="flex flex-col gap-2">
       <section
@@ -176,7 +175,6 @@ export function SettingsTab({ started }) {
     multiChannelOrbits,
     isTabIndentationEnabled,
     isMultiCursorEnabled,
-    isBlockBasedEvalEnabled,
     patternAutoStart,
   } = useSettings();
   const shouldAlwaysSync = isUdels();
@@ -278,7 +276,7 @@ export function SettingsTab({ started }) {
         <ButtonGroup
           value={keybindings}
           onChange={(keybindings) => settingsMap.setKey('keybindings', keybindings)}
-          items={{ codemirror: 'Codemirror', vim: 'Vim', emacs: 'Emacs', helix: 'Helix', vscode: 'VSCode' }}
+          items={{ codemirror: 'Codemirror', vim: 'Vim', emacs: 'Emacs', vscode: 'VSCode' }}
         ></ButtonGroup>
       </FormItem>
       <FormItem label={t('settings.panelPosition')}>
@@ -345,11 +343,6 @@ export function SettingsTab({ started }) {
           label={t('settings.multiCursor')}
           onChange={(cbEvent) => settingsMap.setKey('isMultiCursorEnabled', cbEvent.target.checked)}
           value={isMultiCursorEnabled}
-        />
-        <Checkbox
-          label={t('settings.blockEval')}
-          onChange={(cbEvent) => settingsMap.setKey('isBlockBasedEvalEnabled', cbEvent.target.checked)}
-          value={isBlockBasedEvalEnabled}
         />
         <Checkbox
           label={t('settings.flash')}

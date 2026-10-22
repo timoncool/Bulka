@@ -120,6 +120,7 @@ export default defineConfig({
       workbox: {
         maximumFileSizeToCacheInBytes: 4194304, // 4MB
         globPatterns: ['**/*.{js,css,html,ico,png,svg,json,wav,mp3,ogg,ttf,woff2,TTF,otf}'],
+        globIgnores: ['img/**', '_astro/csound*.js'],
         runtimeCaching: [
           {
             urlPattern: ({ url }) =>
@@ -128,13 +129,14 @@ export default defineConfig({
                 /^https:\/\/freesound\.org\/.*/i,
                 /^https:\/\/cdn\.freesound\.org\/.*/i,
                 /^https:\/\/shabda\.ndre\.gr\/.*/i,
+                /^https:\/\/felixroos\.github\.io\/webaudiofontdata\/.*/i,
               ].some((regex) => regex.test(url)),
             handler: 'CacheFirst',
             options: {
               cacheName: 'external-samples',
               expiration: {
                 maxEntries: 5000,
-                maxAgeSeconds: 60 * 60 * 24 * 30, // <== 14 days
+                maxAgeSeconds: 60 * 60 * 24 * 30, // <== 30 days
               },
               cacheableResponse: {
                 statuses: [0, 200],

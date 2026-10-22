@@ -4,7 +4,7 @@ Copyright (C) 2022 Strudel contributors - see <https://codeberg.org/uzu/strudel/
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more details. You should have received a copy of the GNU Affero General Public License along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { Pattern, isPattern } from '@strudel/core';
+import { Pattern, getClockTime } from '@strudel/core';
 
 var writeMessagers = {};
 var choosing = false;
@@ -64,53 +64,50 @@ function crc16(data) {
 }
 
 Pattern.prototype.serial = function (br = 115200, sendcrc = false, singlecharids = false, name = 'default') {
-  return this.withHap((hap) => {
-    if (!(name in writeMessagers)) {
-      getWriter(name, br);
-    }
-    const onTrigger = (hap, currentTime, _cps, targetTime) => {
-      var message = '';
-      var chk = 0;
-      if (typeof hap.value === 'object') {
-        if ('action' in hap.value) {
-          var action = hap.value['action'];
+  if (!(name in writeMessagers)) {
+    getWriter(name, br);
+  }
+  return this.onSchedule((hap, targetTime) => {
+    var message = '';
+    var chk = 0;
+    if (typeof hap.value === 'object') {
+      if ('action' in hap.value) {
+        var action = hap.value['action'];
+        if (singlecharids) {
+          action = action.charAt(0);
+        }
+        message += action + '(';
+        var first = true;
+        for (var [key, val] of Object.entries(hap.value)) {
+          if (key === 'action') {
+            continue;
+          }
+          if (first) {
+            first = false;
+          } else {
+            message += ',';
+          }
           if (singlecharids) {
-            action = action.charAt(0);
+            key = key.charAt(0);
           }
-          message += action + '(';
-          var first = true;
-          for (var [key, val] of Object.entries(hap.value)) {
-            if (key === 'action') {
-              continue;
-            }
-            if (first) {
-              first = false;
-            } else {
-              message += ',';
-            }
-            if (singlecharids) {
-              key = key.charAt(0);
-            }
-            message += key + ':' + val;
-          }
-          message += ')';
-          if (sendcrc) {
-            chk = crc16(message);
-          }
-        } else {
-          for (const [key, val] of Object.entries(hap.value)) {
-            message += `${key}:${val}`;
-          }
+          message += key + ':' + val;
+        }
+        message += ')';
+        if (sendcrc) {
+          chk = crc16(message);
         }
       } else {
-        message = hap.value;
+        for (const [key, val] of Object.entries(hap.value)) {
+          message += `${key}:${val}`;
+        }
       }
-      const offset = (targetTime - currentTime + latency) * 1000;
+    } else {
+      message = hap.value;
+    }
+    const offset = (targetTime - getClockTime() + latency) * 1000;
 
-      window.setTimeout(function () {
-        writeMessagers[name](message, chk);
-      }, offset);
-    };
-    return hap.setContext({ ...hap.context, onTrigger, dominantTrigger: true });
+    window.setTimeout(function () {
+      writeMessagers[name](message, chk);
+    }, offset);
   });
 };

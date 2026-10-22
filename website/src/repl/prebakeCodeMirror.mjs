@@ -1,4 +1,3 @@
-import { toggleLineComment } from '@codemirror/commands';
 import { javascript, javascriptLanguage } from '@codemirror/lang-javascript';
 import { defaultHighlightStyle, syntaxHighlighting } from '@codemirror/language';
 import { Compartment, EditorState, Prec } from '@codemirror/state';
@@ -63,28 +62,6 @@ export class PrebakeCodeMirror {
       state,
       parent: container,
     });
-
-    const handleSaveEvent = async (e) => {
-      if (e.detail.view !== this.view) {
-        return; // ignore events from other editors
-      }
-      await this.savePrebake();
-      e?.cancelable && e.preventDefault?.();
-    };
-    const handleToggleComment = (e) => {
-      if (e.detail.view !== this.view) {
-        return; // ignore events from other editors
-      }
-      this.toggleComment();
-      e?.cancelable && e.preventDefault?.();
-    };
-
-    document.addEventListener('repl-evaluate', handleSaveEvent);
-    document.addEventListener('repl-toggle-comment', handleToggleComment);
-    this.cleanup = () => {
-      document.removeEventListener('repl-evaluate', handleSaveEvent);
-      document.removeEventListener('repl-toggle-comment', handleToggleComment);
-    };
   }
 
   async savePrebake() {
@@ -92,16 +69,6 @@ export class PrebakeCodeMirror {
     this.storePrebake(this.code);
     evaluate(this.code, { addReturn: false }); // run prebake
     logger('[prebake] prebake-скрипт сохранён');
-  }
-
-  toggleComment() {
-    try {
-      // Honor selections; toggleLineComment handles both selections and
-      // single line
-      toggleLineComment(this.view);
-    } catch (err) {
-      console.error('Error handling repl-toggle-comment event', err);
-    }
   }
 
   setCode(code) {

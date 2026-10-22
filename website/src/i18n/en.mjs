@@ -124,7 +124,6 @@ export default {
   'settings.lineWrap': 'Enable line wrapping',
   'settings.tabIndent': 'Enable Tab indentation',
   'settings.multiCursor': 'Enable multi-cursor (Cmd/Ctrl+Click)',
-  'settings.blockEval': 'Enable block-based evaluation (experimental)',
   'settings.flash': 'Enable flashing on evaluation',
   'settings.sync': 'Sync across browser tabs',
   'settings.hideButtons': 'Hide top buttons',

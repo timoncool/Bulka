@@ -106,7 +106,7 @@ export const xen = register(
       let k = parray(input);
 
       return new Pattern((state) => {
-        let res = k.withValue((x) => x.map((y) => eval(y.join('/')))).query(state);
+        let res = k.withValue((x) => x.map((y) => y.reduce((acc, v) => acc / v))).query(state);
         return res;
       });
     };

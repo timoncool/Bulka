@@ -1,6 +1,8 @@
 import Parser from 'web-tree-sitter';
+import treeSitterWasm from 'web-tree-sitter/tree-sitter.wasm?url';
+import grammarWasm from 'tree-sitter-haskell/tree-sitter-haskell.wasm?url';
 
-let base = '/';
+let base;
 export function setBase(path) {
   base = path;
 }
@@ -10,11 +12,15 @@ let isReady = false,
 async function _loadParser() {
   await Parser.init({
     locateFile(scriptName, scriptDirectory) {
-      return `${base}${scriptName}`;
+      if (base) {
+        return `${base}${scriptName}`;
+      }
+      return treeSitterWasm;
     },
   });
   parser = new Parser();
-  const Lang = await Parser.Language.load(`${base}tree-sitter-haskell.wasm`);
+  let grammarUrl = base ? `${base}tree-sitter-haskell.wasm` : grammarWasm;
+  const Lang = await Parser.Language.load(grammarUrl);
   parser.setLanguage(Lang);
   isReady = true;
   return parser;

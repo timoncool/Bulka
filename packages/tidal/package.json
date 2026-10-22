@@ -3,6 +3,7 @@
   "version": "0.2.0",
   "private": true,
   "description": "Experimental Tidal Code interpreter",
+  "main": "tidal.mjs",
   "module": "tidal.mjs",
   "repository": {
     "type": "git",

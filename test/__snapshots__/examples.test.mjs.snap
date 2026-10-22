@@ -2440,6 +2440,43 @@ exports[`runs examples > example "clip" example index 0 1`] = `
 ]
 `;
 
+exports[`runs examples > example "close" example index 0 1`] = `
+[
+  "[ 0/1 → 1/8 | s:bd cutoff:3000 ]",
+  "[ 1/8 → 1/4 | s:sd cutoff:2915.625 ]",
+  "[ 5/16 → 3/8 | s:bd cutoff:2789.0625 ]",
+  "[ 3/8 → 1/2 | s:sd cutoff:2746.875 ]",
+  "[ 1/2 → 5/8 | s:bd cutoff:2662.5 ]",
+  "[ 5/8 → 3/4 | s:sd cutoff:2578.125 ]",
+  "[ 13/16 → 7/8 | s:bd cutoff:2451.5625 ]",
+  "[ 7/8 → 1/1 | s:sd cutoff:2409.375 ]",
+  "[ 1/1 → 9/8 | s:bd cutoff:2325 ]",
+  "[ 9/8 → 5/4 | s:sd cutoff:2240.625 ]",
+  "[ 21/16 → 11/8 | s:bd cutoff:2114.0625 ]",
+  "[ 11/8 → 3/2 | s:sd cutoff:2071.875 ]",
+  "[ 3/2 → 13/8 | s:bd cutoff:1987.5 ]",
+  "[ 13/8 → 7/4 | s:sd cutoff:1903.125 ]",
+  "[ 29/16 → 15/8 | s:bd cutoff:1776.5625 ]",
+  "[ 15/8 → 2/1 | s:sd cutoff:1734.375 ]",
+  "[ 2/1 → 17/8 | s:bd cutoff:1650 ]",
+  "[ 17/8 → 9/4 | s:sd cutoff:1565.625 ]",
+  "[ 37/16 → 19/8 | s:bd cutoff:1439.0625 ]",
+  "[ 19/8 → 5/2 | s:sd cutoff:1396.875 ]",
+  "[ 5/2 → 21/8 | s:bd cutoff:1312.5 ]",
+  "[ 21/8 → 11/4 | s:sd cutoff:1228.125 ]",
+  "[ 45/16 → 23/8 | s:bd cutoff:1101.5625 ]",
+  "[ 23/8 → 3/1 | s:sd cutoff:1059.375 ]",
+  "[ 3/1 → 25/8 | s:bd cutoff:975 ]",
+  "[ 25/8 → 13/4 | s:sd cutoff:890.625 ]",
+  "[ 53/16 → 27/8 | s:bd cutoff:764.0625 ]",
+  "[ 27/8 → 7/2 | s:sd cutoff:721.875 ]",
+  "[ 7/2 → 29/8 | s:bd cutoff:637.5 ]",
+  "[ 29/8 → 15/4 | s:sd cutoff:553.125 ]",
+  "[ 61/16 → 31/8 | s:bd cutoff:426.5625 ]",
+  "[ 31/8 → 4/1 | s:sd cutoff:384.375 ]",
+]
+`;
+
 exports[`runs examples > example "coarse" example index 0 1`] = `
 [
   "[ 0/1 → 1/8 | s:hh coarse:1 ]",
@@ -3138,43 +3175,6 @@ exports[`runs examples > example "delayfeedback" example index 0 1`] = `
 ]
 `;
 
-exports[`runs examples > example "delayspeed" example index 0 1`] = `
-[
-  "[ 0/1 → 1/8 | note:d s:sawtooth delay:0.8 delaytime:0.5 delayspeed:2 ]",
-  "[ 1/8 → 1/4 | note:d s:sawtooth delay:0.8 delaytime:0.5 delayspeed:2 ]",
-  "[ 1/4 → 3/8 | note:a# s:sawtooth delay:0.8 delaytime:0.5 delayspeed:2 ]",
-  "[ 3/8 → 1/2 | note:a s:sawtooth delay:0.8 delaytime:0.5 delayspeed:2 ]",
-  "[ 1/2 → 5/8 | note:d s:sawtooth delay:0.8 delaytime:0.5 delayspeed:2 ]",
-  "[ 5/8 → 3/4 | note:d s:sawtooth delay:0.8 delaytime:0.5 delayspeed:2 ]",
-  "[ 3/4 → 7/8 | note:a# s:sawtooth delay:0.8 delaytime:0.5 delayspeed:2 ]",
-  "[ 7/8 → 1/1 | note:a s:sawtooth delay:0.8 delaytime:0.5 delayspeed:2 ]",
-  "[ 1/1 → 9/8 | note:d s:sawtooth delay:0.8 delaytime:0.5 delayspeed:0.5 ]",
-  "[ 9/8 → 5/4 | note:d s:sawtooth delay:0.8 delaytime:0.5 delayspeed:0.5 ]",
-  "[ 5/4 → 11/8 | note:a# s:sawtooth delay:0.8 delaytime:0.5 delayspeed:0.5 ]",
-  "[ 11/8 → 3/2 | note:a s:sawtooth delay:0.8 delaytime:0.5 delayspeed:0.5 ]",
-  "[ 3/2 → 13/8 | note:d s:sawtooth delay:0.8 delaytime:0.5 delayspeed:0.5 ]",
-  "[ 13/8 → 7/4 | note:d s:sawtooth delay:0.8 delaytime:0.5 delayspeed:0.5 ]",
-  "[ 7/4 → 15/8 | note:a# s:sawtooth delay:0.8 delaytime:0.5 delayspeed:0.5 ]",
-  "[ 15/8 → 2/1 | note:a s:sawtooth delay:0.8 delaytime:0.5 delayspeed:0.5 ]",
-  "[ 2/1 → 17/8 | note:d s:sawtooth delay:0.8 delaytime:0.5 delayspeed:-1 ]",
-  "[ 17/8 → 9/4 | note:d s:sawtooth delay:0.8 delaytime:0.5 delayspeed:-1 ]",
-  "[ 9/4 → 19/8 | note:a# s:sawtooth delay:0.8 delaytime:0.5 delayspeed:-1 ]",
-  "[ 19/8 → 5/2 | note:a s:sawtooth delay:0.8 delaytime:0.5 delayspeed:-1 ]",
-  "[ 5/2 → 21/8 | note:d s:sawtooth delay:0.8 delaytime:0.5 delayspeed:-1 ]",
-  "[ 21/8 → 11/4 | note:d s:sawtooth delay:0.8 delaytime:0.5 delayspeed:-1 ]",
-  "[ 11/4 → 23/8 | note:a# s:sawtooth delay:0.8 delaytime:0.5 delayspeed:-1 ]",
-  "[ 23/8 → 3/1 | note:a s:sawtooth delay:0.8 delaytime:0.5 delayspeed:-1 ]",
-  "[ 3/1 → 25/8 | note:d s:sawtooth delay:0.8 delaytime:0.5 delayspeed:-2 ]",
-  "[ 25/8 → 13/4 | note:d s:sawtooth delay:0.8 delaytime:0.5 delayspeed:-2 ]",
-  "[ 13/4 → 27/8 | note:a# s:sawtooth delay:0.8 delaytime:0.5 delayspeed:-2 ]",
-  "[ 27/8 → 7/2 | note:a s:sawtooth delay:0.8 delaytime:0.5 delayspeed:-2 ]",
-  "[ 7/2 → 29/8 | note:d s:sawtooth delay:0.8 delaytime:0.5 delayspeed:-2 ]",
-  "[ 29/8 → 15/4 | note:d s:sawtooth delay:0.8 delaytime:0.5 delayspeed:-2 ]",
-  "[ 15/4 → 31/8 | note:a# s:sawtooth delay:0.8 delaytime:0.5 delayspeed:-2 ]",
-  "[ 31/8 → 4/1 | note:a s:sawtooth delay:0.8 delaytime:0.5 delayspeed:-2 ]",
-]
-`;
-
 exports[`runs examples > example "delaysync" example index 0 1`] = `
 [
   "[ 0/1 → 1/2 | s:bd delay:0.25 delaysync:0.125 ]",
@@ -3190,38 +3190,38 @@ exports[`runs examples > example "delaysync" example index 0 1`] = `
 
 exports[`runs examples > example "delaytime" example index 0 1`] = `
 [
-  "[ 0/1 → 1/8 | note:d s:sawtooth delay:0.8 delaytime:0.5 delayspeed:2 ]",
-  "[ 1/8 → 1/4 | note:d s:sawtooth delay:0.8 delaytime:0.5 delayspeed:2 ]",
-  "[ 1/4 → 3/8 | note:a# s:sawtooth delay:0.8 delaytime:0.5 delayspeed:2 ]",
-  "[ 3/8 → 1/2 | note:a s:sawtooth delay:0.8 delaytime:0.5 delayspeed:2 ]",
-  "[ 1/2 → 5/8 | note:d s:sawtooth delay:0.8 delaytime:0.5 delayspeed:2 ]",
-  "[ 5/8 → 3/4 | note:d s:sawtooth delay:0.8 delaytime:0.5 delayspeed:2 ]",
-  "[ 3/4 → 7/8 | note:a# s:sawtooth delay:0.8 delaytime:0.5 delayspeed:2 ]",
-  "[ 7/8 → 1/1 | note:a s:sawtooth delay:0.8 delaytime:0.5 delayspeed:2 ]",
-  "[ 1/1 → 9/8 | note:d s:sawtooth delay:0.8 delaytime:0.5 delayspeed:0.5 ]",
-  "[ 9/8 → 5/4 | note:d s:sawtooth delay:0.8 delaytime:0.5 delayspeed:0.5 ]",
-  "[ 5/4 → 11/8 | note:a# s:sawtooth delay:0.8 delaytime:0.5 delayspeed:0.5 ]",
-  "[ 11/8 → 3/2 | note:a s:sawtooth delay:0.8 delaytime:0.5 delayspeed:0.5 ]",
-  "[ 3/2 → 13/8 | note:d s:sawtooth delay:0.8 delaytime:0.5 delayspeed:0.5 ]",
-  "[ 13/8 → 7/4 | note:d s:sawtooth delay:0.8 delaytime:0.5 delayspeed:0.5 ]",
-  "[ 7/4 → 15/8 | note:a# s:sawtooth delay:0.8 delaytime:0.5 delayspeed:0.5 ]",
-  "[ 15/8 → 2/1 | note:a s:sawtooth delay:0.8 delaytime:0.5 delayspeed:0.5 ]",
-  "[ 2/1 → 17/8 | note:d s:sawtooth delay:0.8 delaytime:0.5 delayspeed:-1 ]",
-  "[ 17/8 → 9/4 | note:d s:sawtooth delay:0.8 delaytime:0.5 delayspeed:-1 ]",
-  "[ 9/4 → 19/8 | note:a# s:sawtooth delay:0.8 delaytime:0.5 delayspeed:-1 ]",
-  "[ 19/8 → 5/2 | note:a s:sawtooth delay:0.8 delaytime:0.5 delayspeed:-1 ]",
-  "[ 5/2 → 21/8 | note:d s:sawtooth delay:0.8 delaytime:0.5 delayspeed:-1 ]",
-  "[ 21/8 → 11/4 | note:d s:sawtooth delay:0.8 delaytime:0.5 delayspeed:-1 ]",
-  "[ 11/4 → 23/8 | note:a# s:sawtooth delay:0.8 delaytime:0.5 delayspeed:-1 ]",
-  "[ 23/8 → 3/1 | note:a s:sawtooth delay:0.8 delaytime:0.5 delayspeed:-1 ]",
-  "[ 3/1 → 25/8 | note:d s:sawtooth delay:0.8 delaytime:0.5 delayspeed:-2 ]",
-  "[ 25/8 → 13/4 | note:d s:sawtooth delay:0.8 delaytime:0.5 delayspeed:-2 ]",
-  "[ 13/4 → 27/8 | note:a# s:sawtooth delay:0.8 delaytime:0.5 delayspeed:-2 ]",
-  "[ 27/8 → 7/2 | note:a s:sawtooth delay:0.8 delaytime:0.5 delayspeed:-2 ]",
-  "[ 7/2 → 29/8 | note:d s:sawtooth delay:0.8 delaytime:0.5 delayspeed:-2 ]",
-  "[ 29/8 → 15/4 | note:d s:sawtooth delay:0.8 delaytime:0.5 delayspeed:-2 ]",
-  "[ 15/4 → 31/8 | note:a# s:sawtooth delay:0.8 delaytime:0.5 delayspeed:-2 ]",
-  "[ 31/8 → 4/1 | note:a s:sawtooth delay:0.8 delaytime:0.5 delayspeed:-2 ]",
+  "[ 0/1 → 1/8 | note:d s:sawtooth delay:0.8 delaytime:0.5 ]",
+  "[ 1/8 → 1/4 | note:d s:sawtooth delay:0.8 delaytime:0.5 ]",
+  "[ 1/4 → 3/8 | note:a# s:sawtooth delay:0.8 delaytime:0.5 ]",
+  "[ 3/8 → 1/2 | note:a s:sawtooth delay:0.8 delaytime:0.5 ]",
+  "[ 1/2 → 5/8 | note:d s:sawtooth delay:0.8 delaytime:0.5 ]",
+  "[ 5/8 → 3/4 | note:d s:sawtooth delay:0.8 delaytime:0.5 ]",
+  "[ 3/4 → 7/8 | note:a# s:sawtooth delay:0.8 delaytime:0.5 ]",
+  "[ 7/8 → 1/1 | note:a s:sawtooth delay:0.8 delaytime:0.5 ]",
+  "[ 1/1 → 9/8 | note:d s:sawtooth delay:0.8 delaytime:0.5 ]",
+  "[ 9/8 → 5/4 | note:d s:sawtooth delay:0.8 delaytime:0.5 ]",
+  "[ 5/4 → 11/8 | note:a# s:sawtooth delay:0.8 delaytime:0.5 ]",
+  "[ 11/8 → 3/2 | note:a s:sawtooth delay:0.8 delaytime:0.5 ]",
+  "[ 3/2 → 13/8 | note:d s:sawtooth delay:0.8 delaytime:0.5 ]",
+  "[ 13/8 → 7/4 | note:d s:sawtooth delay:0.8 delaytime:0.5 ]",
+  "[ 7/4 → 15/8 | note:a# s:sawtooth delay:0.8 delaytime:0.5 ]",
+  "[ 15/8 → 2/1 | note:a s:sawtooth delay:0.8 delaytime:0.5 ]",
+  "[ 2/1 → 17/8 | note:d s:sawtooth delay:0.8 delaytime:0.5 ]",
+  "[ 17/8 → 9/4 | note:d s:sawtooth delay:0.8 delaytime:0.5 ]",
+  "[ 9/4 → 19/8 | note:a# s:sawtooth delay:0.8 delaytime:0.5 ]",
+  "[ 19/8 → 5/2 | note:a s:sawtooth delay:0.8 delaytime:0.5 ]",
+  "[ 5/2 → 21/8 | note:d s:sawtooth delay:0.8 delaytime:0.5 ]",
+  "[ 21/8 → 11/4 | note:d s:sawtooth delay:0.8 delaytime:0.5 ]",
+  "[ 11/4 → 23/8 | note:a# s:sawtooth delay:0.8 delaytime:0.5 ]",
+  "[ 23/8 → 3/1 | note:a s:sawtooth delay:0.8 delaytime:0.5 ]",
+  "[ 3/1 → 25/8 | note:d s:sawtooth delay:0.8 delaytime:0.5 ]",
+  "[ 25/8 → 13/4 | note:d s:sawtooth delay:0.8 delaytime:0.5 ]",
+  "[ 13/4 → 27/8 | note:a# s:sawtooth delay:0.8 delaytime:0.5 ]",
+  "[ 27/8 → 7/2 | note:a s:sawtooth delay:0.8 delaytime:0.5 ]",
+  "[ 7/2 → 29/8 | note:d s:sawtooth delay:0.8 delaytime:0.5 ]",
+  "[ 29/8 → 15/4 | note:d s:sawtooth delay:0.8 delaytime:0.5 ]",
+  "[ 15/4 → 31/8 | note:a# s:sawtooth delay:0.8 delaytime:0.5 ]",
+  "[ 31/8 → 4/1 | note:a s:sawtooth delay:0.8 delaytime:0.5 ]",
 ]
 `;
 
@@ -4777,6 +4777,72 @@ exports[`runs examples > example "floor" example index 0 1`] = `
 ]
 `;
 
+exports[`runs examples > example "fm" example index 0 1`] = `
+[
+  "[ 0/1 → 1/6 | note:c fmi:0 ]",
+  "[ 1/6 → 1/3 | note:e fmi:0 ]",
+  "[ 1/3 → 1/2 | note:g fmi:0 ]",
+  "[ 1/2 → 2/3 | note:b fmi:0 ]",
+  "[ 2/3 → 5/6 | note:g fmi:0 ]",
+  "[ 5/6 → 1/1 | note:e fmi:0 ]",
+  "[ 1/1 → 7/6 | note:c fmi:1 ]",
+  "[ 7/6 → 4/3 | note:e fmi:1 ]",
+  "[ 4/3 → 3/2 | note:g fmi:1 ]",
+  "[ 3/2 → 5/3 | note:b fmi:1 ]",
+  "[ 5/3 → 11/6 | note:g fmi:1 ]",
+  "[ 11/6 → 2/1 | note:e fmi:1 ]",
+  "[ 2/1 → 13/6 | note:c fmi:2 ]",
+  "[ 13/6 → 7/3 | note:e fmi:2 ]",
+  "[ 7/3 → 5/2 | note:g fmi:2 ]",
+  "[ 5/2 → 8/3 | note:b fmi:2 ]",
+  "[ 8/3 → 17/6 | note:g fmi:2 ]",
+  "[ 17/6 → 3/1 | note:e fmi:2 ]",
+  "[ 3/1 → 19/6 | note:c fmi:8 ]",
+  "[ 19/6 → 10/3 | note:e fmi:8 ]",
+  "[ 10/3 → 7/2 | note:g fmi:8 ]",
+  "[ 7/2 → 11/3 | note:b fmi:8 ]",
+  "[ 11/3 → 23/6 | note:g fmi:8 ]",
+  "[ 23/6 → 4/1 | note:e fmi:8 ]",
+]
+`;
+
+exports[`runs examples > example "fm" example index 1 1`] = `
+[
+  "[ 0/1 → 1/8 | s:sine note:F1 fmi:4 fmi2:0 fmi3:0 fmh:1.06 fmh2:10 fmh3:0.1 ]",
+  "[ 1/8 → 1/4 | s:sine note:F1 fmi:4 fmi2:2.7408622801303864 fmi3:0.125 fmh:1.06 fmh2:10 fmh3:0.1 ]",
+  "[ 1/4 → 3/8 | s:sine note:F1 fmi:4 fmi2:1.479038767516613 fmi3:0.25 fmh:1.06 fmh2:10 fmh3:0.1 ]",
+  "[ 3/8 → 1/2 | s:sine note:F1 fmi:4 fmi2:1.605570062994957 fmi3:0.375 fmh:1.06 fmh2:10 fmh3:0.1 ]",
+  "[ 1/2 → 5/8 | s:sine note:F1 fmi:4 fmi2:1.041922464966774 fmi3:0.5 fmh:1.06 fmh2:10 fmh3:0.1 ]",
+  "[ 5/8 → 3/4 | s:sine note:F1 fmi:4 fmi2:0.5425434708595276 fmi3:0.625 fmh:1.06 fmh2:10 fmh3:0.1 ]",
+  "[ 3/4 → 7/8 | s:sine note:F1 fmi:4 fmi2:0.7833059206604958 fmi3:0.75 fmh:1.06 fmh2:10 fmh3:0.1 ]",
+  "[ 7/8 → 1/1 | s:sine note:F1 fmi:4 fmi2:1.590524323284626 fmi3:0.875 fmh:1.06 fmh2:10 fmh3:0.1 ]",
+  "[ 1/1 → 9/8 | s:sine note:F1 fmi:4 fmi2:2.078168660402298 fmi3:1 fmh:1.06 fmh2:10 fmh3:0.1 ]",
+  "[ 9/8 → 5/4 | s:sine note:F1 fmi:4 fmi2:2.689958058297634 fmi3:1.125 fmh:1.06 fmh2:10 fmh3:0.1 ]",
+  "[ 5/4 → 11/8 | s:sine note:F1 fmi:4 fmi2:2.914912812411785 fmi3:1.25 fmh:1.06 fmh2:10 fmh3:0.1 ]",
+  "[ 11/8 → 3/2 | s:sine note:F1 fmi:4 fmi2:0.7312150076031685 fmi3:1.375 fmh:1.06 fmh2:10 fmh3:0.1 ]",
+  "[ 3/2 → 13/8 | s:sine note:F1 fmi:4 fmi2:2.4336322993040085 fmi3:1.5 fmh:1.06 fmh2:10 fmh3:0.1 ]",
+  "[ 13/8 → 7/4 | s:sine note:F1 fmi:4 fmi2:1.987018845975399 fmi3:1.625 fmh:1.06 fmh2:10 fmh3:0.1 ]",
+  "[ 7/4 → 15/8 | s:sine note:F1 fmi:4 fmi2:0.8189515843987465 fmi3:1.75 fmh:1.06 fmh2:10 fmh3:0.1 ]",
+  "[ 15/8 → 2/1 | s:sine note:F1 fmi:4 fmi2:2.3782287165522575 fmi3:1.875 fmh:1.06 fmh2:10 fmh3:0.1 ]",
+  "[ 2/1 → 17/8 | s:sine note:F1 fmi:4 fmi2:3.838108479976654 fmi3:2 fmh:1.06 fmh2:10 fmh3:0.1 ]",
+  "[ 17/8 → 9/4 | s:sine note:F1 fmi:4 fmi2:3.613561175763607 fmi3:2.125 fmh:1.06 fmh2:10 fmh3:0.1 ]",
+  "[ 9/4 → 19/8 | s:sine note:F1 fmi:4 fmi2:1.3819300457835197 fmi3:2.25 fmh:1.06 fmh2:10 fmh3:0.1 ]",
+  "[ 19/8 → 5/2 | s:sine note:F1 fmi:4 fmi2:3.346026562154293 fmi3:2.375 fmh:1.06 fmh2:10 fmh3:0.1 ]",
+  "[ 5/2 → 21/8 | s:sine note:F1 fmi:4 fmi2:1.8344642966985703 fmi3:2.5 fmh:1.06 fmh2:10 fmh3:0.1 ]",
+  "[ 21/8 → 11/4 | s:sine note:F1 fmi:4 fmi2:0.6407739371061325 fmi3:2.625 fmh:1.06 fmh2:10 fmh3:0.1 ]",
+  "[ 11/4 → 23/8 | s:sine note:F1 fmi:4 fmi2:2.5329310819506645 fmi3:2.75 fmh:1.06 fmh2:10 fmh3:0.1 ]",
+  "[ 23/8 → 3/1 | s:sine note:F1 fmi:4 fmi2:0.06501668691635132 fmi3:2.875 fmh:1.06 fmh2:10 fmh3:0.1 ]",
+  "[ 3/1 → 25/8 | s:sine note:F1 fmi:4 fmi2:0.8691564425826073 fmi3:3 fmh:1.06 fmh2:10 fmh3:0.1 ]",
+  "[ 25/8 → 13/4 | s:sine note:F1 fmi:4 fmi2:1.3729755133390427 fmi3:3.125 fmh:1.06 fmh2:10 fmh3:0.1 ]",
+  "[ 13/4 → 27/8 | s:sine note:F1 fmi:4 fmi2:3.9694602862000465 fmi3:3.25 fmh:1.06 fmh2:10 fmh3:0.1 ]",
+  "[ 27/8 → 7/2 | s:sine note:F1 fmi:4 fmi2:1.6347672045230865 fmi3:3.375 fmh:1.06 fmh2:10 fmh3:0.1 ]",
+  "[ 7/2 → 29/8 | s:sine note:F1 fmi:4 fmi2:1.639795258641243 fmi3:3.5 fmh:1.06 fmh2:10 fmh3:0.1 ]",
+  "[ 29/8 → 15/4 | s:sine note:F1 fmi:4 fmi2:3.7565943151712418 fmi3:3.625 fmh:1.06 fmh2:10 fmh3:0.1 ]",
+  "[ 15/4 → 31/8 | s:sine note:F1 fmi:4 fmi2:3.2486692890524864 fmi3:3.75 fmh:1.06 fmh2:10 fmh3:0.1 ]",
+  "[ 31/8 → 4/1 | s:sine note:F1 fmi:4 fmi2:2.9446661546826363 fmi3:3.875 fmh:1.06 fmh2:10 fmh3:0.1 ]",
+]
+`;
+
 exports[`runs examples > example "fmattack" example index 0 1`] = `
 [
   "[ 0/1 → 1/6 | note:c fmi:4 fmattack:0 ]",
@@ -4890,72 +4956,6 @@ exports[`runs examples > example "fmh" example index 0 1`] = `
   "[ 7/2 → 11/3 | note:b fmi:4 fmh:1.61 ]",
   "[ 11/3 → 23/6 | note:g fmi:4 fmh:1.61 ]",
   "[ 23/6 → 4/1 | note:e fmi:4 fmh:1.61 ]",
-]
-`;
-
-exports[`runs examples > example "fmi" example index 0 1`] = `
-[
-  "[ 0/1 → 1/6 | note:c fmi:0 ]",
-  "[ 1/6 → 1/3 | note:e fmi:0 ]",
-  "[ 1/3 → 1/2 | note:g fmi:0 ]",
-  "[ 1/2 → 2/3 | note:b fmi:0 ]",
-  "[ 2/3 → 5/6 | note:g fmi:0 ]",
-  "[ 5/6 → 1/1 | note:e fmi:0 ]",
-  "[ 1/1 → 7/6 | note:c fmi:1 ]",
-  "[ 7/6 → 4/3 | note:e fmi:1 ]",
-  "[ 4/3 → 3/2 | note:g fmi:1 ]",
-  "[ 3/2 → 5/3 | note:b fmi:1 ]",
-  "[ 5/3 → 11/6 | note:g fmi:1 ]",
-  "[ 11/6 → 2/1 | note:e fmi:1 ]",
-  "[ 2/1 → 13/6 | note:c fmi:2 ]",
-  "[ 13/6 → 7/3 | note:e fmi:2 ]",
-  "[ 7/3 → 5/2 | note:g fmi:2 ]",
-  "[ 5/2 → 8/3 | note:b fmi:2 ]",
-  "[ 8/3 → 17/6 | note:g fmi:2 ]",
-  "[ 17/6 → 3/1 | note:e fmi:2 ]",
-  "[ 3/1 → 19/6 | note:c fmi:8 ]",
-  "[ 19/6 → 10/3 | note:e fmi:8 ]",
-  "[ 10/3 → 7/2 | note:g fmi:8 ]",
-  "[ 7/2 → 11/3 | note:b fmi:8 ]",
-  "[ 11/3 → 23/6 | note:g fmi:8 ]",
-  "[ 23/6 → 4/1 | note:e fmi:8 ]",
-]
-`;
-
-exports[`runs examples > example "fmi" example index 1 1`] = `
-[
-  "[ 0/1 → 1/8 | s:sine note:F1 fmi:4 fmi2:0 fmi3:0 fmh:1.06 fmh2:10 fmh3:0.1 ]",
-  "[ 1/8 → 1/4 | s:sine note:F1 fmi:4 fmi2:2.7408622801303864 fmi3:0.125 fmh:1.06 fmh2:10 fmh3:0.1 ]",
-  "[ 1/4 → 3/8 | s:sine note:F1 fmi:4 fmi2:1.479038767516613 fmi3:0.25 fmh:1.06 fmh2:10 fmh3:0.1 ]",
-  "[ 3/8 → 1/2 | s:sine note:F1 fmi:4 fmi2:1.605570062994957 fmi3:0.375 fmh:1.06 fmh2:10 fmh3:0.1 ]",
-  "[ 1/2 → 5/8 | s:sine note:F1 fmi:4 fmi2:1.041922464966774 fmi3:0.5 fmh:1.06 fmh2:10 fmh3:0.1 ]",
-  "[ 5/8 → 3/4 | s:sine note:F1 fmi:4 fmi2:0.5425434708595276 fmi3:0.625 fmh:1.06 fmh2:10 fmh3:0.1 ]",
-  "[ 3/4 → 7/8 | s:sine note:F1 fmi:4 fmi2:0.7833059206604958 fmi3:0.75 fmh:1.06 fmh2:10 fmh3:0.1 ]",
-  "[ 7/8 → 1/1 | s:sine note:F1 fmi:4 fmi2:1.590524323284626 fmi3:0.875 fmh:1.06 fmh2:10 fmh3:0.1 ]",
-  "[ 1/1 → 9/8 | s:sine note:F1 fmi:4 fmi2:2.078168660402298 fmi3:1 fmh:1.06 fmh2:10 fmh3:0.1 ]",
-  "[ 9/8 → 5/4 | s:sine note:F1 fmi:4 fmi2:2.689958058297634 fmi3:1.125 fmh:1.06 fmh2:10 fmh3:0.1 ]",
-  "[ 5/4 → 11/8 | s:sine note:F1 fmi:4 fmi2:2.914912812411785 fmi3:1.25 fmh:1.06 fmh2:10 fmh3:0.1 ]",
-  "[ 11/8 → 3/2 | s:sine note:F1 fmi:4 fmi2:0.7312150076031685 fmi3:1.375 fmh:1.06 fmh2:10 fmh3:0.1 ]",
-  "[ 3/2 → 13/8 | s:sine note:F1 fmi:4 fmi2:2.4336322993040085 fmi3:1.5 fmh:1.06 fmh2:10 fmh3:0.1 ]",
-  "[ 13/8 → 7/4 | s:sine note:F1 fmi:4 fmi2:1.987018845975399 fmi3:1.625 fmh:1.06 fmh2:10 fmh3:0.1 ]",
-  "[ 7/4 → 15/8 | s:sine note:F1 fmi:4 fmi2:0.8189515843987465 fmi3:1.75 fmh:1.06 fmh2:10 fmh3:0.1 ]",
-  "[ 15/8 → 2/1 | s:sine note:F1 fmi:4 fmi2:2.3782287165522575 fmi3:1.875 fmh:1.06 fmh2:10 fmh3:0.1 ]",
-  "[ 2/1 → 17/8 | s:sine note:F1 fmi:4 fmi2:3.838108479976654 fmi3:2 fmh:1.06 fmh2:10 fmh3:0.1 ]",
-  "[ 17/8 → 9/4 | s:sine note:F1 fmi:4 fmi2:3.613561175763607 fmi3:2.125 fmh:1.06 fmh2:10 fmh3:0.1 ]",
-  "[ 9/4 → 19/8 | s:sine note:F1 fmi:4 fmi2:1.3819300457835197 fmi3:2.25 fmh:1.06 fmh2:10 fmh3:0.1 ]",
-  "[ 19/8 → 5/2 | s:sine note:F1 fmi:4 fmi2:3.346026562154293 fmi3:2.375 fmh:1.06 fmh2:10 fmh3:0.1 ]",
-  "[ 5/2 → 21/8 | s:sine note:F1 fmi:4 fmi2:1.8344642966985703 fmi3:2.5 fmh:1.06 fmh2:10 fmh3:0.1 ]",
-  "[ 21/8 → 11/4 | s:sine note:F1 fmi:4 fmi2:0.6407739371061325 fmi3:2.625 fmh:1.06 fmh2:10 fmh3:0.1 ]",
-  "[ 11/4 → 23/8 | s:sine note:F1 fmi:4 fmi2:2.5329310819506645 fmi3:2.75 fmh:1.06 fmh2:10 fmh3:0.1 ]",
-  "[ 23/8 → 3/1 | s:sine note:F1 fmi:4 fmi2:0.06501668691635132 fmi3:2.875 fmh:1.06 fmh2:10 fmh3:0.1 ]",
-  "[ 3/1 → 25/8 | s:sine note:F1 fmi:4 fmi2:0.8691564425826073 fmi3:3 fmh:1.06 fmh2:10 fmh3:0.1 ]",
-  "[ 25/8 → 13/4 | s:sine note:F1 fmi:4 fmi2:1.3729755133390427 fmi3:3.125 fmh:1.06 fmh2:10 fmh3:0.1 ]",
-  "[ 13/4 → 27/8 | s:sine note:F1 fmi:4 fmi2:3.9694602862000465 fmi3:3.25 fmh:1.06 fmh2:10 fmh3:0.1 ]",
-  "[ 27/8 → 7/2 | s:sine note:F1 fmi:4 fmi2:1.6347672045230865 fmi3:3.375 fmh:1.06 fmh2:10 fmh3:0.1 ]",
-  "[ 7/2 → 29/8 | s:sine note:F1 fmi:4 fmi2:1.639795258641243 fmi3:3.5 fmh:1.06 fmh2:10 fmh3:0.1 ]",
-  "[ 29/8 → 15/4 | s:sine note:F1 fmi:4 fmi2:3.7565943151712418 fmi3:3.625 fmh:1.06 fmh2:10 fmh3:0.1 ]",
-  "[ 15/4 → 31/8 | s:sine note:F1 fmi:4 fmi2:3.2486692890524864 fmi3:3.75 fmh:1.06 fmh2:10 fmh3:0.1 ]",
-  "[ 31/8 → 4/1 | s:sine note:F1 fmi:4 fmi2:2.9446661546826363 fmi3:3.875 fmh:1.06 fmh2:10 fmh3:0.1 ]",
 ]
 `;
 
@@ -8714,6 +8714,19 @@ exports[`runs examples > example "often" example index 0 1`] = `
 ]
 `;
 
+exports[`runs examples > example "onSchedule" example index 0 1`] = `
+[
+  "[ 0/1 → 1/2 | s:bd ]",
+  "[ 1/2 → 1/1 | s:sd ]",
+  "[ 1/1 → 3/2 | s:bd ]",
+  "[ 3/2 → 2/1 | s:sd ]",
+  "[ 2/1 → 5/2 | s:bd ]",
+  "[ 5/2 → 3/1 | s:sd ]",
+  "[ 3/1 → 7/2 | s:bd ]",
+  "[ 7/2 → 4/1 | s:sd ]",
+]
+`;
+
 exports[`runs examples > example "onTriggerTime" example index 0 1`] = `
 [
   "[ 0/1 → 1/8 | s:bd ]",
@@ -8748,6 +8761,43 @@ exports[`runs examples > example "onTriggerTime" example index 0 1`] = `
   "[ 29/8 → 15/4 | s:bd ]",
   "[ 15/4 → 31/8 | s:bd ]",
   "[ 31/8 → 4/1 | s:bd ]",
+]
+`;
+
+exports[`runs examples > example "open" example index 0 1`] = `
+[
+  "[ 0/1 → 1/8 | s:bd cutoff:300 ]",
+  "[ 1/8 → 1/4 | s:sd cutoff:384.375 ]",
+  "[ 5/16 → 3/8 | s:bd cutoff:510.9375 ]",
+  "[ 3/8 → 1/2 | s:sd cutoff:553.125 ]",
+  "[ 1/2 → 5/8 | s:bd cutoff:637.5 ]",
+  "[ 5/8 → 3/4 | s:sd cutoff:721.875 ]",
+  "[ 13/16 → 7/8 | s:bd cutoff:848.4375 ]",
+  "[ 7/8 → 1/1 | s:sd cutoff:890.625 ]",
+  "[ 1/1 → 9/8 | s:bd cutoff:975 ]",
+  "[ 9/8 → 5/4 | s:sd cutoff:1059.375 ]",
+  "[ 21/16 → 11/8 | s:bd cutoff:1185.9375 ]",
+  "[ 11/8 → 3/2 | s:sd cutoff:1228.125 ]",
+  "[ 3/2 → 13/8 | s:bd cutoff:1312.5 ]",
+  "[ 13/8 → 7/4 | s:sd cutoff:1396.875 ]",
+  "[ 29/16 → 15/8 | s:bd cutoff:1523.4375 ]",
+  "[ 15/8 → 2/1 | s:sd cutoff:1565.625 ]",
+  "[ 2/1 → 17/8 | s:bd cutoff:1650 ]",
+  "[ 17/8 → 9/4 | s:sd cutoff:1734.375 ]",
+  "[ 37/16 → 19/8 | s:bd cutoff:1860.9375 ]",
+  "[ 19/8 → 5/2 | s:sd cutoff:1903.125 ]",
+  "[ 5/2 → 21/8 | s:bd cutoff:1987.5 ]",
+  "[ 21/8 → 11/4 | s:sd cutoff:2071.875 ]",
+  "[ 45/16 → 23/8 | s:bd cutoff:2198.4375 ]",
+  "[ 23/8 → 3/1 | s:sd cutoff:2240.625 ]",
+  "[ 3/1 → 25/8 | s:bd cutoff:2325 ]",
+  "[ 25/8 → 13/4 | s:sd cutoff:2409.375 ]",
+  "[ 53/16 → 27/8 | s:bd cutoff:2535.9375 ]",
+  "[ 27/8 → 7/2 | s:sd cutoff:2578.125 ]",
+  "[ 7/2 → 29/8 | s:bd cutoff:2662.5 ]",
+  "[ 29/8 → 15/4 | s:sd cutoff:2746.875 ]",
+  "[ 61/16 → 31/8 | s:bd cutoff:2873.4375 ]",
+  "[ 31/8 → 4/1 | s:sd cutoff:2915.625 ]",
 ]
 `;
 

@@ -19,7 +19,7 @@ initAudioOnFirstClick();
 const ctx = getAudioContext();
 
 const { scheduler } = repl({
-  defaultOutput: webaudioOutput,
+  onSchedule: webaudioOutput,
   getTime: () => ctx.currentTime
 });
 
