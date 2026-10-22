@@ -23,6 +23,7 @@ import {
 } from '../../../settings.mjs';
 import { getRandomSuggestions } from '../../data/suggestions.js';
 import { t } from '../../../i18n/index.mjs';
+import { errorWithHint } from '../../tidalHints.mjs';
 
 // Common input styles matching SettingsTab
 const inputClass =
@@ -1135,12 +1136,17 @@ export function ChatTab({ context, isBottomPanel }) {
 
   // Автоотправка ошибок с таймером 5 сек
   useEffect(() => {
-    if (context?.error && !chat.isLoading && chat.hasApiKey && !pendingMessage) {
+    if (!context?.error) {
+      lastAutoSentErrorRef.current = null;
+      return;
+    }
+    if (!chat.isLoading && chat.hasApiKey && !pendingMessage) {
       const errorMsg = context.error.message || String(context.error);
       // Не показываем одну и ту же ошибку повторно
       if (errorMsg && errorMsg !== lastAutoSentErrorRef.current) {
         lastAutoSentErrorRef.current = errorMsg;
-        startPendingMessage('error', errorMsg, () => chat.sendEditorError(errorMsg));
+        const errorText = errorWithHint(context.error);
+        startPendingMessage('error', errorText, () => chat.sendEditorError(errorText));
       }
     }
   }, [context?.error, chat.isLoading, chat.hasApiKey, pendingMessage, startPendingMessage, chat.sendEditorError]);

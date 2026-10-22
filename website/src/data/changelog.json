@@ -13,6 +13,15 @@
         "type": "other",
         "typeLabel": "Прочее",
         "emoji": "📦",
+        "description": "The microphone asked for only to name the sound outputs is released at once",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "958d332f2"
+      },
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
         "description": "The window's own page gets the microphone WebView2 left unanswered, so the sound outputs are listed",
         "scope": null,
         "author": "Nerual Dreming",

@@ -357,6 +357,13 @@ export default {
   'importSounds.button': 'импортировать папку звуков',
   'error.prefix': 'Ошибка:',
   'error.unknown': 'Неизвестная ошибка :-/',
+  'hint.tidal.up':
+    'up — функция TidalCycles, в Strudel её нет. Транспонировать на полутоны: .add(note(12)) или .transpose(12).',
+  'hint.tidal.toScale': 'toScale — функция TidalCycles, в Strudel её нет. Ступени гаммы: n("0 2 4").scale("C:major").',
+  'hint.tidal.euclidOff':
+    'euclidOff — функция TidalCycles, в Strudel её нет. Сдвинутый евклидов ритм: .euclidRot(3, 8, 2).',
+  'hint.tidal.channel':
+    '{name} — канал TidalCycles, в Strudel его нет: пишите сам паттерн, несколько партий — через stack(...) или строками $: ...',
   'summary.codeSet': 'Код установлен',
   'summary.stopped': 'Воспроизведение остановлено',
   'summary.playing': 'Воспроизведение запущено',

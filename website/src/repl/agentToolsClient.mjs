@@ -11,6 +11,7 @@ import { AUDIO_LOCKED_MESSAGE, isAudioUnlocked } from './audioUnlock.mjs';
 import { selectText } from './editorSelection.mjs';
 import { $strudel_log_history } from './components/useLogger.jsx';
 import { beginRecording, endRecording } from './recordingState.mjs';
+import { errorWithHint } from './tidalHints.mjs';
 
 // Список клиентских тулзов (для маршрутизации: клиент vs сервер).
 export const CLIENT_TOOL_NAMES = [
@@ -122,7 +123,7 @@ async function evaluateChecked(editor) {
   }
   await editor.evaluate();
   const err = editor.repl?.state?.evalError;
-  return err ? `Ошибка в коде: ${err.message || String(err)}` : null;
+  return err ? `Ошибка в коде: ${errorWithHint(err)}` : null;
 }
 
 export async function execClientTool(editor, name, args = {}) {

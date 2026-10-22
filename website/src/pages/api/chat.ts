@@ -491,7 +491,7 @@ const TOOLS_ANTHROPIC = TOOLS_OPENAI.map((t) => ({
  * Best practices from: Claude, Cursor, v0.dev, Windsurf, Bolt.new
  */
 const SYSTEM_PROMPT = `<system>
-Ты Bulka AI — креативный музыкальный агент для live coding на платформе Bulka (форк Strudel/TidalCycles).
+Ты Bulka AI — креативный музыкальный агент для live coding на платформе Bulka (форк Strudel).
 
 ВАЖНО О ТВОЕЙ ИДЕНТИЧНОСТИ:
 - Ты — БУЛКА, а НЕ Strudel. Никогда не называй себя Strudel!
@@ -1769,6 +1769,15 @@ stack(
 ПРАВИЛЬНО: n("0 2 4").scale("C:minor").note().s("piano")
 ПОЧЕМУ: Без .note() ноты не преобразуются!
 
+#### ❌ #15: Синтаксис TidalCycles
+НЕПРАВИЛЬНО: d1 $ sound "bd*2" # speed 2
+НЕПРАВИЛЬНО: note("c3 e3 g3").add(up(12))
+НЕПРАВИЛЬНО: n("0 2 4").toScale([0, 2, 4, 5, 7, 9, 11]) / .euclidOff(3, 8, 2)
+ПРАВИЛЬНО: s("bd*2").speed(2)
+ПРАВИЛЬНО: note("c3 e3 g3").add(note(12)) или note("c3 e3 g3").transpose(12)
+ПРАВИЛЬНО: n("0 2 4").scale("C:major") / .euclidRot(3, 8, 2)
+ПОЧЕМУ: Bulka — это Strudel на JavaScript, а не TidalCycles на Haskell. Функций up, toScale, euclidOff, каналов d1…d16 и операторов $ и # в Strudel НЕТ — код падает с «up is not defined».
+
 </workflow_examples>
 
 <response_format>
@@ -1859,6 +1868,15 @@ const TOOL_STATUS_MESSAGES: Record<string, string> = {
   getBankSamples: '🎵 Получаю содержимое банка...',
 };
 
+// The browser runs client tools after this answer is streamed, so the model cannot learn here whether the code ran;
+// an eval error reaches it as the next user message.
+function clientToolResult(toolName: string): string {
+  if (toolName === 'playMusic' || toolName === 'recordSeconds') {
+    return `${toolName} отправлен в редактор: код запускается в браузере пользователя. Если он упадёт, текст ошибки придёт следующим сообщением пользователя — тогда исправь код.`;
+  }
+  return `OK: ${toolName} выполнено`;
+}
+
 /**
  * Execute a single tool call: handle server-side tools and emit client-side tool calls
  * Returns the tool result message to append to conversationMessages
@@ -1910,7 +1928,7 @@ function executeToolCall(
     controller.enqueue(
       encoder.encode(`data: ${JSON.stringify({ type: 'tool_call', name: toolName, args: toolArgs })}\n\n`),
     );
-    return { role: 'tool', tool_call_id: tc.id, content: `OK: ${toolName} выполнено` };
+    return { role: 'tool', tool_call_id: tc.id, content: clientToolResult(toolName) };
   } catch (e: any) {
     return { role: 'tool', tool_call_id: tc.id, content: `Ошибка инструмента ${toolName}: ${e?.message || e}` };
   }
@@ -2443,7 +2461,7 @@ async function runAnthropicAgent(
               toolResults.push({
                 type: 'tool_result',
                 tool_use_id: block.id,
-                content: `OK: ${toolName} выполнено`,
+                content: clientToolResult(toolName),
               });
             }
           }
@@ -2753,7 +2771,7 @@ async function runGeminiAgent(
               functionResponses.push({
                 functionResponse: {
                   name: toolName,
-                  response: { content: `OK: ${toolName} выполнено` },
+                  response: { content: clientToolResult(toolName) },
                 },
               });
             }

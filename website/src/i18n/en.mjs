@@ -358,6 +358,14 @@ export default {
   'importSounds.button': 'import sounds folder',
   'error.prefix': 'Error:',
   'error.unknown': 'Unknown error :-/',
+  'hint.tidal.up':
+    'up is a TidalCycles function; Strudel has none. Transpose by semitones with .add(note(12)) or .transpose(12).',
+  'hint.tidal.toScale':
+    'toScale is a TidalCycles function; Strudel has none. Scale degrees: n("0 2 4").scale("C:major").',
+  'hint.tidal.euclidOff':
+    'euclidOff is a TidalCycles function; Strudel has none. Rotated Euclidean rhythm: .euclidRot(3, 8, 2).',
+  'hint.tidal.channel':
+    '{name} is a TidalCycles channel; Strudel has none: write the pattern itself, several parts with stack(...) or lines starting with $: ...',
   'summary.codeSet': 'Code set',
   'summary.stopped': 'Playback stopped',
   'summary.playing': 'Playback started',
