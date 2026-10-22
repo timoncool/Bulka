@@ -13,6 +13,15 @@
         "type": "other",
         "typeLabel": "Прочее",
         "emoji": "📦",
+        "description": "Statistics send the AI provider and model as a model set, names kept as typed like used_models of the studios' client; the old short-name list mangled OpenRouter ids and the hub's model view never read it",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "43e298f53"
+      },
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
         "description": "Format WelcomeTab",
         "scope": null,
         "author": "Nerual Dreming",
