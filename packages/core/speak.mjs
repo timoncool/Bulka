@@ -32,7 +32,7 @@ function triggerSpeech(words, lang, voice) {
 }
 
 export const speak = register('speak', function (lang, voice, pat) {
-  return pat.onTrigger((hap) => {
+  return pat.onSchedule((hap) => {
     triggerSpeech(hap.value, lang, voice);
   });
 });

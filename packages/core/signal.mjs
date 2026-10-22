@@ -420,7 +420,7 @@ export const binaryNL = (n, nBits = 16) => {
  *   .partials(randL(8))
  */
 export const randL = (n) => {
-  return signal((t) => (nVal) => getRandsAtTime(t, nVal).map(Math.abs)).appLeft(reify(n));
+  return signal((t, controls) => (nVal) => getRandsAtTime(t, nVal, controls.randSeed).map(Math.abs)).appLeft(reify(n));
 };
 
 export const randrun = (n) => {
@@ -1143,3 +1143,26 @@ export const perx = new Pattern(function (state) {
   const n = Fraction(1).div(state.span.duration);
   return [new Hap(undefined, state.span, Math.log(n) / Math.log(2) + 1)];
 });
+
+/**
+ * A signal that goes from `0` to `1` over one cycle, and then stays at `1` forever.
+ * Mainly useful in combination with other functions that reset the cycle. See also
+ * `close`.
+ * @tags temporal
+ * @example
+ * sound("bd sd [- bd] sd".fast(2))
+ *   .lpf(open.slow(4).range(300,3000)) // close envelope over 4 cycles
+ *   .restart("x/4") // restart every 4 cycles
+ */
+export const open = signal((t) => t.min(1));
+
+/**
+ * The same as `open`, but goes from `1` to `0` over one cycle, and then
+ * stays on `0` forever.
+ * @tags temporal
+ * @example
+ * sound("bd sd [- bd] sd".fast(2))
+ *   .lpf(close.slow(4).range(300,3000)) // close envelope over 4 cycles
+ *   .restart("x/4") // restart every 4 cycles
+ */
+export const close = signal((t) => Fraction(1).sub(t).max(0));

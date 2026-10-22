@@ -28,7 +28,7 @@ async function loadFont(name) {
     const url = `${soundfontUrl}/${name}.js`;
     const preset = await fetch(url).then((res) => res.text());
     let [_, data] = preset.split('={');
-    return eval('{' + data);
+    return new Function('return {' + data)().zones;
   };
   loadCache[name] = load();
   return loadCache[name];

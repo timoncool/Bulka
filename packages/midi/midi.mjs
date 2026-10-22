@@ -13,7 +13,7 @@ import {
   getIsStarted,
   getPattern,
   getTime,
-  getTriggerFunc,
+  getScheduleFunc,
   isPattern,
   logger,
   ref,
@@ -342,7 +342,7 @@ Pattern.prototype.midi = function (midiport, options = {}) {
 
   ensureMinimalOutput();
 
-  return this.sortHapsByPart().onTrigger((hap, _currentTime, cps, targetTime) => {
+  return this.sortHapsByPart().onSchedule((hap, targetTime, cps) => {
     if (!WebMidi.enabled) {
       logger('Midi not enabled');
       return;
@@ -570,8 +570,8 @@ const kListeners = {};
 
 function _triggerKeyboard(input, cps, now, latencyCycles) {
   const pattern = getPattern();
-  const trigger = getTriggerFunc();
-  if (!pattern || !trigger) {
+  const schedule = getScheduleFunc();
+  if (!pattern || !schedule) {
     return false;
   }
   const t = now + latencyCycles;
@@ -588,8 +588,7 @@ function _triggerKeyboard(input, cps, now, latencyCycles) {
       return;
     }
     const t = ctxNow + (hap.whole.begin - now) / cps;
-    const duration = hap.duration / cps;
-    trigger(hap, t - ctxNow, duration, cps, t);
+    schedule(hap, t, cps);
   });
 
   return true;
@@ -624,7 +623,7 @@ export async function midikeys(input) {
     noteoff ||= noteon && velocity === 0; // handle devices which may use velocity = 0 to signal noteoff
     const key = `${input}_${note}`;
     const cps = getCps() ?? 0.5;
-    const triggerAvailable = !!(getPattern() && getTriggerFunc());
+    const triggerAvailable = !!(getPattern() && getScheduleFunc());
     const latencySeconds = triggerAvailable ? 0.01 : 0.06; // avoid missing notes due to cyclist / trigger latency
     const now = getTime();
     const t = now + latencySeconds * cps;

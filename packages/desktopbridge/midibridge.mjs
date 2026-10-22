@@ -1,3 +1,4 @@
+import { getAudioContext } from '@strudel/webaudio/index.mjs';
 import { Invoke } from './utils.mjs';
 import { Pattern, getEventOffsetMs, noteToMidi } from '@strudel/core';
 
@@ -6,7 +7,8 @@ const OFF_MESSAGE = 0x80;
 const CC_MESSAGE = 0xb0;
 
 Pattern.prototype.midi = function (output) {
-  return this.onTrigger((hap, currentTime, cps, targetTime) => {
+  return this.onSchedule((hap, targetTime, cps) => {
+    const currentTime = getAudioContext().currentTime;
     let { note, nrpnn, nrpv, ccn, ccv, velocity = 0.9, gain = 1 } = hap.value;
     //magic number to get audio engine to line up, can probably be calculated somehow
     const latencyMs = 34;

@@ -1383,7 +1383,7 @@ describe('Pattern', () => {
 
       // Force a trigger
       haps.forEach((hap) => {
-        hap.context?.onTrigger?.(hap);
+        hap.context?.onSchedule?.(hap);
       });
 
       expect(mockConsoleLog).toHaveBeenCalledWith(
@@ -1401,7 +1401,7 @@ describe('Pattern', () => {
 
       // Force a trigger
       haps.forEach((hap) => {
-        hap.context?.onTrigger?.(hap);
+        hap.context?.onSchedule?.(hap);
       });
 
       expect(mockConsoleLog).toHaveBeenCalledWith(

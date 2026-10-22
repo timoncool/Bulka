@@ -1,7 +1,7 @@
-import { code2hash, evalScope, hash2code, logger } from '@strudel/core';
+import * as strudelCore from '@strudel/core';
+import * as strudelWebaudio from '@strudel/webaudio';
 import { settingPatterns } from '../settings.mjs';
-import { setVersionDefaults } from '@strudel/webaudio';
-import { getMetadata } from '../metadata_parser';
+import { getMetadata } from '../metadata_parser.js';
 import { isTauri } from '../tauri.mjs';
 import './Repl.css';
 import { createClient } from '@supabase/supabase-js';
@@ -11,6 +11,9 @@ import { nanoid } from 'nanoid';
 import { t } from '../i18n/index.mjs';
 import { href } from '../i18n/lang.mjs';
 import { recordDone, recordFailed } from '../hub/bulkaHub.mjs';
+
+const { setVersionDefaults } = strudelWebaudio;
+const { code2hash, evalScope, hash2code, logger } = strudelCore;
 
 // Create a single supabase client for interacting with your database
 export const supabase = createClient(
@@ -90,13 +93,13 @@ export async function getRandomTune() {
 
 export function loadModules() {
   let modules = [
-    import('@strudel/core'),
+    strudelCore,
     import('@strudel/draw'),
     import('@strudel/tonal'),
     import('@strudel/mini'),
     import('@strudel/xen'),
     import('@strudel/edo'),
-    import('@strudel/webaudio'),
+    strudelWebaudio,
     import('@strudel/codemirror'),
     import('@strudel/hydra'),
     import('@strudel/serial'),

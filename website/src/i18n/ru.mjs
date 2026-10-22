@@ -124,7 +124,6 @@ export default {
   'settings.lineWrap': 'Перенос строк',
   'settings.tabIndent': 'Отступы по Tab',
   'settings.multiCursor': 'Мульти-курсор (Cmd/Ctrl+Click)',
-  'settings.blockEval': 'Поблочное выполнение (экспериментально)',
   'settings.flash': 'Вспышка при выполнении',
   'settings.sync': 'Синхронизация между вкладками',
   'settings.hideButtons': 'Скрыть верхние кнопки',

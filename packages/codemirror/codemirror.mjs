@@ -1,5 +1,5 @@
 import { closeBrackets } from '@codemirror/autocomplete';
-import { indentWithTab, toggleLineComment, undo, redo, undoDepth, redoDepth } from '@codemirror/commands';
+import { indentWithTab, undo, redo, undoDepth, redoDepth } from '@codemirror/commands';
 import { javascript, javascriptLanguage } from '@codemirror/lang-javascript';
 import { bracketMatching, defaultHighlightStyle, syntaxHighlighting } from '@codemirror/language';
 import { Compartment, EditorState, Prec } from '@codemirror/state';
@@ -12,19 +12,19 @@ import {
   lineNumbers,
 } from '@codemirror/view';
 import { persistentAtom } from '@nanostores/persistent';
-import { logger, registerControl, repl } from '@strudel/core';
-import { cleanupDraw, cleanupDrawContext, Drawer } from '@strudel/draw';
+import { registerControl, repl } from '@strudel/core';
+import { cleanupDraw, Drawer } from '@strudel/draw';
+
 import { isAutoCompletionEnabled } from './autocomplete.mjs';
 import { basicSetup } from './basicSetup.mjs';
-import { evalBlock } from './block_utilities.mjs';
 import { flash, isFlashEnabled } from './flash.mjs';
 import { highlightMiniLocations, isPatternHighlightingEnabled, updateMiniLocations } from './highlight.mjs';
 import { keybindings } from './keybindings.mjs';
-import { jumpToCharacter } from './labelJump.mjs';
-import { getSliderWidgets, sliderPlugin, updateSliderWidgets } from './slider.mjs';
+import { sliderPlugin, updateSliderWidgets } from './slider.mjs';
 import { activateTheme, initTheme, theme } from './themes.mjs';
 import { isTooltipEnabled } from './tooltip.mjs';
-import { getActiveWidgets, updateWidgets, widgetPlugin } from './widget.mjs';
+import { updateWidgets, widgetPlugin } from './widget.mjs';
+import { jumpToCharacter } from './labelJump.mjs';
 
 export { toggleBlockComment, toggleBlockCommentByLine, toggleComment, toggleLineComment } from '@codemirror/commands';
 
@@ -64,7 +64,6 @@ export const defaultSettings = {
   isLineWrappingEnabled: false,
   isTabIndentationEnabled: false,
   isMultiCursorEnabled: false,
-  isBlockBasedEvalEnabled: false,
   theme: 'strudelTheme',
   fontFamily: 'monospace',
   fontSize: 18,
@@ -76,7 +75,7 @@ export const codemirrorSettings = persistentAtom('codemirror-settings', defaultS
 });
 
 // https://codemirror.net/docs/guide/
-export function initEditor({ initialCode = '', onChange, onEvaluate, onStop, root, mondo, strudelMirror }) {
+export function initEditor({ initialCode = '', onChange, onEvaluate, onStop, root, mondo }) {
   const settings = codemirrorSettings.get();
   const initialSettings = Object.keys(compartments).map((key) =>
     compartments[key].of(extensions[key](parseBooleans(settings[key]))),
@@ -106,26 +105,11 @@ export function initEditor({ initialCode = '', onChange, onEvaluate, onStop, roo
         keymap.of([
           {
             key: 'Ctrl-Enter',
-            run: () => {
-              // issue with referencing settings, this works more reliably
-              if (strudelMirror?.isBlockBasedEvalEnabled) {
-                evalBlock(strudelMirror);
-                return true;
-              } else {
-                return onEvaluate?.();
-              }
-            },
+            run: () => onEvaluate?.(),
           },
           {
             key: 'Alt-Enter',
-            run: () => {
-              if (strudelMirror?.isBlockBasedEvalEnabled) {
-                evalBlock(strudelMirror);
-                return true;
-              } else {
-                return onEvaluate?.();
-              }
-            },
+            run: () => onEvaluate?.(),
           },
           {
             key: 'Ctrl-.',
@@ -187,7 +171,6 @@ export class StrudelMirror {
     this.onDraw = onDraw || this.draw;
     this.id = id || s4();
     this.solo = solo;
-    this.isBlockBasedEvalEnabled = false; // Will be updated via updateSettings()
 
     this.drawer = new Drawer((haps, time, _, painters) => {
       const currentFrame = haps.filter((hap) => hap.isActive(time));
@@ -218,12 +201,8 @@ export class StrudelMirror {
           cleanupDraw(true, id);
         }
       },
-      beforeEval: async ({ blockBased } = {}) => {
-        // Only clean up all drawings for full evaluation
-        // Block-based eval should preserve animations (like .scope()) from other blocks
-        if (!blockBased) {
-          cleanupDraw(true, id);
-        }
+      beforeEval: async () => {
+        cleanupDraw(true, id);
         await this.prebaked;
         await replOptions?.beforeEval?.();
       },
@@ -233,13 +212,10 @@ export class StrudelMirror {
         this.widgets = options.meta?.widgets || [];
 
         const sliders = this.widgets.filter((w) => w.type === 'slider');
+        updateSliderWidgets(this.editor, sliders);
         const widgets = this.widgets.filter((w) => w.type !== 'slider');
-        // range-aware update for block-based evaluation
-        const range = options.range && options.range.length >= 2 ? options.range : null;
-
-        updateSliderWidgets(this.editor, sliders, range);
-        updateWidgets(this.editor, widgets, range);
-        updateMiniLocations(this.editor, this.miniLocations, range);
+        updateWidgets(this.editor, widgets);
+        updateMiniLocations(this.editor, this.miniLocations);
         replOptions?.afterEval?.(options);
         // if no painters are set (.onPaint was not called), then we only need
         // the present moment (for highlighting)
@@ -247,14 +223,8 @@ export class StrudelMirror {
         this.drawer.setDrawTime(drawTime);
         // invalidate drawer after we've set the appropriate drawTime
         this.drawer.invalidate(this.repl.scheduler);
-
-        // Clean up draw context if a non-inline widget was removed
-        if (options.widgetRemoved) {
-          cleanupDrawContext(id);
-        }
       },
     });
-    this.cleanupDrawContext = () => cleanupDrawContext(id);
     this.editor = initEditor({
       root,
       initialCode,
@@ -267,9 +237,7 @@ export class StrudelMirror {
       onEvaluate: () => this.evaluate(),
       onStop: () => this.stop(),
       mondo: replOptions.mondo,
-      strudelMirror: this,
     });
-
     const cmEditor = this.root.querySelector('.cm-editor');
     if (cmEditor) {
       this.root.style.display = 'block';
@@ -289,39 +257,6 @@ export class StrudelMirror {
       }
     };
     document.addEventListener('start-repl', this.onStartRepl);
-
-    // Handle global evaluation requests (e.g., from Vim :w)
-    this.onEvaluateRequest = (e) => {
-      try {
-        if (e.detail.view !== this.editor) {
-          return; // ignore events from other editors
-        }
-        // Evaluate current editor on repl-evaluate
-        logger('[repl] evaluate via event');
-        this.evaluate();
-        e?.cancelable && e.preventDefault?.();
-      } catch (err) {
-        console.error('Error handling repl-evaluate event', err);
-      }
-    };
-    document.addEventListener('repl-evaluate', this.onEvaluateRequest);
-    document.addEventListener('repl-stop', this.onStopRequest);
-
-    // Toggle comments requested from Vim (gc)
-    this.onToggleComment = (e) => {
-      try {
-        if (e.detail.view !== this.editor) {
-          return; // ignore events from other editors
-        }
-        // Honor selections; toggleLineComment handles both selections and
-        // single line
-        toggleLineComment(this.editor);
-        e?.cancelable && e.preventDefault?.();
-      } catch (err) {
-        console.error('Error handling repl-toggle-comment event', err);
-      }
-    };
-    document.addEventListener('repl-toggle-comment', this.onToggleComment);
   }
   draw(haps, time, painters) {
     painters?.forEach((painter) => painter(this.drawContext, time, haps, this.drawTime));
@@ -345,23 +280,10 @@ export class StrudelMirror {
     this.flash();
     await this.repl.evaluate(this.code, autostart);
   }
-
   async stop() {
-    this.repl.stop();
+    this.repl.scheduler.stop();
   }
 
-  // Listen for global stop requests (e.g., from Vim :q)
-  onStopRequest = (e) => {
-    try {
-      if (e.detail.view !== this.editor) {
-        return; // ignore events from other editors
-      }
-      this.stop();
-      e?.cancelable && e.preventDefault?.();
-    } catch (err) {
-      console.error('Error handling repl-stop event', err);
-    }
-  };
   async toggle() {
     if (this.repl.scheduler.started) {
       this.repl.stop();
@@ -369,8 +291,8 @@ export class StrudelMirror {
       this.evaluate();
     }
   }
-  flash(ms, range) {
-    flash(this.editor, ms, range);
+  flash(ms) {
+    flash(this.editor, ms);
   }
   highlight(haps, time) {
     highlightMiniLocations(this.editor, time, haps);
@@ -402,10 +324,6 @@ export class StrudelMirror {
   setLineWrappingEnabled(enabled) {
     this.reconfigureExtension('isLineWrappingEnabled', enabled);
   }
-
-  setBlockBasedEvalEnabled(enabled) {
-    this.reconfigureExtension('isBlockBasedEvalEnabled', enabled);
-  }
   setBracketMatchingEnabled(enabled) {
     this.reconfigureExtension('isBracketMatchingEnabled', enabled);
   }
@@ -426,10 +344,6 @@ export class StrudelMirror {
     this.setFontFamily(settings.fontFamily);
     for (let key in extensions) {
       this.reconfigureExtension(key, settings[key]);
-    }
-    // Update block-based eval setting on the instance
-    if (settings.isBlockBasedEvalEnabled !== undefined) {
-      this.isBlockBasedEvalEnabled = parseBooleans(settings.isBlockBasedEvalEnabled);
     }
     const updated = { ...codemirrorSettings.get(), ...settings };
     codemirrorSettings.set(updated);
@@ -454,21 +368,8 @@ export class StrudelMirror {
   setCode(code) {
     this.replaceCode(code, 0, this.editor.state.doc.length);
   }
-  // used for debugging but could serve other purposes
-  getActiveWidgets() {
-    return getActiveWidgets(this.editor);
-  }
-  getSliderWidgets() {
-    return getSliderWidgets(this.editor);
-  }
-  getMiniLocations() {
-    return this.miniLocations;
-  }
   clear() {
     this.onStartRepl && document.removeEventListener('start-repl', this.onStartRepl);
-    this.onEvaluateRequest && document.removeEventListener('repl-evaluate', this.onEvaluateRequest);
-    this.onStopRequest && document.removeEventListener('repl-stop', this.onStopRequest);
-    this.onToggleComment && document.removeEventListener('repl-toggle-comment', this.onToggleComment);
   }
   getCursorLocation() {
     return this.editor.state.selection.main.head;

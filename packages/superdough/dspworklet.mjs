@@ -74,6 +74,7 @@ export const rawdsp = async (code) => {
   worklet.node.connect(ac.destination);
 };
 
-export function rawdspTrigger(hap, currentTime, cps, targetTime) {
-  window.postMessage({ time: targetTime, dough: hap.value, currentTime, duration: hap.duration, cps });
+export function rawdspOutput(hap, time, cps) {
+  const currentTime = getAudioContext().currentTime;
+  window.postMessage({ time, dough: hap.value, currentTime, duration: hap.duration, cps });
 }

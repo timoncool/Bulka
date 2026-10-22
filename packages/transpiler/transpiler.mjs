@@ -35,12 +35,10 @@ export function transpiler(input, options = {}) {
     addReturn: true,
     emitMiniLocations: true,
     emitWidgets: true,
-    blockBased: false,
-    range: [],
     ...options,
   };
 
-  const { wrapAsync, addReturn, emitMiniLocations, emitWidgets, blockBased, range } = options;
+  const { wrapAsync, addReturn, emitMiniLocations, emitWidgets } = options;
 
   const comments = [];
   let ast = parse(input, {
@@ -52,66 +50,20 @@ export function transpiler(input, options = {}) {
 
   let miniDisableRanges = findMiniDisableRanges(comments, input.length);
 
-  // Position offset for block-based evaluation
-  let nodeOffset = range && range.length > 0 ? range[0] : 0;
-
-  // Track declarations to add to strudelScope for block-based eval
-  let scopeDeclarations = [];
-
   let labels = [];
 
-  const context = { options, input, nodeOffset, miniDisableRanges, labels };
+  const context = { options, input, miniDisableRanges, labels };
   const plugins = getPlugins().map((plugin) => plugin.walk?.(context));
 
   walk(ast, {
     enter(node, parent, prop, index) {
-      // Apply position offset for block-based evaluation
-      if (blockBased && node.start !== undefined) {
-        node.start = node.start + nodeOffset;
-        node.end = node.end + nodeOffset;
-      }
-      // Collect variable and function declarations for strudelScope (block-based eval)
-      if (blockBased && parent?.type === 'Program') {
-        if (node.type === 'VariableDeclaration') {
-          for (const declarator of node.declarations) {
-            if (declarator.id?.name) {
-              scopeDeclarations.push(declarator.id.name);
-            }
-          }
-        } else if (node.type === 'FunctionDeclaration' && node.id?.name) {
-          scopeDeclarations.push(node.id.name);
-        }
-      }
-
       for (const plugin of plugins) {
         if (!plugin?.enter?.call(this, node, parent, prop, index)) continue;
         return;
       }
 
       if (isLabelStatement(node)) {
-        // Collect label info for block-based evaluation
-        // Store positions WITHOUT offset so repl can slice the transpiler output correctly
-        if (blockBased) {
-          labels.push({
-            name: node.label.name,
-            index: node.start - nodeOffset,
-            end: node.label.end - nodeOffset,
-            fullMatch: input.slice(node.start - nodeOffset, node.label.end - nodeOffset),
-            activeVisualizer: findVisualizerInSubtree(node.body),
-          });
-        }
         return this.replace(labelToP(node));
-      }
-      // Detect all() calls as special labels for block management
-      // Store positions WITHOUT offset so repl can slice the transpiler output correctly
-      if (blockBased && isAllCall(node)) {
-        labels.push({
-          name: 'all',
-          index: node.start - nodeOffset,
-          end: node.end - nodeOffset,
-          fullMatch: input.slice(node.start - nodeOffset, node.end - nodeOffset),
-          activeVisualizer: node.arguments[0] ? findVisualizerInSubtree(node.arguments[0]) : null,
-        });
       }
     },
 
@@ -141,14 +93,6 @@ export function transpiler(input, options = {}) {
     body.push(silenceExpression);
   }
 
-  // For block-based eval, add scope assignments before the return statement
-  // This allows variables/functions defined in one block to be used in other blocks
-  if (blockBased && scopeDeclarations.length > 0) {
-    const scopeAssignments = scopeDeclarations.flatMap((name) => createScopeAssignment(name));
-    // Insert scope assignments before the last statement (which will become the return)
-    body.splice(body.length - 1, 0, ...scopeAssignments);
-  }
-
   // add return to last statement
   if (addReturn) {
     const { expression } = body[body.length - 1];
@@ -166,7 +110,7 @@ export function transpiler(input, options = {}) {
   }
 
   let pluginContext;
-  ({ options, input, miniDisableRanges, nodeOffset, ...pluginContext } = context);
+  ({ options, input, miniDisableRanges, ...pluginContext } = context);
 
   return { output, ...pluginContext };
 }
