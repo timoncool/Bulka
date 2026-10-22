@@ -79,6 +79,7 @@ function args() {
 // ---------- PE ----------
 
 function readPe(buf) {
+  if (buf.readUInt16LE(0) !== 0x5a4d) return null; // MZ
   const pe = buf.readUInt32LE(0x3c);
   if (buf.readUInt32LE(pe) !== 0x4550) return null;
   const nsec = buf.readUInt16LE(pe + 6);
@@ -153,12 +154,15 @@ function readElf(buf) {
 // ---------- link maps ----------
 
 // MSVC /MAP: " 0001:00012345       _ZN7zlib_rs...       0000000140013345 f   lib:obj"
+// lld -Map (rust-lld, the Linux default): "   17803   17803   15a   1   /…/x.rcgu.o:(.text._RNv…9crc32fast…)"
 // GNU ld -Map: " .text._ZN7zlib_rs...\n                0x0000000000012345      0x1a0 obj" (one function per section)
 function readMap(file) {
   const text = fs.readFileSync(file, 'latin1');
   const symbols = [];
   const msvc = /^\s*[0-9a-f]{4}:[0-9a-f]{8}\s+(\S+)\s+([0-9a-f]{16})\s+f\b/gim;
   for (const m of text.matchAll(msvc)) symbols.push({ addr: BigInt(`0x${m[2]}`), name: m[1] });
+  const lld = /^\s*([0-9a-f]+)\s+[0-9a-f]+\s+[0-9a-f]+\s+\d+\s+\S*:\(\.text\.([^)]+)\)/gim;
+  for (const m of text.matchAll(lld)) symbols.push({ addr: BigInt(`0x${m[1]}`), name: m[2] });
   const gnu = /^ \.text\.(\S+)\s+0x([0-9a-f]+)\s+0x([0-9a-f]+)/gim;
   for (const m of text.replace(/^( \.text\.\S+)\n\s+(0x)/gm, '$1 $2').matchAll(gnu)) {
     symbols.push({ addr: BigInt(`0x${m[2]}`), name: m[1] });
@@ -216,7 +220,7 @@ function checkWindowsImports(label, dlls) {
 
 const opts = args();
 const shellBuf = fs.readFileSync(opts.shell);
-const shell = readPe(shellBuf) ?? readElf(shellBuf);
+const shell = readElf(shellBuf) ?? readPe(shellBuf);
 if (!shell) throw new Error(`${opts.shell}: neither PE nor ELF`);
 
 if (shell.dlls) {

@@ -10,6 +10,15 @@
     "dateFormatted": "22 октября 2026",
     "changes": [
       {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "Node for the desktop build is checked against a pinned sha256 of the nodejs.org archive (desktop/node-pins.sh): a cached archive with another hash is downloaded again, a download with another hash fails the build; the cached node binary is no longer trusted for being there",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "e025fe4c2"
+      },
+      {
         "type": "webview2",
         "typeLabel": "Прочее",
         "emoji": "📦",
