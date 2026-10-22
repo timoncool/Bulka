@@ -13,6 +13,15 @@
         "type": "other",
         "typeLabel": "Прочее",
         "emoji": "📦",
+        "description": "Desktop compatibility checks and the portable WebView2",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "a84033177"
+      },
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
         "description": "Errors of 0.6.0 statistics: a parse error names its line and character; Switch Angel's prebake functions (acidenv, trancegate, rlpf...) are named as his and acidenv gets its Strudel equivalent, in the editor and in the agent prompts; a provider that refuses the key says to paste a valid one in the AI settings",
         "scope": null,
         "author": "Nerual Dreming",
