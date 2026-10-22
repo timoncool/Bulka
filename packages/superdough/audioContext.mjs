@@ -20,7 +20,8 @@ export const setAudioContext = (context) => {
   // Existing nodes in the node pool contain references to the previous AudioContext,
   // so all the nodes in the pool must be cleared when we set a new AudioContext.
   clearNodePool();
-  if (audioContext && audioContext.state !== 'closed') {
+  // An OfflineAudioContext has no close() in WebKit (Safari, the Linux and macOS desktop app)
+  if (audioContext && audioContext.state !== 'closed' && typeof audioContext.close === 'function') {
     audioContext.close();
   }
   audioContext = context;

@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { registerSamplesFromDB, uploadSamplesToDB, userSamplesDBConfig } from '../../idbutils.mjs';
+import { t } from '../../../i18n/index.mjs';
 
 //choose a directory to locally import samples
 export default function ImportSoundsButton({ onComplete }) {
@@ -54,7 +55,7 @@ export default function ImportSoundsButton({ onComplete }) {
             onChange();
           }}
         />
-        {isUploading ? 'загрузка...' : 'импортировать папку звуков'}
+        {isUploading ? t('importSounds.uploading') : t('importSounds.button')}
       </label>
     </div>
   );

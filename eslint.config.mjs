@@ -44,6 +44,10 @@ export default [
       'packages/hs2js/src/hs2js.mjs',
       'packages/supradough/dough-export.mjs',
       '**/samples',
+      '**/.vercel/**',
+      'desktop/src-tauri/target/**',
+      'desktop/src-tauri/staging/**',
+      'desktop/dist-portable/**',
     ],
   },
   ...compat.extends('eslint:recommended').map((config) => ({

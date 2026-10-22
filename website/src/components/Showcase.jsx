@@ -43,7 +43,11 @@ let _videos = [
   { title: 'Djenerative Music by Bogdan Vera @ TOPLAP solstice Dec 2024', id: 'LtMX4Lr1nzY' },
   { title: 'La musique by BuboBubo @ TOPLAP solstice Dec 2024', id: 'Oz00Y_f80wU' },
   { title: 'Livecode and vocal breaks by Switch Angel @ TOPLAP solstice Dec 2024', id: '2kzjOIsL6CM' },
-  { title: 'TOPLAP Solstice Stream Dec 2024 - Full Playlist', id: '2kECLkYhrp8', params: 'list=PLbyPZ-v56IPnG1-_sGboU7U8qIra_GxEn' },
+  {
+    title: 'TOPLAP Solstice Stream Dec 2024 - Full Playlist',
+    id: '2kECLkYhrp8',
+    params: 'list=PLbyPZ-v56IPnG1-_sGboU7U8qIra_GxEn',
+  },
   // 2024
   { title: 'Eddyflux algorave set @ rudolf5 2024', id: 'MXz8131Ut0A' },
   { title: 'DJ_Dave - Array [Lil Data Edit]', id: 'KUujFuTcuKc' },

@@ -9,12 +9,13 @@ import { getAudioContext, webaudioOutput, registerSynthSounds, samples } from '@
 import { registerSoundfonts } from '@strudel/soundfonts';
 
 // Load all local sample packs
-const loadLocalSamples = () => Promise.all([
-  samples('./tidal-drum-machines.json', './samples/tidal-drum-machines/machines/'),
-  samples('./samples/Dirt-Samples/strudel.json'),
-  samples('./samples/felixroos/strudel.json'),
-  samples('./samples/clean-breaks/strudel.json'),
-]);
+const loadLocalSamples = () =>
+  Promise.all([
+    samples('./tidal-drum-machines.json', './samples/tidal-drum-machines/machines/'),
+    samples('./samples/Dirt-Samples/strudel.json'),
+    samples('./samples/felixroos/strudel.json'),
+    samples('./samples/clean-breaks/strudel.json'),
+  ]);
 
 // init canvas
 const canvas = document.getElementById('roll');

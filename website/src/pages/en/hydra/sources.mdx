@@ -1,0 +1,275 @@
+---
+title: Sources
+layout: ../../../layouts/MainLayout.astro
+---
+
+import { MiniRepl } from '../../../docs/MiniRepl';
+
+# Sources
+
+Sources are functions that **generate** a visual signal. They are the starting point of any Hydra visual.
+
+## osc() — Oscillator
+
+Makes a striped pattern like an oscillator signal.
+
+```javascript
+osc(frequency, sync, offset)
+```
+
+| Parameter | Default | Description |
+|----------|--------------|----------|
+| frequency | 60 | Stripe frequency |
+| sync | 0.1 | Movement speed |
+| offset | 0 | Color offset |
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// A basic oscillator
+osc().out()
+`}
+/>
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// A slow colorful oscillator
+osc(10, 0.1, 0.8).out()
+`}
+/>
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// A fast rainbow oscillator
+osc(60, 0.5, 1.5).out()
+`}
+/>
+
+---
+
+## noise() — Perlin noise
+
+Generates an organic noise pattern.
+
+```javascript
+noise(scale, offset)
+```
+
+| Parameter | Default | Description |
+|----------|--------------|----------|
+| scale | 10 | Noise scale |
+| offset | 0.1 | Animation speed |
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Basic noise
+noise().out()
+`}
+/>
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Large slow noise with color
+noise(3, 0.05)
+  .color(1, 0.5, 0.2)
+  .out()
+`}
+/>
+
+---
+
+## shape() — Geometric shapes
+
+Makes regular polygons.
+
+```javascript
+shape(sides, radius, smoothing)
+```
+
+| Parameter | Default | Description |
+|----------|--------------|----------|
+| sides | 3 | Number of sides |
+| radius | 0.3 | Shape size (0-1) |
+| smoothing | 0.01 | Edge blur |
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Triangle
+shape(3).out()
+`}
+/>
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Square
+shape(4, 0.5, 0.01).out()
+`}
+/>
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// A grid of shapes
+shape(6, 0.3, 0.01)
+  .repeat(4, 4)
+  .color(1, 0, 0.5)
+  .out()
+`}
+/>
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Circle (many sides)
+shape(100, 0.3, 0.01).out()
+`}
+/>
+
+---
+
+## voronoi() — Voronoi diagram
+
+Makes a cellular pattern.
+
+```javascript
+voronoi(scale, speed, blending)
+```
+
+| Parameter | Default | Description |
+|----------|--------------|----------|
+| scale | 5 | Number of cells |
+| speed | 0.3 | Movement speed |
+| blending | 0.3 | Color blending |
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Basic Voronoi
+voronoi().out()
+`}
+/>
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Many small cells
+voronoi(20, 0.1, 0.1).out()
+`}
+/>
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Voronoi with a kaleidoscope
+voronoi(10, 0.3, 0.3)
+  .kaleid(6)
+  .out()
+`}
+/>
+
+---
+
+## gradient() — Gradient
+
+Makes a color gradient.
+
+```javascript
+gradient(speed)
+```
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// A static gradient
+gradient().out()
+`}
+/>
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// An animated gradient with a kaleidoscope
+gradient(0.5)
+  .kaleid(8)
+  .out()
+`}
+/>
+
+---
+
+## solid() — Solid color
+
+Makes a single-color background.
+
+```javascript
+solid(r, g, b, a)
+```
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Red background
+solid(1, 0, 0).out()
+`}
+/>
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// A pulsing color
+solid(
+  () => Math.sin(time) * 0.5 + 0.5,
+  0.2,
+  0.8
+).out()
+`}
+/>
+
+---
+
+## src() — External source
+
+Uses input sources (`s0-s3`) or output buffers (`o0-o3`).
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Using another buffer
+osc(10).out(o1)
+src(o1).kaleid(4).out(o0)
+`}
+/>
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// A feedback effect
+src(o0)
+  .scale(1.01)
+  .rotate(0.01)
+  .blend(osc(10, 0.1, 0.5), 0.1)
+  .out()
+`}
+/>
+
+---
+
+## Combining sources
+
+Sources can be combined with blending functions:
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10)
+  .blend(noise(3), 0.5)
+  .diff(shape(4, 0.3))
+  .out()
+`}
+/>

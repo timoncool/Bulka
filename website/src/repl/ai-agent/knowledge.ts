@@ -343,7 +343,32 @@ stack(
 ).room(0.2)
 \`\`\``,
     category: 'sounds',
-    keywords: ['sparkway', 'spk', '808', 'kick', 'snare', 'clap', 'hat', 'perc', 'drumloop', 'vocal', 'reese', 'moog', 'wonderluverz', 'drum kit', 'uk garage', 'future garage', 'drum and bass', 'dnb', 'trap', 'hip-hop', 'lo-fi', 'electronic', 'современный', 'электронная музыка'],
+    keywords: [
+      'sparkway',
+      'spk',
+      '808',
+      'kick',
+      'snare',
+      'clap',
+      'hat',
+      'perc',
+      'drumloop',
+      'vocal',
+      'reese',
+      'moog',
+      'wonderluverz',
+      'drum kit',
+      'uk garage',
+      'future garage',
+      'drum and bass',
+      'dnb',
+      'trap',
+      'hip-hop',
+      'lo-fi',
+      'electronic',
+      'современный',
+      'электронная музыка',
+    ],
   },
   {
     id: 'e-pianos',
@@ -386,7 +411,30 @@ note("<[c4,e4,g4] [f4,a4,c5] [g4,b4,d5] [e4,g4,b4]>")
   .release(0.5)
 \`\`\``,
     category: 'sounds',
-    keywords: ['e-piano', 'epiano', 'электропиано', 'cp80', 'wurlitzer', 'pianet', 'rhodes', 'piano', 'пианино', 'jazz', 'soul', 'funk', 'neo-soul', 'lofi', 'lo-fi', 'chill', 'vintage', 'винтаж', '70s', '80s', 'мягкий', 'тёплый'],
+    keywords: [
+      'e-piano',
+      'epiano',
+      'электропиано',
+      'cp80',
+      'wurlitzer',
+      'pianet',
+      'rhodes',
+      'piano',
+      'пианино',
+      'jazz',
+      'soul',
+      'funk',
+      'neo-soul',
+      'lofi',
+      'lo-fi',
+      'chill',
+      'vintage',
+      'винтаж',
+      '70s',
+      '80s',
+      'мягкий',
+      'тёплый',
+    ],
   },
   {
     id: 'drum-machines',
@@ -529,7 +577,20 @@ n("0 1 2 3 4 5 6 7").edoScale("<G2 C3>:LLsLL:3:1").s("piano")
 
 Когда применять: экспериментальная/этно/эмбиент музыка, необычные лады, спектральная гармония.`,
     category: 'functions',
-    keywords: ['микротон', 'микротональность', 'edo', 'edoScale', 'xen', 'ксеногармония', 'tune', 'ftrans', 'строй', 'лад', 'gamma', 'гамма'],
+    keywords: [
+      'микротон',
+      'микротональность',
+      'edo',
+      'edoScale',
+      'xen',
+      'ксеногармония',
+      'tune',
+      'ftrans',
+      'строй',
+      'лад',
+      'gamma',
+      'гамма',
+    ],
   },
   {
     id: 'cpm-tempo',
@@ -1078,7 +1139,17 @@ n("c4 e4 g4").fast(3/2)
 n("[c4@3 e4] [g4@3 e4]")
 \`\`\``,
     category: 'theory',
-    keywords: ['melody', 'мелодия', 'composition', 'композиция', 'writing', 'создание', 'arpeggio', 'арпеджио', 'мотив'],
+    keywords: [
+      'melody',
+      'мелодия',
+      'composition',
+      'композиция',
+      'writing',
+      'создание',
+      'arpeggio',
+      'арпеджио',
+      'мотив',
+    ],
   },
 
   // Voicings
@@ -1365,7 +1436,30 @@ s1.initVideo("https://example.com/video.mp4")
 src(s0).blend(src(s1), 0.5).out()
 \`\`\``,
     category: 'functions',
-    keywords: ['hydra', 'гидра', 'initVideo', 'initImage', 'initCam', 'initScreen', 'видео', 'video', 'изображение', 'image', 'камера', 'camera', 'webcam', 'веб-камера', 'экран', 'screen', 'внешние источники', 'external sources', 's0', 's1', 's2', 's3'],
+    keywords: [
+      'hydra',
+      'гидра',
+      'initVideo',
+      'initImage',
+      'initCam',
+      'initScreen',
+      'видео',
+      'video',
+      'изображение',
+      'image',
+      'камера',
+      'camera',
+      'webcam',
+      'веб-камера',
+      'экран',
+      'screen',
+      'внешние источники',
+      'external sources',
+      's0',
+      's1',
+      's2',
+      's3',
+    ],
   },
 ];
 
@@ -1375,10 +1469,10 @@ src(s0).blend(src(s1), 0.5).out()
  */
 export function searchKnowledge(query: string, maxResults: number = 3): KnowledgeChunk[] {
   const queryLower = query.toLowerCase();
-  const queryWords = queryLower.split(/\s+/).filter(w => w.length > 2);
+  const queryWords = queryLower.split(/\s+/).filter((w) => w.length > 2);
 
   // Score each chunk based on keyword matches
-  const scored = KNOWLEDGE_BASE.map(chunk => {
+  const scored = KNOWLEDGE_BASE.map((chunk) => {
     let score = 0;
 
     // Title match (highest weight)
@@ -1409,24 +1503,22 @@ export function searchKnowledge(query: string, maxResults: number = 3): Knowledg
 
   // Sort by score and return top results
   return scored
-    .filter(s => s.score > 0)
+    .filter((s) => s.score > 0)
     .sort((a, b) => b.score - a.score)
     .slice(0, maxResults)
-    .map(s => s.chunk);
+    .map((s) => s.chunk);
 }
 
 /**
  * Get knowledge by category
  */
 export function getKnowledgeByCategory(category: KnowledgeChunk['category']): KnowledgeChunk[] {
-  return KNOWLEDGE_BASE.filter(chunk => chunk.category === category);
+  return KNOWLEDGE_BASE.filter((chunk) => chunk.category === category);
 }
 
 /**
  * Format knowledge chunks for LLM context
  */
 export function formatKnowledgeForContext(chunks: KnowledgeChunk[]): string {
-  return chunks.map(chunk =>
-    `### ${chunk.title}\n${chunk.content}`
-  ).join('\n\n---\n\n');
+  return chunks.map((chunk) => `### ${chunk.title}\n${chunk.content}`).join('\n\n---\n\n');
 }

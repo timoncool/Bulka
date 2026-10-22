@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import cx from '@src/cx.mjs';
+import { t } from '../../../i18n/index.mjs';
 
 // Панель MCP-сервера (только десктоп). Внешний Claude Desktop / ChatGPT управляют этой Bulka:
 // пишут код, играют, останавливают. Мост поднимается авто-стартом; тут — статус, старт/стоп/
@@ -33,12 +34,12 @@ export function McpPanel() {
       fetch('/api/mcp/result')
         .then((r) => r.json())
         .then((j) => alive && setConnected(!!j.connected))
-        .catch(() => {});
+        .catch(() => alive && setConnected(false));
     check();
-    const t = setInterval(check, 3000);
+    const timer = setInterval(check, 3000);
     return () => {
       alive = false;
-      clearInterval(t);
+      clearInterval(timer);
     };
   }, []);
 
@@ -66,54 +67,50 @@ export function McpPanel() {
       await navigator.clipboard.writeText(text);
       setCopied(mark);
       setTimeout(() => setCopied(false), 1500);
-    } catch {
-      /* ignore */
+    } catch (e) {
+      console.error('[mcp-panel] clipboard', e);
     }
   };
 
   return (
     <div className="grid gap-2 p-3 rounded-md border border-foreground/20">
       <div className="flex items-center justify-between gap-2">
-        <span className="font-semibold text-sm">🔌 MCP-сервер — управление из Claude Desktop / ChatGPT</span>
+        <span className="font-semibold text-sm">{t('mcp.title')}</span>
         <span
           className={cx(
             'text-xs px-2 py-0.5 rounded whitespace-nowrap',
             connected ? 'bg-green-500/20 text-green-400' : 'bg-foreground/10 opacity-70',
           )}
         >
-          {connected ? '● окно подключено' : '○ окно не подключено'}
+          {connected ? t('mcp.connected') : t('mcp.disconnected')}
         </span>
       </div>
-      <p className="text-xs opacity-70">
-        Внешний AI (Claude Desktop / ChatGPT) может писать код и рулить музыкой в этой Bulka. Мост поднимается
-        автоматически вместе с приложением и почти не ест ресурсов.
-      </p>
+      <p className="text-xs opacity-70">{t('mcp.about')}</p>
       <div className="flex flex-wrap gap-2 items-center">
         <button onClick={start} disabled={running} className={btn}>
-          Запустить
+          {t('mcp.start')}
         </button>
         <button onClick={stop} disabled={!running} className={btn}>
-          Остановить
+          {t('mcp.stop')}
         </button>
         <button onClick={restart} className={btn}>
-          Перезапустить
+          {t('mcp.restart')}
         </button>
-        <span className="text-xs opacity-60">{running ? 'мост активен' : 'мост остановлен'}</span>
+        <span className="text-xs opacity-60">{running ? t('mcp.running') : t('mcp.stopped')}</span>
       </div>
       <div className="grid gap-1">
         <label className="text-xs opacity-70">
-          Добавь в <code>claude_desktop_config.json</code> (или в конфиг Cursor / другого MCP-клиента) и перезапусти
-          его. Это HTTP-MCP по адресу — никаких команд, npx и мостов ставить не нужно, Bulka уже держит сервер:
+          {t('mcp.configBefore')} <code>claude_desktop_config.json</code> {t('mcp.configAfter')}
         </label>
         <pre className="text-xs bg-background p-2 rounded overflow-x-auto border border-foreground/20 whitespace-pre">
           {config}
         </pre>
         <div className="flex flex-wrap gap-2 items-center">
           <button onClick={() => copyText(config, 'config')} className={cx(btn, 'whitespace-nowrap')}>
-            {copied === 'config' ? '✓ скопировано' : 'Копировать конфиг'}
+            {copied === 'config' ? t('mcp.copied') : t('mcp.copyConfig')}
           </button>
           <button onClick={() => copyText(url, 'url')} className={cx(btn, 'whitespace-nowrap')}>
-            {copied === 'url' ? '✓' : 'Копировать только адрес'}
+            {copied === 'url' ? '✓' : t('mcp.copyUrl')}
           </button>
           <span className="text-xs opacity-60">
             Claude Code: <code>claude mcp add --transport http bulka {url}</code>

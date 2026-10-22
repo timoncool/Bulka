@@ -5,6 +5,9 @@ This program is free software: you can redistribute it and/or modify it under th
 */
 
 import { code2hash, getPerformanceTimeSeconds, logger, silence } from '@strudel/core';
+import { markAudioUnlocked } from './audioUnlock.mjs';
+import { applyReferenceLanguage } from '../i18n/referenceLocale.mjs';
+import { recordDone, recordFailed } from '../hub/bulkaHub.mjs';
 import { getDrawContext } from '@strudel/draw';
 import { evaluate, transpiler } from '@strudel/transpiler';
 import {
@@ -37,6 +40,7 @@ import { getRandomTune, initCode, loadModules, shareCode } from './util.mjs';
 import './Repl.css';
 import { setInterval, clearInterval } from 'worker-timers';
 import { getMetadata } from '../metadata_parser';
+import { currentLang, t } from '../i18n/index.mjs';
 
 const { latestCode, maxPolyphony, audioDeviceName, multiChannelOrbits } = settingsMap.get();
 let modulesLoading, presets, drawContext, clearCanvas, audioReady;
@@ -46,7 +50,7 @@ if (typeof window !== 'undefined') {
     maxPolyphony,
     audioDeviceName,
     multiChannelOrbits: parseBoolean(multiChannelOrbits),
-  });
+  }).then(markAudioUnlocked);
   modulesLoading = loadModules();
   presets = prebake();
   drawContext = getDrawContext();
@@ -71,7 +75,10 @@ export function useReplContext() {
   const init = useCallback(() => {
     // Десктоп (Tauri): чиним blob-«скачивания» (запись/экспорт) — сохраняем через Node-сервер.
     // На вебе (bulka.app) — no-op. Импорт динамический, чтобы не тянуть в SSR.
-    import('./desktopBridge.mjs').then((m) => m.installDesktopDownloadBridge()).catch(() => {});
+    applyReferenceLanguage(currentLang()).catch((e) => logger(`[reference] ${e.message}`, 'error'));
+    import('./desktopBridge.mjs')
+      .then((m) => m.installDesktopDownloadBridge())
+      .catch((e) => console.error('[desktop-bridge]', e));
     const drawTime = [-2, 2];
     const drawContext = getDrawContext();
     const editor = new StrudelMirror({
@@ -102,7 +109,9 @@ export function useReplContext() {
         }
       },
       beforeEval: () => audioReady,
+      onEvalError: (err) => recordFailed('pattern_play', err?.message),
       afterEval: (all) => {
+        recordDone('pattern_play');
         const { code } = all;
         //post to iframe parent (like Udels) if it exists...
         window.parent?.postMessage(code);
@@ -113,8 +122,15 @@ export function useReplContext() {
         // Заголовок трека для записей: десктоп кладёт WAV в папку `recordings/<название трека>/`.
         try {
           const m = code.match(/\/\/\s*@title\s+(.+?)(?:\n|$)/);
-          window.__bulkaTrackTitle = m ? m[1].trim().replace(/[<>:"/\\|?*]/g, '_').slice(0, 100) : '';
-        } catch { /* ignore */ }
+          window.__bulkaTrackTitle = m
+            ? m[1]
+                .trim()
+                .replace(/[<>:"/\\|?*]/g, '_')
+                .slice(0, 100)
+            : '';
+        } catch {
+          /* ignore */
+        }
         const viewingPatternData = getViewingPatternData();
         setVersionDefaultsFrom(code);
         const data = { ...viewingPatternData, code };
@@ -159,13 +175,13 @@ export function useReplContext() {
       let code, msg;
       if (isNewSession) {
         code = '';
-        msg = `Новая сессия!`;
+        msg = t('repl.newSession');
       } else if (decoded) {
         code = decoded;
-        msg = `I have loaded the code from the URL.`;
+        msg = t('repl.loadedFromUrl');
       } else if (latestCode) {
         code = latestCode;
-        msg = `Your last session has been loaded!`;
+        msg = t('repl.lastSession');
       } else {
         /* const { code: randomTune, name } = await getRandomTune();
         code = randomTune; */
@@ -270,11 +286,18 @@ stack(
     ]
   )
 ).gain(0.15);`;
-        msg = `Default code has been loaded`;
+        if (currentLang() === 'en') {
+          code = code
+            .replace('БЛОК 1: ВСТУПЛЕНИЕ', 'BLOCK 1: INTRO')
+            .replace('БЛОК 2: ОСНОВНАЯ ЧАСТЬ', 'BLOCK 2: MAIN PART')
+            .replace('БЛОК 3: БРЕЙКДАУН', 'BLOCK 3: BREAKDOWN')
+            .replace('БЛОК 4: КОНЦОВКА', 'BLOCK 4: ENDING');
+        }
+        msg = t('repl.defaultCode');
       }
       editor.setCode(code);
       setDocumentTitle(code);
-      logger(`Добро пожаловать в Bulka! ${msg} Нажми играть или ctrl+enter чтобы запустить!`, 'highlight');
+      logger(t('repl.welcome', { msg }), 'highlight');
     });
 
     editorRef.current = editor;
@@ -282,14 +305,17 @@ stack(
     // Десктоп: MCP-мост — внешний Claude Desktop / ChatGPT управляют Bulka через наш /mcp.
     // Авто-подъём вместе с приложением (ресурсов почти не ест); на вебе — no-op.
     import('./mcpBridge.mjs')
-      .then((m) => m.installMcpBridge(() => editorRef.current, { autoStart: true }))
-      .catch(() => {});
+      .then((m) =>
+        m.installMcpBridge(() => editorRef.current, { autoStart: true, getActions: () => actionsRef.current }),
+      )
+      .catch((e) => console.error('[mcp-bridge]', e));
   }, []);
 
   const [replState, setReplState] = useState({});
   const { started, isDirty, error, activeCode, pending } = replState;
   const editorRef = useRef();
   const containerRef = useRef();
+  const actionsRef = useRef({});
 
   // Автосохранение текущего кода. latestCode обновлялся только на afterEval (запуск), поэтому
   // код, поставленный агентом/руками и НЕ запущенный, терялся при обновлении страницы (undo тоже
@@ -330,7 +356,7 @@ stack(
 
   const setDocumentTitle = (code) => {
     const meta = getMetadata(code);
-    document.title = (meta.title ? `${meta.title} - ` : '') + 'Bulka редактор';
+    document.title = (meta.title ? `${meta.title} - ` : '') + t('repl.docTitle');
   };
 
   const handleTogglePlay = async () => {
@@ -374,15 +400,23 @@ stack(
       maxPolyphony,
       multiChannelOrbits,
       downloadName,
-    ).finally(async () => {
-      const { maxPolyphony, audioDeviceName, multiChannelOrbits } = settingsMap.get();
-      initAudioOnFirstClick({
-        maxPolyphony,
-        audioDeviceName,
-        multiChannelOrbits: parseBoolean(multiChannelOrbits),
+    )
+      .then(
+        () => recordDone('export'),
+        (e) => {
+          recordFailed('export', e?.message);
+          throw e;
+        },
+      )
+      .finally(async () => {
+        const { maxPolyphony, audioDeviceName, multiChannelOrbits } = settingsMap.get();
+        initAudioOnFirstClick({
+          maxPolyphony,
+          audioDeviceName,
+          multiChannelOrbits: parseBoolean(multiChannelOrbits),
+        });
+        editorRef.current.repl.scheduler.stop();
       });
-      editorRef.current.repl.scheduler.stop();
-    });
   };
   const handleShuffle = async () => {
     const patternData = await getRandomTune();
@@ -402,6 +436,7 @@ stack(
     }
     shareCode(code);
   };
+  actionsRef.current = { started, handleUpdate, handleExport };
   const context = {
     started,
     pending,

@@ -1,17 +1,61 @@
 ---
 // @ts-ignore
 import { pwaInfo } from 'virtual:pwa-info';
+import { langFromPath, pathInLang, t } from '../i18n/index.mjs';
+import { DIRECT_URL, PROXY_URL } from '../hub/studioHub.mjs';
+import websitePackage from '../../package.json';
+import desktopConf from '../../../desktop/src-tauri/tauri.conf.json';
 import '../styles/index.css';
 
 const { BASE_URL } = import.meta.env;
 const baseNoTrailing = BASE_URL.endsWith('/') ? BASE_URL.slice(0, -1) : BASE_URL;
+const lang = langFromPath(Astro.url.pathname);
+
+// The Rust shell of the desktop app starts its Node server with BULKA_DESKTOP=1.
+const desktop = process.env.BULKA_DESKTOP === '1';
+const hubUrl = import.meta.env.PUBLIC_STUDIO_HUB_URL || process.env.STUDIO_HUB_URL || '';
+const hubTest = import.meta.env.DEV || process.env.STUDIO_HUB_TEST === '1';
+// the computer id the shell derives (studio-hub-client `machine::id`), so Bulka and the studios count one person once
+const machine = desktop && process.env.BULKA_MACHINE ? process.env.BULKA_MACHINE : undefined;
+const build = { desktop, version: desktop ? desktopConf.version : websitePackage.version, hubUrl, machine };
+const notice = { app: 'bulka', lang, version: build.version, ...(hubTest ? { test: '1' } : {}) };
 ---
 
 <!-- Global Metadata -->
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width" />
 <meta name="generator" content={Astro.generator} />
-<link rel="alternate" type="application/rss+xml" title={`RSS Feed for Bulka`} href="/rss.xml" />
+<link rel="alternate" type="application/rss+xml" title={`RSS Feed for Bulka`} href={pathInLang('/rss.xml', lang)} />
+<meta name="bulka-build" content={JSON.stringify(build)} />
+<script is:inline define:vars={{ hubs: hubUrl ? [hubUrl] : [DIRECT_URL, PROXY_URL], notice }}>
+  // The hub's notices script: workers.dev does not resolve from Russia, so the proxy is tried when it fails to load;
+  // the other address goes to data-proxy for the script's own requests. Impressions are counted only once the person
+  // agreed to statistics (src/hub/studioHub.mjs keeps the choice).
+  (() => {
+    const eventsOn = () => {
+      try {
+        const state = JSON.parse(localStorage.getItem('bulka-studio-hub') || '{}');
+        return state.acknowledged && state.telemetry;
+      } catch (e) {
+        console.warn('[studio hub] the statistics choice could not be read:', e);
+        return false;
+      }
+    };
+    const load = (i) => {
+      const script = document.createElement('script');
+      script.src = `${hubs[i]}/embed/notices.js`;
+      Object.assign(script.dataset, notice, { events: eventsOn() ? 'on' : 'off' });
+      if (hubs.length > 1) script.dataset.proxy = hubs[1 - i];
+      script.onerror = () => {
+        script.remove();
+        if (i + 1 < hubs.length) load(i + 1);
+        else console.warn(`[studio hub] the notices script did not load from ${hubs.join(' or ')}`);
+      };
+      document.head.appendChild(script);
+    };
+    load(0);
+  })();
+</script>
 <link rel="icon" type="image/svg+xml" href={`${baseNoTrailing}/favicon.svg`} />
 
 <!-- Fredoka Font for Bulka branding -->
@@ -22,10 +66,7 @@ const baseNoTrailing = BASE_URL.endsWith('/') ? BASE_URL.slice(0, -1) : BASE_URL
 <!-- Iconify for noto:bread icon -->
 <script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
 
-<meta
-  name="description"
-  content="Bulka — платформа для лайв-кодинга музыки в браузере."
-/>
+<meta name="description" content={t('meta.description', undefined, lang)} />
 <link rel="icon" href={`${baseNoTrailing}/favicon.svg`} />
 <link rel="apple-touch-icon" href={`${baseNoTrailing}/icons/apple-icon-180.png`} sizes="180x180" />
 <meta name="theme-color" content="#222222" />

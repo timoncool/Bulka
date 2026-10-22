@@ -48,9 +48,9 @@ Bulka — не цифровая звуковая рабочая станция (
 
 Загрузить свою коллекцию сэмплов можно несколькими способами. Одни удобны для быстрых экспериментов, другие — чтобы делиться коллекцией с другими музыкантами:
 
-- Импортировать папки [через интерфейс](/learn/samples/#from-disk-via-import-sounds-folder). Они хранятся локально в браузере и никуда не загружаются.
-- Раздавать папку с сэмплами локально с помощью [консольной утилиты «sampler» из Strudel](https://bulka.app/learn/samples/#from-disk-via-strudelsampler). Это, пожалуй, самый надёжный способ, но требует установленного [nodejs](https://nodejs.org).
-- Разместить свою звуковую библиотеку в интернете и [загружать её по URL](/learn/samples/#loading-custom-samples).
+- Импортировать папки [через интерфейс](/learn/samples/#с-диска-кнопка-импортировать-папку-звуков). Они хранятся локально в браузере и никуда не загружаются.
+- Раздавать папку с сэмплами локально с помощью [консольной утилиты «sampler» из Strudel](/learn/samples/#с-диска-через-strudelsampler). Это, пожалуй, самый надёжный способ, но требует установленного [nodejs](https://nodejs.org).
+- Разместить свою звуковую библиотеку в интернете и [загружать её по URL](/learn/samples/#загрузка-своих-сэмплов).
 
 ## Можно ли создать новый проект на основе Strudel?
 
@@ -80,7 +80,7 @@ LLM в специально отведённых для этого местах 
 
 ## Как работать офлайн?
 
-Bulka прекрасно работает офлайн! Способов несколько — см. [это объяснение](learn/pwa/#using-strudel-offline).
+Bulka прекрасно работает офлайн! Способов несколько — см. [это объяснение](/learn/pwa/).
 
 ## Как менять темп? Как перевести BPM в cpm?
 
@@ -154,7 +154,7 @@ Bulka умеет отправлять [MIDI и OSC](/learn/input-output/) — э
 $: s("- sd").bank("tr909")`}
 />
 
-См. также [stack](intro/#combining-patterns)
+См. также [stack](/learn/factories/#stack)
 
 ## Можно ли заглушить паттерн?
 
@@ -319,38 +319,38 @@ all(x => x.release(.2))
 Да!
 
 ```
-'   marks start and end of strings, is different from "
-"   marks start and end of single line patterns in mini notation, is different from '
-`   marks start and end of patterns with line breaks in mini notation, is different from '
-[]  used for patterns in mini notation, each item in it has the same length
-<>  used for patterns, alternates between items each cycle
-{}  historically used for polyrhythmic patterns. {a b c}%4 is the same as <a b c>*4.
-@3  elongates the item by a factor of 3 (other numbers work too, even non-integer, but for numbers between 0 and 1 you need a leading zero like this: @0.5)
-@   after an item: elongates the item once (multiple @ work too c @ @ is the same as c@3)
-_   after an item: also elongates an item once (multiple _ work too c _ _ is the same as c@3), see below for a different usage.
-.   this divides equal parts of a pattern and is called a foot. Can be used instead of [] like this: "1 6 7 8 . 2 . 3 . 4" is the same as "[1 6 7 8] 2 3 4"
--   silence
-~   also silence
-x   not silence (for the use in struct, any non-silence symbol works there)
-b   decrease by one semitone, i.e. flat, works for steps of scales, note names (but not midi numbers) and chord names
-s   increase by one semitone, i.e. sharp, works for steps of scales, note names (but not midi numbers) but not chord names
-#   increase by one semitone, i.e. sharp works for steps of scales, note names (but not midi numbers) and chord names
-#   also used in mondo notation
-*3  play the sample or pattern at thrice the speed, fast(3)
-!3  play the sample or pattern three times
-/2  play the sample or pattern at half speed, slow(2)
-?   play the pattern sometimes
-|   once per cycle, choose randomly a pattern of those separated by i.e. chooseCycles()
-,   play all items separated by it at the same time, i.e. stack()
-:   is used to separate multiple parameters, such as adsr(".1:.1:.5:.2"), this is is an operator which creates a list of these objects.
-$:  at the start of a line, defines a member of the stack. is the only stack name that should occur multiple names
-_   before a stack name: mutes the stack, i.e. hush(), for example _$: s("bd"), see above for a different usage.
+'   начало и конец строки; не то же самое, что "
+"   начало и конец однострочного паттерна в мини-нотации; не то же самое, что '
+`   начало и конец паттерна с переносами строк в мини-нотации; не то же самое, что '
+[]  паттерн в мини-нотации: все элементы внутри одинаковой длины
+<>  паттерн, который каждый цикл переключается на следующий элемент
+{}  исторически — полиритмические паттерны. {a b c}%4 — то же, что <a b c>*4.
+@3  растягивает элемент в 3 раза (можно и другие числа, даже дробные; для чисел от 0 до 1 нужен ведущий ноль: @0.5)
+@   после элемента: растягивает его на один шаг (можно несколько: c @ @ — то же, что c@3)
+_   после элемента: тоже растягивает его на один шаг (c _ _ — то же, что c@3); другое значение — ниже.
+.   делит паттерн на равные части («стопы»). Можно вместо []: "1 6 7 8 . 2 . 3 . 4" — то же, что "[1 6 7 8] 2 3 4"
+-   тишина
+~   тоже тишина
+x   не тишина (в struct подходит любой не-тихий символ)
+b   на полутон ниже (бемоль): для ступеней лада, названий нот (не MIDI-номеров) и аккордов
+s   на полутон выше (диез): для ступеней лада и названий нот (не MIDI-номеров), но не для аккордов
+#   на полутон выше (диез): для ступеней лада, названий нот (не MIDI-номеров) и аккордов
+#   также используется в mondo-нотации
+*3  играть сэмпл или паттерн втрое быстрее, fast(3)
+!3  сыграть сэмпл или паттерн три раза
+/2  играть сэмпл или паттерн вдвое медленнее, slow(2)
+?   играть паттерн иногда
+|   раз в цикл случайно выбирает один из разделённых паттернов, как chooseCycles()
+,   играть все разделённые элементы одновременно, как stack()
+:   разделяет несколько параметров, например adsr(".1:.1:.5:.2"); это оператор, создающий список из этих значений.
+$:  в начале строки объявляет участника стэка; единственное имя стэка, которое может повторяться
+_   перед именем стэка: глушит его, как hush(), например _$: s("bd"); другое значение — выше.
 ```
 
-## What is a 'hap'?
+## Что такое hap?
 
-A 'hap' is a name for a thing that happens, e.g. `note("c3 -")` playing a note and then stopping after a while. Haps have a start and an end. Every separate sound that is produced by strudel is a hap on its own.
+Hap — то, что «происходит»: например, `note("c3 -")` играет ноту и через некоторое время её отпускает. У каждого hap есть начало и конец. Каждый отдельный звук, который выдаёт Strudel, — это свой hap.
 
-We would have called it 'event' if this particular name wasn't used by JavaScript to describe things that happen on html pages, like clicking on a button or hovering over a line of text.
+Мы бы назвали это «событием» (event), но в JavaScript это слово уже занято событиями на HTML-страницах — щелчком по кнопке, наведением на строку текста.
 
-Since strudel is written in JavaScript, this confusion of having the same name for different things is avoided by calling events 'haps'.
+Strudel написан на JavaScript, поэтому, чтобы не путать одно слово с разными вещами, события здесь называются hap.

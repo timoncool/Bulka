@@ -41,7 +41,11 @@ export async function prebake() {
       prebake: true,
       pack: 'uzu-wavetables',
     }),
-    samples(`${baseCDN}/mridangam.json`, `${baseCDN}/mrid/`, { prebake: true, tag: 'drum-machines', pack: 'mridangam' }),
+    samples(`${baseCDN}/mridangam.json`, `${baseCDN}/mrid/`, {
+      prebake: true,
+      tag: 'drum-machines',
+      pack: 'mridangam',
+    }),
     // Все Dirt-Samples через JSON (200+ банков, 2000+ семплов)
     samples(`${baseCDN}/Dirt-Samples/strudel.json`, `${baseCDN}/Dirt-Samples/`, {
       prebake: true,
@@ -60,10 +64,14 @@ export async function prebake() {
       prebake: true,
       pack: 'samples-flbass',
     }),
-    samples(`${baseNoTrailing}/samples/sounds-repetition/strudel.json`, `${baseNoTrailing}/samples/sounds-repetition/`, {
-      prebake: true,
-      pack: 'sounds-repetition',
-    }),
+    samples(
+      `${baseNoTrailing}/samples/sounds-repetition/strudel.json`,
+      `${baseNoTrailing}/samples/sounds-repetition/`,
+      {
+        prebake: true,
+        pack: 'sounds-repetition',
+      },
+    ),
     samples(`${baseNoTrailing}/samples/clean-breaks/strudel.json`, `${baseNoTrailing}/samples/clean-breaks/`, {
       prebake: true,
       pack: 'clean-breaks',
@@ -73,11 +81,15 @@ export async function prebake() {
       pack: 'felixroos',
     }),
     // Sparkway Drum Kit - UK Garage / Future Garage drum samples
-    samples(`${baseNoTrailing}/samples/sparkway-drum-kit/strudel.json`, `${baseNoTrailing}/samples/sparkway-drum-kit/`, {
-      prebake: true,
-      tag: 'drum-machines',
-      pack: 'sparkway-drum-kit',
-    }),
+    samples(
+      `${baseNoTrailing}/samples/sparkway-drum-kit/strudel.json`,
+      `${baseNoTrailing}/samples/sparkway-drum-kit/`,
+      {
+        prebake: true,
+        tag: 'drum-machines',
+        pack: 'sparkway-drum-kit',
+      },
+    ),
     // E-Pianos - Yamaha CP80, Wurlitzer, Hohner Pianet (CC-BY)
     samples(`${baseNoTrailing}/samples/e-pianos/strudel.json`, `${baseNoTrailing}/samples/e-pianos/`, {
       prebake: true,

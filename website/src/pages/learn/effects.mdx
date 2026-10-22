@@ -6,12 +6,12 @@ layout: ../../layouts/MainLayout.astro
 import { MiniRepl } from '../../docs/MiniRepl';
 import { JsDoc } from '../../docs/JsDoc';
 
-# Audio Effects
+# Аудиоэффекты
 
 Независимо от того, используете ли вы synth или sample, вы можете применить любой из следующих встроенных audio effects.
 Как вы могли догадаться, effects могут быть объединены в цепочку, и они принимают строку pattern в качестве аргумента.
 
-# Signal chain
+# Цепочка обработки сигнала
 
 <img src="/img/strudel-signal-flow.png"></img>
 
@@ -179,7 +179,7 @@ Strudel поставляется с 3 типами filters:
 
 <JsDoc client:idle name="vowel" h={0} />
 
-# Amplitude Modulation
+# Амплитудная модуляция
 
 Amplitude modulation периодически изменяет амплитуду (gain) во времени.
 
@@ -207,7 +207,7 @@ Amplitude modulation периодически изменяет амплитуд�
 
 <JsDoc client:idle name="tremoloshape" h={0} />
 
-# Amplitude Envelope
+# Огибающая громкости
 
 Amplitude [envelope](<https://en.wikipedia.org/wiki/Envelope_(music)>) контролирует динамический контур звука.
 Strudel использует ADSR envelopes, которые, вероятно, являются наиболее распространенным способом описания envelope:
@@ -236,7 +236,7 @@ Strudel использует ADSR envelopes, которые, вероятно, �
 
 <JsDoc client:idle name="adsr" h={0} />
 
-# Filter Envelope
+# Огибающая фильтра
 
 Каждый filter может получить дополнительный filter envelope, динамически контролирующий значение cutoff. Он использует ADSR envelope, аналогичный используемому для амплитуды. Есть дополнительный параметр для контроля глубины модуляции filter: `lpenv`|`hpenv`|`bpenv`. Это позволяет вам воспроизводить тонкие или огромные модуляции filter просто увеличивая или уменьшая глубину.
 
@@ -288,7 +288,7 @@ Strudel использует ADSR envelopes, которые, вероятно, �
 
 <JsDoc client:idle name="lpenv" h={0} />
 
-# Pitch Envelope
+# Огибающая высоты тона
 
 Вы также можете контролировать высоту тона с помощью envelopes!
 Pitch envelopes могут вдохнуть жизнь в статичные звуки:
@@ -392,9 +392,9 @@ Pitch envelopes могут вдохнуть жизнь в статичные з�
 
 <JsDoc client:idle name="distort" h={0} />
 
-# Global Effects
+# Глобальные эффекты
 
-## Local vs Global Effects
+## Локальные и глобальные эффекты
 
 В то время как вышеперечисленные "локальные" effects всегда будут создавать отдельную цепочку effects для каждого event,
 global effects используют одну и ту же цепочку для всех events одного orbit:

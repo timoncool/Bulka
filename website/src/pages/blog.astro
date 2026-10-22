@@ -9,16 +9,21 @@ import RightSidebar from '../components/RightSidebar/RightSidebar.astro';
 import { getCollection } from 'astro:content';
 import { compareDesc } from 'date-fns';
 import 'react-lite-youtube-embed/dist/LiteYouTubeEmbed.css';
+import { t } from '../i18n/index.mjs';
+import { langFromPath, pathInLang } from '../i18n/lang.mjs';
 const currentPage = Astro.url.pathname;
+const lang = langFromPath(currentPage);
 
-const posts = (await getCollection('blog')).sort((a, b) => compareDesc(a.data.date, b.data.date));
+const posts = (await getCollection('blog'))
+  .filter((post) => post.data.lang === lang && !post.data.draft)
+  .sort((a, b) => compareDesc(a.data.date, b.data.date));
 ---
 
-<html dir={'ltr'} lang={'ru'} class="initial dark">
+<html dir={'ltr'} lang={lang} class="initial dark">
   <head>
     <HeadCommon />
     <!-- <HeadSEO frontmatter={frontmatter} canonicalUrl={canonicalURL} /> -->
-    <title>🍞 Блог Bulka</title>
+    <title>{t('blogPage.title', undefined, lang)}</title>
   </head>
 
   <body class="h-app-height text-gray-50 bg-background">
@@ -33,12 +38,10 @@ const posts = (await getCollection('blog')).sort((a, b) => compareDesc(a.data.da
           </aside>
           <PageContent>
             <div class="border-b-4 border-lineHighlight py-4">
-              <h1>Блог Bulka</h1>
+              <h1>{t('blogPage.h1', undefined, lang)}</h1>
               <p>
-                Добро пожаловать в блог Bulka, где мы будем держать вас в курсе последних изменений и событий.
-                Подписаться на блог можно по <a target="_blank" href="/rss.xml"
-                  >этой RSS-ссылке</a
-                >
+                {t('blogPage.intro', undefined, lang)}
+                <a target="_blank" href={pathInLang('/rss.xml', lang)}>{t('blogPage.rss', undefined, lang)}</a>
               </p>
             </div>
             <div class="space-y-8">

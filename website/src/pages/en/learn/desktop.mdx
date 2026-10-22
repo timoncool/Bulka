@@ -1,0 +1,42 @@
+---
+title: Desktop App
+layout: ../../../layouts/MainLayout.astro
+---
+
+# The Bulka desktop app
+
+Bulka ships as a **desktop app for Windows, Linux and macOS**: all of Bulka runs locally.
+[Download the latest version](https://github.com/timoncool/Bulka/releases/latest).
+
+- **Windows installer** `Bulka_<version>_x64-setup.exe` → a "Bulka" shortcut. Installs without admin rights and
+  **updates itself** from new releases.
+- **Windows portable** `Bulka-portable.zip` → unzip → `Bulka.exe`. Nothing is written to the system: delete the
+  folder and the app is gone.
+- **Linux** `Bulka_<version>_amd64.AppImage` (runs on any distribution, updates itself) or `Bulka_<version>_amd64.deb`.
+- **macOS** (Apple Silicon, macOS 13.5 or newer) `Bulka_<version>_aarch64.dmg`. The app is not notarized by Apple: start it
+  once, then System Settings → Privacy & Security → "Open Anyway". If macOS says the app is damaged, run
+  `xattr -cr /Applications/Bulka.app` in Terminal.
+
+## What's inside
+
+The app starts a built-in server and opens a window: the full Bulka without a browser. Windows 10/11 x64 needs
+WebView2 (Windows 11 has it; otherwise the installer fetches it).
+
+## Local and private
+
+- **Keys, settings and recordings** stay on your machine: on Windows in the app folder (`webview-data`,
+  `recordings`), on Linux in `~/.local/share/app.bulka.desktop`, on macOS in
+  `~/Library/Application Support/app.bulka.desktop`.
+- Close the window and everything stops (no server left running in the background).
+- Recordings and WAV exports go to the `recordings` folder, and the folder opens after saving.
+
+## Desktop-only features
+
+- **[Built-in MCP server](/en/learn/mcp)**: an external Claude Desktop / ChatGPT / Cursor drives Bulka.
+- **[Local models (LM Studio / Ollama)](/en/learn/local-models)**: the Bulka chat on your local model, no cloud.
+
+## Building from source
+
+Repository [timoncool/Bulka](https://github.com/timoncool/Bulka), folder `desktop/` (Tauri v2):
+`bash desktop/build.sh` builds the app for the current OS, `bash desktop/pack-portable.sh` the Windows portable,
+`desktop/build-linux-docker.sh` Linux in Docker. Details are in `desktop/README.md`.

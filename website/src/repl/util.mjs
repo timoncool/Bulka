@@ -8,6 +8,9 @@ import { createClient } from '@supabase/supabase-js';
 import { writeText } from '@tauri-apps/plugin-clipboard-manager';
 import { $featuredPatterns /* , loadDBPatterns */ } from '@src/user_pattern_utils.mjs';
 import { nanoid } from 'nanoid';
+import { t } from '../i18n/index.mjs';
+import { href } from '../i18n/lang.mjs';
+import { recordDone, recordFailed } from '../hub/bulkaHub.mjs';
 
 // Create a single supabase client for interacting with your database
 export const supabase = createClient(
@@ -129,42 +132,6 @@ export function confirmDialog(msg) {
   });
 }
 
-//RIP due to SPAM
-// let lastShared;
-// export async function shareCode(codeToShare) {
-//   // const codeToShare = activeCode || code;
-//   if (lastShared === codeToShare) {
-//     logger(`Link already generated!`, 'error');
-//     return;
-//   }
-
-//   confirmDialog(
-//     'Do you want your pattern to be public? If no, press cancel and you will get just a private link.',
-//   ).then(async (isPublic) => {
-//     const hash = nanoid(12);
-//     const shareUrl = window.location.origin + window.location.pathname + '?' + hash;
-//     const { error } = await supabase.from('code_v1').insert([{ code: codeToShare, hash, ['public']: isPublic }]);
-//     if (!error) {
-//       lastShared = codeToShare;
-//       // copy shareUrl to clipboard
-//       if (isTauri()) {
-//         await writeText(shareUrl);
-//       } else {
-//         await navigator.clipboard.writeText(shareUrl);
-//       }
-//       const message = `Link copied to clipboard: ${shareUrl}`;
-//       alert(message);
-//       // alert(message);
-//       logger(message, 'highlight');
-//     } else {
-//       console.log('error', error);
-//       const message = `Error: ${error.message}`;
-//       // alert(message);
-//       logger(message);
-//     }
-//   });
-// }
-
 let lastShared;
 let lastShareHash;
 
@@ -193,38 +160,61 @@ function isValidCode(code) {
   if (trimmed.length < 10) return false;
 
   // Contains only comments or loading placeholders
-  const withoutComments = trimmed.replace(/\/\/.*$/gm, '').replace(/\/\*[\s\S]*?\*\//g, '').trim();
+  const withoutComments = trimmed
+    .replace(/\/\/.*$/gm, '')
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .trim();
   if (withoutComments.length < 5) return false;
 
   // Specific bad patterns
   const badPatterns = ['// LOADING', '//LOADING', 'LOADING'];
-  if (badPatterns.some(p => trimmed.toUpperCase().includes(p))) return false;
+  if (badPatterns.some((p) => trimmed.toUpperCase().includes(p))) return false;
 
   return true;
 }
 
 // New shareCode that returns data for ShareDialog
+// Публичный адрес ссылки: в десктопе окно открыто на 127.0.0.1, а ссылка должна вести на сайт.
+function siteUrl(path) {
+  const { hostname, origin } = window.location;
+  const isLocal = hostname === '127.0.0.1' || hostname === 'localhost';
+  return isLocal ? new URL(path, import.meta.env.SITE).href : origin + path;
+}
+
+const shareBase = () => siteUrl(window.location.pathname);
+
+/** Ссылка на трек в редакторе на языке страницы — для ленты и других мест вне редактора. */
+export const trackLink = (hash) => siteUrl(href('/')) + '?' + hash;
+
 export async function shareCode(codeToShare, isPublic = true) {
+  const result = await createShareLink(codeToShare, isPublic);
+  if (result.success) recordDone('share');
+  else recordFailed('share', result.error);
+  return result;
+}
+
+async function createShareLink(codeToShare, isPublic) {
   try {
     // Validate code first
     if (!isValidCode(codeToShare)) {
-      logger('Код слишком короткий или пустой', 'error');
+      logger(t('share.tooShort'), 'error');
       return { success: false, error: 'Invalid code' };
     }
 
     // Check if already shared this exact code (local cache)
     if (lastShared === codeToShare && lastShareHash) {
-      const shareUrl = window.location.origin + window.location.pathname + '?' + lastShareHash;
+      const shareUrl = shareBase() + '?' + lastShareHash;
       await copyToClipboard(shareUrl);
-      logger('Ссылка скопирована!', 'highlight');
+      logger(t('share.copied'), 'highlight');
       return {
         success: true,
         shareUrl,
         hash: lastShareHash,
-        isExisting: true
+        isExisting: true,
       };
     }
 
+    let shortLinkError = t('share.unknownError');
     // Try to create short URL via Supabase
     try {
       // Если есть originHash - обновляем существующую запись (перезапись трека)
@@ -235,18 +225,18 @@ export async function shareCode(codeToShare, isPublic = true) {
           .eq('hash', originHash);
 
         if (!updateError) {
-          const shareUrl = window.location.origin + window.location.pathname + '?' + originHash;
+          const shareUrl = shareBase() + '?' + originHash;
           lastShared = codeToShare;
           lastShareHash = originHash;
 
           await copyToClipboard(shareUrl);
-          logger('Трек обновлён!', 'highlight');
+          logger(t('share.updated'), 'highlight');
           return {
             success: true,
             shareUrl,
             hash: originHash,
             isExisting: true,
-            wasUpdated: true
+            wasUpdated: true,
           };
         }
         // Если UPDATE не сработал - продолжаем стандартную логику
@@ -263,64 +253,67 @@ export async function shareCode(codeToShare, isPublic = true) {
 
       if (existing?.hash) {
         // Code already exists, return existing link
-        const shareUrl = window.location.origin + window.location.pathname + '?' + existing.hash;
+        const shareUrl = shareBase() + '?' + existing.hash;
         lastShared = codeToShare;
         lastShareHash = existing.hash;
 
         await copyToClipboard(shareUrl);
-        logger('Ссылка скопирована!', 'highlight');
+        logger(t('share.copied'), 'highlight');
         return {
           success: true,
           shareUrl,
           hash: existing.hash,
-          isExisting: true
+          isExisting: true,
         };
       }
 
       // Create new entry
       const hash = nanoid(12);
-      const { error } = await supabase.from('code_v1').insert([{
-        code: codeToShare,
-        hash,
-        public: isPublic,
-      }]);
+      const { error } = await supabase.from('code_v1').insert([
+        {
+          code: codeToShare,
+          hash,
+          public: isPublic,
+        },
+      ]);
 
       if (!error) {
-        const shareUrl = window.location.origin + window.location.pathname + '?' + hash;
+        const shareUrl = shareBase() + '?' + hash;
         lastShared = codeToShare;
         lastShareHash = hash;
         // Устанавливаем originHash для возможных будущих обновлений
         originHash = hash;
 
         await copyToClipboard(shareUrl);
-        logger('Ссылка скопирована!', 'highlight');
+        logger(t('share.copied'), 'highlight');
         return {
           success: true,
           shareUrl,
           hash,
-          isExisting: false
+          isExisting: false,
         };
       }
-      console.warn('Supabase error, falling back to long URL:', error);
+      shortLinkError = error.message;
     } catch (e) {
-      console.warn('Short URL failed, using long URL:', e);
+      shortLinkError = e.message;
     }
+    logger(t('share.longLink', { reason: shortLinkError }), 'warning');
 
     // Fallback to long URL (base64 encoded code in hash)
     const longHash = '#' + code2hash(codeToShare);
-    const shareUrl = window.location.origin + window.location.pathname + longHash;
+    const shareUrl = shareBase() + longHash;
 
     await copyToClipboard(shareUrl);
-    logger('Ссылка скопирована!', 'highlight');
+    logger(t('share.copied'), 'highlight');
     return {
       success: true,
       shareUrl,
       hash: null,
-      isExisting: false
+      isExisting: false,
     };
   } catch (e) {
     console.error(e);
-    logger('Ошибка при создании ссылки', 'error');
+    logger(t('share.failed'), 'error');
     return { success: false, error: e.message };
   }
 }

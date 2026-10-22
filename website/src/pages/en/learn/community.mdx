@@ -1,0 +1,282 @@
+---
+title: Community & Resources
+layout: ../../../layouts/MainLayout.astro
+---
+
+import { MiniRepl } from '../../../docs/MiniRepl';
+
+# Community & Resources
+
+This page collects useful tips, example tracks and resources from the Strudel/TidalCycles community.
+
+## Where to find the community
+
+### Bulka (Russian-speaking community)
+
+- **Telegram**: [t.me/bulka_app](https://t.me/bulka_app) — the Russian-speaking Bulka community
+- **Website**: [bulka.app](https://bulka.app/en/) — the official site of the project
+- **GitHub**: [github.com/timoncool/Bulka](https://github.com/timoncool/Bulka) — the source code
+
+### Strudel/TidalCycles (international community)
+
+- **Discord**: [Tidal, Strudel and friends](https://discord.com/invite/HGEdXmRkzT) — 7000+ members, an active community
+- **Forum**: [club.tidalcycles.org](https://club.tidalcycles.org/) — discussions, questions, ideas
+- **Community Bakery**: [strudel.cc/bakery](https://strudel.cc/bakery/) — patterns from other users
+- **GitHub**: [awesome-strudel](https://github.com/terryds/awesome-strudel) — a curated collection of resources
+
+## Tips and tricks
+
+### Common mistakes
+
+**`n` vs `note`: what's the difference?**
+
+- `note` changes the pitch
+- `n` picks a sample number from the bank
+
+<MiniRepl
+  client:visible
+  tune={`// n picks a sample from the bank
+s("bd").n("<0 1 2 3>")  // different kicks`}
+/>
+
+<MiniRepl
+  client:visible
+  tune={`// note changes the pitch
+s("piano").note("c4 e4 g4 c5")`}
+/>
+
+With synths both change the pitch, but with samples `n` picks the file!
+
+**The Reference panel slows things down**
+
+If things get sluggish, close the Reference panel. It renders many elements and can affect audio performance.
+
+**Sounds don't load the first time**
+
+Samples have to load, so the first run may be silent. Just run the code again.
+
+### Workflow tips
+
+**Use the Community Bakery for inspiration**
+
+Open [strudel.cc/bakery](https://strudel.cc/bakery/) and study other people's patterns: it's the best way to learn new techniques.
+
+**Share your code**
+
+Press the "share" button in the REPL to get a link to your pattern that you can share.
+
+**Don't be afraid to delete code**
+
+If you don't like the result, delete it and start over. That's a normal part of live coding.
+
+## Example tracks
+
+### Minimal techno
+
+<MiniRepl
+  client:visible
+  tune={`// A minimal techno groove
+stack(
+  s("bd*4").gain(1.2),
+  s("~ cp").room(0.3),
+  s("hh*8").gain(0.6).pan(sine.range(0.3, 0.7)),
+  note("g1*2 [~ g1] g1 [g1 a1]")
+    .s("sawtooth")
+    .lpf(sine.slow(8).range(200, 1200))
+    .lpq(8)
+    .gain(0.7)
+)`}
+/>
+
+### Ambient drone
+
+<MiniRepl
+  client:visible
+  tune={`// Atmospheric ambient
+stack(
+  note("[c3,e3,g3,b3]")
+    .s("sawtooth")
+    .lpf(400)
+    .attack(2)
+    .release(4)
+    .room(0.8)
+    .size(0.9)
+    .slow(4),
+  note("c2").s("sine")
+    .gain(0.3)
+    .slow(8)
+)`}
+/>
+
+### Drum and bass pattern
+
+<MiniRepl
+  client:visible
+  tune={`// A DnB rhythm section
+stack(
+  s("[bd ~] ~ [~ bd] ~"),
+  s("~ [~ sd] ~ sd").room(0.2),
+  s("[hh hh]*4").gain(0.5).speed(1.2)
+).fast(2)`}
+/>
+
+### Polyrhythmic groove
+
+<MiniRepl
+  client:visible
+  tune={`// A 3 against 4 polyrhythm
+stack(
+  s("bd*4"),
+  s("cp*3").gain(0.8),
+  s("hh*5").gain(0.5)
+)`}
+/>
+
+### Euclidean rhythms
+
+<MiniRepl
+  client:visible
+  tune={`// Euclidean rhythms make interesting patterns
+stack(
+  s("bd(3,8)"),
+  s("sd(5,8)").gain(0.7),
+  s("hh(7,8)").gain(0.5),
+  s("cp(2,8)").room(0.3)
+)`}
+/>
+
+### Acid bassline
+
+<MiniRepl
+  client:visible
+  tune={`// Acid 303 style
+note("c2 c2 [c2 c3] c2 c2 [~ c2] eb2 [c2 g1]")
+  .s("sawtooth")
+  .lpf(sine.slow(4).range(200, 2000))
+  .lpq(15)
+  .lpenv(4)
+  .lpa(0.01)
+  .lpd(0.1)
+  .gain(0.8)
+  .distort(0.3)`}
+/>
+
+### Lo-fi hip-hop
+
+<MiniRepl
+  client:visible
+  tune={`// Lo-fi vibes
+stack(
+  s("bd [~ bd] ~ bd").slow(2),
+  s("~ sd").slow(2).room(0.4),
+  s("hh*4").gain(0.3).speed(0.9),
+  note("<[c4,e4,g4] [a3,c4,e4] [f3,a3,c4] [g3,b3,d4]>")
+    .s("piano")
+    .slow(2)
+    .room(0.5)
+    .lpf(2000)
+)`}
+/>
+
+## Advanced techniques
+
+### Breakbeat chopping
+
+<MiniRepl
+  client:visible
+  tune={`// A classic amen break chop
+samples('github:yaxu/clean-breaks')
+s("amen/4").fit()
+  .chop(16)
+  .cut(1)
+  .sometimesBy(0.3, ply(2))
+  .sometimesBy(0.2, rev)`}
+/>
+
+### Generative patterns with rand
+
+<MiniRepl
+  client:visible
+  tune={`// Random variations
+note("c3 e3 g3 b3")
+  .add(note(rand.range(-2, 2)))
+  .s("piano")
+  .sometimesBy(0.3, add(note(12)))`}
+/>
+
+### Layer for complex textures
+
+<MiniRepl
+  client:visible
+  tune={`// Stacking different processing
+note("c3 e3 g3 b3").layer(
+  x => x.s("sawtooth").lpf(800),
+  x => x.s("square").add(note(12)).gain(0.3),
+  x => x.s("sine").sub(note(12)).gain(0.5)
+).room(0.5)`}
+/>
+
+### Phasing
+
+<MiniRepl
+  client:visible
+  tune={`// Steve Reich style phasing
+note("c4 d4 e4 g4 a4 g4 e4 d4")
+  .s("piano")
+  .fast("[1, 1.01]")  // slightly different speeds
+  .room(0.4)`}
+/>
+
+### Conditional modifiers
+
+<MiniRepl
+  client:visible
+  tune={`// Apply an effect every N cycles
+s("bd sd cp sd")
+  .every(4, fast(2))
+  .every(3, rev)
+  .sometimesBy(0.2, speed(1.5))`}
+/>
+
+## YouTube tutorials
+
+Recommended videos to learn from:
+
+- **"Live Coding For Music With Strudel.cc (Beginners)"** — Groovin in G, a great start for beginners
+- **"Creative Code Art - WORKSHOP // Coding Music With Strudel"** — Dan Gorelick & Viola He, a full workshop
+- **"Intro To Algorave (Strudel Workshop)"** — an introduction to algorave culture
+- **Switch Angel** — a channel with live coded techno demos
+
+## Useful resources
+
+### Docs
+- [strudel.cc](https://strudel.cc/) — the official site
+- [TidalCycles Docs](https://tidalcycles.org/docs/) — the docs of the original Tidal (much of it applies)
+
+### Tools
+- **Flok** ([flok.cc](https://flok.cc/)) — collaborative live coding in the browser
+- **strudel.nvim** — Neovim integration for advanced users
+
+### Samples
+- [Dirt Samples](https://github.com/tidalcycles/dirt-samples) — the standard library
+- [Clean Breaks](https://github.com/yaxu/clean-breaks) — a collection of breaks
+
+## Performance
+
+- **Close the Reference panel** while live coding
+- **Use `.cut(1)`** on samples to avoid overlaps
+- **[Desktop app](/learn/desktop)** — Bulka without a browser, for Windows, Linux and macOS
+- **Go easy on reverb** — high `.room()` and `.size()` values load the CPU
+
+## The live coding philosophy
+
+> "Don't be afraid of mistakes: they are part of the process. Practice like on a musical instrument. It gets better with time."
+
+Live coding is:
+- **Experiment** — try different things and listen to what happens
+- **Process** — the path matters, not only the result
+- **Community** — share, learn from others, ask questions
+
+---
+
+*Want to add your example or tip? Open a PR in the project repository!*

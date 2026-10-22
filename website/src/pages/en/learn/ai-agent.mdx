@@ -1,0 +1,167 @@
+---
+title: Bulka AI Agent
+layout: ../../../layouts/MainLayout.astro
+---
+
+# The Bulka AI agent
+
+Bulka AI is a built-in music assistant that helps you make music with code. The agent knows Strudel/TidalCycles and can write, edit and run code for you.
+
+## Features
+
+- **Providers to choose from**: free OVHcloud with no key, OpenAI, Anthropic (Claude), Google Gemini, Z.AI, OpenRouter, local models (LM Studio / Ollama) and an external agent over MCP
+- **Full real-time streaming**: answers appear as they are written
+- **Visible thinking**: for models with extended thinking, the reasoning is shown
+- **Dynamic model list**: models are loaded straight from the providers' APIs
+- **Selection aware**: select code and the agent focuses on it
+- **Docs search**: the agent knows Strudel and can search the reference
+
+## Where is the agent?
+
+The AI agent lives in the right panel of the editor. Open the **Chat** tab (chat icon) in the side panel to the right of the code editor.
+
+## Setting up an API key
+
+Paid providers need an API key from one of them:
+
+1. Open the **Chat** tab in the side panel
+2. If no key is set, the settings panel opens automatically
+3. Pick a provider (OpenAI, Anthropic or Google)
+4. Enter your API key
+5. Press **Save**
+
+### Where to get an API key?
+
+- **OpenAI**: [platform.openai.com/api-keys](https://platform.openai.com/api-keys)
+- **Anthropic**: [console.anthropic.com](https://console.anthropic.com/)
+- **Google Gemini**: [aistudio.google.com/apikey](https://aistudio.google.com/apikey)
+
+All keys are stored only locally in your browser.
+
+## Supported models
+
+The model list is loaded **automatically** from each provider's API.
+
+**Providers:**
+- **OpenAI** — GPT-5.2, GPT-5.1, GPT-5.1-Codex-Max
+- **Anthropic** — Claude Opus 4.5, Claude Sonnet 4.5, Claude Haiku 4.5
+- **Google** — Gemini 3 Pro, Gemini 2.5 Flash, Gemini 2.5 Pro
+- **Free (OVHcloud)** — no API key, works straight from the browser ([more](/learn/free-ai))
+
+## What can the agent do?
+
+### Making music
+Just describe what you want to make:
+- "Make a simple beat with a kick and a snare"
+- "Make a relaxing ambient track"
+- "Write a drum and bass pattern at 174 BPM"
+
+### Editing code
+The agent can change existing code:
+- "Add a bass to the current track"
+- "Make the hi-hats faster"
+- "Add reverb to all instruments"
+
+### Explaining code
+If it is unclear what the code does:
+- "Explain what the current code does"
+- "What does .lpf(800) mean?"
+
+### Working with a selection
+Select part of the code in the editor and the agent works only with that fragment:
+- "Change this fragment"
+- "Add an effect to the selection"
+
+### Finding code
+The agent can find and select the fragment you need:
+- "Show where the volume is set"
+- "Find where the bass is defined"
+
+### Hydra visuals
+The agent can add visuals:
+- "Add a Hydra visual"
+- "Make a visual in sync with the music"
+
+## Agent tools
+
+The agent uses dedicated tools to work with the editor:
+
+| Tool | Description |
+|------------|----------|
+| `readCode()` | Read the current code from the editor |
+| `setFullCode(code)` | Replace all the code (for a new track) |
+| `editCode(search, replace)` | Find and replace a code fragment |
+| `appendCode(code)` | Append code at the end |
+| `playMusic()` | Start playback |
+| `stopMusic()` | Stop playback |
+| `searchDocs(query)` | Search the Strudel docs |
+| `highlightCode(search)` | Select a code fragment in the editor |
+| `getAvailablePacks()` / `getBankSamples(bank)` | Which sounds and packs are loaded |
+| `getExamples(category)` | Code examples by genre |
+| `getConsole()` | Console logs for debugging |
+| `startRecording()` / `stopRecording()` / `recordSeconds(n)` | Record what plays to WAV |
+
+## Quick commands
+
+The chat has quick command buttons:
+- **Simple beat** — make a basic rhythm
+- **Add bass** — add a bass line
+- **Explain code** — get an explanation of the current code
+- **Add effect** — add reverb and delay
+
+## Sending errors to the chat
+
+When an error occurs, the error bar has a **"To chat"** button: press it and the agent gets the error and helps fix it.
+
+## Tips
+
+### Be specific
+The more precise the description, the better the result:
+- ❌ "Make something"
+- ✅ "Make a minimal techno beat at 120 BPM with a deep bass"
+
+### Use the selection
+Select the code you want to change and the agent focuses on it.
+
+### Iterate
+Don't try to do everything at once. Start simple and add parts step by step.
+
+### Report problems
+If something sounds wrong, say so. The agent will fix it.
+
+## Example conversation
+
+**You:** Make a simple house beat
+
+**Agent:** *writes the code and plays it*
+
+```javascript
+// === HOUSE BEAT ===
+stack(
+  s("bd*4").gain(0.9)._scope(),           // kick on every beat
+  s("~ cp ~ cp").gain(0.7),               // clap on 2 and 4
+  s("hh*8").gain(0.5)._scope(),           // hi-hats
+  note("c2 c2 c2 c3").s("bass").lpf(600)  // bass line
+)
+```
+
+**You:** Add a piano
+
+**Agent:** *edits the code and adds a piano*
+
+**You:** Make the bass deeper
+
+**Agent:** *finds the bass and lowers the filter*
+
+## Limitations
+
+- The agent sees only the code and does not hear the result
+- When something fails, describe what went wrong
+- Build complex layered tracks step by step
+- The agent works only with Strudel/TidalCycles syntax
+
+## Privacy
+
+- API keys are stored only in your browser's localStorage
+- Code and messages go straight to the provider (OpenAI/Anthropic/Google)
+- Bulka does not store your data on its servers

@@ -32,9 +32,26 @@ const APP_VERSION = GIT_COMMIT;
 
 console.log(`📦 Building Bulka ${GIT_COMMIT}`);
 
-const site = `https://strudel.cc/`; // root url without a path
-const base = '/'; // base path of the strudel site
+const site = `https://bulka.app/`; // root url without a path
+const base = '/'; // base path of the site
 const baseNoTrailing = base.endsWith('/') ? base.slice(0, -1) : base;
+
+// English pages (src/pages/en/**) show the English function reference: <JsDoc> gets lang="en".
+function englishJsDoc() {
+  return (tree, file) => {
+    if (!file.history[0].replace(/\\/g, '/').includes('/src/pages/en/')) return;
+    const walk = (node) => {
+      if ((node.type === 'mdxJsxFlowElement' || node.type === 'mdxJsxTextElement') && node.name === 'JsDoc') {
+        node.attributes = [
+          ...node.attributes.filter((a) => a.name !== 'lang'),
+          { type: 'mdxJsxAttribute', name: 'lang', value: 'en' },
+        ];
+      }
+      node.children?.forEach(walk);
+    };
+    walk(tree);
+  };
+}
 
 // this rehype plugin fixes relative links
 // it works by prepending the base + page path to anchor links
@@ -43,17 +60,23 @@ const baseNoTrailing = base.endsWith('/') ? base.slice(0, -1) : base;
 // examples with base as "mybase":
 //   #gain -> /mybase/learn/effects/#gain
 //   /some/page -> /mybase/some/page
+// on English pages (src/pages/en/**) site links get the /en prefix
 function relativeURLFix() {
   return (tree, file) => {
-    const chunks = file.history[0].split('/src/pages/'); // file.history[0] is the file path
-    const path = chunks[chunks.length - 1].slice(0, -4); // only path inside src/pages, without .mdx
+    const filePath = file.history[0].replace(/\\/g, '/'); // file.history[0] is the file path
+    // mdx imported from packages/*/docs renders inside a page: its own #anchors stay relative
+    const isPage = filePath.includes('/src/pages/');
+    const path = filePath.split('/src/pages/').pop().slice(0, -4); // only path inside src/pages, without .mdx
     return rehypeUrls((url) => {
       let newHref = baseNoTrailing;
       if (url.href.startsWith('#')) {
+        if (!isPage) return;
         // special case: a relative anchor link to the current page
         newHref += `/${path}/${url.href}`;
       } else if (url.href.startsWith('/')) {
         // any other relative url starting with /
+        const isAsset = url.pathname.split('/').pop().includes('.');
+        if (path.startsWith('en/') && !isAsset && !/^\/(en|api)(\/|$)/.test(url.pathname)) newHref += '/en';
         newHref += url.pathname;
         if (url.pathname.indexOf('.') == -1) {
           // append trailing slash to resource only if there is no file extension
@@ -74,6 +97,7 @@ const options = {
   // See https://mdxjs.com/advanced/plugins
   remarkPlugins: [
     remarkToc,
+    englishJsDoc,
     // E.g. `remark-frontmatter`
   ],
   rehypePlugins: [rehypeSlug, [rehypeAutolinkHeadings, { behavior: 'append' }], relativeURLFix],

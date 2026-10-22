@@ -1,0 +1,147 @@
+---
+title: Hydra Introduction
+layout: ../../../layouts/MainLayout.astro
+---
+
+import { MiniRepl } from '../../../docs/MiniRepl';
+
+# Hydra Introduction
+
+**Hydra** is a live-codable video synthesizer that runs right in the browser. It was created by the artist Olivia Jack and is inspired by analog modular video synthesizers.
+
+## What is Hydra?
+
+Hydra lets you make real-time visuals with simple JavaScript. The syntax is inspired by modular synthesis: instead of physical cables you chain JavaScript functions with dots.
+
+### The simplest example
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10, 0.1, 0.8).out()
+`}
+/>
+
+## The modular synthesis idea
+
+```
+SOURCE → TRANSFORMS → OUTPUT
+source   →    transforms   → .out()
+```
+
+The number arguments inside the functions are like knob positions on synth modules.
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10)           // Source: oscillator
+  .rotate(0.5)    // Transform: rotation
+  .kaleid(4)      // Transform: kaleidoscope
+  .out()          // Output to the screen
+`}
+/>
+
+## Five kinds of functions
+
+### 1. Sources
+Generate a visual signal: `osc()`, `noise()`, `shape()`, `voronoi()`, `gradient()`, `solid()`
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Different sources
+noise(5, 0.1).out(o0)
+// Try: osc(10), shape(4), voronoi(5), gradient()
+`}
+/>
+
+### 2. Geometry
+Transform the coordinates: `rotate()`, `scale()`, `pixelate()`, `kaleid()`, `repeat()`
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10, 0.1, 0.5)
+  .kaleid(6)
+  .pixelate(20, 20)
+  .out()
+`}
+/>
+
+### 3. Color
+Change the color values: `color()`, `brightness()`, `contrast()`, `saturate()`, `hue()`, `invert()`
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10, 0.1, 0.5)
+  .color(1, 0.5, 0.2)
+  .contrast(1.5)
+  .out()
+`}
+/>
+
+### 4. Blend
+Combine two sources: `add()`, `mult()`, `diff()`, `blend()`, `layer()`, `mask()`
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10)
+  .blend(noise(3), 0.5)
+  .out()
+`}
+/>
+
+### 5. Modulate
+Use one source to distort the geometry of another: `modulate()`, `modulateScale()`, `modulateRotate()`
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10, 0.1, 0.5)
+  .modulate(noise(3), 0.3)
+  .out()
+`}
+/>
+
+## Output buffers
+
+Hydra has **four output buffers**: `o0`, `o1`, `o2`, `o3`
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Different visuals in different buffers
+osc(10).out(o0)
+noise(3).out(o1)
+shape(4).out(o2)
+voronoi(5).out(o3)
+
+// Show all four
+render()
+`}
+/>
+
+## Dynamic parameters
+
+Any parameter can be a function evaluated in real time:
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// The oscillator frequency changes over time
+osc(() => Math.sin(time) * 20 + 30, 0.1, 0.5)
+  .rotate(() => time * 0.1)
+  .out()
+`}
+/>
+
+## Next steps
+
+Study each part of Hydra in detail:
+- [Sources](/hydra/sources) — all visual generators
+- [Transforms](/hydra/transforms) — geometry and color
+- [Blending](/hydra/blending) — combining sources
+- [Modulation](/hydra/modulation) — advanced effects
+- [Audio reactivity](/hydra/audio) — visualizing sound

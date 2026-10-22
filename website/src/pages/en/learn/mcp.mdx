@@ -1,0 +1,65 @@
+---
+title: MCP — drive Bulka from Claude Desktop
+layout: ../../../layouts/MainLayout.astro
+---
+
+# MCP server: drive Bulka from Claude Desktop / ChatGPT / Cursor
+
+The [Bulka desktop app](/en/learn/desktop) runs an **MCP server inside itself**. Your external AI agent
+(Claude Desktop, Cursor, ChatGPT) connects to it and **fully drives Bulka**: writes code, starts and stops the
+music, reads the current pattern. It works while the Bulka app is open.
+
+## Connecting
+
+Nothing to run or install: it is HTTP MCP at a URL. Add it to the client config and restart the client:
+
+```json
+{ "mcpServers": { "bulka": { "type": "streamable-http", "url": "http://127.0.0.1:4188/mcp" } } }
+```
+
+- **Claude Desktop / Cursor:** paste this block into `claude_desktop_config.json` (or the Cursor config).
+- **Claude Code:** `claude mcp add --transport http bulka http://127.0.0.1:4188/mcp`
+
+A ready snippet and control buttons (start/stop/restart) are in the app: **Settings → MCP panel**.
+
+## Tools
+
+Editor and sound:
+
+- `setCodeAndPlay` — replace all the code and play it (the main one); `setFullCode`, `appendCode`, `editCode` — replace, append, fix a fragment; `readCode` — read the code; `highlightCode` — select a fragment.
+- `playMusic` / `stopMusic` — start and stop; if the code has an error, the tool returns its text. Until the first click in the window the sound is off (the browser requires it), and the tool says so.
+- `undo` / `redo` — undo and redo an edit; `getPlaybackState` — whether music plays, which pattern is open, the volume, the panel tab.
+- `getVolume` / `setVolume` — master volume (0–1).
+- `startRecording` / `stopRecording` / `recordSeconds` — record what plays to WAV; `exportWav` — render cycles to WAV faster than real time; `listRecordings` — files in the `recordings` folder (desktop).
+
+Knowledge and sounds:
+
+- `searchDocs` — search the docs and the function reference; `getReference` — the reference for one function; `getExamples` — examples by genre.
+- `getAvailablePacks` / `getBankSamples` — which sounds exist; `loadSamples` — load a pack (`github:user/repo` or a URL to `strudel.json`).
+- `getConsole` — console logs for debugging.
+
+Patterns and sharing:
+
+- `listPatterns`, `openPattern`, `newPattern`, `duplicatePattern`, `deletePattern`, `clearPatterns`, `exportPatterns`, `importPatterns` — your own patterns (deleting needs `confirm: true`).
+- `shareCode` — save the track to the cloud and get a `bulka.app/?…` link; `setSharePublic` — show the track in the feed or hide it.
+- `listPublicPatterns`, `openPublicPattern`, `likePattern` — the public feed and featured tracks.
+- `newTrack` — start a new track (the window reloads).
+
+Window and settings:
+
+- `getSettings` / `setSettings` — theme, font, keybindings (Vim, Emacs, Helix too), panel, editor, audio; `listAudioDevices` — audio outputs.
+- `getPrebakeScript` / `setPrebakeScript` — the script that runs before every evaluation.
+- `getAiProviders` / `setAiProvider` — the AI provider and model of the Bulka chat.
+- `openPanel` — open a panel tab or close the panel.
+
+Chat: `getNewMessages` / `sendChatMessage` — read the user's messages from the Bulka chat and reply there.
+
+The agent deliberately has no access to provider API keys, the anonymous statistics checkbox (only a person sets it) or switching off the MCP server itself.
+
+## Chat over MCP (both ways)
+
+In the Bulka chat, pick the **"External agent (MCP)"** provider and type right there. Messages go to the external
+agent, which reads them (`getNewMessages`), replies in the chat (`sendChatMessage`) and drives the music along the
+way. So an external Claude becomes the "brain" of your Bulka.
+
+A detailed guide for the agent (tools + Strudel basics) is the file `desktop/bulka-mcp-skill.md` in the repository.

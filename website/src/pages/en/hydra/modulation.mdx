@@ -1,0 +1,216 @@
+---
+title: Modulation
+layout: ../../../layouts/MainLayout.astro
+---
+
+import { MiniRepl } from '../../../docs/MiniRepl';
+
+# Modulation
+
+Modulation is one of the most powerful techniques in Hydra. It uses the colors of one source to **distort the geometry** of another.
+
+## How modulation works
+
+When modulating:
+- The modulator's red channel → offset along X
+- The modulator's green channel → offset along Y
+- Bright areas are distorted more
+
+---
+
+## modulate() — Basic modulation
+
+```javascript
+source.modulate(texture, amount)
+```
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10)
+  .modulate(noise(3))
+  .out()
+`}
+/>
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Strong modulation
+osc(10)
+  .modulate(noise(3), 0.5)
+  .out()
+`}
+/>
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Modulating with Voronoi
+osc(10, 0.1, 0.5)
+  .modulate(voronoi(5, 0.1), 0.3)
+  .out()
+`}
+/>
+
+---
+
+## modulateScale() — Scale modulation
+
+Changes the scale of different parts of the image.
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10)
+  .modulateScale(noise(3), 0.5)
+  .out()
+`}
+/>
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+shape(4)
+  .modulateScale(osc(3), 2, 0.5)
+  .out()
+`}
+/>
+
+---
+
+## modulateRotate() — Rotation modulation
+
+Applies a different amount of rotation to different parts of the image.
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10)
+  .modulateRotate(osc(3), 1)
+  .out()
+`}
+/>
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// A spiral effect
+osc(20, 0.1, 0.5)
+  .modulateRotate(noise(3), 2)
+  .out()
+`}
+/>
+
+---
+
+## modulateHue() — Hue modulation
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10, 0.1, 0.5)
+  .modulateHue(osc(3).saturate(3), 1)
+  .out()
+`}
+/>
+
+---
+
+## modulateKaleid() — Kaleidoscope modulation
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10)
+  .modulateKaleid(noise(3), 8)
+  .out()
+`}
+/>
+
+---
+
+## modulateRepeat() — Repetition modulation
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+shape(4)
+  .modulateRepeat(osc(3), 3, 3)
+  .out()
+`}
+/>
+
+---
+
+## modulatePixelate()
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10, 0.1, 0.5)
+  .modulatePixelate(noise(3), 100, 10)
+  .out()
+`}
+/>
+
+---
+
+## Complex examples
+
+### Layered modulation
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10, 0.1, 0.5)
+  .modulate(noise(3), 0.2)
+  .modulateRotate(osc(2), 0.5)
+  .modulateScale(voronoi(5), 0.3)
+  .out()
+`}
+/>
+
+### Self-modulation (feedback)
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10, 0.1, 0.5)
+  .modulate(o0, 0.1)
+  .out()
+`}
+/>
+
+### Cross modulation
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10, 0.1, 0.5).modulate(o1, 0.2).out(o0)
+noise(3).modulate(o0, 0.2).out(o1)
+render(o0)
+`}
+/>
+
+### Combining with color
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(20, 0.03, 0)
+  .modulate(noise(3), () => Math.sin(time) * 0.3)
+  .color(1, 0.5, 0.2)
+  .kaleid(4)
+  .out()
+`}
+/>
+
+---
+
+## Modulation tips
+
+1. **Start with small values** (0.1-0.3)
+2. **Use noise() as the modulator** for organic distortions
+3. **Combine with color effects**
+4. **Animate the intensity**: `() => Math.sin(time) * 0.3`

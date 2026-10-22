@@ -19,19 +19,26 @@ interface DocEntry {
   category: string;
   keywords: string[];
   path: string;
+  lang: Lang;
 }
+
+type Lang = 'ru' | 'en';
+
+// Ответ на языке интерфейса: системный промпт общий (русский), язык задаёт приписка к сообщению.
+const REPLY_IN_ENGLISH = '\n\n(The Bulka interface is in English: reply in English.)';
 
 /**
  * Search ALL documentation from pre-built index (70+ MDX files)
  * This works in Vercel serverless because the index is bundled at build time
  */
-export function searchAllDocs(query: string, maxResults: number = 5): string[] {
+export function searchAllDocs(query: string, maxResults: number = 5, lang: Lang = 'ru'): string[] {
   const queryLower = query.toLowerCase();
-  const queryWords = queryLower.split(/\s+/).filter(w => w.length > 2);
+  const queryWords = queryLower.split(/\s+/).filter((w) => w.length > 2);
 
   const results: { doc: DocEntry; score: number }[] = [];
 
   for (const doc of docsIndex as DocEntry[]) {
+    if (doc.lang !== lang) continue;
     let score = 0;
 
     // Title match (highest weight)
@@ -77,11 +84,9 @@ export function searchAllDocs(query: string, maxResults: number = 5): string[] {
   // Sort by score and return top results
   results.sort((a, b) => b.score - a.score);
 
-  return results.slice(0, maxResults).map(r => {
+  return results.slice(0, maxResults).map((r) => {
     // Limit content length for response
-    const content = r.doc.content.length > 2000
-      ? r.doc.content.slice(0, 2000) + '...'
-      : r.doc.content;
+    const content = r.doc.content.length > 2000 ? r.doc.content.slice(0, 2000) + '...' : r.doc.content;
     return `## ${r.doc.title}\n${content}`;
   });
 }
@@ -91,7 +96,7 @@ export function searchAllDocs(query: string, maxResults: number = 5): string[] {
  * This reduces system prompt size significantly
  */
 const CODE_EXAMPLES: Record<string, string> = {
-  'arrangement': `// Трек с аранжировкой
+  arrangement: `// Трек с аранжировкой
 cpm(116/2);
 const progression = chord("<Em C Am D>");
 const intro = stack(
@@ -105,14 +110,14 @@ const verse = stack(
 );
 arrange([4, intro], [8, verse], [4, intro]);`,
 
-  'hiphop': `// Hip-Hop / Trap бит
+  hiphop: `// Hip-Hop / Trap бит
 stack(
   s("bd ~ ~ bd ~ ~ sd ~").gain(1.2),
   s("hh*8").gain(0.6),
   note("c1 ~ c1 ~").s("sawtooth").lpf(200).gain(0.8) // 808 бас
 ).bank("RolandTR808")._scope()`,
 
-  'techno': `// Techno / House бит
+  techno: `// Techno / House бит
 stack(
   s("bd*4").gain(0.9),
   s("~ sd ~ sd"),
@@ -120,7 +125,7 @@ stack(
   note("c2 c2 c2 c2").s("sawtooth").lpf(500)
 ).bank("RolandTR909")._scope()`,
 
-  'ukgarage': `// UK Garage / 2-step
+  ukgarage: `// UK Garage / 2-step
 stack(
   s("spk_kick ~ [~ spk_kick] ~"), // шаффл-ритм
   s("~ spk_snare ~ spk_snare"),
@@ -128,23 +133,23 @@ stack(
   s("spk_808").lpf(500).gain(0.8) // саб-бас
 )._scope()`,
 
-  'dnb': `// Drum and Bass
+  dnb: `// Drum and Bass
 stack(
   s("amen").speed(1.6).chop(16),
   note("c2 ~ c2 g1").s("sawtooth").lpf(400).decay(0.2)
 )._scope()`,
 
-  'ambient': `// Ambient pad
+  ambient: `// Ambient pad
 note("c3 e3 g3 b3").s("sawtooth")
   .attack(0.5).release(2).lpf(800)
   .room(0.8).roomsize(0.9).delay(0.3)._scope()`,
 
-  'melody': `// Мелодия с визуализацией
+  melody: `// Мелодия с визуализацией
 note("c4 e4 g4 e4 f4 a4 g4 ~")
   .s("piano").room(0.4).delay(0.2)
   ._pianoroll({labels:1})`,
 
-  'hydra': `// Hydra визуализация (в начале кода!)
+  hydra: `// Hydra визуализация (в начале кода!)
 await initHydra()
 osc(8, 0.1, 0.8)
   .color(0.3, 0.1, 1)
@@ -156,7 +161,7 @@ osc(8, 0.1, 0.8)
 // Музыка после Hydra
 stack(s("bd sd bd sd"), s("hh*8"))`,
 
-  'sliders': `// Интерактивные слайдеры
+  sliders: `// Интерактивные слайдеры
 s("bd sd bd sd")
   .lpf(slider(800, 200, 4000))
   .room(slider(0.3, 0, 1))
@@ -188,11 +193,7 @@ export function getCodeExamples(category?: string): string {
  * Helper for retrying API calls with exponential backoff
  * Respects retry-after header from API responses
  */
-async function fetchWithRetry(
-  url: string,
-  options: RequestInit,
-  maxRetries: number = 3
-): Promise<Response> {
+async function fetchWithRetry(url: string, options: RequestInit, maxRetries: number = 3): Promise<Response> {
   const baseDelay = 2000; // 2 seconds
 
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
@@ -242,7 +243,7 @@ async function fetchWithRetry(
     delay = delay + Math.random() * 1000;
 
     console.log(`[API] Rate limited, retrying in ${delay}ms (attempt ${attempt + 1}/${maxRetries})`);
-    await new Promise(resolve => setTimeout(resolve, delay));
+    await new Promise((resolve) => setTimeout(resolve, delay));
   }
 
   // This should never be reached, but TypeScript needs it
@@ -266,7 +267,8 @@ export const TOOLS_OPENAI = [
     type: 'function' as const,
     function: {
       name: 'editCode',
-      description: 'Редактировать код: найти и заменить конкретный фрагмент. Используй для изменения существующего кода без полной перезаписи.',
+      description:
+        'Редактировать код: найти и заменить конкретный фрагмент. Используй для изменения существующего кода без полной перезаписи.',
       parameters: {
         type: 'object',
         properties: {
@@ -339,7 +341,8 @@ export const TOOLS_OPENAI = [
     type: 'function' as const,
     function: {
       name: 'highlightCode',
-      description: 'Выделить (подсветить) фрагмент кода в редакторе чтобы показать пользователю. Используй когда пользователь спрашивает "где", "покажи", "найди".',
+      description:
+        'Выделить (подсветить) фрагмент кода в редакторе чтобы показать пользователю. Используй когда пользователь спрашивает "где", "покажи", "найди".',
       parameters: {
         type: 'object',
         properties: {
@@ -353,7 +356,8 @@ export const TOOLS_OPENAI = [
     type: 'function' as const,
     function: {
       name: 'getAvailablePacks',
-      description: 'Получить список всех доступных сэмпл-паков. Возвращает массив с названиями паков и количеством банков в каждом. Используй чтобы узнать какие паки доступны перед выбором конкретного.',
+      description:
+        'Получить список всех доступных сэмпл-паков. Возвращает массив с названиями паков и количеством банков в каждом. Используй чтобы узнать какие паки доступны перед выбором конкретного.',
       parameters: { type: 'object', properties: {} },
     },
   },
@@ -361,7 +365,8 @@ export const TOOLS_OPENAI = [
     type: 'function' as const,
     function: {
       name: 'getBankSamples',
-      description: 'Получить содержимое конкретного банка (список всех сэмплов). Используй после getAvailablePacks чтобы изучить содержимое выбранного банка.',
+      description:
+        'Получить содержимое конкретного банка (список всех сэмплов). Используй после getAvailablePacks чтобы изучить содержимое выбранного банка.',
       parameters: {
         type: 'object',
         properties: {
@@ -375,7 +380,8 @@ export const TOOLS_OPENAI = [
     type: 'function' as const,
     function: {
       name: 'getConsole',
-      description: 'Получить логи консоли для отладки. СНАЧАЛА остановит воспроизведение, затем покажет последние сообщения консоли. Используй когда пользователь жалуется на ошибку или нужно понять что происходит.',
+      description:
+        'Получить логи консоли для отладки. СНАЧАЛА остановит воспроизведение, затем покажет последние сообщения консоли. Используй когда пользователь жалуется на ошибку или нужно понять что происходит.',
       parameters: { type: 'object', properties: {} },
     },
   },
@@ -383,11 +389,16 @@ export const TOOLS_OPENAI = [
     type: 'function' as const,
     function: {
       name: 'getExamples',
-      description: 'Получить примеры кода по категории. Категории: arrangement (аранжировка), hiphop, techno, ukgarage, dnb, ambient, melody, hydra (визуализация), sliders (интерактивность). Вызови без параметра чтобы увидеть список категорий.',
+      description:
+        'Получить примеры кода по категории. Категории: arrangement (аранжировка), hiphop, techno, ukgarage, dnb, ambient, melody, hydra (визуализация), sliders (интерактивность). Вызови без параметра чтобы увидеть список категорий.',
       parameters: {
         type: 'object',
         properties: {
-          category: { type: 'string', description: 'Категория примера: arrangement, hiphop, techno, ukgarage, dnb, ambient, melody, hydra, sliders' },
+          category: {
+            type: 'string',
+            description:
+              'Категория примера: arrangement, hiphop, techno, ukgarage, dnb, ambient, melody, hydra, sliders',
+          },
         },
       },
     },
@@ -396,7 +407,8 @@ export const TOOLS_OPENAI = [
     type: 'function' as const,
     function: {
       name: 'startRecording',
-      description: 'Начать запись аудио-выхода (того, что сейчас играет) в WAV. Убедись, что музыка запущена (playMusic). Останови через stopRecording. Для записи фиксированной длины удобнее recordSeconds.',
+      description:
+        'Начать запись аудио-выхода (того, что сейчас играет) в WAV. Убедись, что музыка запущена (playMusic). Останови через stopRecording. Для записи фиксированной длины удобнее recordSeconds.',
       parameters: { type: 'object', properties: {} },
     },
   },
@@ -404,7 +416,8 @@ export const TOOLS_OPENAI = [
     type: 'function' as const,
     function: {
       name: 'stopRecording',
-      description: 'Остановить запись и сохранить WAV. В десктопе файл кладётся в папку recordings рядом с приложением; имя берётся из // @title.',
+      description:
+        'Остановить запись и сохранить WAV. В десктопе файл кладётся в папку recordings рядом с приложением; имя берётся из // @title.',
       parameters: { type: 'object', properties: {} },
     },
   },
@@ -412,7 +425,8 @@ export const TOOLS_OPENAI = [
     type: 'function' as const,
     function: {
       name: 'recordSeconds',
-      description: 'Записать РОВНО указанное число секунд и автоматически остановить+сохранить WAV. Перед записью запускает воспроизведение. Чтобы записать полный круг трека — посчитай длительность: 1 цикл = 60/(cpm) секунд (setcpm(120/4) → 30 циклов/мин → 2 с на цикл), умножь на суммарную длину секций arrange().',
+      description:
+        'Записать РОВНО указанное число секунд и автоматически остановить+сохранить WAV. Перед записью запускает воспроизведение. Чтобы записать полный круг трека — посчитай длительность: 1 цикл = 60/(cpm) секунд (setcpm(120/4) → 30 циклов/мин → 2 с на цикл), умножь на суммарную длину секций arrange().',
       parameters: {
         type: 'object',
         properties: {
@@ -453,19 +467,19 @@ function normalizeParams(params: any, strict: boolean) {
 
 // OpenRouter / Z.AI — arbitrary models: additionalProperties:false, но БЕЗ strict
 // (не все модели поддерживают constrained decoding — strict мог бы их сломать).
-const TOOLS_OPENAI_BASE = TOOLS_OPENAI.map(t => ({
+const TOOLS_OPENAI_BASE = TOOLS_OPENAI.map((t) => ({
   ...t,
   function: { ...t.function, parameters: normalizeParams(t.function.parameters, false) },
 }));
 
 // OpenAI — нативный strict function calling (gpt-4o/4.1/5): гарантия соответствия схеме.
-const TOOLS_OPENAI_STRICT = TOOLS_OPENAI.map(t => ({
+const TOOLS_OPENAI_STRICT = TOOLS_OPENAI.map((t) => ({
   ...t,
   function: { ...t.function, strict: true, parameters: normalizeParams(t.function.parameters, true) },
 }));
 
 // Anthropic strict tool use — вход инструмента гарантированно соответствует схеме.
-const TOOLS_ANTHROPIC = TOOLS_OPENAI.map(t => ({
+const TOOLS_ANTHROPIC = TOOLS_OPENAI.map((t) => ({
   name: t.function.name,
   description: t.function.description,
   strict: true,
@@ -477,7 +491,7 @@ const TOOLS_ANTHROPIC = TOOLS_OPENAI.map(t => ({
  * Best practices from: Claude, Cursor, v0.dev, Windsurf, Bolt.new
  */
 const SYSTEM_PROMPT = `<system>
-Ты Bulka AI — креативный музыкальный агент для live coding на платформе Bulka (форк Strudel/TidalCycles).
+Ты Bulka AI — креативный музыкальный агент для live coding на платформе Bulka (форк Strudel).
 
 ВАЖНО О ТВОЕЙ ИДЕНТИЧНОСТИ:
 - Ты — БУЛКА, а НЕ Strudel. Никогда не называй себя Strudel!
@@ -534,7 +548,7 @@ const SYSTEM_PROMPT = `<system>
 // 3. STRUDEL ПРАВИЛА: Какие правила применимы?
 //    - Несколько партий → stack() ОБЯЗАТЕЛЬНО!
 //    - Аккорды → voicing() ОБЯЗАТЕЛЬНО!
-//    - n() с scale → .note() в конце!
+//    - n() с scale() → ноты готовы, .note() после scale() НЕ добавлять!
 //    - Темп → setcpm(120/4)
 // 4. ИНСТРУМЕНТЫ: Какие tools и в каком порядке?
 // 5. ПАРАЛЛЕЛЬНОСТЬ: Можно ли что-то вызвать параллельно?
@@ -567,7 +581,7 @@ const SYSTEM_PROMPT = `<system>
 <think>
 // 1. ЗАДАЧА: Пользователь говорит "не работает"
 // 2. КОД: Да, нужен readCode() + getConsole()
-// 3. ПРАВИЛА: Проверить stack(), voicing(), .note()
+// 3. ПРАВИЛА: Проверить stack(), voicing(), лишний .note() после scale()
 // 4. TOOLS: getConsole() + readCode() → анализ → editCode → playMusic
 // 5. ПАРАЛЛЕЛЬНО: ДА! getConsole + readCode независимы
 // 6. ПРОВЕРКА: playMusic()
@@ -721,17 +735,18 @@ chord("<C Am F G>").voicing().s("piano")  // Автоматический voicin
 chord("<C Am F G>").anchor("c4").voicing().s("piano")  // С якорем
 \`\`\`
 
-### ПРАВИЛО #3: .note() ДЛЯ n() С scale()
-Без .note() ноты не преобразуются!
+### ПРАВИЛО #3: n() С scale() — БЕЗ .note()
+scale() сам превращает ступени n() в ноты. Пустой .note() после него ломает ноты (note внутри note).
+.note() в конце нужен только голой строке без n(): "0 2 4".scale("C:minor").note()
 
 ❌ **НЕПРАВИЛЬНО:**
 \`\`\`javascript
-n("0 2 4 7").scale("C:minor").s("piano")  // Не работает!
+n("0 2 4 7").scale("C:minor").note().s("piano")  // Ноты сломаны!
 \`\`\`
 
 ✅ **ПРАВИЛЬНО:**
 \`\`\`javascript
-n("0 2 4 7").scale("C:minor").note().s("piano")  // .note() в конце!
+n("0 2 4 7").scale("C:minor").s("piano")
 \`\`\`
 
 ### ПРАВИЛО #4: setcpm() ДЛЯ ТЕМПА
@@ -794,7 +809,7 @@ stack(
 1. □ getConsole() + readCode() — ПАРАЛЛЕЛЬНО!
 2. □ Проверить: есть ли stack() для партий?
 3. □ Проверить: есть ли voicing() для аккордов?
-4. □ Проверить: есть ли .note() для n()?
+4. □ Проверить: нет ли пустого .note() после scale()?
 5. □ editCode() — исправить
 6. □ playMusic()
 
@@ -1026,8 +1041,8 @@ getAvailablePacks() → getBankSamples(pack)  // второй зависит о�
 2. **Аккорды без voicing()?**
    → Добавить .voicing()
 
-3. **n() с scale() без .note()?**
-   → Добавить .note() в конце
+3. **Пустой .note() после scale()?**
+   → Убрать .note(): scale() уже даёт ноты
 
 4. **Несуществующий звук?**
    → getAvailablePacks() → найти правильное название
@@ -1044,7 +1059,7 @@ getAvailablePacks() → getBankSamples(pack)  // второй зависит о�
 ### АЛГОРИТМ ИСПРАВЛЕНИЯ:
 \`\`\`
 1. getConsole() + readCode()  // ПАРАЛЛЕЛЬНО!
-2. Анализ: stack()? voicing()? .note()?
+2. Анализ: stack()? voicing()? лишний .note() после scale()?
 3. editCode() с исправлением
 4. playMusic()
 5. Если опять ошибка → повторить (макс 3 раза)
@@ -1438,7 +1453,7 @@ slider(value, min, max)  — ползунок для значения
 |---|---------|---------|---------|
 | 1 | Слышен только один инструмент | Нет stack() | Обернуть ВСЕ партии в stack() |
 | 2 | Аккорды звучат странно | Нет voicing() | Добавить .voicing() |
-| 3 | Ноты из scale не играют | n() без .note() | Добавить .note() в конце |
+| 3 | Ноты из scale не играют | Пустой .note() после scale() | Убрать .note(): scale() уже даёт ноты |
 | 4 | off() заменяет звук | Непонимание off() | off() ДОБАВЛЯЕТ звук, не заменяет |
 | 5 | Код повторяется | Нет const | Использовать const для паттернов |
 | 6 | Партии не синхронизированы | Отдельные строки | Все партии в один stack() |
@@ -1473,14 +1488,14 @@ chord("<C Am F G>").s("piano")
 chord("<C Am F G>").voicing().s("piano")
 \`\`\`
 
-**❌ ОШИБКА #3: n() без .note()**
+**❌ ОШИБКА #3: пустой .note() после scale()**
 \`\`\`javascript
 // НЕПРАВИЛЬНО
-n("0 2 4 7").scale("C:minor").s("piano")
+n("0 2 4 7").scale("C:minor").note().s("piano")
 \`\`\`
 \`\`\`javascript
 // ПРАВИЛЬНО
-n("0 2 4 7").scale("C:minor").note().s("piano")
+n("0 2 4 7").scale("C:minor").s("piano")
 \`\`\`
 
 **❌ ОШИБКА #4: Добавление элемента ВНЕ stack()**
@@ -1542,7 +1557,7 @@ User: "У меня ничего не слышно"
 <think>
 // 1. ЗАДАЧА: Диагностика — почему не слышно
 // 2. КОД: Да, нужен readCode() + getConsole()
-// 3. ПРАВИЛА: Проверить stack(), voicing(), .note()
+// 3. ПРАВИЛА: Проверить stack(), voicing(), лишний .note() после scale()
 // 4. TOOLS: getConsole() + readCode() ПАРАЛЛЕЛЬНО → анализ → editCode
 // 5. ПАРАЛЛЕЛЬНО: ДА!
 </think>
@@ -1750,10 +1765,24 @@ stack(
 ПРАВИЛЬНО: chord("<C Am F G>").voicing().s("piano")
 ПОЧЕМУ: Без voicing() аккорды не звучат правильно!
 
-#### ❌ #14: n() с scale() без .note()
-НЕПРАВИЛЬНО: n("0 2 4").scale("C:minor").s("piano")
-ПРАВИЛЬНО: n("0 2 4").scale("C:minor").note().s("piano")
-ПОЧЕМУ: Без .note() ноты не преобразуются!
+#### ❌ #14: Пустой .note() после scale()
+НЕПРАВИЛЬНО: n("0 2 4").scale("C:minor").note().s("piano")
+ПРАВИЛЬНО: n("0 2 4").scale("C:minor").s("piano")
+ПОЧЕМУ: scale() уже превращает ступени n() в ноты; пустой .note() кладёт ноту внутрь ноты, и она ломается. .note() в конце нужен только голой строке без n(): "0 2 4".scale("C:minor").note()
+
+#### ❌ #15: Синтаксис TidalCycles
+НЕПРАВИЛЬНО: d1 $ sound "bd*2" # speed 2
+НЕПРАВИЛЬНО: note("c3 e3 g3").add(up(12))
+НЕПРАВИЛЬНО: n("0 2 4").toScale([0, 2, 4, 5, 7, 9, 11]) / .euclidOff(3, 8, 2)
+ПРАВИЛЬНО: s("bd*2").speed(2)
+ПРАВИЛЬНО: note("c3 e3 g3").add(note(12)) или note("c3 e3 g3").transpose(12)
+ПРАВИЛЬНО: n("0 2 4").scale("C:major") / .euclidRot(3, 8, 2)
+ПОЧЕМУ: Bulka — это Strudel на JavaScript, а не TidalCycles на Haskell. Функций up, toScale, euclidOff, каналов d1…d16 и операторов $ и # в Strudel НЕТ — код падает с «up is not defined».
+
+#### ❌ #16: Функции из prebake-скрипта Switch Angel
+НЕПРАВИЛЬНО: note("c2*8").s("sawtooth").acidenv(.5) / .trancegate(1.5, 45, 1) / .rlpf(.5) / .dly(.3)
+ПРАВИЛЬНО: note("c2*8").s("sawtooth").lpf(100).lpenv(4.5).lps(.2).lpd(.12).lpq(2) — это и есть acidenv(.5)
+ПОЧЕМУ: acidenv, acid, trancegate, tgate, rlpf, rhpf, dly, pg, accent, grab, mpan, vstruct, stxt, voc и прочие из его видео — не Strudel, а его личный prebake-скрипт. В Bulka их НЕТ — код падает с «….acidenv is not a function». Пиши штатными функциями.
 
 </workflow_examples>
 
@@ -1819,24 +1848,6 @@ stack(
  * Execute tool call server-side
  * Returns { result, isClientTool }
  */
-function executeServerTool(name: string, args: any, currentCode: string): { result: string; isClientTool: boolean } {
-  // Server-side tools
-  if (name === 'searchDocs') {
-    // Will be handled async separately
-    return { result: '', isClientTool: false };
-  }
-
-  if (name === 'readCode') {
-    return {
-      result: currentCode || '// Редактор пуст',
-      isClientTool: false
-    };
-  }
-
-  // Client-side tools
-  return { result: '', isClientTool: true };
-}
-
 /**
  * Build code context string for prepending to first user message
  */
@@ -1863,6 +1874,24 @@ const TOOL_STATUS_MESSAGES: Record<string, string> = {
   getBankSamples: '🎵 Получаю содержимое банка...',
 };
 
+// A provider that refuses the key (401/403) gets the same answer from every runner: what it said and where to fix it.
+function providerHttpError(provider: string, status: number, message: string, lang: Lang): string {
+  const text = `${provider}: ${String(message).replace(/[.\s]+$/, '')}`;
+  if (status !== 401 && status !== 403) return text;
+  return lang === 'en'
+    ? `${text}. The key was not accepted: paste a valid one in the AI settings.`
+    : `${text}. Ключ не принят: вставьте действующий в настройках AI.`;
+}
+
+// The browser runs client tools after this answer is streamed, so the model cannot learn here whether the code ran;
+// an eval error reaches it as the next user message.
+function clientToolResult(toolName: string): string {
+  if (toolName === 'playMusic' || toolName === 'recordSeconds') {
+    return `${toolName} отправлен в редактор: код запускается в браузере пользователя. Если он упадёт, текст ошибки придёт следующим сообщением пользователя — тогда исправь код.`;
+  }
+  return `OK: ${toolName} выполнено`;
+}
+
 /**
  * Execute a single tool call: handle server-side tools and emit client-side tool calls
  * Returns the tool result message to append to conversationMessages
@@ -1872,11 +1901,12 @@ function executeToolCall(
   currentCode: string,
   controller: ReadableStreamDefaultController,
   encoder: TextEncoder,
+  lang: Lang,
 ): { role: string; tool_call_id: string; content: string } {
   let toolArgs: any = {};
   try {
     toolArgs = JSON.parse(tc.arguments || '{}');
-  } catch (e) { }
+  } catch (e) {}
 
   const toolName = tc.name;
 
@@ -1889,12 +1919,18 @@ function executeToolCall(
       return { role: 'tool', tool_call_id: tc.id, content: currentCode || '// Редактор пуст' };
     }
     if (toolName === 'searchDocs') {
-      controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: `🔍 Ищу в документации: "${toolArgs.query}"...` })}\n\n`));
-      const docs = searchAllDocs(toolArgs.query || '', 3);
+      controller.enqueue(
+        encoder.encode(
+          `data: ${JSON.stringify({ type: 'status', message: `🔍 Ищу в документации: "${toolArgs.query}"...` })}\n\n`,
+        ),
+      );
+      const docs = searchAllDocs(toolArgs.query || '', 3, lang);
       return { role: 'tool', tool_call_id: tc.id, content: docs.join('\n\n---\n\n') || 'Ничего не найдено' };
     }
     if (toolName === 'getExamples') {
-      controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: '📝 Получаю примеры кода...' })}\n\n`));
+      controller.enqueue(
+        encoder.encode(`data: ${JSON.stringify({ type: 'status', message: '📝 Получаю примеры кода...' })}\n\n`),
+      );
       const examples = getCodeExamples(toolArgs.category);
       return { role: 'tool', tool_call_id: tc.id, content: examples };
     }
@@ -1904,8 +1940,10 @@ function executeToolCall(
     if (statusMessage) {
       controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: statusMessage })}\n\n`));
     }
-    controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'tool_call', name: toolName, args: toolArgs })}\n\n`));
-    return { role: 'tool', tool_call_id: tc.id, content: `OK: ${toolName} выполнено` };
+    controller.enqueue(
+      encoder.encode(`data: ${JSON.stringify({ type: 'tool_call', name: toolName, args: toolArgs })}\n\n`),
+    );
+    return { role: 'tool', tool_call_id: tc.id, content: clientToolResult(toolName) };
   } catch (e: any) {
     return { role: 'tool', tool_call_id: tc.id, content: `Ошибка инструмента ${toolName}: ${e?.message || e}` };
   }
@@ -1920,7 +1958,8 @@ async function runOpenAIAgent(
   model: string,
   messages: any[],
   currentCode: string,
-  selectedCode: string | null
+  selectedCode: string | null,
+  lang: Lang,
 ): Promise<ReadableStream> {
   const codeContext = buildCodeContext(currentCode, selectedCode);
   const encoder = new TextEncoder();
@@ -1945,7 +1984,7 @@ async function runOpenAIAgent(
         if (firstMessage.role === 'user') {
           userMessages[0] = {
             ...firstMessage,
-            content: codeContext + firstMessage.content
+            content: codeContext + firstMessage.content,
           };
         }
       }
@@ -1984,12 +2023,12 @@ async function runOpenAIAgent(
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${apiKey}`,
+              Authorization: `Bearer ${apiKey}`,
             },
             body: JSON.stringify(requestBody),
             signal: abortController.signal,
           },
-          3 // maxRetries
+          3, // maxRetries
         );
 
         if (!response.ok) {
@@ -1998,15 +2037,21 @@ async function runOpenAIAgent(
           try {
             const errJson = JSON.parse(errText);
             errMsg = errJson.error?.message || errJson.error || errText;
-          } catch (e) { }
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'error', error: `OpenAI: ${errMsg}` })}\n\n`));
+          } catch (e) {}
+          controller.enqueue(
+            encoder.encode(
+              `data: ${JSON.stringify({ type: 'error', error: providerHttpError('OpenAI', response.status, errMsg, lang) })}\n\n`,
+            ),
+          );
           controller.enqueue(encoder.encode('data: [DONE]\n\n'));
           controller.close();
           return;
         }
 
         if (!response.body) {
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'error', error: 'No response body from OpenAI' })}\n\n`));
+          controller.enqueue(
+            encoder.encode(`data: ${JSON.stringify({ type: 'error', error: 'No response body from OpenAI' })}\n\n`),
+          );
           controller.enqueue(encoder.encode('data: [DONE]\n\n'));
           controller.close();
           return;
@@ -2047,7 +2092,9 @@ async function runOpenAIAgent(
               // Stream text content
               if (delta.content) {
                 textContent += delta.content;
-                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'text', content: delta.content })}\n\n`));
+                controller.enqueue(
+                  encoder.encode(`data: ${JSON.stringify({ type: 'text', content: delta.content })}\n\n`),
+                );
               }
 
               // Accumulate tool calls
@@ -2063,7 +2110,7 @@ async function runOpenAIAgent(
                   if (tc.function?.arguments) existing.arguments += tc.function.arguments;
                 }
               }
-            } catch (e) { }
+            } catch (e) {}
           }
         }
 
@@ -2085,7 +2132,7 @@ async function runOpenAIAgent(
 
           // Execute each tool call
           for (const tc of toolCalls) {
-            conversationMessages.push(executeToolCall(tc, currentCode, controller, encoder));
+            conversationMessages.push(executeToolCall(tc, currentCode, controller, encoder, lang));
           }
 
           // Continue loop for next response
@@ -2102,7 +2149,12 @@ async function runOpenAIAgent(
       controller.enqueue(encoder.encode('data: [DONE]\n\n'));
       controller.close();
     },
-    cancel() { console.log('[chat] stream cancelled by client → aborting upstream'); try { abortController.abort(); } catch {} },
+    cancel() {
+      console.log('[chat] stream cancelled by client → aborting upstream');
+      try {
+        abortController.abort();
+      } catch {}
+    },
   });
 }
 
@@ -2115,7 +2167,8 @@ async function runAnthropicAgent(
   model: string,
   messages: any[],
   currentCode: string,
-  selectedCode: string | null
+  selectedCode: string | null,
+  lang: Lang,
 ): Promise<ReadableStream> {
   // Build code context - will be prepended to first user message, NOT system prompt
   // This keeps system prompt static for prompt caching (cached tokens don't count in rate limit)
@@ -2129,10 +2182,11 @@ async function runAnthropicAgent(
   const encoder = new TextEncoder();
 
   // Check if model supports thinking (Claude 4+ models)
-  const supportsThinking = /claude-(opus|sonnet|haiku)-4/.test(model) ||
-                           model.includes('claude-4') ||
-                           model.includes('claude-sonnet-4') ||
-                           model.includes('claude-opus-4');
+  const supportsThinking =
+    /claude-(opus|sonnet|haiku)-4/.test(model) ||
+    model.includes('claude-4') ||
+    model.includes('claude-sonnet-4') ||
+    model.includes('claude-opus-4');
 
   // Abort апстрим-запроса, когда клиент нажал «стоп» (стрим отменяется -> cancel()).
   const abortController = new AbortController();
@@ -2146,7 +2200,7 @@ async function runAnthropicAgent(
         if (firstMessage.role === 'user') {
           conversationMessages[0] = {
             ...firstMessage,
-            content: codeContext + firstMessage.content
+            content: codeContext + firstMessage.content,
           };
         }
       }
@@ -2167,7 +2221,7 @@ async function runAnthropicAgent(
               type: 'text',
               text: SYSTEM_PROMPT, // Static prompt only - cached!
               cache_control: { type: 'ephemeral' },
-            }
+            },
           ],
           messages: conversationMessages, // Code context prepended to first user message
           tools: TOOLS_ANTHROPIC,
@@ -2195,7 +2249,7 @@ async function runAnthropicAgent(
             body: JSON.stringify(requestBody),
             signal: abortController.signal,
           },
-          3 // maxRetries
+          3, // maxRetries
         );
 
         if (!response.ok) {
@@ -2204,15 +2258,21 @@ async function runAnthropicAgent(
           try {
             const errJson = JSON.parse(errText);
             errMsg = errJson.error?.message || errJson.error || errText;
-          } catch (e) { }
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'error', error: `Anthropic: ${errMsg}` })}\n\n`));
+          } catch (e) {}
+          controller.enqueue(
+            encoder.encode(
+              `data: ${JSON.stringify({ type: 'error', error: providerHttpError('Anthropic', response.status, errMsg, lang) })}\n\n`,
+            ),
+          );
           controller.enqueue(encoder.encode('data: [DONE]\n\n'));
           controller.close();
           return;
         }
 
         if (!response.body) {
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'error', error: 'No response body from Anthropic' })}\n\n`));
+          controller.enqueue(
+            encoder.encode(`data: ${JSON.stringify({ type: 'error', error: 'No response body from Anthropic' })}\n\n`),
+          );
           controller.enqueue(encoder.encode('data: [DONE]\n\n'));
           controller.close();
           return;
@@ -2267,12 +2327,10 @@ async function runAnthropicAgent(
                   controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'thinking_start' })}\n\n`));
                   contentBlocks[currentBlockIndex] = { type: 'thinking', thinking: '' };
                   thinkingSignatures.set(currentBlockIndex, '');
-                }
-                else if (block?.type === 'text') {
+                } else if (block?.type === 'text') {
                   isInThinkingBlock = false;
                   contentBlocks[currentBlockIndex] = { type: 'text', text: '' };
-                }
-                else if (block?.type === 'tool_use') {
+                } else if (block?.type === 'tool_use') {
                   contentBlocks[currentBlockIndex] = {
                     type: 'tool_use',
                     id: block.id,
@@ -2293,7 +2351,9 @@ async function runAnthropicAgent(
                   if (contentBlocks[idx]) {
                     contentBlocks[idx].thinking += delta.thinking;
                   }
-                  controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'thinking', content: delta.thinking })}\n\n`));
+                  controller.enqueue(
+                    encoder.encode(`data: ${JSON.stringify({ type: 'thinking', content: delta.thinking })}\n\n`),
+                  );
                 }
                 // Signature delta (for thinking blocks)
                 else if (delta?.type === 'signature_delta' && delta?.signature) {
@@ -2305,7 +2365,9 @@ async function runAnthropicAgent(
                   if (contentBlocks[idx]) {
                     contentBlocks[idx].text += delta.text;
                   }
-                  controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'text', content: delta.text })}\n\n`));
+                  controller.enqueue(
+                    encoder.encode(`data: ${JSON.stringify({ type: 'text', content: delta.text })}\n\n`),
+                  );
                 }
                 // Tool input delta (JSON chunks)
                 else if (delta?.type === 'input_json_delta' && delta?.partial_json) {
@@ -2337,18 +2399,18 @@ async function runAnthropicAgent(
                   }
                 }
               }
-            } catch (e) { }
+            } catch (e) {}
           }
         }
 
         // Check if there are tool_use blocks to execute
-        const toolUseBlocks = contentBlocks.filter(b => b?.type === 'tool_use');
+        const toolUseBlocks = contentBlocks.filter((b) => b?.type === 'tool_use');
 
         if (toolUseBlocks.length > 0 && stopReason === 'tool_use') {
           // Add assistant response with all content blocks
           conversationMessages.push({
             role: 'assistant',
-            content: contentBlocks.filter(b => b != null),
+            content: contentBlocks.filter((b) => b != null),
           });
 
           // Execute tools and collect results
@@ -2360,24 +2422,32 @@ async function runAnthropicAgent(
 
             // Server-side tools
             if (toolName === 'readCode') {
-              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: '📖 Читаю код...' })}\n\n`));
+              controller.enqueue(
+                encoder.encode(`data: ${JSON.stringify({ type: 'status', message: '📖 Читаю код...' })}\n\n`),
+              );
               toolResults.push({
                 type: 'tool_result',
                 tool_use_id: block.id,
                 content: currentCode || '// Редактор пуст',
               });
-            }
-            else if (toolName === 'searchDocs') {
-              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: `🔍 Ищу в документации: "${toolArgs.query}"...` })}\n\n`));
-              const docs = searchAllDocs(toolArgs.query || '', 3);
+            } else if (toolName === 'searchDocs') {
+              controller.enqueue(
+                encoder.encode(
+                  `data: ${JSON.stringify({ type: 'status', message: `🔍 Ищу в документации: "${toolArgs.query}"...` })}\n\n`,
+                ),
+              );
+              const docs = searchAllDocs(toolArgs.query || '', 3, lang);
               toolResults.push({
                 type: 'tool_result',
                 tool_use_id: block.id,
                 content: docs.join('\n\n---\n\n') || 'Ничего не найдено',
               });
-            }
-            else if (toolName === 'getExamples') {
-              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: '📝 Получаю примеры кода...' })}\n\n`));
+            } else if (toolName === 'getExamples') {
+              controller.enqueue(
+                encoder.encode(
+                  `data: ${JSON.stringify({ type: 'status', message: '📝 Получаю примеры кода...' })}\n\n`,
+                ),
+              );
               const examples = getCodeExamples(toolArgs.category);
               toolResults.push({
                 type: 'tool_result',
@@ -2398,15 +2468,19 @@ async function runAnthropicAgent(
               else if (toolName === 'getBankSamples') statusMessage = '🎵 Получаю содержимое банка...';
 
               if (statusMessage) {
-                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: statusMessage })}\n\n`));
+                controller.enqueue(
+                  encoder.encode(`data: ${JSON.stringify({ type: 'status', message: statusMessage })}\n\n`),
+                );
               }
 
-              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'tool_call', name: toolName, args: toolArgs })}\n\n`));
+              controller.enqueue(
+                encoder.encode(`data: ${JSON.stringify({ type: 'tool_call', name: toolName, args: toolArgs })}\n\n`),
+              );
 
               toolResults.push({
                 type: 'tool_result',
                 tool_use_id: block.id,
-                content: `OK: ${toolName} выполнено`,
+                content: clientToolResult(toolName),
               });
             }
           }
@@ -2430,7 +2504,12 @@ async function runAnthropicAgent(
       controller.enqueue(encoder.encode('data: [DONE]\n\n'));
       controller.close();
     },
-    cancel() { console.log('[chat] stream cancelled by client → aborting upstream'); try { abortController.abort(); } catch {} },
+    cancel() {
+      console.log('[chat] stream cancelled by client → aborting upstream');
+      try {
+        abortController.abort();
+      } catch {}
+    },
   });
 }
 
@@ -2443,7 +2522,8 @@ async function runGeminiAgent(
   model: string,
   messages: any[],
   currentCode: string,
-  selectedCode: string | null
+  selectedCode: string | null,
+  lang: Lang,
 ): Promise<ReadableStream> {
   let codeContext = '';
   if (selectedCode) {
@@ -2456,19 +2536,21 @@ async function runGeminiAgent(
   const encoder = new TextEncoder();
 
   // Convert messages to Gemini format
-  const geminiContents = messages.map(m => ({
+  const geminiContents = messages.map((m) => ({
     role: m.role === 'assistant' ? 'model' : 'user',
     parts: [{ text: m.content }],
   }));
 
   // Gemini tools format
-  const geminiTools = [{
-    function_declarations: TOOLS_OPENAI.map(t => ({
-      name: t.function.name,
-      description: t.function.description,
-      parameters: t.function.parameters,
-    })),
-  }];
+  const geminiTools = [
+    {
+      function_declarations: TOOLS_OPENAI.map((t) => ({
+        name: t.function.name,
+        description: t.function.description,
+        parameters: t.function.parameters,
+      })),
+    },
+  ];
 
   // Check if model supports thinking
   // Gemini 2.5+ and Gemini 3+ support thinking mode
@@ -2517,7 +2599,7 @@ async function runGeminiAgent(
               generationConfig,
             }),
           },
-          3 // maxRetries
+          3, // maxRetries
         );
 
         if (!response.ok) {
@@ -2526,15 +2608,21 @@ async function runGeminiAgent(
           try {
             const errJson = JSON.parse(errText);
             errMsg = errJson.error?.message || errJson.error?.status || errText;
-          } catch (e) { }
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'error', error: `Gemini: ${errMsg}` })}\n\n`));
+          } catch (e) {}
+          controller.enqueue(
+            encoder.encode(
+              `data: ${JSON.stringify({ type: 'error', error: providerHttpError('Gemini', response.status, errMsg, lang) })}\n\n`,
+            ),
+          );
           controller.enqueue(encoder.encode('data: [DONE]\n\n'));
           controller.close();
           return;
         }
 
         if (!response.body) {
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'error', error: 'No response body from Gemini' })}\n\n`));
+          controller.enqueue(
+            encoder.encode(`data: ${JSON.stringify({ type: 'error', error: 'No response body from Gemini' })}\n\n`),
+          );
           controller.enqueue(encoder.encode('data: [DONE]\n\n'));
           controller.close();
           return;
@@ -2568,7 +2656,11 @@ async function runGeminiAgent(
 
               // Check for errors in response
               if (parsed.error) {
-                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'error', error: `Gemini: ${parsed.error.message || parsed.error}` })}\n\n`));
+                controller.enqueue(
+                  encoder.encode(
+                    `data: ${JSON.stringify({ type: 'error', error: `Gemini: ${parsed.error.message || parsed.error}` })}\n\n`,
+                  ),
+                );
                 continue;
               }
 
@@ -2592,14 +2684,18 @@ async function runGeminiAgent(
                       controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'thinking_start' })}\n\n`));
                       thinkingStarted = true;
                     }
-                    controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'thinking', content: part.text })}\n\n`));
+                    controller.enqueue(
+                      encoder.encode(`data: ${JSON.stringify({ type: 'thinking', content: part.text })}\n\n`),
+                    );
                   } else {
                     // End thinking if we were in it
                     if (thinkingStarted) {
                       controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'thinking_end' })}\n\n`));
                       thinkingStarted = false;
                     }
-                    controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'text', content: part.text })}\n\n`));
+                    controller.enqueue(
+                      encoder.encode(`data: ${JSON.stringify({ type: 'text', content: part.text })}\n\n`),
+                    );
                   }
                 }
               }
@@ -2616,7 +2712,7 @@ async function runGeminiAgent(
         }
 
         // Process function calls if any
-        const functionCalls = allParts.filter(p => p.functionCall);
+        const functionCalls = allParts.filter((p) => p.functionCall);
 
         if (hasFunctionCalls && functionCalls.length > 0) {
           // Build the model's response content
@@ -2635,26 +2731,34 @@ async function runGeminiAgent(
 
             // Server-side tools
             if (toolName === 'readCode') {
-              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: '📖 Читаю код...' })}\n\n`));
+              controller.enqueue(
+                encoder.encode(`data: ${JSON.stringify({ type: 'status', message: '📖 Читаю код...' })}\n\n`),
+              );
               functionResponses.push({
                 functionResponse: {
                   name: toolName,
                   response: { content: currentCode || '// Редактор пуст' },
                 },
               });
-            }
-            else if (toolName === 'searchDocs') {
-              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: `🔍 Ищу в документации: "${toolArgs.query}"...` })}\n\n`));
-              const docs = searchAllDocs(toolArgs.query || '', 3);
+            } else if (toolName === 'searchDocs') {
+              controller.enqueue(
+                encoder.encode(
+                  `data: ${JSON.stringify({ type: 'status', message: `🔍 Ищу в документации: "${toolArgs.query}"...` })}\n\n`,
+                ),
+              );
+              const docs = searchAllDocs(toolArgs.query || '', 3, lang);
               functionResponses.push({
                 functionResponse: {
                   name: toolName,
                   response: { content: docs.join('\n\n---\n\n') || 'Ничего не найдено' },
                 },
               });
-            }
-            else if (toolName === 'getExamples') {
-              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: '📝 Получаю примеры кода...' })}\n\n`));
+            } else if (toolName === 'getExamples') {
+              controller.enqueue(
+                encoder.encode(
+                  `data: ${JSON.stringify({ type: 'status', message: '📝 Получаю примеры кода...' })}\n\n`,
+                ),
+              );
               const examples = getCodeExamples(toolArgs.category);
               functionResponses.push({
                 functionResponse: {
@@ -2676,15 +2780,19 @@ async function runGeminiAgent(
               else if (toolName === 'getBankSamples') statusMessage = '🎵 Получаю содержимое банка...';
 
               if (statusMessage) {
-                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', message: statusMessage })}\n\n`));
+                controller.enqueue(
+                  encoder.encode(`data: ${JSON.stringify({ type: 'status', message: statusMessage })}\n\n`),
+                );
               }
 
-              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'tool_call', name: toolName, args: toolArgs })}\n\n`));
+              controller.enqueue(
+                encoder.encode(`data: ${JSON.stringify({ type: 'tool_call', name: toolName, args: toolArgs })}\n\n`),
+              );
 
               functionResponses.push({
                 functionResponse: {
                   name: toolName,
-                  response: { content: `OK: ${toolName} выполнено` },
+                  response: { content: clientToolResult(toolName) },
                 },
               });
             }
@@ -2709,7 +2817,12 @@ async function runGeminiAgent(
       controller.enqueue(encoder.encode('data: [DONE]\n\n'));
       controller.close();
     },
-    cancel() { console.log('[chat] stream cancelled by client → aborting upstream'); try { abortController.abort(); } catch {} },
+    cancel() {
+      console.log('[chat] stream cancelled by client → aborting upstream');
+      try {
+        abortController.abort();
+      } catch {}
+    },
   });
 }
 
@@ -2729,7 +2842,8 @@ async function runOpenAICompatibleAgent(
   model: string,
   messages: any[],
   currentCode: string,
-  selectedCode: string | null
+  selectedCode: string | null,
+  lang: Lang,
 ): Promise<ReadableStream> {
   const codeContext = buildCodeContext(currentCode, selectedCode);
   const encoder = new TextEncoder();
@@ -2744,21 +2858,23 @@ async function runOpenAICompatibleAgent(
         if (firstMessage.role === 'user') {
           userMessages[0] = {
             ...firstMessage,
-            content: codeContext + firstMessage.content
+            content: codeContext + firstMessage.content,
           };
         }
       }
 
-      let conversationMessages = [
-        { role: 'system', content: SYSTEM_PROMPT },
-        ...userMessages,
-      ];
+      let conversationMessages = [{ role: 'system', content: SYSTEM_PROMPT }, ...userMessages];
 
       let maxIterations = 5;
 
       while (maxIterations > 0) {
         maxIterations--;
-        if (abortController.signal.aborted) { try { controller.close(); } catch {} return; }
+        if (abortController.signal.aborted) {
+          try {
+            controller.close();
+          } catch {}
+          return;
+        }
 
         const requestBody: any = {
           model,
@@ -2814,7 +2930,7 @@ async function runOpenAICompatibleAgent(
             body: JSON.stringify(requestBody),
             signal: abortController.signal,
           },
-          3
+          3,
         );
 
         if (!response.ok) {
@@ -2823,15 +2939,23 @@ async function runOpenAICompatibleAgent(
           try {
             const errJson = JSON.parse(errText);
             errMsg = errJson.error?.message || errJson.error || errText;
-          } catch (e) { }
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'error', error: `${config.providerName}: ${errMsg}` })}\n\n`));
+          } catch (e) {}
+          controller.enqueue(
+            encoder.encode(
+              `data: ${JSON.stringify({ type: 'error', error: providerHttpError(config.providerName, response.status, errMsg, lang) })}\n\n`,
+            ),
+          );
           controller.enqueue(encoder.encode('data: [DONE]\n\n'));
           controller.close();
           return;
         }
 
         if (!response.body) {
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'error', error: `No response body from ${config.providerName}` })}\n\n`));
+          controller.enqueue(
+            encoder.encode(
+              `data: ${JSON.stringify({ type: 'error', error: `No response body from ${config.providerName}` })}\n\n`,
+            ),
+          );
           controller.enqueue(encoder.encode('data: [DONE]\n\n'));
           controller.close();
           return;
@@ -2866,7 +2990,11 @@ async function runOpenAICompatibleAgent(
 
               // Handle mid-stream errors (e.g. OpenRouter)
               if (parsed.error) {
-                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'error', error: `${config.providerName}: ${parsed.error.message || parsed.error}` })}\n\n`));
+                controller.enqueue(
+                  encoder.encode(
+                    `data: ${JSON.stringify({ type: 'error', error: `${config.providerName}: ${parsed.error.message || parsed.error}` })}\n\n`,
+                  ),
+                );
                 continue;
               }
 
@@ -2888,7 +3016,9 @@ async function runOpenAICompatibleAgent(
                   thinkingStarted = true;
                   controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'thinking_start' })}\n\n`));
                 }
-                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'thinking', content: reasoningDelta })}\n\n`));
+                controller.enqueue(
+                  encoder.encode(`data: ${JSON.stringify({ type: 'thinking', content: reasoningDelta })}\n\n`),
+                );
               }
 
               // Stream text content
@@ -2898,7 +3028,9 @@ async function runOpenAICompatibleAgent(
                   controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'thinking_end' })}\n\n`));
                 }
                 textContent += delta.content;
-                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'text', content: delta.content })}\n\n`));
+                controller.enqueue(
+                  encoder.encode(`data: ${JSON.stringify({ type: 'text', content: delta.content })}\n\n`),
+                );
               }
 
               // Accumulate tool calls
@@ -2914,7 +3046,7 @@ async function runOpenAICompatibleAgent(
                   if (tc.function?.arguments) existing.arguments += tc.function.arguments;
                 }
               }
-            } catch (e) { }
+            } catch (e) {}
           }
         }
 
@@ -2939,7 +3071,7 @@ async function runOpenAICompatibleAgent(
           conversationMessages.push(assistantMessage);
 
           for (const tc of toolCalls) {
-            conversationMessages.push(executeToolCall(tc, currentCode, controller, encoder));
+            conversationMessages.push(executeToolCall(tc, currentCode, controller, encoder, lang));
           }
 
           continue;
@@ -2954,7 +3086,12 @@ async function runOpenAICompatibleAgent(
       controller.enqueue(encoder.encode('data: [DONE]\n\n'));
       controller.close();
     },
-    cancel() { console.log('[chat] stream cancelled by client → aborting upstream'); try { abortController.abort(); } catch {} },
+    cancel() {
+      console.log('[chat] stream cancelled by client → aborting upstream');
+      try {
+        abortController.abort();
+      } catch {}
+    },
   });
 }
 
@@ -2988,13 +3125,20 @@ export const POST: APIRoute = async ({ request }) => {
   try {
     const body = await request.json();
     let { messages, apiKey, provider, model, currentCode, selectedCode, modelParams, strictTools, localBaseUrl } = body;
+    const lang: Lang = body.lang ?? 'ru';
+    if (lang !== 'ru' && lang !== 'en') {
+      return new Response(JSON.stringify({ error: `unknown lang: ${lang}` }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
 
     // Локальная модель (local) не требует ключ (он опционален).
     if (!apiKey && provider !== 'local') {
-      return new Response(
-        JSON.stringify({ error: 'API ключ не указан' }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
-      );
+      return new Response(JSON.stringify({ error: 'API ключ не указан' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
     }
 
     // Soft truncation — only for extremely large inputs to prevent context overflow
@@ -3003,33 +3147,41 @@ export const POST: APIRoute = async ({ request }) => {
       ...m,
       content: truncateMessageContent(m.content, 30000),
     }));
+    if (lang === 'en' && messages.length > 0) {
+      const last = messages[messages.length - 1];
+      messages[messages.length - 1] = { ...last, content: last.content + REPLY_IN_ENGLISH };
+    }
     currentCode = truncateCode(currentCode || '', 50000);
     if (selectedCode) {
       selectedCode = truncateCode(selectedCode, 20000);
     }
 
     if (!model) {
-      return new Response(
-        JSON.stringify({ error: 'Модель не выбрана. Обновите список моделей в настройках.' }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
-      );
+      return new Response(JSON.stringify({ error: 'Модель не выбрана. Обновите список моделей в настройках.' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
     }
 
     let stream: ReadableStream;
 
     if (provider === 'anthropic') {
-      stream = await runAnthropicAgent(apiKey, model, messages, currentCode || '', selectedCode || null);
+      stream = await runAnthropicAgent(apiKey, model, messages, currentCode || '', selectedCode || null, lang);
     } else if (provider === 'gemini') {
-      stream = await runGeminiAgent(apiKey, model, messages, currentCode || '', selectedCode || null);
+      stream = await runGeminiAgent(apiKey, model, messages, currentCode || '', selectedCode || null, lang);
     } else if (provider === 'zai') {
       stream = await runOpenAICompatibleAgent(
         {
           apiUrl: 'https://api.z.ai/api/paas/v4/chat/completions',
           providerName: 'Z.AI',
-          headers: { 'Authorization': `Bearer ${apiKey}` },
+          headers: { Authorization: `Bearer ${apiKey}` },
           handleThinking: true,
         },
-        model, messages, currentCode || '', selectedCode || null
+        model,
+        messages,
+        currentCode || '',
+        selectedCode || null,
+        lang,
       );
     } else if (provider === 'openrouter') {
       stream = await runOpenAICompatibleAgent(
@@ -3037,14 +3189,18 @@ export const POST: APIRoute = async ({ request }) => {
           apiUrl: 'https://openrouter.ai/api/v1/chat/completions',
           providerName: 'OpenRouter',
           headers: {
-            'Authorization': `Bearer ${apiKey}`,
-            'HTTP-Referer': 'https://bulka.app',
+            Authorization: `Bearer ${apiKey}`,
+            'HTTP-Referer': new URL(import.meta.env.SITE).origin,
             'X-Title': 'Bulka AI',
           },
           modelParams: modelParams || {},
           strictTools: !!strictTools, // включаем strict только если модель это умеет
         },
-        model, messages, currentCode || '', selectedCode || null
+        model,
+        messages,
+        currentCode || '',
+        selectedCode || null,
+        lang,
       );
     } else if (provider === 'local') {
       // Локальная модель (LM Studio / Ollama и пр.) — OpenAI-совместимый сервер на localhost.
@@ -3057,25 +3213,28 @@ export const POST: APIRoute = async ({ request }) => {
           headers: apiKey ? { Authorization: `Bearer ${apiKey}` } : {},
           modelParams: modelParams || {},
         },
-        model, messages, currentCode || '', selectedCode || null
+        model,
+        messages,
+        currentCode || '',
+        selectedCode || null,
+        lang,
       );
     } else {
-      stream = await runOpenAIAgent(apiKey, model, messages, currentCode || '', selectedCode || null);
+      stream = await runOpenAIAgent(apiKey, model, messages, currentCode || '', selectedCode || null, lang);
     }
 
     return new Response(stream, {
       headers: {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
-        'Connection': 'keep-alive',
+        Connection: 'keep-alive',
       },
     });
-
   } catch (error) {
     console.error('Chat API error:', error);
-    return new Response(
-      JSON.stringify({ error: 'Внутренняя ошибка сервера' }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
-    );
+    return new Response(JSON.stringify({ error: 'Внутренняя ошибка сервера' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 };

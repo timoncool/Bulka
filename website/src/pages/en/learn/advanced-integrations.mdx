@@ -1,0 +1,238 @@
+---
+title: Advanced Integrations
+layout: ../../../layouts/MainLayout.astro
+---
+
+import { MiniRepl } from '../../../docs/MiniRepl';
+
+# Advanced Integrations
+
+This page covers advanced techniques for integrating Bulka with external tools and systems.
+
+## Hydra: advanced techniques
+
+### Syncing patterns with visuals
+
+The `H()` function lets you use music patterns as Hydra inputs:
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+let pat = "3 4 5 [6 7]*2"
+// The number of sides follows the pattern
+shape(H(pat))
+  .scale(1.5)
+  .rotate(()=>time*0.1)
+  .out(o0)
+// The sound uses the same pattern
+n(pat).scale("A:minor").piano().room(0.5)`}
+/>
+
+### Transforming the built-in visuals
+
+With `feedStrudel` you can apply Hydra effects to pianoroll, scope and others:
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra({feedStrudel:1})
+// Strudel visuals go to s0
+src(s0)
+  .kaleid(H("<3 4 5 6>"))
+  .colorama(0.1)
+  .out()
+//
+$: s("bd*4, hh*8, ~ cp")
+$: note("[c3,e3,g3]*2").s("sawtooth").lpf(800)
+all(x=>x.scope())`}
+/>
+
+### Reacting to audio
+
+With `detectAudio` Hydra reacts to the sound through FFT analysis:
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra({detectAudio:true})
+osc(10,0.1,1)
+  .modulate(noise(3))
+  .scale(()=> 1 + a.fft[0]*0.5)  // reacts to the bass
+  .colorama(()=> a.fft[2]*0.3)  // color from the highs
+  .out()
+$: s("bd*4, hh*8").gain(1.2)`}
+/>
+
+## MIDI: advanced techniques
+
+### Patterning Control Change
+
+Modulate external synth parameters with CC:
+
+<MiniRepl
+  client:visible
+  tune={`// CC 74 often controls the filter
+// A sine modulates the cutoff
+note("c2 e2 g2 a2")
+  .ccn(74)
+  .ccv(sine.slow(8).range(0, 1))
+  .midi()`}
+/>
+
+### Multi-channel MIDI
+
+Send different patterns to different MIDI channels:
+
+<MiniRepl
+  client:visible
+  tune={`stack(
+  // Channel 1 - bass
+  note("c2 e2 g2").midichan(1),
+  // Channel 2 - lead
+  note("c4 e4 g4 b4").midichan(2),
+  // Channel 10 - drums (GM standard)
+  note("c1 d1 c1 [c1 d1]").midichan(10)
+).midi()`}
+/>
+
+### Pitch bend and modulation
+
+<MiniRepl
+  client:visible
+  tune={`// Smooth pitch bend
+note("c3 e3 g3 c4")
+  .midibend(sine.slow(4).range(-0.2, 0.2))
+  .midi()`}
+/>
+
+### MIDI input: using controllers
+
+```javascript
+// Connect to a MIDI input
+let cc = await midin('Your MIDI Device')
+
+// Use CC controllers to drive parameters
+note("c3 e3 g3 b3")
+  .lpf(cc(74).range(100, 5000))  // CC 74 → filter
+  .lpq(cc(71).range(0, 20))      // CC 71 → resonance
+  .gain(cc(7).range(0, 1))       // CC 7 → volume
+  .s("sawtooth")
+```
+
+## OSC and SuperCollider
+
+### Setting up the connection
+
+```bash
+# Install and start the OSC bridge
+npx @strudel/osc
+
+# With debugging to check the messages
+npx @strudel/osc --debug
+```
+
+### Sending to SuperDirt
+
+<MiniRepl
+  client:visible
+  tune={`// All events go through OSC to SuperCollider
+$: s("bd*4, hh*8, ~ sd")
+all(osc)`}
+/>
+
+### Orbits for separate processing
+
+In SuperDirt each orbit has its own effects:
+
+<MiniRepl
+  client:visible
+  tune={`stack(
+  s("bd*4").orbit(0),           // Dry signal
+  s("hh*8").orbit(1).room(0.5), // With reverb
+  s("~ sd").orbit(2).delay(0.3) // With delay
+).osc()`}
+/>
+
+## Gamepad
+
+Control patterns with a gamepad:
+
+<MiniRepl
+  client:visible
+  tune={`// gp = gamepad(0) - the first gamepad
+// gp.a, gp.b, gp.x, gp.y - buttons
+// gp.lstick.x/y - left stick
+// gp.rstick.x/y - right stick
+
+// Example (needs a connected gamepad):
+// note("c3 e3 g3 b3")
+//   .mask(gp.a)  // Plays while A is pressed
+//   .lpf(gp.lstick.x.range(200, 5000))
+//   .s("sawtooth")`}
+/>
+
+## Flok: collaborative live coding
+
+[Flok](https://flok.cc/) lets several people code together:
+
+1. Open flok.cc
+2. Create a session
+3. Share the link with others
+4. One codes the sound (Strudel), another the visuals (Hydra)
+
+```javascript
+// Participant 1 — sound
+$: s("bd*4, hh*8")
+$: note("[c3,e3,g3]").s("sawtooth").lpf(800)
+
+// Participant 2 — visuals
+osc(10).rotate(0.1).out()
+```
+
+## The Hydra-Strudel extension
+
+An external extension for even tighter integration:
+
+```javascript
+// Load the extension
+await loadScript("https://cdn.jsdelivr.net/gh/atfornes/Hydra-strudel-extension@latest/hydra-strudel.js")
+await initHydraStrudel()
+
+// One pattern for sound and visuals
+myPattern = '0 10 [2 5]*4'.slow(2)
+note(myPattern).play()      // Audio
+osc(P(myPattern)).out()     // Visuals with the P() function
+```
+
+## Practical tips
+
+### Integration performance
+
+- **Hydra**: complex shaders load the GPU. Start simple.
+- **MIDI**: Web MIDI has a small latency. For critical uses, use the desktop app.
+- **OSC**: needs SuperCollider running. Make sure SuperDirt is loaded.
+
+### Debugging
+
+```javascript
+// For OSC, start with --debug
+// npx @strudel/osc --debug
+
+// For MIDI, check the available devices
+// In the browser console: navigator.requestMIDIAccess()
+```
+
+### Combining integrations
+
+You can use several integrations at once:
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra({detectAudio:true})
+// The visuals react to the sound
+osc(5).scale(()=>1+a.fft[0]).out()
+// The sound goes through the built-in engine
+$: s("bd*4, hh*8, ~ cp").room(0.3)`}
+/>
+
+---
+
+*For details on each integration, see the matching docs pages.*

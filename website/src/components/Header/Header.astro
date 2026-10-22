@@ -1,8 +1,10 @@
 ---
-// import { getLanguageFromURL, KNOWN_LANGUAGE_CODES } from '../../languages';
+import { getLanguageFromURL, KNOWN_LANGUAGE_CODES } from '../../languages';
 import * as CONFIG from '../../config';
 // import AstroLogo from './AstroLogo.astro';
-// import LanguageSelect from './LanguageSelect';
+import LanguageSelect from './LanguageSelect';
+import { t } from '../../i18n/index.mjs';
+import { pathInLang } from '../../i18n/lang.mjs';
 import Search from './Search';
 import CommandLineIcon from '@heroicons/react/20/solid/CommandLineIcon';
 import MobileNav from '../../docs/MobileNav';
@@ -14,8 +16,7 @@ type Props = {
 };
 
 const { currentPage } = Astro.props as Props;
-// const lang = getLanguageFromURL(currentPage);
-const langCode = 'en'; // getLanguageFromURL(currentPage);
+const langCode = getLanguageFromURL(currentPage ?? Astro.url.pathname);
 const sidebar = SIDEBAR[langCode];
 
 const { BASE_URL } = import.meta.env;
@@ -24,7 +25,7 @@ const baseNoTrailing = BASE_URL.endsWith('/') ? BASE_URL.slice(0, -1) : BASE_URL
 
 <nav
   class="flex justify-between py-2 px-4 items-center h-14 max-h-14 bg-lineHighlight text-foreground"
-  title="Главная навигация"
+  title={t('nav.main', undefined, langCode)}
 >
   <div class="flex overflow-visible items-center grow" style="overflow:visible">
     <div class="flex items-center text-2xl space-x-2">
@@ -38,12 +39,12 @@ const baseNoTrailing = BASE_URL.endsWith('/') ? BASE_URL.slice(0, -1) : BASE_URL
       </h1>
     </div>
   </div>
-  {/* KNOWN_LANGUAGE_CODES.length > 1 && <LanguageSelect lang={lang} client:idle /> */}
+  {KNOWN_LANGUAGE_CODES.length > 1 && <LanguageSelect lang={langCode} client:idle />}
   <div class="search-item h-10">
     <Search client:idle />
   </div>
-  <a href={`${baseNoTrailing}/`} class="hidden md:flex cursor-pointer items-center space-x-1"
-    ><CommandLineIcon className="w-5 h-5" /><span>перейти в редактор</span>
+  <a href={pathInLang(`${baseNoTrailing}/`, langCode)} class="hidden md:flex cursor-pointer items-center space-x-1"
+    ><CommandLineIcon className="w-5 h-5" /><span>{t('nav.toEditor', undefined, langCode)}</span>
   </a>
   <div class="md:hidden">
     <MobileNav sidebar={sidebar} client:idle />

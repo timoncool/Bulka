@@ -1,9 +1,11 @@
-import jsdoc from '../../../doc.json'; // doc.json is built with `npm run jsdoc-json`
-const docs = jsdoc.docs.reduce((acc, obj) => Object.assign(acc, { [obj.longname]: obj }), {});
+import jsdoc from '../../../doc.json';
+import jsdocEn from '../../../doc.en.json';
+const byLongname = (list) => list.reduce((acc, obj) => Object.assign(acc, { [obj.longname]: obj }), {});
+const docsByLang = { ru: byLongname(jsdoc.docs), en: byLongname(jsdocEn.docs) };
 import { MiniRepl } from './MiniRepl';
 
-export function JsDoc({ name, h = 3, hideDescription, punchcard, canvasHeight }) {
-  const item = docs[name];
+export function JsDoc({ name, h = 3, hideDescription, punchcard, canvasHeight, lang = 'ru' }) {
+  const item = docsByLang[lang][name];
   if (!item) {
     console.warn('Not found: ' + name);
     return <div />;
@@ -11,7 +13,7 @@ export function JsDoc({ name, h = 3, hideDescription, punchcard, canvasHeight })
   const CustomHeading = `h${h}`;
   const description =
     item.description?.replaceAll(/\{@link ([a-zA-Z\.]+)?#?([a-zA-Z]*)\}/g, (_, a, b) => {
-      return `<a href="#${a.replaceAll('.', '').toLowerCase()}${b ? `-${b}` : ''}">${a}${b ? `#${b}` : ''}</a>`;
+      return `<code>${b || a}</code>`;
     }) || '';
   return (
     <>

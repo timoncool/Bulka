@@ -2,6 +2,7 @@ import cx from '@src/cx.mjs';
 import { useState } from 'react';
 import { Textbox } from '../textbox/Textbox.jsx';
 import { getAudioContext } from '@strudel/webaudio';
+import { t } from '../../../i18n/index.mjs';
 
 function Checkbox({ label, value, onChange, disabled = false }) {
   return (
@@ -48,7 +49,7 @@ export default function ExportTab(Props) {
   return (
     <>
       <div className="text-foreground w-full space-y-4 p-4">
-        <FormItem label="Имя файла" disabled={exporting}>
+        <FormItem label={t('export.fileName')} disabled={exporting}>
           <Textbox
             onBlur={(e) => {
               setDownloadName(e.target.value);
@@ -57,13 +58,13 @@ export default function ExportTab(Props) {
               setDownloadName(v);
             }}
             disabled={exporting}
-            placeholder="Пусто — подставится текущая дата"
+            placeholder={t('export.fileNamePlaceholder')}
             className={cx('placeholder-muted', exporting && 'opacity-50 border-opacity-50')}
             value={downloadName ?? ''}
           />
         </FormItem>
         <div className="flex flex-row gap-4 w-full">
-          <FormItem label="Начальный цикл" disabled={exporting}>
+          <FormItem label={t('export.startCycle')} disabled={exporting}>
             <Textbox
               min={0}
               max={Infinity}
@@ -83,7 +84,7 @@ export default function ExportTab(Props) {
               value={startCycle ?? ''}
             />
           </FormItem>
-          <FormItem label="Конечный цикл" disabled={exporting}>
+          <FormItem label={t('export.endCycle')} disabled={exporting}>
             <Textbox
               min={1}
               max={Infinity}
@@ -105,7 +106,7 @@ export default function ExportTab(Props) {
           </FormItem>
         </div>
         <div className="flex flex-row gap-4">
-          <FormItem label="Частота дискретизации" disabled={exporting}>
+          <FormItem label={t('export.sampleRate')} disabled={exporting}>
             <Textbox
               min={1}
               max={Infinity}
@@ -125,7 +126,7 @@ export default function ExportTab(Props) {
               value={sampleRate ?? ''}
             />
           </FormItem>
-          <FormItem label="Макс. полифония" disabled={exporting}>
+          <FormItem label={t('export.maxPolyphony')} disabled={exporting}>
             <Textbox
               min={1}
               max={Infinity}
@@ -148,7 +149,7 @@ export default function ExportTab(Props) {
         </div>
         <div>
           <Checkbox
-            label="Многоканальные орбиты"
+            label={t('export.multiOrbits')}
             onChange={(cbEvent) => {
               const val = cbEvent.target.checked;
               setMultiChannelOrbits(val);
@@ -183,7 +184,7 @@ export default function ExportTab(Props) {
               width: `${(exporting ? 1 : 0) + (progress / length) * 99}%`,
             }}
           />
-          <span className="text-foreground">{exporting ? 'Экспорт…' : 'Экспорт в WAV'}</span>
+          <span className="text-foreground">{exporting ? t('export.exporting') : t('export.wav')}</span>
         </button>
       </div>
       <dialog

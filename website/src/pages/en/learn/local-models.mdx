@@ -1,0 +1,32 @@
+---
+title: Local Models (LM Studio / Ollama)
+layout: ../../../layouts/MainLayout.astro
+---
+
+# The Bulka chat on a local model
+
+The Bulka chat agent can run on a **local model**: LM Studio, Ollama or any other OpenAI-compatible server on your
+computer. No cloud, no keys, with the full tool set (the model writes code and plays music itself). Works in the
+[desktop app](/en/learn/desktop).
+
+## Quick start
+
+1. Start the local model server:
+   - **LM Studio** → *Developer* tab → *Local Server* → *Start*. Address: `http://localhost:1234/v1`.
+   - **Ollama** → starts by itself. Address: `http://localhost:11434/v1`.
+2. In Bulka: **Chat** tab → settings → the **"Local (LM Studio / Ollama)"** provider.
+3. Enter the server address (there are LM Studio / Ollama preset buttons), press **"Load models"** and pick a model.
+4. Talk: the model writes code and drives the music right in the editor.
+
+## How it works
+
+Requests go **through the built-in Bulka server** to your local server (server to server), so CORS does not get in
+the way (a browser talking to LM Studio/Ollama directly is blocked by CORS). A key is usually not needed, but there
+is a field for it.
+
+## Recommendations
+
+- To drive Bulka, the model needs **function calling (tools)** support: for example Qwen 3 / Qwen 2.5, Llama 3.x,
+  Mistral. Tested on **Qwen 3.8 27B**: it sets the code and starts the track itself.
+- Reasoning models show their thoughts in the chat as a collapsible block.
+- The bigger the model, the more meaningful the music, and the higher the hardware requirements.

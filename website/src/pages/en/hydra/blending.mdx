@@ -1,0 +1,206 @@
+---
+title: Blending
+layout: ../../../layouts/MainLayout.astro
+---
+
+import { MiniRepl } from '../../../docs/MiniRepl';
+
+# Blending
+
+Blending functions combine the **colors** of two visual sources.
+
+## add() — Addition
+
+Adds the color values. The result is usually brighter.
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10)
+  .add(noise(3))
+  .out()
+`}
+/>
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Partial addition
+osc(10)
+  .add(shape(4), 0.5)
+  .out()
+`}
+/>
+
+---
+
+## mult() — Multiplication
+
+Multiplies the color values. The result is usually darker.
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10, 0.1, 0.5)
+  .mult(noise(3))
+  .out()
+`}
+/>
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Multiplying by a shape
+osc(10, 0.1, 0.5)
+  .mult(shape(4, 0.5))
+  .out()
+`}
+/>
+
+---
+
+## diff() — Difference
+
+Computes the absolute difference between colors.
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10)
+  .diff(osc(20))
+  .out()
+`}
+/>
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10, 0.1, 0.5)
+  .diff(noise(3))
+  .out()
+`}
+/>
+
+---
+
+## blend() — Smooth blending
+
+Linearly interpolates between two sources.
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// 50% blend
+osc(10)
+  .blend(noise(3), 0.5)
+  .out()
+`}
+/>
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Animated blending
+osc(10)
+  .blend(voronoi(5), () => Math.sin(time) * 0.5 + 0.5)
+  .out()
+`}
+/>
+
+---
+
+## layer() — Layering
+
+Puts one source on top of another using the alpha channel.
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10, 0.1, 0.5)
+  .layer(shape(4, 0.3).color(1, 0, 0))
+  .out()
+`}
+/>
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Several layers
+gradient()
+  .layer(shape(3, 0.2).color(1, 0, 0))
+  .layer(shape(4, 0.15).color(0, 1, 0))
+  .layer(shape(5, 0.1).color(0, 0, 1))
+  .out()
+`}
+/>
+
+---
+
+## mask() — Masking
+
+Uses the second source as a transparency mask.
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// A shape mask
+osc(10, 0.1, 0.5)
+  .mask(shape(4, 0.5))
+  .out()
+`}
+/>
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// A mask with a moving shape
+osc(10, 0.1, 0.5)
+  .mask(shape(6, 0.3).rotate(() => time))
+  .out()
+`}
+/>
+
+---
+
+## Complex examples
+
+### A layered composition
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10, 0.1, 0.5)
+  .blend(noise(3), 0.3)
+  .diff(osc(30).rotate(0.5))
+  .mult(shape(4, 0.8))
+  .out()
+`}
+/>
+
+### Using several buffers
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// Make different visuals in different buffers
+osc(10).out(o1)
+noise(3).out(o2)
+
+// Blend them in the main buffer
+src(o1)
+  .blend(src(o2), 0.5)
+  .out(o0)
+`}
+/>
+
+### Color transitions
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+solid(1, 0, 0)
+  .blend(solid(0, 0, 1), () => Math.sin(time) * 0.5 + 0.5)
+  .mult(noise(5))
+  .out()
+`}
+/>

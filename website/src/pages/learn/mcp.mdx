@@ -24,17 +24,42 @@ layout: ../../layouts/MainLayout.astro
 
 ## Инструменты
 
-- `set_code_and_play` — заменить весь код и сразу запустить (главный).
-- `set_code` / `append_code` — заменить / дописать код.
-- `get_code` — прочитать текущий код.
-- `play` / `stop` — запуск / остановка.
-- `get_new_messages` / `send_chat_message` — **чат через MCP**: читать сообщения пользователя из чата Bulka и
-  отвечать в него.
+Редактор и звук:
+
+- `setCodeAndPlay` — заменить весь код и сразу запустить (главный); `setFullCode`, `appendCode`, `editCode` — заменить, дописать, поправить фрагмент; `readCode` — прочитать код; `highlightCode` — выделить фрагмент.
+- `playMusic` / `stopMusic` — запуск и остановка; если в коде ошибка, тул вернёт её текст. До первого щелчка в окне звук выключен (так требует браузер) — тул скажет об этом.
+- `undo` / `redo` — отменить и повторить правку; `getPlaybackState` — играет ли музыка, какой паттерн открыт, громкость, вкладка панели.
+- `getVolume` / `setVolume` — общая громкость (0–1).
+- `startRecording` / `stopRecording` / `recordSeconds` — запись того, что играет, в WAV; `exportWav` — рендер циклов в WAV без реального времени; `listRecordings` — файлы в папке `recordings` (десктоп).
+
+Знания и звуки:
+
+- `searchDocs` — поиск по документации и справке функций; `getReference` — справка по одной функции; `getExamples` — примеры по жанрам.
+- `getAvailablePacks` / `getBankSamples` — какие звуки есть; `loadSamples` — подключить пак (`github:user/repo` или URL на `strudel.json`).
+- `getConsole` — логи консоли для отладки.
+
+Паттерны и шеринг:
+
+- `listPatterns`, `openPattern`, `newPattern`, `duplicatePattern`, `deletePattern`, `clearPatterns`, `exportPatterns`, `importPatterns` — свои паттерны (удаление — только с `confirm: true`).
+- `shareCode` — сохранить трек в облако и получить ссылку `bulka.app/?…`; `setSharePublic` — показать трек в ленте или скрыть.
+- `listPublicPatterns`, `openPublicPattern`, `likePattern` — публичная лента и избранное.
+- `newTrack` — начать новый трек (окно перезагрузится).
+
+Окно и настройки:
+
+- `getSettings` / `setSettings` — тема, шрифт, клавиши (в том числе Vim, Emacs, Helix), панель, редактор, аудио; `listAudioDevices` — аудиовыходы.
+- `getPrebakeScript` / `setPrebakeScript` — скрипт, выполняемый перед каждым запуском.
+- `getAiProviders` / `setAiProvider` — провайдер и модель ИИ чата Bulka.
+- `openPanel` — открыть вкладку панели или закрыть панель.
+
+Чат: `getNewMessages` / `sendChatMessage` — читать сообщения пользователя из чата Bulka и отвечать в него.
+
+Агенту сознательно не доступны ключи API провайдеров, галочка анонимной статистики (её ставит только человек) и выключение самого MCP-сервера.
 
 ## Чат через MCP (двусторонний)
 
 В чате Bulka выбери провайдера **«Внешний агент (MCP)»** — и пиши прямо туда. Сообщения уходят внешнему агенту,
-он читает их (`get_new_messages`), отвечает в чат (`send_chat_message`) и попутно рулит музыкой. Так внешний
+он читает их (`getNewMessages`), отвечает в чат (`sendChatMessage`) и попутно рулит музыкой. Так внешний
 Claude становится «мозгом» твоей Bulka.
 
 Подробная инструкция для агента (тулы + база Strudel) — файл `desktop/bulka-mcp-skill.md` в репозитории.

@@ -1,5 +1,6 @@
 import { queryCode } from './runtime.mjs';
-import { describe, it } from 'vitest';
+import { beforeEach, describe, it } from 'vitest';
+import { setDefaultJoin } from '@strudel/core';
 import doc from '../doc.json';
 
 const skippedExamples = [
@@ -25,6 +26,8 @@ const skippedExamples = [
 ];
 
 describe('runs examples', () => {
+  // an example may call setDefaultJoin, which is global and would leak into every later example
+  beforeEach(() => setDefaultJoin('in'));
   const { docs } = doc;
   docs.forEach(async (doc) => {
     if (skippedExamples.includes(doc.name)) {

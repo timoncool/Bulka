@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 
 import jsdocJson from '../../../../../doc.json';
 import { Textbox } from '../textbox/Textbox';
+import { t } from '../../../i18n/index.mjs';
 
 const isValid = ({ name, description }) => name && !name.startsWith('_') && !!description;
 
@@ -56,7 +57,7 @@ export function Reference() {
     <div className="flex h-full w-full p-2 overflow-hidden">
       <div className="h-full  flex flex-col gap-2 w-1/3 max-w-72 ">
         <div class="w-full flex">
-          <Textbox className="w-full" placeholder="Поиск" value={search} onChange={setSearch} />
+          <Textbox className="w-full" placeholder={t('reference.search')} value={search} onChange={setSearch} />
         </div>
         <div className="flex flex-col h-full overflow-y-auto  gap-1.5 bg-background bg-opacity-50  rounded-md">
           {visibleFunctions.map((entry, i) => (
@@ -79,17 +80,14 @@ export function Reference() {
         id="reference-container"
       >
         <div className="prose dark:prose-invert min-w-full px-1 ">
-          <h2>Справочник API</h2>
-          <p>
-            Это полный список функций, которые ты можешь использовать. Помни, что не нужно запоминать их все —
-            для создания музыки достаточно небольшого набора функций!
-          </p>
+          <h2>{t('reference.title')}</h2>
+          <p>{t('reference.intro')}</p>
           {visibleFunctions.map((entry, i) => (
             <section key={i}>
               <h3 id={`doc-${i}`}>{entry.name}</h3>
               {!!entry.synonyms_text && (
                 <p>
-                  Синонимы: <code>{entry.synonyms_text}</code>
+                  {t('reference.synonyms')} <code>{entry.synonyms_text}</code>
                 </p>
               )}
               {/* <small>{entry.meta.filename}</small> */}

@@ -1,0 +1,52 @@
+---
+title: "Hydra: fixes and docs"
+author: "timoncool"
+date: "2025-12-14"
+description: "initImage/initVideo fixed and Hydra docs added"
+lang: en
+---
+
+# Hydra: fixes and docs
+
+## initImage and initVideo fixed
+
+`initImage()` and `initVideo()` did not work before: Strudel's code parsed the URLs wrongly when passing them to Hydra, which broke loading external media.
+
+Now it is fixed:
+
+```javascript
+await initHydra()
+
+// Load an image as a source
+await s0.initImage("https://upload.wikimedia.org/wikipedia/commons/2/25/Hydra-Foto.jpg")
+
+src(s0)
+  .saturate(2)
+  .kaleid(4)
+  .out()
+```
+
+```javascript
+await initHydra()
+
+// Load a video as a source
+await s0.initVideo("https://example.com/video.mp4")
+
+src(s0)
+  .modulate(osc(3), 0.5)
+  .out()
+```
+
+## Hydra docs
+
+A new **[Hydra](/en/hydra/intro)** section:
+
+- [Introduction](/en/hydra/intro) — the basics of modular video synthesis
+- [Tutorial](/en/hydra/tutorial) — step by step
+- [Sources](/en/hydra/sources) — osc, noise, shape, voronoi
+- [Transforms](/en/hydra/transforms) — rotate, scale, pixelate, kaleid
+- [Blending](/en/hydra/blending) — blend, add, mult, diff, layer
+- [Modulation](/en/hydra/modulation) — modulate, modulateScale
+- [External sources](/en/hydra/external-sources) — camera, images, video
+- [Audio reactivity](/en/hydra/audio) — linking visuals to sound
+- [Examples](/en/hydra/examples) — ready-made visuals

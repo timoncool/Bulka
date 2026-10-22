@@ -14,7 +14,7 @@ Sample — это (обычно короткий) фрагмент аудио, �
 
 Strudel позволяет загружать samples в виде аудиофайлов различных форматов (wav, mp3, ogg) из любого общедоступного URL.
 
-# Default Samples
+# Стандартные сэмплы
 
 По умолчанию strudel поставляется со встроенной "sample map", обеспечивающей надежную основу для экспериментов.
 
@@ -41,7 +41,7 @@ Strudel позволяет загружать samples в виде аудиофа
 <img src="/img/drumset.png" />
 
 <a class="text-right text-xs" href="https://de.wikipedia.org/wiki/Schlagzeug#/media/Datei:Drum_set.svg" target="_blank">
-  original von Pbroks13
+  оригинал: Pbroks13
 </a>
 
 Дополнительные перкуссионные звуки:
@@ -72,7 +72,7 @@ s("kick")`}
 Хотя это экономит ресурсы, это также может привести к тому, что звуки не будут слышны при первом воспроизведении, потому что звук все еще загружается.
 [Это может быть исправлено в будущем](https://codeberg.org/uzu/strudel/issues/187)
 
-# Sound Banks
+# Банки звуков
 
 Если мы откроем вкладку `sounds`, а затем `drum-machines`, мы увидим, что все drum samples имеют префиксы с названиями драм-машин: `RolandTR808_bd`, `RolandTR808_sd`, `RolandTR808_hh` и т.д.
 
@@ -92,7 +92,7 @@ s("kick")`}
 Это, конечно, работает только потому, что имя после `_` (`bd`, `sd` и т.д.) стандартизировано.
 Также обратите внимание, что у некоторых banks может не быть samples для всех звуков!
 
-# Selecting Sounds
+# Выбор звуков
 
 Если мы снова откроем вкладку `sounds`, затем вкладку `drum machines`, там также есть число за каждым именем, указывающее, сколько отдельных samples доступно.
 Например, `RolandTR909_hh(4)` означает, что доступно 4 samples хэта TR909.
@@ -114,11 +114,11 @@ s("kick")`}
 .bank("RolandTR909")`}
 />
 
-# Loading Custom Samples
+# Загрузка своих сэмплов
 
 Вы можете загрузить нестандартную sample map, используя функцию `samples`.
 
-## Loading samples from file URLs
+## Сэмплы по ссылкам на файлы
 
 В этом примере мы назначаем имена `bassdrum`, `hihat` и `snaredrum` конкретным аудиофайлам на сервере:
 
@@ -147,7 +147,7 @@ https://raw.githubusercontent.com/tidalcycles/Dirt-Samples/master/bd/BT0AADA.wav
 Обратите внимание, что мы можем загрузить либо один файл, как для `bassdrum` и `hihat`, либо список файлов, как для `snaredrum`!
 Как только вы запустите код, выбранные вами имена samples будут перечислены в `sounds` -> `user`.
 
-## Loading Samples from a strudel.json file
+## Сэмплы из файла strudel.json
 
 Приведенный выше способ загрузки samples может быть утомительным для записи / копирования-вставки каждый раз, когда вы пишете новый pattern.
 Чтобы избежать этого, вы можете просто передать URL к файлу `strudel.json` где-то в интернете:
@@ -186,7 +186,7 @@ samples('https://raw.githubusercontent.com/tidalcycles/Dirt-Samples/master/strud
 Также возможно, конечно, просто удалить его из кэша (удаление кэша в настройках конфиденциальности браузера,
 или из консоли разработчика, если вы технически подкованы, или с помощью расширения для удаления кэша).
 
-## Generating strudel.json
+## Как сгенерировать strudel.json
 
 Вы можете использовать [@strudel/sampler](https://www.npmjs.com/package/@strudel/sampler) для генерации файла strudel.json, выполнив:
 
@@ -196,7 +196,7 @@ npx --yes @strudel/sampler --json > strudel.json
 
 Смотрите другие способы использования strudel/sampler ниже, в разделе "From Disk via @strudel/sampler".
 
-## Github Shortcut
+## Сокращение для GitHub
 
 Поскольку загрузка samples из github является распространенной, есть сокращение:
 
@@ -213,11 +213,11 @@ s("bd sd bd sd,hh*16")`}
 https://raw.githubusercontent.com/<user>/<repo>/<branch>/strudel.json
 ```
 
-## From Disk via "Import Sounds Folder"
+## С диска: кнопка «импортировать папку звуков»
 
 Если вы не хотите загружать свои samples в интернет, вы также можете загрузить их с локального диска.
 Перейдите на вкладку `sounds` в REPL и откройте вкладку `import-sounds` под строкой поиска.
-Нажмите кнопку "import sounds folder" и выберите папку, содержащую аудиофайлы.
+Нажмите кнопку «импортировать папку звуков» и выберите папку, содержащую аудиофайлы.
 Выбранная вами папка также может содержать подпапки с аудиофайлами.
 Пример:
 
@@ -238,9 +238,9 @@ https://raw.githubusercontent.com/<user>/<repo>/<branch>/strudel.json
 Отдельные samples затем могут быть воспроизведены обычным способом, например `s("swoop:0 swoop:1 smash:2")`.
 Samples внутри каждого звука используют индексацию с нуля в алфавитном порядке.
 
-## From Disk via @strudel/sampler
+## С диска через @strudel/sampler
 
-Вместо загрузки samples в браузер с помощью кнопки "import sounds folder", вы также можете обслуживать samples с локального файлового сервера.
+Вместо загрузки samples в браузер с помощью кнопки «импортировать папку звуков», вы также можете обслуживать samples с локального файлового сервера.
 Самый простой способ сделать это — использовать [@strudel/sampler](https://www.npmjs.com/package/@strudel/sampler):
 
 ```sh
@@ -262,7 +262,7 @@ n("<0 1 2>").s("swoop smash")`}
 
 Примечание: Для работы этого вам нужен установленный [NodeJS](https://nodejs.org/).
 
-## Specifying Pitch
+## Высота тона сэмпла
 
 Чтобы убедиться, что ваши samples настроены правильно при воспроизведении с `note`, вы можете указать базовую высоту звука следующим образом:
 
@@ -323,7 +323,7 @@ $: s("the_drum*2").chop(16).speed(rand.range(0.85,1.1))
 $: s("forever magnifique").slow(4).late(0.125)`}
 />
 
-# Sampler Effects
+# Эффекты сэмплера
 
 Sampler effects — это функции, которые можно использовать для изменения поведения воспроизведения sample.
 

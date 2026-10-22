@@ -4,7 +4,9 @@
 // стартовал программно агент/MCP. Обёртки begin/end — единственная точка старта/стопа записи.
 
 import { atom } from 'nanostores';
+import { logger } from '@strudel/core';
 import { startRecording as _start, stopRecording as _stop } from '@strudel/webaudio';
+import { recordDone, recordFailed } from '../hub/bulkaHub.mjs';
 
 export const $isRecording = atom(false);
 export const $recordingElapsed = atom(0); // мс с начала записи (для таймера в UI)
@@ -18,7 +20,9 @@ export function beginRecording() {
     _start((elapsed) => $recordingElapsed.set(elapsed));
   } catch (e) {
     $isRecording.set(false);
-    return false;
+    logger(`[record] ${e.message}`, 'error');
+    recordFailed('record', e.message);
+    throw e;
   }
   return true;
 }
@@ -28,10 +32,14 @@ export function endRecording(filename) {
   if (!$isRecording.get()) return false;
   try {
     _stop(filename);
+    recordDone('record');
   } catch (e) {
-    /* игнор */
+    logger(`[record] ${e.message}`, 'error');
+    recordFailed('record', e.message);
+    throw e;
+  } finally {
+    $isRecording.set(false);
+    $recordingElapsed.set(0);
   }
-  $isRecording.set(false);
-  $recordingElapsed.set(0);
   return true;
 }

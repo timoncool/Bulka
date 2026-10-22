@@ -3,9 +3,11 @@ import * as tunes from '../../../src/repl/tunes.mjs';
 import HeadCommon from '../../components/HeadCommon.astro';
 
 import { getMetadata } from '../../metadata_parser';
+import { langFromPath, pathInLang } from '../../i18n/lang.mjs';
 
 const { BASE_URL } = import.meta.env;
 const baseNoTrailing = BASE_URL.endsWith('/') ? BASE_URL.slice(0, -1) : BASE_URL;
+const repl = pathInLang(`${baseNoTrailing}/`, langFromPath(Astro.url.pathname));
 ---
 
 <head>
@@ -17,7 +19,7 @@ const baseNoTrailing = BASE_URL.endsWith('/') ? BASE_URL.slice(0, -1) : BASE_URL
       Object.entries(tunes).map(([name, tune]) => (
         <a
           class="rounded-md bg-slate-900 hover:bg-slate-700 cursor-pointer relative block w-full h-[160px]"
-          href={`${baseNoTrailing}/#${btoa(tune)}`}
+          href={`${repl}#${btoa(tune)}`}
         >
           <div class="absolute w-full h-full flex justify-center items-center">
             <span class="bg-slate-800 p-2 rounded-md text-white">{getMetadata(tune)['title'] || name}</span>

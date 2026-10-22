@@ -5,15 +5,18 @@ import LeftSidebar from '../components/LeftSidebar/LeftSidebar.astro';
 import PageContent from '../components/PageContent/PageContent.astro';
 import RightSidebar from '../components/RightSidebar/RightSidebar.astro';
 import { Feed } from '../components/Feed/Feed.jsx';
+import { t } from '../i18n/index.mjs';
+import { langFromPath } from '../i18n/lang.mjs';
 
 const currentPage = Astro.url.pathname;
+const lang = langFromPath(currentPage);
 ---
 
-<html dir={'ltr'} lang={'ru'} class="initial dark">
+<html dir={'ltr'} lang={lang} class="initial dark">
   <head>
     <HeadCommon />
-    <title>Лента треков | Bulka</title>
-    <meta name="description" content="Слушай и открывай новые треки от сообщества Bulka. Голосуй за лучшие треки и делись своими." />
+    <title>{t('feedPage.title', undefined, lang)}</title>
+    <meta name="description" content={t('feedPage.description', undefined, lang)} />
   </head>
 
   <body class="h-app-height text-gray-50 bg-background">
@@ -27,20 +30,12 @@ const currentPage = Astro.url.pathname;
             <LeftSidebar currentPage={currentPage} />
           </aside>
           <PageContent>
-            <h1>Лента</h1>
-            <p class="text-foreground/70 mb-6">
-              Слушай треки от сообщества, голосуй за лучшие и делись своими творениями.
-              Нажми "Поделиться" в редакторе, чтобы опубликовать свой трек.
-            </p>
+            <h1>{t('feedPage.h1', undefined, lang)}</h1>
+            <p class="text-foreground/70 mb-6">{t('feedPage.intro', undefined, lang)}</p>
             <Feed client:only="react" />
           </PageContent>
           <aside class="fixed right-0 h-full overflow-auto pr-4 pl-0 pb-16 hidden xl:block" title="Table of Contents">
-            <RightSidebar
-              headings={[
-                { depth: 1, slug: 'popular', text: 'Популярное' },
-                { depth: 1, slug: 'latest', text: 'Новое' },
-              ]}
-            />
+            <RightSidebar headings={[]} />
           </aside>
         </div>
       </main>

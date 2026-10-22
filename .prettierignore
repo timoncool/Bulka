@@ -14,3 +14,9 @@ website/.astro
 !tidal-drum-machines.json
 !tidal-drum-machines-alias.json
 .pnpm-store
+desktop/src-tauri/target
+desktop/src-tauri/staging
+desktop/src-tauri/gen
+desktop/src-tauri/node
+desktop/dist-portable
+**/*.mdx

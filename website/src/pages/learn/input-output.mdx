@@ -129,7 +129,7 @@ $: ccv(sine.segment(16).slow(4)).ccn(74).midi()`}
 
 <JsDoc client:idle name="defaultmidimap" h={0} />
 
-## progNum (Program Change)
+## progNum (смена программы, Program Change)
 
 `progNum` отправляет MIDI program change сообщения для переключения между различными пресетами/патчами на вашем MIDI устройстве.
 Значения program change должны быть числами от 0 до 127.
@@ -143,7 +143,7 @@ note("c3 e3 g3").progNum("<0 1 2>").midi()`} />
 Сообщения program change полезны для переключения между различными звуками инструментов или пресетами во время выступления.
 Точный звук, на который отображается каждый номер программы, зависит от конфигурации вашего MIDI устройства.
 
-## sysex, sysexid && sysexdata (System Exclusive Message)
+## sysex, sysexid и sysexdata (системные сообщения, System Exclusive)
 
 `sysex` отправляет MIDI System Exclusive (SysEx) сообщения на ваше MIDI устройство.
 SysEx сообщения - это специфичные для устройства команды, которые позволяют более глубокое управление параметрами синтезатора.

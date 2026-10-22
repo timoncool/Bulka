@@ -1,0 +1,162 @@
+---
+title: Editor Themes
+layout: ../../../layouts/MainLayout.astro
+---
+
+import { MiniRepl } from '../../../docs/MiniRepl';
+
+# Editor Themes
+
+Bulka has 39 built-in color themes for the code editor. You can switch themes right from your music code or in the settings.
+
+## Switching the theme from code
+
+Use the `theme()` function to switch the theme dynamically:
+
+<MiniRepl client:only="react" tune={`$: s("bd sd bd sd").theme("dracula")`} />
+
+### Switching themes automatically
+
+You can cycle through themes in time with the music:
+
+<MiniRepl client:only="react" tune={`// Changes the theme every cycle
+$: s("bd sd bd sd")
+  .theme("<strudelTheme dracula nord monokai>")`} />
+
+<MiniRepl client:only="react" tune={`// Changes the theme every 4 cycles
+$: s("bd sd bd sd")
+  .theme("<strudelTheme dracula nord monokai>/4")`} />
+
+### All 39 themes in one pattern
+
+<MiniRepl client:only="react" tune={`// Cycles through all themes every 2 cycles
+$: s("bd sd bd sd")
+  .theme("<strudelTheme algoboy archBtw androidstudio atomone aura bbedit blackscreen bluescreen bluescreenlight CutiePi darcula dracula duotoneDark eclipse fruitDaw githubDark githubLight greenText gruvboxDark gruvboxLight sonicPink materialDark materialLight monokai noctisLilac nord redText solarizedDark solarizedLight sublime teletext tokyoNight tokyoNightDay tokyoNightStorm vscodeDark vscodeLight whitescreen xcodeLight>/2")`} />
+
+## All themes
+
+### Dark themes (30)
+
+| Theme | Description |
+|------|----------|
+| `strudelTheme` | The standard dark theme (default) |
+| `algoboy` | Retro Game Boy style |
+| `archBtw` | Arch Linux style |
+| `androidstudio` | Android Studio |
+| `atomone` | Atom One Dark |
+| `aura` | Purple Aura |
+| `bbedit` | BBEdit |
+| `blackscreen` | Black screen |
+| `bluescreen` | Blue screen (BSOD style) |
+| `CutiePi` | A cute pink theme |
+| `darcula` | JetBrains Darcula |
+| `dracula` | The popular Dracula |
+| `duotoneDark` | Two-tone dark |
+| `eclipse` | Eclipse Dark |
+| `fruitDaw` | Fruit DAW style |
+| `githubDark` | GitHub Dark |
+| `greenText` | Green text on black |
+| `gruvboxDark` | Gruvbox Dark |
+| `sonicPink` | Sonic Pink |
+| `materialDark` | Material Dark |
+| `monokai` | The classic Monokai |
+| `noctisLilac` | Noctis Lilac |
+| `nord` | Nord (Scandinavian style) |
+| `redText` | Red text on black |
+| `solarizedDark` | Solarized Dark |
+| `sublime` | Sublime Text |
+| `teletext` | Retro teletext |
+| `tokyoNight` | Tokyo Night |
+| `tokyoNightStorm` | Tokyo Night Storm |
+| `vscodeDark` | VS Code Dark |
+
+### Light themes (9)
+
+| Theme | Description |
+|------|----------|
+| `bluescreenlight` | Light blue |
+| `githubLight` | GitHub Light |
+| `gruvboxLight` | Gruvbox Light |
+| `materialLight` | Material Light |
+| `solarizedLight` | Solarized Light |
+| `tokyoNightDay` | Tokyo Night Day |
+| `vscodeLight` | VS Code Light |
+| `whitescreen` | White screen |
+| `xcodeLight` | Xcode Light |
+
+## Switching in the settings
+
+1. Open the settings panel (gear icon)
+2. Find the "Theme" section
+3. Pick a theme from the dropdown
+
+The chosen theme is saved in localStorage and restored on your next visit.
+
+## Making a custom theme
+
+Each theme is defined in its own `.mjs` file in `packages/codemirror/themes/`.
+
+### Theme structure
+
+```javascript
+import { tags as t } from '@lezer/highlight';
+import { createTheme } from './theme-helper.mjs';
+
+// Main color settings
+export const settings = {
+  background: '#222',           // Editor background
+  lineBackground: '#22222299',  // Code line background
+  foreground: '#fff',           // Text color
+  caret: '#ffcc00',             // Caret color
+  selection: 'rgba(128, 203, 196, 0.5)', // Selection color
+  selectionMatch: '#036dd626',  // Search match color
+  lineHighlight: '#00000050',   // Active line highlight
+  gutterBackground: 'transparent', // Line number gutter background
+  gutterForeground: '#8a919966',   // Line number color
+  light: false,                 // true for light themes
+};
+
+// Create the theme with syntax highlighting
+export default createTheme({
+  theme: 'dark', // or 'light'
+  settings,
+  styles: [
+    { tag: t.keyword, color: '#c792ea' },      // Keywords
+    { tag: t.string, color: '#c3e88d' },       // Strings
+    { tag: t.number, color: '#c3e88d' },       // Numbers
+    { tag: t.comment, color: '#7d8799' },      // Comments
+    { tag: t.variableName, color: '#c792ea' }, // Variables
+    { tag: t.operator, color: '#89ddff' },     // Operators
+    { tag: t.bracket, color: '#525154' },      // Brackets
+  ],
+});
+```
+
+### Available syntax highlighting tags
+
+- `t.keyword` — keywords (if, else, function)
+- `t.string` — quoted strings
+- `t.number` — numbers
+- `t.comment` — comments
+- `t.variableName` — variable names
+- `t.operator` — operators (+, -, *, /)
+- `t.bracket` — brackets
+- `t.propertyName` — object properties
+- `t.className` — class names
+- `t.tagName` — tags
+- `t.meta` — metadata
+- `t.atom` — atomic values
+- `t.bool` — booleans
+
+### Adding a new theme
+
+1. Create the file `packages/codemirror/themes/my-theme.mjs`
+2. Export `settings` and the theme as the default export
+3. Import the theme in `packages/codemirror/themes.mjs`
+4. Add it to the `themes` and `settings` objects
+
+After that the theme is available via `theme("myTheme")` and in the settings.
+
+## Links
+
+- [Theme source code](https://github.com/timoncool/Bulka/tree/main/packages/codemirror/themes)

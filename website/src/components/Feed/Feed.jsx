@@ -4,11 +4,19 @@ import { MiniRepl } from '@src/docs/MiniRepl';
 import { PatternLabel } from '@src/repl/components/panel/PatternsTab';
 import { getMetadata } from '@src/metadata_parser.js';
 import cx from '@src/cx.mjs';
+import { t } from '../../i18n/index.mjs';
+import { trackLink } from '@src/repl/util.mjs';
 
 // Icons
 function HeartIcon({ filled }) {
   return (
-    <svg className="w-5 h-5" viewBox="0 0 20 20" fill={filled ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.5">
+    <svg
+      className="w-5 h-5"
+      viewBox="0 0 20 20"
+      fill={filled ? 'currentColor' : 'none'}
+      stroke="currentColor"
+      strokeWidth="1.5"
+    >
       <path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" />
     </svg>
   );
@@ -25,7 +33,11 @@ function ShareIcon() {
 function CheckIcon() {
   return (
     <svg className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
-      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+      <path
+        fillRule="evenodd"
+        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+        clipRule="evenodd"
+      />
     </svg>
   );
 }
@@ -41,18 +53,18 @@ function OpenInEditorIcon() {
 
 // Sort options
 const SORT_OPTIONS = {
-  date: 'По дате',
-  likes: 'По популярности',
+  date: t('feed.sortDate'),
+  likes: t('feed.sortLikes'),
 };
 
 // Extract unique genres from patterns
 function extractGenres(patterns) {
   const genreSet = new Set();
-  patterns.forEach(pat => {
+  patterns.forEach((pat) => {
     const meta = getMetadata(pat.code);
     if (meta.genre) {
       const genres = Array.isArray(meta.genre) ? meta.genre : [meta.genre];
-      genres.forEach(g => genreSet.add(g.trim().toLowerCase()));
+      genres.forEach((g) => genreSet.add(g.trim().toLowerCase()));
     }
   });
   return Array.from(genreSet).sort();
@@ -66,7 +78,7 @@ function FilterBar({ genres, selectedGenre, onGenreChange, sortBy, onSortChange,
       <div>
         <input
           type="text"
-          placeholder="Поиск по названию или автору..."
+          placeholder={t('feed.search')}
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
           className="w-full px-4 py-2 bg-background rounded-md text-foreground placeholder-foreground/50 focus:outline-none focus:ring-2 focus:ring-foreground/30"
@@ -76,15 +88,15 @@ function FilterBar({ genres, selectedGenre, onGenreChange, sortBy, onSortChange,
       <div className="flex flex-wrap items-center gap-4">
         {/* Genre Filter */}
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-sm text-foreground/70">Жанр:</span>
+          <span className="text-sm text-foreground/70">{t('feed.genre')}</span>
           <button
             onClick={() => onGenreChange('')}
             className={cx(
               'px-3 py-1 rounded-full text-sm transition-colors',
-              selectedGenre === '' ? 'bg-foreground text-background' : 'bg-background text-foreground hover:opacity-70'
+              selectedGenre === '' ? 'bg-foreground text-background' : 'bg-background text-foreground hover:opacity-70',
             )}
           >
-            Все
+            {t('feed.all')}
           </button>
           {genres.slice(0, 6).map((genre) => (
             <button
@@ -92,7 +104,9 @@ function FilterBar({ genres, selectedGenre, onGenreChange, sortBy, onSortChange,
               onClick={() => onGenreChange(genre)}
               className={cx(
                 'px-3 py-1 rounded-full text-sm capitalize transition-colors',
-                selectedGenre === genre ? 'bg-foreground text-background' : 'bg-background text-foreground hover:opacity-70'
+                selectedGenre === genre
+                  ? 'bg-foreground text-background'
+                  : 'bg-background text-foreground hover:opacity-70',
               )}
             >
               {genre}
@@ -102,14 +116,16 @@ function FilterBar({ genres, selectedGenre, onGenreChange, sortBy, onSortChange,
 
         {/* Sort */}
         <div className="flex items-center gap-2 ml-auto">
-          <span className="text-sm text-foreground/70">Сортировка:</span>
+          <span className="text-sm text-foreground/70">{t('feed.sort')}</span>
           <select
             value={sortBy}
             onChange={(e) => onSortChange(e.target.value)}
             className="px-3 py-1 bg-background rounded-md text-foreground focus:outline-none"
           >
             {Object.entries(SORT_OPTIONS).map(([value, label]) => (
-              <option key={value} value={value}>{label}</option>
+              <option key={value} value={value}>
+                {label}
+              </option>
             ))}
           </select>
         </div>
@@ -126,9 +142,9 @@ function TrackCard({ pattern, onRefresh }) {
   const [copied, setCopied] = useState(false);
 
   const metadata = useMemo(() => getMetadata(pattern.code), [pattern.code]);
-  const title = metadata.title || 'Без названия';
-  const author = Array.isArray(metadata.by) ? metadata.by.join(', ') : (metadata.by || 'Аноним');
-  const genres = Array.isArray(metadata.genre) ? metadata.genre : (metadata.genre ? [metadata.genre] : []);
+  const title = metadata.title || t('feed.untitled');
+  const author = Array.isArray(metadata.by) ? metadata.by.join(', ') : metadata.by || t('feed.anonymous');
+  const genres = Array.isArray(metadata.genre) ? metadata.genre : metadata.genre ? [metadata.genre] : [];
 
   const formattedDate = useMemo(() => {
     const date = new Date(pattern.created_at);
@@ -150,19 +166,20 @@ function TrackCard({ pattern, onRefresh }) {
     // Optimistic update
     const newLiked = !liked;
     setLiked(newLiked);
-    setLikeCount(prev => newLiked ? prev + 1 : Math.max(0, prev - 1));
+    setLikeCount((prev) => (newLiked ? prev + 1 : Math.max(0, prev - 1)));
 
     try {
       const result = await toggleLike(pattern.hash);
       // If result is null, it means rate limited or cooldown - revert
       if (result === null) {
         setLiked(!newLiked);
-        setLikeCount(prev => newLiked ? Math.max(0, prev - 1) : prev + 1);
+        setLikeCount((prev) => (newLiked ? Math.max(0, prev - 1) : prev + 1));
       }
     } catch (err) {
+      console.error('[like]', err);
       // Revert on error
       setLiked(!newLiked);
-      setLikeCount(prev => newLiked ? Math.max(0, prev - 1) : prev + 1);
+      setLikeCount((prev) => (newLiked ? Math.max(0, prev - 1) : prev + 1));
     } finally {
       setIsLiking(false);
     }
@@ -170,8 +187,7 @@ function TrackCard({ pattern, onRefresh }) {
 
   const handleShare = useCallback(async () => {
     if (!pattern.hash) return;
-    // Формируем ссылку напрямую на редактор (без /feed/)
-    const shareUrl = window.location.origin + '/?' + pattern.hash;
+    const shareUrl = trackLink(pattern.hash);
     try {
       await navigator.clipboard.writeText(shareUrl);
       setCopied(true);
@@ -192,32 +208,22 @@ function TrackCard({ pattern, onRefresh }) {
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1 min-w-0">
             <h3 className="text-lg font-medium truncate">
-              <a
-                href={`/?${pattern.hash}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:underline"
-              >
+              <a href={`/?${pattern.hash}`} target="_blank" rel="noopener noreferrer" className="hover:underline">
                 {title}
               </a>
             </h3>
             <p className="text-sm text-foreground/70">
-              от <span className="text-foreground/80">{author}</span>
+              {t('feed.by')} <span className="text-foreground/80">{author}</span>
             </p>
           </div>
-          <time className="text-xs text-foreground/50 whitespace-nowrap">
-            {formattedDate}
-          </time>
+          <time className="text-xs text-foreground/50 whitespace-nowrap">{formattedDate}</time>
         </div>
 
         {/* Genre Tags */}
         {genres.length > 0 && (
           <div className="flex flex-wrap gap-1 mt-2">
             {genres.map((genre, idx) => (
-              <span
-                key={idx}
-                className="text-xs px-2 py-0.5 bg-background rounded-full text-foreground/70 capitalize"
-              >
+              <span key={idx} className="text-xs px-2 py-0.5 bg-background rounded-full text-foreground/70 capitalize">
                 {genre}
               </span>
             ))}
@@ -241,9 +247,9 @@ function TrackCard({ pattern, onRefresh }) {
               'flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-colors',
               liked
                 ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30'
-                : 'bg-background hover:bg-background/80 text-foreground/60 hover:text-red-400'
+                : 'bg-background hover:bg-background/80 text-foreground/60 hover:text-red-400',
             )}
-            title={liked ? 'Убрать лайк' : 'Поставить лайк'}
+            title={liked ? t('feed.unlike') : t('feed.like')}
           >
             <HeartIcon filled={liked} />
             <span className="text-sm">{likeCount}</span>
@@ -256,22 +262,22 @@ function TrackCard({ pattern, onRefresh }) {
               'flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-colors',
               copied
                 ? 'bg-green-500/20 text-green-400'
-                : 'bg-background hover:bg-background/80 text-foreground/60 hover:text-foreground'
+                : 'bg-background hover:bg-background/80 text-foreground/60 hover:text-foreground',
             )}
-            title={copied ? 'Скопировано!' : 'Поделиться'}
+            title={copied ? t('feed.copied') : t('feed.share')}
           >
             {copied ? <CheckIcon /> : <ShareIcon />}
-            {copied && <span className="text-sm">Скопировано</span>}
+            {copied && <span className="text-sm">{t('feed.copiedShort')}</span>}
           </button>
 
           {/* Open in Editor */}
           <button
             onClick={handleEdit}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-background hover:bg-background/80 text-foreground/60 hover:text-foreground transition-colors"
-            title="Открыть в редакторе"
+            title={t('feed.openInEditor')}
           >
             <OpenInEditorIcon />
-            <span className="text-sm hidden sm:inline">Открыть</span>
+            <span className="text-sm hidden sm:inline">{t('feed.open')}</span>
           </button>
         </div>
       </div>
@@ -291,13 +297,15 @@ export function Feed() {
   useEffect(() => {
     setLoading(true);
     const loadFn = sortBy === 'likes' ? loadPatternsByLikes : loadPublicPatterns;
-    loadFn().then(({ data }) => {
-      setPatterns(data || []);
-      setLoading(false);
-    }).catch(err => {
-      console.error('Failed to load patterns:', err);
-      setLoading(false);
-    });
+    loadFn()
+      .then(({ data }) => {
+        setPatterns(data || []);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error('Failed to load patterns:', err);
+        setLoading(false);
+      });
   }, [sortBy]);
 
   // Extract genres
@@ -309,18 +317,18 @@ export function Feed() {
 
     // Filter by genre
     if (selectedGenre) {
-      result = result.filter(pat => {
+      result = result.filter((pat) => {
         const meta = getMetadata(pat.code);
         if (!meta.genre) return false;
         const patGenres = Array.isArray(meta.genre) ? meta.genre : [meta.genre];
-        return patGenres.some(g => g.toLowerCase().trim() === selectedGenre);
+        return patGenres.some((g) => g.toLowerCase().trim() === selectedGenre);
       });
     }
 
     // Filter by search
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase().trim();
-      result = result.filter(pat => {
+      result = result.filter((pat) => {
         const meta = getMetadata(pat.code);
         const title = (meta.title || '').toLowerCase();
         const authors = Array.isArray(meta.by) ? meta.by.join(' ').toLowerCase() : (meta.by || '').toLowerCase();
@@ -350,19 +358,15 @@ export function Feed() {
 
       {loading ? (
         <div className="flex justify-center py-8">
-          <div className="animate-pulse text-foreground/50">Загрузка треков...</div>
+          <div className="animate-pulse text-foreground/50">{t('feed.loading')}</div>
         </div>
       ) : filteredPatterns.length === 0 ? (
         <div className="text-center py-8 text-foreground/50">
-          {searchQuery || selectedGenre
-            ? 'Треки не найдены. Попробуйте изменить фильтры.'
-            : 'Пока нет опубликованных треков. Будь первым!'}
+          {searchQuery || selectedGenre ? t('feed.noneFiltered') : t('feed.none')}
         </div>
       ) : (
         <>
-          <div className="text-sm text-foreground/50 mb-4">
-            Найдено треков: {filteredPatterns.length}
-          </div>
+          <div className="text-sm text-foreground/50 mb-4">{t('feed.found', { n: filteredPatterns.length })}</div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {filteredPatterns.map((pattern) => (
               <TrackCard key={pattern.id} pattern={pattern} onRefresh={handleRefresh} />

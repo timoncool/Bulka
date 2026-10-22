@@ -1,6 +1,7 @@
 import { Disclosure } from '@headlessui/react';
 import Bars3Icon from '@heroicons/react/24/outline/Bars3Icon';
 import XMarkIcon from '@heroicons/react/24/outline/XMarkIcon';
+import { t } from '../i18n/index.mjs';
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
@@ -12,7 +13,7 @@ export default function MobileNav({ sidebar }) {
       {({ open }) => (
         <>
           <Disclosure.Button className="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
-            <span className="sr-only">Открыть меню</span>
+            <span className="sr-only">{t('nav.openMenu')}</span>
             {open ? (
               <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
             ) : (
@@ -25,7 +26,7 @@ export default function MobileNav({ sidebar }) {
                 href=".."
                 className="py-2 flex cursor-pointer items-center space-x-1 hover:bg-background hover:px-2 rounded-md"
               >
-                <span>перейти в редактор</span>
+                <span>{t('nav.toEditor')}</span>
               </a>
               {Object.entries(sidebar).map(([group, items], i) => (
                 <div key={i} className="space-y-2">

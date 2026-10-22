@@ -2,18 +2,16 @@
 /**
  * Генератор changelog для Bulka
  *
- * Читает историю git коммитов и создаёт:
- * 1. JSON файл для страницы /whatsnew
- * 2. CHANGELOG.md в формате Keep a Changelog
+ * Читает историю git-коммитов и пишет website/src/data/changelog.json для страницы /whatsnew.
  *
- * Запуск: node scripts/generate-changelog.js
+ * Запуск: node scripts/generate-changelog.mjs [--since-date=YYYY-MM-DD]
  *
  * ⚠️  ВАЖНО: НИКОГДА не редактируй website/src/data/changelog.json вручную!
  *     Всегда запускай этот скрипт: pnpm changelog
  *     Скрипт автоматически читает коммиты из git и генерирует changelog.
  */
 
-import { execSync } from 'child_process';
+import { execFileSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -37,18 +35,15 @@ const COMMIT_TYPES = {
 };
 
 // Коммиты, которые нужно пропустить
-const SKIP_PATTERNS = [
-  /^Merge pull request/,
-  /^Merge branch/,
-  /^Revert "/,
-  /^Reapply "/,
-];
+const SKIP_PATTERNS = [/^Merge pull request/, /^Merge branch/, /^Revert "/, /^Reapply "/];
+
+const isBot = (author) => /\[bot\]$/.test(author ?? '');
 
 function parseCommit(line) {
   const [date, message, author, hash] = line.split('|');
 
-  // Пропускаем merge коммиты и реверты
-  if (SKIP_PATTERNS.some(pattern => pattern.test(message))) {
+  // Пропускаем merge коммиты, реверты и коммиты ботов (график звёзд)
+  if (SKIP_PATTERNS.some((pattern) => pattern.test(message)) || isBot(author)) {
     return null;
   }
 
@@ -82,14 +77,8 @@ function parseCommit(line) {
 
 function getExistingChangelog() {
   const jsonPath = path.join(ROOT_DIR, 'website/src/data/changelog.json');
-  if (fs.existsSync(jsonPath)) {
-    try {
-      return JSON.parse(fs.readFileSync(jsonPath, 'utf-8'));
-    } catch (e) {
-      return [];
-    }
-  }
-  return [];
+  if (!fs.existsSync(jsonPath)) return [];
+  return JSON.parse(fs.readFileSync(jsonPath, 'utf-8'));
 }
 
 function getLastKnownHash(existingChangelog) {
@@ -102,23 +91,20 @@ function getLastKnownHash(existingChangelog) {
   return null;
 }
 
-function getGitLog(sinceHash = null) {
-  try {
-    // Если есть хэш - берём только новые коммиты
-    const range = sinceHash ? `${sinceHash}..HEAD` : '';
-    const log = execSync(
-      `git log ${range} --pretty=format:"%ad|%s|%an|%h" --date=short`,
-      { encoding: 'utf-8', cwd: ROOT_DIR, maxBuffer: 10 * 1024 * 1024 }
-    );
+function getGitLog({ sinceHash = null, sinceDate = null } = {}) {
+  const args = ['log', '--pretty=format:%ad|%s|%an|%h', '--date=short'];
+  if (sinceHash) args.push(`${sinceHash}..HEAD`);
+  if (sinceDate) args.push(`--since=${sinceDate}`);
+  const log = execFileSync('git', args, { encoding: 'utf-8', cwd: ROOT_DIR, maxBuffer: 10 * 1024 * 1024 });
+  return log.split('\n').filter(Boolean).map(parseCommit).filter(Boolean);
+}
 
-    return log
-      .split('\n')
-      .filter(Boolean)
-      .map(parseCommit)
-      .filter(Boolean);
-  } catch (error) {
-    console.error('Ошибка чтения git log:', error.message);
-    return [];
+function commitExists(hash) {
+  try {
+    execFileSync('git', ['cat-file', '-e', `${hash}^{commit}`], { cwd: ROOT_DIR, stdio: 'ignore' });
+    return true;
+  } catch {
+    return false;
   }
 }
 
@@ -135,27 +121,36 @@ function groupByDate(commits) {
   // Сортируем даты по убыванию (новые сверху)
   const sortedDates = Object.keys(grouped).sort((a, b) => b.localeCompare(a));
 
-  return sortedDates.map(date => ({
+  return sortedDates.map((date) => ({
     date,
     commits: grouped[date],
   }));
 }
 
-
 function formatDate(dateStr) {
   const date = new Date(dateStr);
   const months = [
-    'января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
-    'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'
+    'января',
+    'февраля',
+    'марта',
+    'апреля',
+    'мая',
+    'июня',
+    'июля',
+    'августа',
+    'сентября',
+    'октября',
+    'ноября',
+    'декабря',
   ];
   return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`;
 }
 
 function generateJSON(groupedByDate) {
-  const changelog = groupedByDate.map(day => ({
+  const changelog = groupedByDate.map((day) => ({
     date: day.date,
     dateFormatted: formatDate(day.date),
-    changes: day.commits.map(c => ({
+    changes: day.commits.map((c) => ({
       type: c.type,
       typeLabel: COMMIT_TYPES[c.type]?.label || 'Прочее',
       emoji: COMMIT_TYPES[c.type]?.emoji || '📦',
@@ -168,7 +163,6 @@ function generateJSON(groupedByDate) {
 
   return changelog;
 }
-
 
 function mergeChangelogs(existing, newChanges) {
   // Собираем все известные хэши для дедупликации
@@ -184,12 +178,13 @@ function mergeChangelogs(existing, newChanges) {
 
   // Сначала добавляем существующие
   for (const day of existing) {
-    byDate[day.date] = { ...day, changes: [...day.changes] };
+    const changes = day.changes.filter((c) => !isBot(c.author));
+    if (changes.length > 0 || day.date === '_DO_NOT_EDIT') byDate[day.date] = { ...day, changes };
   }
 
   // Добавляем только новые коммиты (без дубликатов)
   for (const day of newChanges) {
-    const uniqueChanges = day.changes.filter(c => !knownHashes.has(c.hash));
+    const uniqueChanges = day.changes.filter((c) => !knownHashes.has(c.hash));
     if (uniqueChanges.length === 0) continue;
 
     if (byDate[day.date]) {
@@ -202,7 +197,7 @@ function mergeChangelogs(existing, newChanges) {
   // Дедупликация внутри каждого дня (на всякий случай)
   for (const date of Object.keys(byDate)) {
     const seen = new Set();
-    byDate[date].changes = byDate[date].changes.filter(c => {
+    byDate[date].changes = byDate[date].changes.filter((c) => {
       if (seen.has(c.hash)) return false;
       seen.add(c.hash);
       return true;
@@ -220,12 +215,23 @@ function main() {
   const existingChangelog = getExistingChangelog();
   const lastHash = getLastKnownHash(existingChangelog);
 
+  const sinceDateArg = process.argv.find((a) => a.startsWith('--since-date='));
+  const sinceDate = sinceDateArg ? sinceDateArg.slice('--since-date='.length) : null;
+  if (sinceDate && !/^\d{4}-\d{2}-\d{2}$/.test(sinceDate)) {
+    throw new Error(`--since-date ждёт YYYY-MM-DD, получено «${sinceDate}»`);
+  }
+
   if (lastHash) {
     console.log(`📌 Последний известный коммит: ${lastHash}`);
   }
+  if (lastHash && !sinceDate && !commitExists(lastHash)) {
+    throw new Error(
+      `Коммита ${lastHash} из changelog.json нет в истории (история переписана). ` +
+        'Запусти один раз: node scripts/generate-changelog.mjs --since-date=<день после последней записи>',
+    );
+  }
 
-  // Получаем только новые коммиты
-  const newCommits = getGitLog(lastHash);
+  const newCommits = sinceDate ? getGitLog({ sinceDate }) : getGitLog({ sinceHash: lastHash });
 
   if (newCommits.length === 0) {
     console.log('✅ Changelog актуален, новых коммитов нет.\n');
@@ -243,17 +249,14 @@ function main() {
 
   // Добавляем предупреждение как первый элемент (для Claude и других AI)
   const warningEntry = {
-    "_AI_WARNING": "⚠️ НЕ РЕДАКТИРУЙ ЭТОТ ФАЙЛ ВРУЧНУЮ! Запусти: pnpm changelog",
-    "date": "_DO_NOT_EDIT",
-    "dateFormatted": "⚠️ ГЕНЕРИРУЕТСЯ АВТОМАТИЧЕСКИ",
-    "changes": []
+    _AI_WARNING: '⚠️ НЕ РЕДАКТИРУЙ ЭТОТ ФАЙЛ ВРУЧНУЮ! Запусти: pnpm changelog',
+    date: '_DO_NOT_EDIT',
+    dateFormatted: '⚠️ ГЕНЕРИРУЕТСЯ АВТОМАТИЧЕСКИ',
+    changes: [],
   };
 
   // Убираем старое предупреждение если есть, добавляем новое в начало
-  const finalChangelog = [
-    warningEntry,
-    ...mergedChangelog.filter(day => day.date !== "_DO_NOT_EDIT")
-  ];
+  const finalChangelog = [warningEntry, ...mergedChangelog.filter((day) => day.date !== '_DO_NOT_EDIT')];
 
   // Сохраняем JSON
   const jsonPath = path.join(ROOT_DIR, 'website/src/data/changelog.json');
@@ -268,4 +271,9 @@ function main() {
   console.log(`\n✨ Добавлено ${newCommits.length} новых записей!`);
 }
 
-main();
+try {
+  main();
+} catch (error) {
+  console.error(`[ERROR] changelog: ${error.message}`);
+  process.exit(1);
+}

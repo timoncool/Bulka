@@ -1,6 +1,7 @@
 import { Fragment, useEffect } from 'react';
 import React, { useMemo, useState } from 'react';
 import { isAudioFile, readDir, dir, playFile } from '../../files.mjs';
+import { t } from '../../../i18n/index.mjs';
 
 export function FilesTab() {
   const [path, setPath] = useState([]);
@@ -54,7 +55,7 @@ export function FilesTab() {
         </div>
       </div>
       <div className="overflow-auto">
-        {!folders?.length && !files?.length && <span className="text-gray-500">Здесь пусто</span>}
+        {!folders?.length && !files?.length && <span className="text-gray-500">{t('files.empty')}</span>}
         {folders?.map((e, i) => (
           <div className="cursor-pointer" key={i} onClick={() => select(e)}>
             {e.name}

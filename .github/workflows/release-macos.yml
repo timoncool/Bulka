@@ -1,0 +1,82 @@
+name: macOS build
+
+# Bulka for Apple Silicon, started by hand. With a tag the .dmg and the updater archive (.app.tar.gz) are attached to
+# that release; the archive is signed for the updater on the release machine (desktop/make-release.sh), where the key
+# lives. Windows and Linux are built on the release machine: desktop/build.sh, desktop/build-linux-docker.sh.
+
+on:
+  # a pull request that touches the desktop app builds it for macOS too (no release upload without a tag)
+  pull_request:
+    paths:
+      - "desktop/**"
+      - ".github/workflows/release-macos.yml"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag to attach the builds to; empty builds only"
+        required: false
+
+concurrency:
+  group: macos-build-${{ github.ref }}-${{ inputs.tag || 'pr' }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+env:
+  CARGO_TERM_COLOR: never
+
+jobs:
+  macos:
+    runs-on: macos-15
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 11.22.0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24.21.0
+          cache: pnpm
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: desktop/src-tauri -> target
+      - name: Supabase keys of the site
+        env:
+          PUBLIC_SUPABASE_URL: ${{ vars.PUBLIC_SUPABASE_URL }}
+          PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
+        run: |
+          if [ -z "$PUBLIC_SUPABASE_URL" ] || [ -z "$PUBLIC_SUPABASE_PUBLISHABLE_KEY" ]; then
+            echo "::error::repository variables PUBLIC_SUPABASE_URL and PUBLIC_SUPABASE_PUBLISHABLE_KEY are not set"
+            exit 1
+          fi
+          printf 'PUBLIC_SUPABASE_URL=%s\nPUBLIC_SUPABASE_PUBLISHABLE_KEY=%s\n' "$PUBLIC_SUPABASE_URL" "$PUBLIC_SUPABASE_PUBLISHABLE_KEY" > website/.env
+      - name: Install
+        run: pnpm install --frozen-lockfile
+      - name: Build
+        run: bash desktop/build.sh
+      - name: Bundled node starts
+        run: |
+          set -e
+          node_bin=desktop/src-tauri/target/release/bundle/macos/Bulka.app/Contents/Resources/app/node/node
+          "$node_bin" -e "console.log('node', process.version, process.arch)"
+      - name: Collect
+        run: |
+          set -e
+          mkdir -p out
+          version="$(node -p "require('./desktop/src-tauri/tauri.conf.json').version")"
+          bundle=desktop/src-tauri/target/release/bundle
+          cp "$(find "$bundle/dmg" -name '*.dmg' | head -n 1)" "out/Bulka_${version}_aarch64.dmg"
+          tar -czf "out/Bulka_${version}_aarch64.app.tar.gz" -C "$bundle/macos" Bulka.app
+          ls -la out
+      - uses: actions/upload-artifact@v7
+        with:
+          name: bulka-macos-arm64
+          path: out/*
+      - name: Attach to the release
+        if: ${{ inputs.tag != '' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "${{ inputs.tag }}" out/* --clobber

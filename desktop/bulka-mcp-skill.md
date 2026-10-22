@@ -1,6 +1,6 @@
 ---
 name: bulka-live-coding
-description: Писать, менять, запускать и останавливать музыку в приложении Bulka (форк Strudel, live-coding) через MCP-сервер. Используй ВСЕГДА, когда пользователь просит создать/изменить/сыграть/остановить музыку, бит, мелодию, трек, паттерн, аранжировку, лупу или звук в Bulka — на десктопе или в браузере. Умеет писать полноценные треки на Strudel, добавлять партии, отлаживать по консоли, искать в документации (RAG), брать примеры по жанру и список звуков, а также визуализацию. Тулзы: setCodeAndPlay, setFullCode, appendCode, editCode, readCode, playMusic, stopMusic, highlightCode, searchDocs, getExamples, getAvailablePacks, getBankSamples, getConsole, getNewMessages, sendChatMessage.
+description: Писать, менять, запускать и останавливать музыку в приложении Bulka (форк Strudel, live-coding) через MCP-сервер. Используй ВСЕГДА, когда пользователь просит создать/изменить/сыграть/остановить музыку, бит, мелодию, трек, паттерн, аранжировку, лупу или звук в Bulka — на десктопе или в браузере. Умеет писать полноценные треки на Strudel, добавлять партии, отлаживать по консоли, искать в документации (RAG), брать примеры по жанру и список звуков, а также визуализацию. Умеет и всё остальное, что пользователь делает в окне: паттерны, шеринг, громкость, запись и экспорт WAV, сэмплы, настройки, провайдер ИИ.
 ---
 
 # Bulka — live-coding музыки через MCP
@@ -17,25 +17,41 @@ Bulka (форк Strudel) — редактор музыки кодом. Чере�
 Или в Claude Code: `claude mcp add --transport http bulka http://127.0.0.1:4188/mcp`.
 Bulka должна быть открыта, иначе тулзы редактора вернут «окно не подключено».
 
-## Инструменты (ровно те же, что у встроенного агента Bulka)
-Редактор и воспроизведение:
-- `setCodeAndPlay(code)` — заменить ВЕСЬ код и сразу запустить (главный инструмент).
-- `setFullCode(code)` — заменить код без запуска; `playMusic()` / `stopMusic()` — старт/стоп.
-- `appendCode(code)` — дописать партию; `editCode(search, replace)` — точечно заменить фрагмент.
-- `readCode()` — прочитать текущий код (менять аккуратно, а не с нуля); `highlightCode(search)` — подсветить.
+## Инструменты
 
-Знания и звуки — **не угадывай, спрашивай тулами** (это и есть RAG/справка Bulka):
-- `searchDocs(query)` — поиск по документации Strudel/Bulka: как работает функция, синтаксис,
-  эффекты, Hydra-визуализация, тональные функции. Сомневаешься в функции — сперва `searchDocs`.
-- `getExamples(category)` — готовые примеры кода. Категории: arrangement, hiphop, techno, ukgarage,
-  dnb, ambient, melody, hydra, sliders. Вызови без аргумента — покажет список категорий.
-- `getAvailablePacks()` — список сэмпл-паков и банков. **Вызывай ПЕРЕД использованием `s("...")`**,
-  чтобы взять реально существующий звук; `getBankSamples(bankName)` — содержимое конкретного банка.
-- `getConsole()` — логи консоли для отладки (сначала остановит воспроизведение). При ошибке —
-  сперва `getConsole()` + `readCode()`, потом `editCode`.
+Редактор и звук:
 
-Чат с пользователем (двусторонний, MCP-only): `getNewMessages()` — читать новые сообщения из чата
-Bulka; `sendChatMessage(text)` — коротко ответить в чат.
+- `setCodeAndPlay` — заменить весь код и сразу запустить (главный); `setFullCode`, `appendCode`, `editCode` — заменить, дописать, поправить фрагмент; `readCode` — прочитать код; `highlightCode` — выделить фрагмент.
+- `playMusic` / `stopMusic` — запуск и остановка; если в коде ошибка, тул вернёт её текст. До первого щелчка в окне звук выключен (так требует браузер) — тул скажет об этом.
+- `undo` / `redo` — отменить и повторить правку; `getPlaybackState` — играет ли музыка, какой паттерн открыт, громкость, вкладка панели.
+- `getVolume` / `setVolume` — общая громкость (0–1).
+- `startRecording` / `stopRecording` / `recordSeconds` — запись того, что играет, в WAV; `exportWav` — рендер циклов в WAV без реального времени; `listRecordings` — файлы в папке `recordings` (десктоп).
+
+Знания и звуки:
+
+- `searchDocs` — поиск по документации и справке функций; `getReference` — справка по одной функции; `getExamples` — примеры по жанрам.
+- `getAvailablePacks` / `getBankSamples` — какие звуки есть; `loadSamples` — подключить пак (`github:user/repo` или URL на `strudel.json`).
+- `getConsole` — логи консоли для отладки.
+
+Паттерны и шеринг:
+
+- `listPatterns`, `openPattern`, `newPattern`, `duplicatePattern`, `deletePattern`, `clearPatterns`, `exportPatterns`, `importPatterns` — свои паттерны (удаление — только с `confirm: true`).
+- `shareCode` — сохранить трек в облако и получить ссылку `bulka.app/?…`; `setSharePublic` — показать трек в ленте или скрыть.
+- `listPublicPatterns`, `openPublicPattern`, `likePattern` — публичная лента и избранное.
+- `newTrack` — начать новый трек (окно перезагрузится).
+
+Окно и настройки:
+
+- `getSettings` / `setSettings` — тема, шрифт, клавиши (в том числе Vim, Emacs, Helix), панель, редактор, аудио; `listAudioDevices` — аудиовыходы.
+- `getPrebakeScript` / `setPrebakeScript` — скрипт, выполняемый перед каждым запуском.
+- `getAiProviders` / `setAiProvider` — провайдер и модель ИИ чата Bulka.
+- `openPanel` — открыть вкладку панели или закрыть панель.
+
+Чат: `getNewMessages` / `sendChatMessage` — читать сообщения пользователя из чата Bulka и отвечать в него.
+
+Агенту сознательно не доступны ключи API провайдеров, галочка анонимной статистики (её ставит только человек) и выключение самого MCP-сервера.
+
+Знания и звуки — **не угадывай, спрашивай тулами**: сомневаешься в функции — `searchDocs` или `getReference`; перед `s("...")` — `getAvailablePacks`, чтобы взять реально существующий звук. При ошибке — сперва `getConsole()` + `readCode()`, потом `editCode`.
 
 ## Как писать музыку (Strudel, минимум)
 - **Ударные:** `s("bd sd hh")` — bd бочка, sd снейр, hh хэт. Повтор: `s("hh*8")`. Пауза: `~`.

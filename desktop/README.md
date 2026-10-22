@@ -1,50 +1,63 @@
-# Bulka Desktop (портативное Windows-приложение)
+# Bulka Desktop (Windows, Linux, macOS)
 
-Оболочка Tauri v2: поднимает автономный **Astro Node-сервер** Bulka на `127.0.0.1:<свободный порт>`
-дочерним процессом `node.exe` и открывает нативное окно WebView2 на этот URL. Сервер сам раздаёт SPA
-и API (`/api/chat`, `/api/models`) на одном origin — весь функционал сайта работает локально.
+Оболочка Tauri v2: поднимает автономный **Astro Node-сервер** Bulka на `127.0.0.1:4188` (занят — свободный порт)
+дочерним процессом бандлёного `node` и открывает нативное окно (WebView2 / WebKitGTK / WKWebView) на этот URL.
+Сервер сам раздаёт SPA и API (`/api/chat`, `/api/models`, `/mcp`) на одном origin — весь функционал сайта работает
+локально. Не поднялся сервер — окно с ошибкой и путём к логу `bulka-server.log`, а не пустое окно.
 
-## Портативность / изоляция
+## Где что лежит
 
-- Всё живёт **рядом с exe**: `app/dist` (сайт), `app/node/node.exe` (рантайм), `app/node_modules`
-  (только рантайм-зависимости сервера), `webview-data/` (localStorage → **твои ключи и настройки**).
-  Ничего не пишется в систему/AppData. **Удалил папку — удалил приложение.**
-- Закрыл окно → дочерний Node-сервер убивается (`RunEvent::Exit`), процессов не остаётся.
-- Свои ключи (OpenAI/Anthropic/Gemini/Z.AI/OpenRouter) вводятся в UI и хранятся в `webview-data/`.
-  Бесплатный режим (OVHcloud) работает без ключа.
+| | Ресурсы (`app/`: dist, node, node_modules) | Данные (записи, `bulka-server.log`) | Ключи и настройки (localStorage) |
+|---|---|---|---|
+| Windows | рядом с exe | рядом с exe | `webview-data/` рядом с exe |
+| Linux (AppImage, .deb) | внутри бандла (`/usr/lib/Bulka`) | `~/.local/share/app.bulka.desktop` | там же |
+| macOS | `Bulka.app/Contents/Resources` | `~/Library/Application Support/app.bulka.desktop` | там же |
+
+Закрыл окно → окно отправляет накопленную статистику (если она включена, до 8 с, `/api/desktop/flush`), потом
+дочерний Node-сервер убивается, процессов не остаётся.
 
 ## Сборка
 
 ```bash
-# 1) установщик (.exe) + updater-артефакты
+# Windows: установщик (.exe) + updater-артефакты, затем портативный zip
 bash desktop/build.sh
-#    -> desktop/src-tauri/target/release/bundle/nsis/Bulka_<ver>_x64-setup.exe
-
-# 2) портативный zip (та же раскладка, без установщика)
 bash desktop/pack-portable.sh
-#    -> desktop/dist-portable/Bulka-portable.zip
 ```
 
-`build.sh` детерминирован: собирает сайт (`DESKTOP=1` → node-адаптер), готовит `staging/app`
-(dist + `node.exe` + **плоский** prod-`node_modules` через `pnpm deploy --node-linker=hoisted`),
-вырезает build-only пакеты (typescript/esbuild/sharp/tailwind/rollup/… — сервер их в рантайме не
-грузит), затем `tauri build`. **react-aria / react-stately / @internationalized НУЖНЫ** (SSR React) —
-их скрипт не трогает.
+```bash
+# Linux (AppImage + .sig, .deb): в Docker под WSL, Ubuntu 22.04 (glibc 2.35), из закоммиченного HEAD
+bash desktop/build-linux-docker.sh desktop/dist-linux
+```
+
+macOS (.dmg и архив `.app.tar.gz` для апдейтера) собирается на GitHub: workflow **macOS build**
+(`.github/workflows/release-macos.yml`, `workflow_dispatch`, поле `tag`). Ему нужны переменные репозитория
+`PUBLIC_SUPABASE_URL` и `PUBLIC_SUPABASE_PUBLISHABLE_KEY`.
+
+`build.sh` собирает под текущую ОС: сайт (`DESKTOP=1` → node-адаптер), `staging/app` (dist + node нужной ОС с
+nodejs.org с проверкой SHA-256 + **плоский** prod-`node_modules` через `pnpm deploy --node-linker=hoisted`), вырезает
+build-only пакеты (typescript/esbuild/sharp/tailwind/rollup/… — сервер их в рантайме не грузит), затем `tauri build`.
+**react-aria / react-stately / @internationalized НУЖНЫ** (SSR React) — их скрипт не трогает. Платформенные настройки
+бандла — `src-tauri/tauri.linux.conf.json` (AppImage с GStreamer для звука WebKitGTK, зависимости .deb) и
+`src-tauri/tauri.macos.conf.json`.
 
 ## Требования сборки
 
-- Rust/cargo, Node+pnpm, WebView2 (в Windows 11 предустановлен; иначе NSIS докачает bootstrapper).
-- Ключ подписи авто-апдейта: `~/.tauri/bulka-updater.key` (+ пароль в env
-  `BULKA_UPDATER_PASSWORD`). Публичный ключ вшит в `src-tauri/tauri.conf.json`.
+- Rust/cargo, Node + pnpm; для Linux — Docker под WSL.
+- Ключ подписи авто-апдейта: `~/.tauri/bulka-updater.key` (путь меняет `BULKA_UPDATER_KEY`), пароль — env
+  `BULKA_UPDATER_PASSWORD` или строка `BULKA_UPDATER_PASSWORD=` в `~/.claude/secrets/bulka.env` (`BULKA_SECRETS`).
+  Публичный ключ вшит в `src-tauri/tauri.conf.json`. Без ключа сборка Windows и Linux останавливается с ошибкой.
 
-## Авто-обновление
+## Релиз и авто-обновление
 
-Установленная сборка при старте проверяет последний GitHub-релиз; при новой версии предлагает
-скачать подписанный `setup.exe` и перезапуститься. Портативная — предлагает открыть страницу релиза.
-Манифест — `latest.json` рядом с ассетами релиза (эндпоинт в `tauri.conf.json`).
+`bash desktop/make-release.sh` — когда готовы все три сборки: скачивает артефакт «macOS build» этого же коммита,
+подписывает `.app.tar.gz` ключом апдейтера, собирает `latest.json` (`windows-x86_64`, `linux-x86_64`,
+`darwin-aarch64`) и создаёт GitHub-релиз со всеми файлами.
+
+При старте приложение проверяет последний релиз. Установленная Windows-сборка, AppImage и macOS предлагают обновиться
+на месте и перезапуститься; портатив Windows и .deb — открыть страницу релизов.
 
 ## Стек и почему Tauri (а не Electron)
 
-Как в остальных десктоп-приложениях автора (dub-studio, MiniMax Studio) — **Tauri v2**: маленький
-бандл (системный WebView2), NSIS-установщик из коробки, авто-апдейт. Отличие Bulka: сервер не Rust-крейт,
-а **Node** (агент на JS), поэтому поднимается дочерним `node.exe` (`src-tauri/src/lib.rs`).
+Как в остальных десктоп-приложениях автора (dub-studio, MiniMax Studio) — **Tauri v2**: маленький бандл (системный
+WebView), установщики из коробки, авто-апдейт. Отличие Bulka: сервер не Rust-крейт, а **Node** (агент на JS), поэтому
+поднимается дочерним `node` (`src-tauri/src/lib.rs`).

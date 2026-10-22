@@ -6,6 +6,819 @@
     "changes": []
   },
   {
+    "date": "2026-10-22",
+    "dateFormatted": "22 октября 2026",
+    "changes": [
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "Remove the unused agent tools module",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "12581b878"
+      },
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "Statistics send the AI provider and model as a model set, names kept as typed like used_models of the studios' client; the old short-name list mangled OpenRouter ids and the hub's model view never read it",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "43e298f53"
+      },
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "Format WelcomeTab",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "1b2bca34e"
+      },
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "Remove the unused agent prompt module; the agent prompt no longer tells to add .note() after n().scale(), which nests the note and breaks it",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "1467b7eb2"
+      },
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "TidalCycles words in code (up, toScale, euclidOff, d1) get the Strudel way under the error; the agent prompts stop calling Bulka a Tidal fork and say what Strudel lacks; an editor error goes back to the agent again after a run that worked; the server no longer tells the model playMusic succeeded",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "eb58bf900"
+      }
+    ]
+  },
+  {
+    "date": "2026-10-15",
+    "dateFormatted": "15 октября 2026",
+    "changes": [
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "The microphone asked for only to name the sound outputs is released at once",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "958d332f2"
+      },
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "The window's own page gets the microphone WebView2 left unanswered, so the sound outputs are listed",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "758013ac4"
+      }
+    ]
+  },
+  {
+    "date": "2026-10-14",
+    "dateFormatted": "14 октября 2026",
+    "changes": [
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "studio-hub-client 365c2b7",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "2b3d27785"
+      },
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "Ревью: номер компьютера для окна — только системный (machine::system_id), без записи общего файла до согласия; studio-hub-client 68d95f8",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "79fe8b8ac"
+      },
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "The desktop app sends the computer number the studios send, so one person with Bulka and a studio counts once",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "c5303fe54"
+      },
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "Welcome tab: report a problem through the issue forms, with the browser filled in",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "68f997854"
+      },
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "Issue forms: bug, idea, question",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "cd53c2308"
+      }
+    ]
+  },
+  {
+    "date": "2026-10-12",
+    "dateFormatted": "12 октября 2026",
+    "changes": [
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "make-release.sh works from Git Bash (node for Windows got /d/... paths)",
+        "scope": "desktop",
+        "author": "Nerual Dreming",
+        "hash": "6ec511f59"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "statistics start and the consent switch work when the notices script failed to load; the loader reads the choice for each try",
+        "scope": "hub",
+        "author": "Nerual Dreming",
+        "hash": "2d0f90088"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "review findings — local server answers only on its own name, MCP off the site, notices via the proxy, statistics race",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "633253555"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "bot commits (star history chart) stay out of What's new, and the ones already in are removed",
+        "scope": "changelog",
+        "author": "Nerual Dreming",
+        "hash": "3c8b86500"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "newTrack keeps the page language (the English page went to the Russian root)",
+        "scope": "mcp",
+        "author": "Nerual Dreming",
+        "hash": "efc865cce"
+      },
+      {
+        "type": "ci",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "the macOS build also runs on pull requests that touch the desktop app",
+        "scope": "desktop",
+        "author": "Nerual Dreming",
+        "hash": "a27c74b1d"
+      }
+    ]
+  },
+  {
+    "date": "2026-10-11",
+    "dateFormatted": "11 октября 2026",
+    "changes": [
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "saving a recording no longer crashes the server where xdg-open is missing (spawn error event had no handler)",
+        "scope": "desktop",
+        "author": "Nerual Dreming",
+        "hash": "ee1accc2d"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "WAV export in WebKit, MCP calls during window reconnects, exit without the 8 s wait",
+        "scope": "desktop",
+        "author": "Nerual Dreming",
+        "hash": "da53044c1"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "no trailing whitespace in the English pages from upstream and the xen page",
+        "scope": "docs",
+        "author": "Nerual Dreming",
+        "hash": "54d7e4a0a"
+      },
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "build.sh: the deploy folder no longer takes the TMP variable the linker writes to; docs index for the desktop pages",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "869ae3d60"
+      },
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "Desktop for Windows, Linux and macOS",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "dac19d8d0"
+      },
+      {
+        "type": "feat",
+        "typeLabel": "Новые возможности",
+        "emoji": "✨",
+        "description": "anonymous statistics with consent and hub news on site and desktop — Rust-client report format (scrub, limits, cascade), first-run consent panel and settings toggle with preview, counters for pattern runs, recordings, exports, shares, agent replies; notices.js with impressions only after consent; recording errors surfaced; README statistics and English sections",
+        "scope": "hub",
+        "author": "Nerual Dreming",
+        "hash": "a719dc037"
+      },
+      {
+        "type": "docs",
+        "typeLabel": "Документация",
+        "emoji": "📚",
+        "description": "CLAUDE.md — two languages, post-sync steps",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "addb057e2"
+      },
+      {
+        "type": "feat",
+        "typeLabel": "Новые возможности",
+        "emoji": "✨",
+        "description": "English version at /en/ — upstream English docs (59 pages, sync script), Bulka pages translated (20), UI dictionary ru/en with parity test, English reference and agent search, blog/RSS/feed/whatsnew per language, language switch in REPL and docs, hreflang; fixes: RU blog dates, RSS titled Strudel, /workshop redirect, false feed TOC, hydra/api link, outdated agent/community/themes facts",
+        "scope": "i18n",
+        "author": "Nerual Dreming",
+        "hash": "9a0eb9ef3"
+      },
+      {
+        "type": "feat",
+        "typeLabel": "Новые возможности",
+        "emoji": "✨",
+        "description": "every window capability as an MCP tool (49 tools: patterns, share, feed, volume, undo, export WAV, samples, prebake, settings, AI provider, panel, reference, recordings); playMusic reports code errors and locked audio; restore lost selectText/getSelection",
+        "scope": "mcp",
+        "author": "Nerual Dreming",
+        "hash": "9ea24c002"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "site URL was strudel.cc (canonical, og, RSS); package-doc anchors leaked disk paths; Russian headings; likes/publicity/clearAll/pagination errors surfaced; share link from desktop points to bulka.app; recordings never overwrite; Helix keys, block eval, prebake editor from upstream; agent search covers function reference",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "f56d0906d"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "prettier/eslint green (format 41 files, ignore build outputs and MDX that prettier's MDX1 parser corrupts); masterVolume NaN when unset; vite glob query raw",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "f62b9d5ba"
+      },
+      {
+        "type": "chore",
+        "typeLabel": "Обслуживание",
+        "emoji": "🔧",
+        "description": "Astro 5.18 + integrations, React 19.3, supabase-js 2.117, Tauri 2.12 (CLI+crates); drop 9 unused deps (ai, @ai-sdk/*, zod, hs2js dup...); pnpm 11 allowBuilds mirrors upstream onlyBuiltDependencies",
+        "scope": "deps",
+        "author": "Nerual Dreming",
+        "hash": "2d903d2dc"
+      },
+      {
+        "type": "docs",
+        "typeLabel": "Документация",
+        "emoji": "📚",
+        "description": "translate upstream FAQ hap section and symbol cheatsheet, signals, samples headings; fix samples anchors and hardcoded bulka.app link; rebuild docs index",
+        "scope": "ru",
+        "author": "Nerual Dreming",
+        "hash": "39abc46ef"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "doc.en.json + doc-ru sync keep Russian reference; translate 31 new Strudel functions; tests run with vitest run, isolate setDefaultJoin, restore midikeys mock, drop broken growlist doc",
+        "scope": "reference,test",
+        "author": "Nerual Dreming",
+        "hash": "c9f11646b"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "fail loudly on lost anchor or git error, --since-date re-anchor, ESM .mjs; backfill Dec 2025 - Oct 2026",
+        "scope": "changelog",
+        "author": "Nerual Dreming",
+        "hash": "ba5a77355"
+      },
+      {
+        "type": "sync",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "land strudel-sync (Strudel d97e91e92) onto Bulka",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "cbcc7fe28"
+      },
+      {
+        "type": "chore",
+        "typeLabel": "Обслуживание",
+        "emoji": "🔧",
+        "description": "Cargo.lock under desktop 0.2.2, pnpm release-age exclude for @typescript-eslint/visitor-keys",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "7f730f04f"
+      }
+    ]
+  },
+  {
+    "date": "2026-09-24",
+    "dateFormatted": "24 сентября 2026",
+    "changes": [
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "Star history redraws on every new star",
+        "scope": null,
+        "author": "Ilya (Nerual Dreming) Timonin",
+        "hash": "2ca703e46"
+      }
+    ]
+  },
+  {
+    "date": "2026-09-01",
+    "dateFormatted": "1 сентября 2026",
+    "changes": [
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "единый стор состояния записи → индикатор в UI при программной записи",
+        "scope": "record",
+        "author": "Nerual Dreming",
+        "hash": "ae6d8c89e"
+      },
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "feat(record) + refactor(desktop): запись из кода/тулзами; node через shell-плагин Tauri",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "1e06a55be"
+      },
+      {
+        "type": "feat",
+        "typeLabel": "Новые возможности",
+        "emoji": "✨",
+        "description": "запись из кода .record() + тулзы записи; fix(updater): гасить node.exe перед установкой",
+        "scope": "record",
+        "author": "Nerual Dreming",
+        "hash": "f04305a9e"
+      },
+      {
+        "type": "docs",
+        "typeLabel": "Документация",
+        "emoji": "📚",
+        "description": "скилл — как писать музыку, RAG через тулы, визуализация ._scope() на секциях",
+        "scope": "mcp",
+        "author": "Nerual Dreming",
+        "hash": "417cc9c97"
+      },
+      {
+        "type": "docs",
+        "typeLabel": "Документация",
+        "emoji": "📚",
+        "description": "скилл-дока под единый набор из 15 тулзов + версия 0.2.1",
+        "scope": "mcp",
+        "author": "Nerual Dreming",
+        "hash": "52a80146a"
+      },
+      {
+        "type": "refactor",
+        "typeLabel": "Рефакторинг",
+        "emoji": "♻️",
+        "description": "единый реестр тулзов для встроенного агента И MCP",
+        "scope": "agent",
+        "author": "Nerual Dreming",
+        "hash": "4543ea768"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "searchDocs больше не роняет стрим на спецсимволах + защита тулзов",
+        "scope": "chat",
+        "author": "Nerual Dreming",
+        "hash": "4ca1a05ee"
+      },
+      {
+        "type": "feat",
+        "typeLabel": "Новые возможности",
+        "emoji": "✨",
+        "description": "реальная схема параметров OpenRouter-моделей + починка персистентности",
+        "scope": "chat",
+        "author": "Nerual Dreming",
+        "hash": "d20ef9251"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "стоп реально отменяет генерацию на сервере + настройки локальной модели",
+        "scope": "chat",
+        "author": "Nerual Dreming",
+        "hash": "5e3061644"
+      },
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "docs+ui: вики про десктоп/MCP/локальные модели + иконка копирования в «Поддержать»",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "a8edb1002"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "не терять код при обновлении страницы (автосохранение)",
+        "scope": "repl",
+        "author": "Nerual Dreming",
+        "hash": "08f4dfa65"
+      },
+      {
+        "type": "feat",
+        "typeLabel": "Новые возможности",
+        "emoji": "✨",
+        "description": "показывать reasoning модели всегда (не только Z.AI)",
+        "scope": "chat",
+        "author": "Nerual Dreming",
+        "hash": "22c2cfd55"
+      },
+      {
+        "type": "feat",
+        "typeLabel": "Новые возможности",
+        "emoji": "✨",
+        "description": "вкладка «Поддержать» + вики-страница; «поделиться» скрыта в десктопе",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "9ad2e9af8"
+      },
+      {
+        "type": "feat",
+        "typeLabel": "Новые возможности",
+        "emoji": "✨",
+        "description": "провайдер «Локально (LM Studio / Ollama)» с тулами",
+        "scope": "chat",
+        "author": "Nerual Dreming",
+        "hash": "01deee1c1"
+      },
+      {
+        "type": "feat",
+        "typeLabel": "Новые возможности",
+        "emoji": "✨",
+        "description": "двусторонний чат через MCP + провайдер «Внешний агент»",
+        "scope": "mcp",
+        "author": "Nerual Dreming",
+        "hash": "98946e112"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "эндпоинт на /mcp (был /api/mcp) — реальный MCP-клиент ловил 404 на URL из конфига",
+        "scope": "mcp",
+        "author": "Nerual Dreming",
+        "hash": "8a76eff42"
+      },
+      {
+        "type": "chore",
+        "typeLabel": "Обслуживание",
+        "emoji": "🔧",
+        "description": "версия 0.2.0",
+        "scope": "desktop",
+        "author": "Nerual Dreming",
+        "hash": "d73c414db"
+      },
+      {
+        "type": "feat",
+        "typeLabel": "Новые возможности",
+        "emoji": "✨",
+        "description": "встроенный MCP-сервер — внешний Claude/ChatGPT рулит Bulka",
+        "scope": "desktop",
+        "author": "Nerual Dreming",
+        "hash": "744f21859"
+      },
+      {
+        "type": "chore",
+        "typeLabel": "Обслуживание",
+        "emoji": "🔧",
+        "description": "скрипт публикации релиза (latest.json + gh release)",
+        "scope": "desktop",
+        "author": "Nerual Dreming",
+        "hash": "eef849b9b"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "рабочие undo/redo (кнопки редактора) и запись/экспорт в десктопе",
+        "scope": "desktop",
+        "author": "Nerual Dreming",
+        "hash": "b5a8bacb5"
+      },
+      {
+        "type": "docs",
+        "typeLabel": "Документация",
+        "emoji": "📚",
+        "description": "добавлена десктоп-версия (установщик + портатив для Windows)",
+        "scope": "readme",
+        "author": "Nerual Dreming",
+        "hash": "65cef80e3"
+      },
+      {
+        "type": "feat",
+        "typeLabel": "Новые возможности",
+        "emoji": "✨",
+        "description": "портативное Windows-приложение Bulka (Tauri v2 + Node-сервер)",
+        "scope": "desktop",
+        "author": "Nerual Dreming",
+        "hash": "7245ae0f6"
+      },
+      {
+        "type": "feat",
+        "typeLabel": "Новые возможности",
+        "emoji": "✨",
+        "description": "бесплатный AI без ключа через OVHcloud, полностью убран gpt4free",
+        "scope": "ai",
+        "author": "Nerual Dreming",
+        "hash": "34a55d4a5"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "keep default 'Auto' provider (revert pollinations); cakes make it work",
+        "scope": "gpt4free",
+        "author": "Nerual Dreming",
+        "hash": "7ec275140"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "bake proof-of-work cakes + send credentials (as g4f.dev intends)",
+        "scope": "gpt4free",
+        "author": "Nerual Dreming",
+        "hash": "a6f1ae1f5"
+      },
+      {
+        "type": "feat",
+        "typeLabel": "Новые возможности",
+        "emoji": "✨",
+        "description": "conditional strict for OpenRouter + single source of truth",
+        "scope": "agent-tools",
+        "author": "Nerual Dreming",
+        "hash": "8ee7bf836"
+      },
+      {
+        "type": "feat",
+        "typeLabel": "Новые возможности",
+        "emoji": "✨",
+        "description": "modernize tool schemas per 2026 best practices",
+        "scope": "agent-tools",
+        "author": "Nerual Dreming",
+        "hash": "0050ab466"
+      },
+      {
+        "type": "feat",
+        "typeLabel": "Новые возможности",
+        "emoji": "✨",
+        "description": "per-model settings pulled from OpenRouter + fix GPT4Free default",
+        "scope": "openrouter",
+        "author": "Nerual Dreming",
+        "hash": "eb4e71aff"
+      },
+      {
+        "type": "docs",
+        "typeLabel": "Документация",
+        "emoji": "📚",
+        "description": "update README (new engine features) + add CLAUDE.md",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "c325a22a9"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "don't regenerate doc.json in prebuild (keep curated RU reference)",
+        "scope": "build",
+        "author": "Nerual Dreming",
+        "hash": "43d72aa3c"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "restore RUSSIAN in-app reference + add new functions",
+        "scope": "reference",
+        "author": "Nerual Dreming",
+        "hash": "aa4c525ae"
+      },
+      {
+        "type": "chore",
+        "typeLabel": "Обслуживание",
+        "emoji": "🔧",
+        "description": "regenerate doc.json REPL reference from updated engine",
+        "scope": "sync",
+        "author": "Nerual Dreming",
+        "hash": "f7483ee1a"
+      },
+      {
+        "type": "feat",
+        "typeLabel": "Новые возможности",
+        "emoji": "✨",
+        "description": "teach AI agent the new engine features so it uses them",
+        "scope": "agent",
+        "author": "Nerual Dreming",
+        "hash": "6670058fa"
+      },
+      {
+        "type": "feat",
+        "typeLabel": "Новые возможности",
+        "emoji": "✨",
+        "description": "russify + integrate new Strudel features into Bulka docs/UI",
+        "scope": "sync",
+        "author": "Nerual Dreming",
+        "hash": "04719723c"
+      }
+    ]
+  },
+  {
+    "date": "2026-08-31",
+    "dateFormatted": "31 августа 2026",
+    "changes": [
+      {
+        "type": "feat",
+        "typeLabel": "Новые возможности",
+        "emoji": "✨",
+        "description": "pull Strudel upstream engine (Jan→Aug 2026) into Bulka",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "f6065f616"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "move client config to env vars, restore live project",
+        "scope": "supabase",
+        "author": "Nerual Dreming",
+        "hash": "c2fe8fa02"
+      },
+      {
+        "type": "restore",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "bring back full source tree accidentally deleted in 68874b1b",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "33981cdc2"
+      }
+    ]
+  },
+  {
+    "date": "2026-07-07",
+    "dateFormatted": "7 июля 2026",
+    "changes": [
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "Star History: self-hosted chart via GitHub Action (external services broken by stargazers API restriction)",
+        "scope": null,
+        "author": "timoncool",
+        "hash": "68874b1b7"
+      }
+    ]
+  },
+  {
+    "date": "2026-04-16",
+    "dateFormatted": "16 апреля 2026",
+    "changes": [
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "Style upgrade: centered header, flat-square badges, cross-links, cleanup",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "753703812"
+      },
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "Add FUNDING.yml — enable Sponsor button",
+        "scope": null,
+        "author": "Ilya (Nerual Dreming) Timonin",
+        "hash": "1c165220a"
+      },
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "Switch donation block from table to vertical list",
+        "scope": null,
+        "author": "Ilya Timonin",
+        "hash": "6412c2919"
+      },
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "Add donation section to README",
+        "scope": null,
+        "author": "Ilya Timonin",
+        "hash": "88c9afcb7"
+      }
+    ]
+  },
+  {
+    "date": "2026-03-02",
+    "dateFormatted": "2 марта 2026",
+    "changes": [
+      {
+        "type": "feat",
+        "typeLabel": "Новые возможности",
+        "emoji": "✨",
+        "description": "use ?new URL param to start fresh session with empty editor",
+        "scope": null,
+        "author": "Claude",
+        "hash": "287e748fe"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "start with empty code instead of default pattern on new session",
+        "scope": null,
+        "author": "Claude",
+        "hash": "9d223d957"
+      },
+      {
+        "type": "fix",
+        "typeLabel": "Исправления",
+        "emoji": "🐛",
+        "description": "\"новый\" button now properly resets all session state",
+        "scope": null,
+        "author": "Claude",
+        "hash": "02bcc38e3"
+      },
+      {
+        "type": "feat",
+        "typeLabel": "Новые возможности",
+        "emoji": "✨",
+        "description": "add \"новый\" button to navigation to start fresh session",
+        "scope": null,
+        "author": "Claude",
+        "hash": "d652aa31e"
+      },
+      {
+        "type": "feat",
+        "typeLabel": "Новые возможности",
+        "emoji": "✨",
+        "description": "auto-add // @model provider/model tag when AI sets code",
+        "scope": null,
+        "author": "Claude",
+        "hash": "ecd0923f0"
+      }
+    ]
+  },
+  {
     "date": "2025-12-16",
     "dateFormatted": "16 декабря 2025",
     "changes": [
@@ -758,15 +1571,6 @@
         "scope": null,
         "author": "Claude",
         "hash": "68423e41"
-      },
-      {
-        "type": "chore",
-        "typeLabel": "Обслуживание",
-        "emoji": "🔧",
-        "description": "обновить changelog [skip ci]",
-        "scope": null,
-        "author": "github-actions[bot]",
-        "hash": "3fd8aec3"
       },
       {
         "type": "fix",

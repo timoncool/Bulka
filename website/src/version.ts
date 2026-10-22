@@ -20,6 +20,6 @@ if (typeof window !== 'undefined') {
   console.log(
     `%c🍞 Bulka %c${VERSION_FULL}`,
     'font-weight: bold; font-size: 14px; color: #D4A574;',
-    'font-size: 12px; color: #888;'
+    'font-size: 12px; color: #888;',
   );
 }

@@ -1,0 +1,55 @@
+---
+title: "Bulka AI Agent"
+author: "timoncool"
+date: "2025-12-08"
+description: "An AI music agent with OpenAI, Anthropic and Gemini support"
+lang: en
+---
+
+# Bulka AI Agent
+
+The main update of the day is the **AI Music Agent** for vibe-coding music!
+
+## AI Agent
+
+### Multi-provider support
+- **OpenAI**: GPT-4.1, GPT-5, GPT-5.1, o3-mini
+- **Anthropic**: Claude 4.5 Sonnet, Claude Opus 4.5
+- **Gemini**: Gemini 2.5 Pro, Gemini 2.5 Flash
+
+### Features
+- Chat interface in the side panel
+- Tool calling to control the code
+- RAG search across the docs
+- Real-time response streaming
+- Extended thinking for Claude
+- Reasoning summaries for GPT-5.1
+- Chat saved in localStorage
+
+### Agent tools
+- `runCode` — run the code
+- `stopCode` — stop playback
+- `updateCode` — edit the code
+- `getCode` — read the current code
+- `highlightCode` — highlight a selection
+- `searchDocs` — search the docs
+- `listSounds` — list the available sounds
+
+## Docs
+
+- Full docs in Markdown for RAG
+- All code examples added to the EN docs
+- Duplicate tracks removed from the Gallery
+- Complex community examples added
+
+## UI/UX
+
+- Artifact-style code editing
+- Markdown rendering in the chat
+- ChatTab colors match the other tabs
+- Vercel adapter for the server-side API
+
+## Fixes
+- Correct path for RAG search
+- Correct default models
+- Models without tool support are filtered out

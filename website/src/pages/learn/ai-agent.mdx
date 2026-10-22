@@ -3,13 +3,13 @@ title: Bulka AI Agent
 layout: ../../layouts/MainLayout.astro
 ---
 
-# Bulka AI Agent
+# AI-агент Bulka
 
 Bulka AI — это встроенный музыкальный помощник, который поможет тебе создавать музыку через код. Агент понимает Strudel/TidalCycles и может писать, редактировать и запускать код за тебя.
 
 ## Особенности
 
-- **Три провайдера на выбор**: OpenAI, Anthropic (Claude), Google Gemini
+- **Провайдеры на выбор**: бесплатный OVHcloud без ключа, OpenAI, Anthropic (Claude), Google Gemini, Z.AI, OpenRouter, локальные модели (LM Studio / Ollama) и внешний агент через MCP
 - **Полный real-time стриминг**: ответы появляются в реальном времени
 - **Отображение мыслей**: для моделей с extended thinking показывается процесс размышления
 - **Динамическая загрузка моделей**: список моделей подгружается напрямую с API провайдеров
@@ -96,6 +96,10 @@ AI-агент находится в правой панели редактора
 | `stopMusic()` | Остановить воспроизведение |
 | `searchDocs(query)` | Поиск по документации Strudel |
 | `highlightCode(search)` | Выделить фрагмент кода в редакторе |
+| `getAvailablePacks()` / `getBankSamples(bank)` | Какие звуки и паки загружены |
+| `getExamples(category)` | Примеры кода по жанрам |
+| `getConsole()` | Логи консоли для отладки |
+| `startRecording()` / `stopRecording()` / `recordSeconds(n)` | Запись того, что играет, в WAV |
 
 ## Быстрые команды
 

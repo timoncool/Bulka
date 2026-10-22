@@ -10,11 +10,16 @@ import PageContent from '../components/PageContent/PageContent.astro';
  *
  * Этот файл генерируется автоматически из git коммитов.
  * Чтобы обновить changelog, запусти: pnpm changelog
- * Скрипт: scripts/generate-changelog.js
+ * Скрипт: scripts/generate-changelog.mjs
  */
 import changelog from '../data/changelog.json';
+import { format } from 'date-fns';
+import { t } from '../i18n/index.mjs';
+import { langFromPath } from '../i18n/lang.mjs';
 
 const currentPage = Astro.url.pathname;
+const lang = langFromPath(currentPage);
+const dayTitle = (day: any) => (lang === 'en' ? format(new Date(day.date), 'MMMM d, yyyy') : day.dateFormatted);
 
 // Типы и их стили
 const typeStyles: Record<string, { bg: string; text: string }> = {
@@ -36,11 +41,11 @@ function getTypeStyle(type: string) {
 }
 ---
 
-<html dir="ltr" lang="ru" class="initial dark">
+<html dir="ltr" lang={lang} class="initial dark">
   <head>
     <HeadCommon />
-    <title>🍞 Что нового в Bulka</title>
-    <meta name="description" content="История изменений и обновлений Bulka - лайвкодинг музыки в браузере" />
+    <title>{t('whatsnew.title', undefined, lang)}</title>
+    <meta name="description" content={t('whatsnew.description', undefined, lang)} />
   </head>
 
   <body class="h-app-height text-gray-50 bg-background">
@@ -55,15 +60,13 @@ function getTypeStyle(type: string) {
           </aside>
           <PageContent>
             <div class="border-b-4 border-lineHighlight py-4 mb-8">
-              <h1 class="text-3xl font-bold mb-2">✨ Что нового</h1>
-              <p class="text-gray-400">
-                История всех изменений Bulka.
-              </p>
+              <h1 class="text-3xl font-bold mb-2">{t('whatsnew.h1', undefined, lang)}</h1>
+              <p class="text-gray-400">{t('whatsnew.intro', undefined, lang)}</p>
             </div>
 
             <!-- Легенда типов -->
             <div class="flex flex-wrap gap-2 mb-8 p-4 bg-gray-800/50 rounded-lg">
-              <span class="text-sm text-gray-400 mr-2">Типы:</span>
+              <span class="text-sm text-gray-400 mr-2">{t('whatsnew.types', undefined, lang)}</span>
               {Object.entries(typeStyles).slice(0, -1).map(([type, style]) => (
                 <span class={`text-xs px-2 py-1 rounded ${style.bg} ${style.text}`}>
                   {type}
@@ -78,7 +81,7 @@ function getTypeStyle(type: string) {
                   <!-- Дата -->
                   <div class="sticky top-16 z-10 bg-background/95 backdrop-blur py-2 mb-4 border-b border-gray-700">
                     <h2 class="text-xl font-semibold text-white">
-                      📅 {day.dateFormatted}
+                      📅 {dayTitle(day)}
                     </h2>
                     <span class="text-sm text-gray-500">{day.date}</span>
                   </div>
@@ -137,7 +140,7 @@ function getTypeStyle(type: string) {
             <div class="mt-12 pt-8 border-t border-gray-700 text-center text-gray-500">
                             <p class="mt-2">
                 <a href="https://github.com/timoncool/Bulka" target="_blank" class="text-blue-400 hover:underline">
-                  GitHub репозиторий
+                  {t('whatsnew.github', undefined, lang)}
                 </a>
               </p>
             </div>

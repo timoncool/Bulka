@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { addSubscriber } from '../../../lib/mcpBus.mjs';
+import { addSubscriber, subscriberCount } from '../../../lib/mcpBus.mjs';
 
 export const prerender = false;
 
@@ -19,10 +19,15 @@ export const GET: APIRoute = async () => {
       };
       safeEnqueue(': connected\n\n');
       const unsub = addSubscriber({ send: (cmd: unknown) => safeEnqueue(`data: ${JSON.stringify(cmd)}\n\n`) });
+      console.info(`[mcp] window connected (${subscriberCount()})`);
       const keepalive = setInterval(() => safeEnqueue(': ping\n\n'), 20000);
+      let closed = false;
       cleanup = () => {
+        if (closed) return;
+        closed = true;
         clearInterval(keepalive);
         unsub();
+        console.info(`[mcp] window disconnected (${subscriberCount()})`);
         try {
           controller.close();
         } catch {

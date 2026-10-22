@@ -16,6 +16,7 @@ import { isTauri } from '../../../tauri.mjs';
 import ClipboardDocumentIcon from '@heroicons/react/20/solid/ClipboardDocumentIcon';
 import DocumentPlusIcon from '@heroicons/react/20/solid/DocumentPlusIcon';
 import { TreeView, groupSoundsByPack } from './TreeView.jsx';
+import { t } from '../../../i18n/index.mjs';
 
 const getSamples = (samples) =>
   Array.isArray(samples) ? samples.length : typeof samples === 'object' ? Object.values(samples).length : 1;
@@ -261,7 +262,7 @@ export function SoundsTab() {
             e.stopPropagation();
             copyToClipboard(name);
           }}
-          title="Скопировать название"
+          title={t('sounds.copyName')}
         >
           <ClipboardDocumentIcon className="w-3 h-3" />
         </button>
@@ -271,7 +272,7 @@ export function SoundsTab() {
             e.stopPropagation();
             insertIntoEditor(`s("${name}")`);
           }}
-          title="Вставить в редактор"
+          title={t('sounds.insert')}
         >
           <DocumentPlusIcon className="w-3 h-3" />
         </button>
@@ -296,20 +297,20 @@ export function SoundsTab() {
   return (
     <div id="sounds-tab" className="px-4 flex gap-2 flex-col w-full h-full text-foreground">
       <div className="flex gap-2 items-center">
-        <Textbox placeholder="Поиск" value={search} onChange={(v) => setSearch(v)} className="flex-grow" />
+        <Textbox placeholder={t('sounds.search')} value={search} onChange={(v) => setSearch(v)} className="flex-grow" />
         {/* Переключатель режима отображения */}
         <div className="flex gap-1 shrink-0">
           <button
             onClick={() => setViewMode('tree')}
             className={`p-1.5 rounded ${viewMode === 'tree' ? 'bg-foreground/20' : 'hover:bg-foreground/10'}`}
-            title="Древовидный вид"
+            title={t('sounds.treeView')}
           >
             <ListBulletIcon className="w-4 h-4" />
           </button>
           <button
             onClick={() => setViewMode('flat')}
             className={`p-1.5 rounded ${viewMode === 'flat' ? 'bg-foreground/20' : 'hover:bg-foreground/10'}`}
-            title="Плоский список"
+            title={t('sounds.flatView')}
           >
             <Squares2X2Icon className="w-4 h-4" />
           </button>
@@ -321,12 +322,12 @@ export function SoundsTab() {
           value={soundsFilter}
           onChange={(value) => settingsMap.setKey('soundsFilter', value)}
           items={{
-            samples: 'сэмплы',
-            drums: 'драм-машины',
-            synths: 'синтезаторы',
-            wavetables: 'волновые таблицы',
-            user: 'свои',
-            importSounds: 'импорт звуков',
+            samples: t('sounds.filter.samples'),
+            drums: t('sounds.filter.drums'),
+            synths: t('sounds.filter.synths'),
+            wavetables: t('sounds.filter.wavetables'),
+            user: t('sounds.filter.user'),
+            importSounds: t('sounds.filter.importSounds'),
           }}
         ></ButtonGroup>
       </div>
@@ -338,22 +339,16 @@ export function SoundsTab() {
             onClick={() => setShowPackFilter(!showPackFilter)}
             className="text-left text-xs opacity-70 hover:opacity-100 transition-opacity"
           >
-            {showPackFilter ? '▼' : '▶'} Фильтр по пакам
+            {showPackFilter ? '▼' : '▶'} {t('sounds.packFilter')}
           </button>
           {showPackFilter && (
             <div className="flex flex-col gap-1 pl-4 max-h-40 overflow-y-auto">
               <div className="flex gap-2 mb-1">
-                <button
-                  onClick={selectAllPacks}
-                  className="text-xs opacity-70 hover:opacity-100 underline"
-                >
-                  Выбрать все
+                <button onClick={selectAllPacks} className="text-xs opacity-70 hover:opacity-100 underline">
+                  {t('sounds.selectAll')}
                 </button>
-                <button
-                  onClick={deselectAllPacks}
-                  className="text-xs opacity-70 hover:opacity-100 underline"
-                >
-                  Снять все
+                <button onClick={deselectAllPacks} className="text-xs opacity-70 hover:opacity-100 underline">
+                  {t('sounds.deselectAll')}
                 </button>
               </div>
               {Object.entries(availablePacks)
@@ -379,10 +374,10 @@ export function SoundsTab() {
       {soundsFilter === soundFilterType.USER && soundEntries.length > 0 && (
         <ActionButton
           className="pl-2"
-          label="удалить все"
+          label={t('sounds.deleteAll')}
           onClick={async () => {
             try {
-              const confirmed = await confirmDialog('Удалить все импортированные сэмплы?');
+              const confirmed = await confirmDialog(t('sounds.deleteAllConfirm'));
               if (confirmed) {
                 clearIDB(userSamplesDBConfig.dbName);
                 soundMap.set({});
@@ -412,15 +407,14 @@ export function SoundsTab() {
           <div className="prose dark:prose-invert min-w-full pt-2 pb-8 px-4">
             <ImportSoundsButton onComplete={() => settingsMap.setKey('soundsFilter', 'user')} />
             <p>
-              Чтобы импортировать звуки, они должны находиться{' '}
-              <a href={`${baseNoTrailing}/learn/samples/#from-disk-via-import-sounds-folder`} target="_blank">
-                в папке или подпапке
+              {t('sounds.importIntro')}{' '}
+              <a href={`${baseNoTrailing}${t('sounds.importDocs')}`} target="_blank">
+                {t('sounds.importIntroLink')}
               </a>
-              . Лучший способ — загрузить папку "samples", содержащую подпапки с отдельными звуками или
-              звуковыми банками (см. диаграмму ниже).{' '}
+              {t('sounds.importIntroRest')}{' '}
             </p>
             <pre className="bg-background" key={'sample-diagram'}>
-              {`└─ samples <-- импортируй эту папку
+              {`${t('sounds.importDiagramRoot')}
    ├─ swoop
    │  ├─ swoopshort.wav
    │  ├─ swooplong.wav
@@ -430,31 +424,24 @@ export function SoundsTab() {
       ├─ smashlow.wav
       └─ smashmiddle.wav`}
             </pre>
+            <p>{t('sounds.importNaming')}</p>
             <p>
-              Имя подпапки соответствует имени звука во вкладке "свои". Несколько сэмплов в одной
-              подпапке имеют одинаковое имя, но доступны через ".n( )" — помни, что нумерация
-              начинается с нуля и идёт в алфавитном порядке!
-            </p>
-            <p>
-              Больше информации и другие способы использования своих звуков —{' '}
-              <a href={`${baseNoTrailing}/learn/samples/#from-disk-via-import-sounds-folder`} target="_blank">
-                в документации
+              {t('sounds.importMore')}{' '}
+              <a href={`${baseNoTrailing}${t('sounds.importDocs')}`} target="_blank">
+                {t('sounds.importMoreLink')}
               </a>
               !
             </p>
-            <h3>Предпрослушка звуков</h3>
+            <h3>{t('sounds.previewTitle')}</h3>
             <pre className="bg-background" key={'sample-preview'}>
               n("0 1 2 3 4 5").s("sample-name")
             </pre>
-            <p>
-              Вставь строку выше в редактор, чтобы услышать загруженную папку. Используй имя сэмпла
-              как оно отображается во вкладке "свои".
-            </p>
+            <p>{t('sounds.previewHint')}</p>
           </div>
         ) : (
           ''
         )}
-        {!soundEntries.length && soundsFilter !== 'importSounds' ? 'Звуки не загружены' : ''}
+        {!soundEntries.length && soundsFilter !== 'importSounds' ? t('sounds.none') : ''}
       </div>
     </div>
   );

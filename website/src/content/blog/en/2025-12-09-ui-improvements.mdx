@@ -1,0 +1,45 @@
+---
+title: "UI improvements and an audio recorder"
+author: "timoncool"
+date: "2025-12-09"
+description: "Audio recorder, volume control, AI agent improvements"
+lang: en
+---
+
+# UI improvements and an audio recorder
+
+## Audio recorder
+
+New feature: **audio recording** right in the browser!
+
+- Record button in the header
+- Uncompressed WAV (lossless)
+- File name taken from the `@title` metadata
+- Correct UI positioning
+
+## Volume control
+
+- **Default volume 100%** (was 80%)
+- Floating volume slider
+- Synced with the mute state
+- Fixed the check for 0 (falsy)
+
+## AI Agent improvements
+
+### Streaming
+- Real-time streaming for all providers
+- Proper streaming for thinking blocks
+- Thinking signature captured for Anthropic
+
+### Models
+- Models loaded dynamically from the API
+- Models without tool support are filtered out
+- Fixed support for the GPT-5 series
+- Removed the unsupported reasoning_effort
+
+## UI/UX
+
+- Version and commit hash in the header
+- More space between header items
+- Removed the Mastodon link
+- Updated the AI agent docs

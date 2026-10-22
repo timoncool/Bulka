@@ -6,6 +6,11 @@ type Props = { post: CollectionEntry<'blog'> };
 const { post } = Astro.props;
 const { Content } = await post.render();
 import { format } from 'date-fns';
+import { ru } from 'date-fns/locale';
+import { t } from '../i18n/index.mjs';
+
+const lang = post.data.lang;
+const date = format(post.data.date, 'LLLL yyyy', lang === 'ru' ? { locale: ru } : undefined);
 ---
 
 <article
@@ -15,7 +20,7 @@ import { format } from 'date-fns';
     <span id={post.slug} class="-mt-16"></span>
     <p class="italic p-0 m-0">
       <time datetime={post.data.date.toISOString()}>
-        {format(post.data.date, 'MMMM yyyy')} by {post.data.author}
+        {t('blogPost.by', { date, author: post.data.author }, lang)}
       </time>
     </p>
   </div>

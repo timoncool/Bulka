@@ -1,6 +1,6 @@
 [package]
 name = "bulka-desktop"
-version = "0.2.2"
+version = "0.3.0"
 edition = "2021"
 description = "Tauri-оболочка Bulka: поднимает Node-сервер Astro на 127.0.0.1:<порт> и открывает окно"
 
@@ -21,6 +21,8 @@ tauri-plugin-updater = "2"
 tauri-plugin-shell = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+# только machine::id — номер компьютера, общий со студиями
+studio-hub-client = { git = "https://github.com/timoncool/studio-hub-client", rev = "365c2b757bfddd45fff67e7264b41f4f961a0032" }
 
 [profile.release]
 opt-level = "s"

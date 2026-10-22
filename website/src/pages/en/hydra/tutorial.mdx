@@ -1,0 +1,382 @@
+---
+title: Interactive Hydra Tutorial
+layout: ../../../layouts/MainLayout.astro
+---
+
+import { MiniRepl } from '../../../docs/MiniRepl';
+
+# Interactive Hydra Tutorial
+
+Welcome to the step-by-step Hydra tutorial! Every example can be edited and run right here.
+
+---
+
+## Step 1: Your first visual
+
+Let's start with the simplest thing: an oscillator. Press **play** to see the result:
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// This is an oscillator - a striped pattern
+osc().out()
+`}
+/>
+
+**Try:** change the number inside `osc()` to 10, 50 or 100 and see what changes!
+
+---
+
+## Step 2: Oscillator parameters
+
+The `osc()` oscillator takes three parameters:
+- **frequency** — the stripe frequency
+- **sync** — the movement speed
+- **offset** — the color offset
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+// osc(frequency, speed, color)
+osc(10, 0.1, 0.8).out()
+`}
+/>
+
+**Try:**
+- Change the first number (frequency): 5, 20, 60
+- Change the third number (color): 0, 0.5, 1.5
+
+---
+
+## Step 3: Adding transforms
+
+Now add a transform: rotation with `.rotate()`:
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10, 0.1, 0.8)
+  .rotate(0.5)  // Rotate by 0.5 radians
+  .out()
+`}
+/>
+
+**Try:** change the number in rotate() to 0, 1, 2, 3.14
+
+---
+
+## Step 4: Kaleidoscope
+
+Add a kaleidoscope effect with `.kaleid()`:
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10, 0.1, 0.8)
+  .rotate(0.5)
+  .kaleid(4)  // A 4-segment kaleidoscope
+  .out()
+`}
+/>
+
+**Try:** change the number in kaleid() to 3, 6, 8, 12
+
+---
+
+## Step 5: Animating over time
+
+Let's make the visual move! Use a function with `time`:
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10, 0.1, 0.8)
+  .rotate(() => time * 0.1)  // Constant rotation!
+  .kaleid(4)
+  .out()
+`}
+/>
+
+**Key point:** `() => time * 0.1` is a function evaluated every frame. `time` is the seconds since the start.
+
+---
+
+## Step 6: Other sources: noise
+
+Let's try another source: `noise()` (Perlin noise):
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+noise(5, 0.1)  // noise(scale, speed)
+  .out()
+`}
+/>
+
+---
+
+## Step 7: Adding color
+
+Color the noise with `.color()`:
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+noise(5, 0.1)
+  .color(1, 0.5, 0.2)  // RGB: red, green, blue (0-1)
+  .out()
+`}
+/>
+
+**Try:**
+- Red: `.color(1, 0, 0)`
+- Blue: `.color(0, 0, 1)`
+- Magenta: `.color(1, 0, 1)`
+
+---
+
+## Step 8: Geometric shapes
+
+The `shape()` source makes polygons:
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+shape(3)  // shape(number of sides)
+  .out()
+// Try: 4 = square, 5 = pentagon, 100 = circle
+`}
+/>
+
+---
+
+## Step 9: A grid of shapes
+
+Add repetition with `.repeat()`:
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+shape(4, 0.3)
+  .repeat(4, 4)  // repeat(along X, along Y)
+  .color(1, 0.5, 0)
+  .out()
+`}
+/>
+
+---
+
+## Step 10: Blending sources
+
+Blend two sources with `.blend()`:
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10, 0.1, 0.8)
+  .blend(noise(3), 0.5)  // Blend 50/50 with noise
+  .out()
+`}
+/>
+
+---
+
+## Step 11: Difference (diff)
+
+Compute the difference between two sources:
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10)
+  .diff(osc(30))  // The difference between two oscillators
+  .out()
+`}
+/>
+
+---
+
+## Step 12: Modulation, the magic of distortion!
+
+Modulation is the most fun part! One source distorts another:
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10, 0.1, 0.8)
+  .modulate(noise(3), 0.3)  // Noise distorts the oscillator
+  .out()
+`}
+/>
+
+**Try:** change the second number in modulate() from 0.1 to 1.0
+
+---
+
+## Step 13: Modulating with an oscillator
+
+Let's try another modulator:
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(20, 0.1, 0.8)
+  .modulate(osc(3).rotate(1.57), 0.5)  // An oscillator modulates an oscillator
+  .out()
+`}
+/>
+
+---
+
+## Step 14: Putting it all together
+
+Now let's make a complex visual:
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10, 0.1, 0.8)
+  .modulate(noise(3), 0.2)
+  .color(1, 0.5, 0.2)
+  .rotate(() => time * 0.1)
+  .kaleid(4)
+  .out()
+`}
+/>
+
+---
+
+## Step 15: Feedback, infinity!
+
+Feedback makes an infinite mirror effect:
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+src(o0)  // Take the previous frame
+  .scale(1.01)  // Zoom in a little
+  .rotate(0.01)  // Rotate a little
+  .blend(osc(10, 0.1, 0.8).kaleid(4), 0.1)  // Add a new visual
+  .out()
+`}
+/>
+
+---
+
+## Step 16: Arrays for animation
+
+Arrays switch values automatically:
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc([10, 20, 30, 40], 0.1, [0, 0.5, 1])  // Three different values!
+  .kaleid([3, 4, 5, 6])  // The kaleidoscope changes too
+  .out()
+`}
+/>
+
+---
+
+## Step 17: Smooth transitions
+
+Add `.smooth()` for smooth transitions:
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc([10, 50].smooth(), 0.1, 0.8)
+  .kaleid([3, 6].smooth())
+  .out()
+`}
+/>
+
+---
+
+## Step 18: Audio reactivity
+
+Connect the visual to the sound:
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra({detectAudio: true})
+a.setBins(4)
+a.setSmooth(0.8)
+
+osc(() => 10 + a.fft[0] * 50, 0.1, 0.8)
+  .kaleid(() => Math.floor(a.fft[1] * 6) + 3)
+  .rotate(() => time * 0.1)
+  .out()
+
+// Add sound to react to
+s("bd*4, hh*8").bank("RolandTR909")
+`}
+/>
+
+---
+
+## Step 19: Strudel patterns in Hydra
+
+The `H()` function links Strudel patterns to Hydra:
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+let pattern = "<3 4 5 6>"  // A Strudel pattern
+
+shape(H(pattern), 0.3)
+  .repeat(H(pattern), H(pattern))
+  .rotate(() => time * 0.1)
+  .color(1, 0.5, 0)
+  .out()
+
+// The music uses the same pattern
+n(pattern).scale("C:minor").piano().room(0.5)
+`}
+/>
+
+---
+
+## Step 20: Your first masterpiece!
+
+Now you know the basics! Here is a final example: edit it however you like:
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra({detectAudio: true})
+a.setBins(4)
+a.setSmooth(0.8)
+
+// Feedback base
+src(o0)
+  .scale(() => 1.01 + a.fft[0] * 0.02)
+  .rotate(() => 0.005 + a.fft[1] * 0.01)
+  .blend(
+    // A new visual
+    osc(20, 0.1, 0.8)
+      .modulate(noise(3), () => a.fft[0] * 0.3)
+      .kaleid([3, 4, 5, 6].fast(0.5))
+      .color(1, 0.5, () => a.fft[2]),
+    0.1
+  )
+  .out()
+
+// Music
+s("bd*4, hh*8, ~ sd")
+  .bank("RolandTR909")
+  .room(0.3)
+`}
+/>
+
+---
+
+## What's next?
+
+Congratulations! You now know the basics of Hydra. Keep exploring:
+
+- [Sources](/hydra/sources) — all visual generators
+- [Modulation](/hydra/modulation) — advanced distortion techniques
+- [Example gallery](/hydra/examples) — inspiring works
+- [API Reference](https://hydra.ojack.xyz/api/) — the full Hydra function reference
+
+**Tip:** experiment! Change numbers, combine functions, make mistakes: that's how art is born!

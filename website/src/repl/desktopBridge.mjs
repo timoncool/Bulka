@@ -1,3 +1,4 @@
+import { t } from '../i18n/index.mjs';
 // Десктоп-мост. В Tauri/WebView2 blob/data-«скачивания» через <a download> не сохраняются
 // (баг wry — запись WAV, экспорт и т.п. молча теряются). Перехватываем такие клики и сохраняем
 // файл через наш Node-сервер (/api/save-file): он кладёт файл в папку приложения и открывает её,
@@ -46,10 +47,10 @@ async function saveViaServer(href, filename) {
       body: JSON.stringify({ filename, dataBase64, subfolder }),
     });
     const j = await r.json();
-    toast(j.ok ? `💾 Сохранено в папку приложения: ${shorten(j.path)}` : `Ошибка сохранения: ${j.error || ''}`);
+    toast(j.ok ? t('desktop.saved', { path: shorten(j.path) }) : t('desktop.saveError', { error: j.error || '' }));
   } catch (e) {
     console.error('[desktop bridge] save failed', e);
-    toast('Не удалось сохранить файл');
+    toast(t('desktop.saveFailed'));
   }
 }
 

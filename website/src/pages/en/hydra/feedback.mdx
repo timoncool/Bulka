@@ -1,0 +1,215 @@
+---
+title: Feedback Effects
+layout: ../../../layouts/MainLayout.astro
+---
+
+import { MiniRepl } from '../../../docs/MiniRepl';
+
+# Feedback Effects
+
+Feedback is when the output is used as an input, making an infinite mirror effect.
+
+## Basic feedback
+
+### Feedback with scaling
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+src(o0)
+  .scale(1.01)
+  .blend(osc(10, 0.1, 0.5), 0.1)
+  .out()
+`}
+/>
+
+### Feedback with rotation
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+src(o0)
+  .rotate(0.01)
+  .blend(osc(10, 0.1, 0.5), 0.1)
+  .out()
+`}
+/>
+
+---
+
+## The structure of a feedback patch
+
+```javascript
+src(o0)                    // 1. Take the previous frame
+  .scale(1.01)             // 2. Apply a transform
+  .rotate(0.01)
+  .blend(source, amount)    // 3. Blend with a new source
+  .out()                    // 4. Output
+```
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+src(o0)
+  .scale(1.02)
+  .rotate(0.02)
+  .blend(noise(3).color(1, 0, 0.5), 0.1)
+  .out()
+`}
+/>
+
+---
+
+## Feedback techniques
+
+### Infinite tunnel
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+src(o0)
+  .scale(0.99)
+  .blend(shape(4, 0.1).color(1, 0.5, 0), 0.05)
+  .out()
+`}
+/>
+
+### Spiral feedback
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+src(o0)
+  .scale(1.01)
+  .rotate(() => 0.01 + Math.sin(time) * 0.005)
+  .blend(osc(20, 0.1, 0.5).kaleid(4), 0.1)
+  .out()
+`}
+/>
+
+### Feedback with modulation
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+src(o0)
+  .modulate(osc(3), 0.01)
+  .blend(osc(10, 0.1, 0.5), 0.1)
+  .out()
+`}
+/>
+
+---
+
+## Cross feedback
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10, 0.1, 0.5)
+  .modulate(src(o1), 0.2)
+  .out(o0)
+
+noise(3)
+  .modulate(src(o0), 0.2)
+  .out(o1)
+
+render(o0)
+`}
+/>
+
+---
+
+## Controlling the intensity
+
+### Feedback decay
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+src(o0)
+  .scale(1.01)
+  .brightness(-0.01)  // Gradual fade
+  .blend(osc(10, 0.1, 0.5).kaleid(4), 0.1)
+  .out()
+`}
+/>
+
+### Color shift
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+src(o0)
+  .scale(1.01)
+  .hue(0.005)
+  .blend(shape(4, 0.1), 0.1)
+  .out()
+`}
+/>
+
+---
+
+## Complex examples
+
+### Psychedelic feedback
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+src(o0)
+  .scale(1.02)
+  .rotate(() => 0.01 * Math.sin(time))
+  .colorama(0.01)
+  .blend(
+    osc(20, 0.1, 0.5)
+      .kaleid(4)
+      .modulate(noise(3), 0.1),
+    0.1
+  )
+  .out()
+`}
+/>
+
+### Glitch feedback
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+src(o0)
+  .scrollX(() => Math.random() * 0.01 - 0.005)
+  .scrollY(() => Math.random() * 0.01 - 0.005)
+  .blend(
+    osc(30).thresh(0.5).color(1, 0, 0.5),
+    0.1
+  )
+  .out()
+`}
+/>
+
+### Organic growth
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+src(o0)
+  .scale(1.005)
+  .modulate(noise(3), 0.005)
+  .blend(
+    voronoi(10, 0.1)
+      .thresh(0.5)
+      .color(0.2, 0.8, 0.5),
+    0.05
+  )
+  .out()
+`}
+/>
+
+---
+
+## Feedback tips
+
+1. **Start with small values** (scale: 1.01, rotate: 0.01)
+2. **Add decay** (brightness: -0.005)
+3. **Use blend for control** (0.05-0.3)
+4. **Clear the screen**: `solid(0, 0, 0).out()` if it "blew up" to white

@@ -5,6 +5,7 @@ import ClipboardDocumentIcon from '@heroicons/react/20/solid/ClipboardDocumentIc
 import DocumentPlusIcon from '@heroicons/react/20/solid/DocumentPlusIcon';
 import { getAudioContext, connectToDestination } from '@strudel/webaudio';
 import { isTauri } from '../../../tauri.mjs';
+import { t } from '../../../i18n/index.mjs';
 
 async function copyToClipboard(text) {
   try {
@@ -97,25 +98,15 @@ function ExpandableBank({ name, data, onTrigger, trigRef }) {
       <div className="flex items-center">
         {/* Кнопка раскрытия (только если есть несколько семплов) */}
         {hasSamples ? (
-          <button
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="w-4 h-4 mr-1 flex-shrink-0 hover:opacity-50"
-          >
-            {isExpanded ? (
-              <ChevronDownIcon className="w-4 h-4" />
-            ) : (
-              <ChevronRightIcon className="w-4 h-4" />
-            )}
+          <button onClick={() => setIsExpanded(!isExpanded)} className="w-4 h-4 mr-1 flex-shrink-0 hover:opacity-50">
+            {isExpanded ? <ChevronDownIcon className="w-4 h-4" /> : <ChevronRightIcon className="w-4 h-4" />}
           </button>
         ) : (
           <span className="w-4 h-4 mr-1 flex-shrink-0" />
         )}
 
         {/* Название банка */}
-        <span
-          className="cursor-pointer hover:opacity-50"
-          onMouseDown={() => playSample(0)}
-        >
+        <span className="cursor-pointer hover:opacity-50" onMouseDown={() => playSample(0)}>
           {name}
           {sampleCount > 0 && `(${sampleCount})`}
         </span>
@@ -127,7 +118,7 @@ function ExpandableBank({ name, data, onTrigger, trigRef }) {
             e.stopPropagation();
             copyToClipboard(name);
           }}
-          title="Скопировать название"
+          title={t('sounds.copyName')}
         >
           <ClipboardDocumentIcon className="w-3 h-3" />
         </button>
@@ -137,7 +128,7 @@ function ExpandableBank({ name, data, onTrigger, trigRef }) {
             e.stopPropagation();
             insertIntoEditor(`s("${name}")`);
           }}
-          title="Вставить в редактор"
+          title={t('sounds.insert')}
         >
           <DocumentPlusIcon className="w-3 h-3" />
         </button>
@@ -163,7 +154,7 @@ function ExpandableBank({ name, data, onTrigger, trigRef }) {
                     e.stopPropagation();
                     insertIntoEditor(`s("${name}").n(${index})`);
                   }}
-                  title="Вставить в редактор"
+                  title={t('sounds.insert')}
                 >
                   <DocumentPlusIcon className="w-3 h-3" />
                 </button>
@@ -206,21 +197,15 @@ export function TreeView({ packData, expandedPacks, onTogglePack, renderSound, t
             >
               {/* Иконка разворачивания/сворачивания */}
               <span className="flex-shrink-0 w-4 h-4 mr-1">
-                {isExpanded ? (
-                  <ChevronDownIcon className="w-4 h-4" />
-                ) : (
-                  <ChevronRightIcon className="w-4 h-4" />
-                )}
+                {isExpanded ? <ChevronDownIcon className="w-4 h-4" /> : <ChevronRightIcon className="w-4 h-4" />}
               </span>
 
               {/* Название пака */}
-              <span className="font-medium flex-grow">
-                {packName}
-              </span>
+              <span className="font-medium flex-grow">{packName}</span>
 
               {/* Счётчик: банков / семплов */}
               <span className="text-xs opacity-60 ml-2">
-                {soundCount} банков / {totalSamples} семплов
+                {t('sounds.counts', { banks: soundCount, samples: totalSamples })}
               </span>
             </div>
 
@@ -253,7 +238,7 @@ export function groupSoundsByPack(soundEntries) {
 
   soundEntries.forEach((entry) => {
     const [name, { data }] = entry;
-    let packName = data.pack || 'Другие';
+    let packName = data.pack || t('sounds.otherPack');
 
     if (!packData[packName]) {
       packData[packName] = [];

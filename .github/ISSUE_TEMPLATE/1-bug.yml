@@ -1,0 +1,75 @@
+name: Bug report / Ошибка
+description: Something is broken or works wrong · Что-то сломалось или работает не так
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report! Write in any language — English, Русский, 中文.
+        Спасибо, что сообщаете! Пишите на любом языке.
+
+        - Please check that you have the [latest version](https://github.com/timoncool/bulka/releases/latest) — many problems are already fixed. · Проверьте, что у вас [последняя версия](https://github.com/timoncool/bulka/releases/latest).
+        - [Search existing issues](https://github.com/timoncool/bulka/issues?q=is%3Aissue) — if yours is there, add a 👍 or a comment. · [Поищите похожие](https://github.com/timoncool/bulka/issues?q=is%3Aissue).
+        - One problem per report. · Одна проблема — одно сообщение.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened? / Что случилось?
+      description: Copy the exact error text, if there was one. · Если было сообщение об ошибке, скопируйте его текст целиком.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce / Как повторить
+      placeholder: |
+        1. …
+        2. …
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect? / Что ожидали?
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where / Где
+      options:
+        - bulka.app in a browser / в браузере
+        - Bulka Desktop — Windows
+        - Bulka Desktop — macOS
+        - Other / Другое
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Desktop version / Версия Desktop
+      description: "For Bulka Desktop: the installer's name or **Windows Settings → Apps**. · Для Bulka Desktop: имя установщика или **Параметры Windows → Приложения**."
+      placeholder: "0.3.0"
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and system / Браузер и система
+      placeholder: "Chrome 131, Windows 11 · Safari 18, macOS 15"
+  - type: textarea
+    id: code
+    attributes:
+      label: Code / Код
+      description: The shortest pattern that shows the problem. · Самый короткий паттерн, на котором видна проблема.
+      render: js
+  - type: textarea
+    id: log
+    attributes:
+      label: Errors / Ошибки
+      description: |
+        The red text under the editor, or the browser console (**F12 → Console**). For the AI agent, say which model it used. · Красный текст под редактором или консоль браузера (**F12 → Console**). Для ИИ-агента напишите, какая модель отвечала.
+
+        Remove API keys if any. · Уберите ключи API, если они там есть.
+      render: shell
+  - type: textarea
+    id: attachments
+    attributes:
+      label: Screenshots or files / Скриншоты или файлы
+      description: Drag images or videos here. · Перетащите сюда картинки или видео.

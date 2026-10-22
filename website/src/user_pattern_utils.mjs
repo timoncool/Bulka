@@ -4,6 +4,7 @@ import { logger } from '@strudel/core';
 import { nanoid } from 'nanoid';
 import { settingsMap } from './settings.mjs';
 import { confirmDialog, parseJSON, supabase } from './repl/util.mjs';
+import { t } from './i18n/index.mjs';
 
 export let $publicPatterns = atom([]);
 export let $featuredPatterns = atom([]);
@@ -57,7 +58,7 @@ export function loadPublicPatterns(page) {
     .from('code_v1')
     .select()
     .eq('public', true)
-    .range(offset, offset + patternQueryLimit)
+    .range(offset, offset + patternQueryLimit - 1)
     .order('id', { ascending: false });
 }
 
@@ -68,7 +69,7 @@ export function loadFeaturedPatterns(page = 0) {
     .from('code_v1')
     .select()
     .eq('featured', true)
-    .range(offset, offset + patternQueryLimit)
+    .range(offset, offset + patternQueryLimit - 1)
     .order('id', { ascending: false });
 }
 
@@ -150,20 +151,18 @@ export const userPattern = {
     const newPattern = this.create();
     return this.update(newPattern.id, { ...newPattern.data, code: data.code });
   },
-  clearAll() {
-    confirmDialog(`This will delete all your patterns. Are you really sure?`).then((r) => {
-      if (r == false) {
-        return;
-      }
-      const viewingPatternData = getViewingPatternData();
-      setUserPatterns({});
+  async clearAll({ confirmed = false } = {}) {
+    if (!confirmed && !(await confirmDialog(t('patterns.clearConfirm')))) {
+      return null;
+    }
+    const viewingPatternData = getViewingPatternData();
+    setUserPatterns({});
 
-      if (viewingPatternData.collection !== this.collection) {
-        return { id: viewingPatternData.id, data: viewingPatternData };
-      }
-      setActivePattern(null);
-      return this.create();
-    });
+    if (viewingPatternData.collection !== this.collection) {
+      return { id: viewingPatternData.id, data: viewingPatternData };
+    }
+    setActivePattern(null);
+    return this.create();
   },
   delete(id) {
     const userPatterns = this.getAll();
@@ -348,69 +347,34 @@ export async function toggleLike(hash) {
     return null; // Rate limited
   }
 
-  // Set cooldown for this track
   setCooldown(hash);
 
   const likedTracks = getLikedTracks();
   const wasLiked = likedTracks.includes(hash);
 
-  // Update localStorage
-  if (wasLiked) {
-    setLikedTracks(likedTracks.filter(h => h !== hash));
-  } else {
-    setLikedTracks([...likedTracks, hash]);
-  }
+  const read = await supabase.from('code_v1').select('like_count').eq('hash', hash).single();
+  if (read.error) throw new Error(`лайк не сохранён: ${read.error.message}`);
+  const currentCount = read.data?.like_count || 0;
+  const like_count = wasLiked ? Math.max(0, currentCount - 1) : currentCount + 1;
+  const write = await supabase.from('code_v1').update({ like_count }).eq('hash', hash);
+  if (write.error) throw new Error(`лайк не сохранён: ${write.error.message}`);
 
-  // Update database
-  try {
-    if (wasLiked) {
-      // Decrement like_count
-      const { data } = await supabase
-        .from('code_v1')
-        .select('like_count')
-        .eq('hash', hash)
-        .single();
-
-      const currentCount = data?.like_count || 0;
-      await supabase
-        .from('code_v1')
-        .update({ like_count: Math.max(0, currentCount - 1) })
-        .eq('hash', hash);
-    } else {
-      // Increment like_count
-      const { data } = await supabase
-        .from('code_v1')
-        .select('like_count')
-        .eq('hash', hash)
-        .single();
-
-      const currentCount = data?.like_count || 0;
-      await supabase
-        .from('code_v1')
-        .update({ like_count: currentCount + 1 })
-        .eq('hash', hash);
-    }
-  } catch (err) {
-    console.error('Error updating like count:', err);
-  }
-
+  setLikedTracks(wasLiked ? likedTracks.filter((h) => h !== hash) : [...likedTracks, hash]);
   return !wasLiked;
 }
 
 // Update track publicity
 export async function updateTrackPublicity(hash, isPublic) {
-  if (!hash) return { success: false };
+  if (!hash) return { success: false, error: 'нет hash трека' };
 
   try {
-    const { error } = await supabase
-      .from('code_v1')
-      .update({ public: isPublic })
-      .eq('hash', hash);
+    const { data, error } = await supabase.from('code_v1').update({ public: isPublic }).eq('hash', hash).select('hash');
 
     if (error) {
       console.error('Failed to update publicity:', error);
       return { success: false, error: error.message };
     }
+    if (!data?.length) return { success: false, error: `трек ${hash} не найден` };
 
     return { success: true };
   } catch (e) {
@@ -427,6 +391,6 @@ export function loadPatternsByLikes(page = 0) {
     .from('code_v1')
     .select()
     .eq('public', true)
-    .range(offset, offset + patternQueryLimit)
+    .range(offset, offset + patternQueryLimit - 1)
     .order('like_count', { ascending: false, nullsFirst: false });
 }

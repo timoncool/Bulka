@@ -1,0 +1,34 @@
+---
+title: Free AI (OVHcloud)
+layout: ../../../layouts/MainLayout.astro
+---
+
+# Free AI: no key, no sign-up
+
+Bulka has a built-in **free AI agent** that works right away, with no API key and no sign-up. Requests go straight from your browser to [OVHcloud AI Endpoints](https://endpoints.ai.cloud.ovh.net/), an open free service with open-weight models (GPT-OSS, Llama, Qwen, Mistral) hosted in the EU. Your data is not used to train models.
+
+## Quick start
+
+1. Open the **Chat** tab in the right side panel
+2. Click the settings icon (gear)
+3. Pick the **Free (OVHcloud)** provider
+4. Pick a model from the list
+5. Start talking to the agent!
+
+No API key needed.
+
+## Available models
+
+The model list loads automatically. It includes the fast **GPT-OSS 20B** (default), the smarter **GPT-OSS 120B**, plus **Llama 3.3 70B**, **Qwen3** and **Mistral**. The default model is enough for simple tasks; pick a bigger one for harder ones.
+
+## Free tier limit
+
+Free access allows **2 requests per minute** (counted per IP). If you hit the limit, wait ~30 seconds and try again. For more and steadier access, add your own key (OpenAI, Anthropic, Gemini) or **OpenRouter** in the same settings.
+
+## Agent tools
+
+Not every free model supports tool calling (function calling). For those, Bulka uses **text action markers**: the agent returns the code in a ```` ```javascript ```` block and a `[PLAY]`/`[STOP]` marker, and Bulka puts the code into the editor and starts playback itself. So the agent works even on models without tools, just more simply than on paid providers with full tools.
+
+## Privacy
+
+The request goes from your device straight to OVHcloud: Bulka does not proxy it through its server and keeps no chat history on a server (the chat history stays only in your browser).

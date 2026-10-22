@@ -21,12 +21,24 @@ catalog:
   "@codemirror/search": "^6.5.8"
 
 allowBuilds:
-  '@serialport/bindings-cpp': set this to true or false
-  esbuild: set this to true or false
-  nx: set this to true or false
-  sharp: set this to true or false
-  tree-sitter: set this to true or false
-  tree-sitter-haskell: set this to true or false
+  '@serialport/bindings-cpp': false
+  esbuild: true
+  nx: true
+  sharp: true
+  tree-sitter: true
+  tree-sitter-haskell: true
 
 minimumReleaseAgeExclude:
   - '@typescript-eslint/visitor-keys@8.69.0'
+  - '@tauri-apps/cli-darwin-arm64@2.12.2'
+  - '@tauri-apps/cli-darwin-x64@2.12.2'
+  - '@tauri-apps/cli-linux-arm-gnueabihf@2.12.2'
+  - '@tauri-apps/cli-linux-arm64-gnu@2.12.2'
+  - '@tauri-apps/cli-linux-arm64-musl@2.12.2'
+  - '@tauri-apps/cli-linux-riscv64-gnu@2.12.2'
+  - '@tauri-apps/cli-linux-x64-gnu@2.12.2'
+  - '@tauri-apps/cli-linux-x64-musl@2.12.2'
+  - '@tauri-apps/cli-win32-arm64-msvc@2.12.2'
+  - '@tauri-apps/cli-win32-ia32-msvc@2.12.2'
+  - '@tauri-apps/cli-win32-x64-msvc@2.12.2'
+  - '@tauri-apps/cli@2.12.2'

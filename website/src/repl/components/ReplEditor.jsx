@@ -78,7 +78,10 @@ export default function ReplEditor(Props) {
           <ResizeHandle direction="vertical" containerRef={containerElRef} settingKey="panelSizeRight" />
         )}
         {showRightPanel && (
-          <div className="shrink-0 overflow-hidden h-full" style={{ width: isPanelOpen ? `${panelSizeRight}%` : '48px' }}>
+          <div
+            className="shrink-0 overflow-hidden h-full"
+            style={{ width: isPanelOpen ? `${panelSizeRight}%` : '48px' }}
+          >
             <VerticalPanel context={context} />
           </div>
         )}

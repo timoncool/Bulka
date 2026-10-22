@@ -18,6 +18,7 @@ import { Pagination } from '../pagination/Pagination.jsx';
 import { useState } from 'react';
 import { useDebounce } from '../usedebounce.jsx';
 import cx from '@src/cx.mjs';
+import { t } from '../../../i18n/index.mjs';
 
 export function PatternLabel({ pattern } /* : { pattern: Tables<'code'> } */) {
   const meta = useMemo(() => getMetadata(pattern.code), [pattern]);
@@ -28,11 +29,11 @@ export function PatternLabel({ pattern } /* : { pattern: Tables<'code'> } */) {
     if (!isNaN(date)) {
       title = date.toLocaleDateString();
     } else {
-      title = 'без названия';
+      title = t('patterns.untitled');
     }
   }
 
-  const author = Array.isArray(meta.by) ? meta.by.join(',') : 'Аноним';
+  const author = Array.isArray(meta.by) ? meta.by.join(',') : t('patterns.anonymous');
   return <>{`${pattern.id}: ${title} by ${author.slice(0, 100)}`.slice(0, 60)}</>;
 }
 
@@ -89,21 +90,21 @@ function UserPatterns({ context }) {
     <div className="flex flex-col gap-2 flex-grow overflow-hidden h-full pb-2 ">
       <div className="pr-4 space-x-4  flex max-w-full overflow-x-auto">
         <ActionButton
-          label="новый"
+          label={t('patterns.new')}
           onClick={() => {
             const { data } = userPattern.createAndAddToDB();
             updateCodeWindow(context, data);
           }}
         />
         <ActionButton
-          label="копировать"
+          label={t('patterns.duplicate')}
           onClick={() => {
             const { data } = userPattern.duplicate(viewingPatternData);
             updateCodeWindow(context, data);
           }}
         />
         <ActionButton
-          label="удалить"
+          label={t('patterns.delete')}
           onClick={() => {
             const { data } = userPattern.delete(viewingPatternID);
             updateCodeWindow(context, { ...data, collection: userPattern.collection });
@@ -117,15 +118,15 @@ function UserPatterns({ context }) {
             accept="text/plain,text/x-markdown,application/json"
             onChange={(e) => importPatterns(e.target.files)}
           />
-          импорт
+          {t('patterns.import')}
         </label>
-        <ActionButton label="экспорт" onClick={exportPatterns} />
+        <ActionButton label={t('patterns.export')} onClick={exportPatterns} />
 
         <ActionButton
-          label="удалить все"
-          onClick={() => {
-            const { data } = userPattern.clearAll();
-            updateCodeWindow(context, data);
+          label={t('patterns.deleteAll')}
+          onClick={async () => {
+            const cleared = await userPattern.clearAll();
+            if (cleared) updateCodeWindow(context, cleared.data);
           }}
         />
       </div>
@@ -174,7 +175,7 @@ function PatternPageWithPagination({ patterns, patternOnClick, context, paginati
         />
       </div>
       <div className="flex items-center gap-2 py-2">
-        <label htmlFor="pattern pagination">Страница</label>
+        <label htmlFor="pattern pagination">{t('patterns.page')}</label>
         <Pagination id="pattern pagination" currPage={page} onPageChange={onPageChange} />
       </div>
     </div>

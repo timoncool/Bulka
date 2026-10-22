@@ -12,6 +12,7 @@ import { WelcomeTab } from './WelcomeTab';
 import { PatternsTab } from './PatternsTab';
 import { ChatTab } from './ChatTab';
 import { ChevronLeftIcon, ChevronUpIcon, XMarkIcon } from '@heroicons/react/16/solid';
+import { t } from '../../../i18n/index.mjs';
 
 const TAURI = typeof window !== 'undefined' && window.__TAURI__;
 
@@ -20,10 +21,7 @@ export function HorizontalPanel({ context }) {
   const { isPanelOpen, activeFooter: tab } = settings;
 
   return (
-    <PanelNav
-      settings={settings}
-      className={cx('h-full overflow-hidden flex flex-col')}
-    >
+    <PanelNav settings={settings} className={cx('h-full overflow-hidden flex flex-col')}>
       {isPanelOpen ? (
         <>
           <div className="flex grow overflow-auto pr-10 h-full">
@@ -43,7 +41,7 @@ export function HorizontalPanel({ context }) {
           onClick={(e) => {
             setIsPanelOpened(true);
           }}
-          aria-label="открыть панель меню"
+          aria-label={t('panel.open')}
           className={cx(
             'flex flex-row hover:bg-lineBackground items-center cursor-pointer justify-center w-full h-full',
           )}
@@ -60,10 +58,7 @@ export function VerticalPanel({ context }) {
   const { activeFooter: tab, isPanelOpen } = settings;
 
   return (
-    <PanelNav
-      settings={settings}
-      className={cx('h-full')}
-    >
+    <PanelNav settings={settings} className={cx('h-full')}>
       {isPanelOpen ? (
         <div className={cx('flex flex-col h-full')}>
           <div className="flex justify-between w-full shrink-0">
@@ -80,7 +75,7 @@ export function VerticalPanel({ context }) {
           onClick={(e) => {
             setIsPanelOpened(true);
           }}
-          aria-label="открыть панель меню"
+          aria-label={t('panel.open')}
           className={cx(
             'flex flex-col hover:bg-lineBackground items-center cursor-pointer justify-center w-full h-full',
           )}
@@ -92,19 +87,9 @@ export function VerticalPanel({ context }) {
   );
 }
 
-const tabNames = {
-  привет: 'intro',
-  'AI чат': 'chat',
-  паттерны: 'patterns',
-  звуки: 'sounds',
-  справка: 'reference',
-  консоль: 'console',
-  экспорт: 'export',
-  настройки: 'settings',
-  поддержать: 'support',
-};
+const tabIds = ['intro', 'chat', 'patterns', 'sounds', 'reference', 'console', 'export', 'settings', 'support'];
 if (TAURI) {
-  tabNames['файлы'] = 'files';
+  tabIds.push('files');
 }
 
 function PanelNav({ children, className, settings, ...props }) {
@@ -179,10 +164,9 @@ function PanelTab({ label, isSelected, onClick }) {
 function Tabs({ setTab, tab, className }) {
   return (
     <div className={cx('flex select-none max-w-full overflow-auto pb-2', className)}>
-      {Object.keys(tabNames).map((key) => {
-        const val = tabNames[key];
-        return <PanelTab key={key} isSelected={tab === val} label={key} onClick={() => setTab(val)} />;
-      })}
+      {tabIds.map((id) => (
+        <PanelTab key={id} isSelected={tab === id} label={t(`tab.${id}`)} onClick={() => setTab(id)} />
+      ))}
     </div>
   );
 }
@@ -208,7 +192,7 @@ function PinButton({ pinned }) {
         'text-foreground max-h-8 min-h-8 max-w-8 min-w-8 items-center justify-center p-1.5 group-hover:flex',
         pinned ? 'flex' : 'hidden',
       )}
-      aria-label="Закрепить панель"
+      aria-label={t('panel.pin')}
     >
       <svg
         stroke="currentColor"
@@ -232,7 +216,7 @@ function CloseButton({ onClick }) {
       className={cx(
         'text-foreground max-h-8 min-h-8 max-w-8 min-w-8 items-center justify-center p-1.5 group-hover:flex',
       )}
-      aria-label="Закрыть меню"
+      aria-label={t('panel.close')}
     >
       <XMarkIcon />
     </button>

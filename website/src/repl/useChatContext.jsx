@@ -11,6 +11,9 @@ import { useSettings } from '../settings.mjs';
 import { soundMap } from '@strudel/webaudio';
 import { $strudel_log_history } from './components/useLogger.jsx';
 import { execClientTool } from './agentToolsClient.mjs';
+import { getSelectedCode } from './editorSelection.mjs';
+import { recordDone, recordFailed, recordModel } from '../hub/bulkaHub.mjs';
+import { currentLang, t } from '../i18n/index.mjs';
 
 // Бесплатный AI БЕЗ авторизации/ключа: OVHcloud AI Endpoints (OpenAI-совместимый,
 // открытый CORS, стриминг). Проверено из браузера — gpt-oss отвечает и стримит.
@@ -29,7 +32,7 @@ export const FREE_AI_DEFAULT_MODEL = 'gpt-oss-20b';
  * @param {Function} onStatus
  */
 async function* runFreeClientChat(messages, model, subProvider, onStatus) {
-  onStatus?.('🔗 Бесплатный AI (OVHcloud)...');
+  onStatus?.(t('free.connecting'));
   try {
     const resp = await fetch(FREE_AI_ENDPOINT, {
       method: 'POST',
@@ -44,16 +47,19 @@ async function* runFreeClientChat(messages, model, subProvider, onStatus) {
     if (resp.status === 429) {
       yield {
         type: 'error',
-        error: 'Бесплатный лимит: не больше 2 запросов в минуту на этот IP. Подожди ~30 секунд и попробуй снова — либо укажи свой ключ / выбери OpenRouter.',
+        error: t('free.rateLimit'),
       };
       return;
     }
     if (!resp.ok || !resp.body) {
-      yield { type: 'error', error: `Бесплатный AI недоступен (${resp.status}). Попробуй позже или используй свой ключ / OpenRouter.` };
+      yield {
+        type: 'error',
+        error: t('free.unavailable', { status: resp.status }),
+      };
       return;
     }
 
-    onStatus?.('📡 Получаю ответ...');
+    onStatus?.(t('free.receiving'));
     const reader = resp.body.getReader();
     const decoder = new TextDecoder();
     let buffer = '';
@@ -78,7 +84,7 @@ async function* runFreeClientChat(messages, model, subProvider, onStatus) {
       }
     }
   } catch (error) {
-    yield { type: 'error', error: error?.message || 'Ошибка бесплатного AI' };
+    yield { type: 'error', error: error?.message || t('free.error') };
   }
 }
 
@@ -223,7 +229,9 @@ const FREE_SYSTEM_PROMPT = `Ты Bulka AI - помощник для музыка
 ## ПРАВИЛА:
 - Всегда давай ПОЛНЫЙ рабочий код, не фрагменты
 - После написания кода ВСЕГДА добавляй [PLAY] чтобы запустить музыку
-- Код должен быть валидным Strudel/Tidal кодом
+- Код — JavaScript Strudel, а не TidalCycles: d1 $, # и функций up, toScale, euclidOff здесь НЕТ
+- Транспозиция: note("c3 e3").add(note(12)) или .transpose(12); гамма: n("0 2 4").scale("C:major")
+- Функций из скрипта Switch Angel (acidenv, trancegate, rlpf, dly и т.п.) здесь НЕТ: acidenv(.5) = .lpf(100).lpenv(4.5).lps(.2).lpd(.12).lpq(2)
 - Используй stack() для нескольких партий одновременно
 - Будь кратким в объяснениях (1-2 предложения)
 
@@ -278,7 +286,7 @@ export function useChatContext(replContext) {
   // Save messages to localStorage when they change
   useEffect(() => {
     // Only save if there are messages with content
-    const messagesWithContent = messages.filter(m => m.content);
+    const messagesWithContent = messages.filter((m) => m.content);
     if (messagesWithContent.length > 0) {
       saveMessagesToStorage(messagesWithContent);
     }
@@ -321,23 +329,29 @@ export function useChatContext(replContext) {
   /**
    * Apply code to editor
    */
-  const applyCode = useCallback((code) => {
-    if (replContext?.editorRef?.current) {
-      replContext.editorRef.current.setCode(code);
-      setLastAction('✓ Код применён');
-    }
-  }, [replContext]);
+  const applyCode = useCallback(
+    (code) => {
+      if (replContext?.editorRef?.current) {
+        replContext.editorRef.current.setCode(code);
+        setLastAction(t('action.codeApplied'));
+      }
+    },
+    [replContext],
+  );
 
   /**
    * Apply code and run it
    */
-  const applyAndRun = useCallback((code) => {
-    if (replContext?.editorRef?.current) {
-      replContext.editorRef.current.setCode(code);
-      replContext.editorRef.current.evaluate();
-      setLastAction('▶ Код применён и запущен');
-    }
-  }, [replContext]);
+  const applyAndRun = useCallback(
+    (code) => {
+      if (replContext?.editorRef?.current) {
+        replContext.editorRef.current.setCode(code);
+        replContext.editorRef.current.evaluate();
+        setLastAction(t('action.codeAppliedPlaying'));
+      }
+    },
+    [replContext],
+  );
 
   /**
    * Get current code from editor
@@ -381,346 +395,388 @@ export function useChatContext(replContext) {
   /**
    * Send message to AI
    */
-  const sendMessage = useCallback(async (content) => {
-    if (!content.trim() || isLoading) return;
+  const sendMessage = useCallback(
+    async (content) => {
+      if (!content.trim() || isLoading) return;
 
-    const { aiProvider, aiModel, openaiApiKey, anthropicApiKey, geminiApiKey } = settings;
+      const { aiProvider, aiModel, openaiApiKey, anthropicApiKey, geminiApiKey } = settings;
 
-    // Провайдер «Внешний агент (MCP)»: сообщение уходит внешнему Claude/ChatGPT (через MCP),
-    // ответ придёт событием bulka-mcp-chat-reply. Внутренний LLM тут не вызывается.
-    if (aiProvider === 'mcp') {
-      const um = { id: generateId(), role: 'user', content: content.trim() };
-      setMessages((prev) => [...prev, um]);
+      // Провайдер «Внешний агент (MCP)»: сообщение уходит внешнему Claude/ChatGPT (через MCP),
+      // ответ придёт событием bulka-mcp-chat-reply. Внутренний LLM тут не вызывается.
+      if (aiProvider === 'mcp') {
+        const um = { id: generateId(), role: 'user', content: content.trim() };
+        setMessages((prev) => [...prev, um]);
+        setInput('');
+        fetch('/api/mcp/chat-in', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: content.trim() }),
+        }).catch(() => {});
+        setLastAction(t('action.sentToMcp'));
+        return;
+      }
+
+      // free doesn't need API key
+      const isFree = aiProvider === 'free';
+      const isLocal = aiProvider === 'local';
+
+      // Get API key for current provider (не нужен для free; для local опционален)
+      const aiApiKey = isFree
+        ? null
+        : isLocal
+          ? settings.localApiKey || ''
+          : aiProvider === 'openai'
+            ? openaiApiKey
+            : aiProvider === 'anthropic'
+              ? anthropicApiKey
+              : aiProvider === 'gemini'
+                ? geminiApiKey
+                : aiProvider === 'zai'
+                  ? settings.zaiApiKey
+                  : aiProvider === 'openrouter'
+                    ? settings.openrouterApiKey
+                    : '';
+
+      if (!isFree && !isLocal && !aiApiKey) {
+        setError(t('chat.noKey', { provider: aiProvider }));
+        return;
+      }
+
+      setError(null);
+      setIsLoading(true);
+
+      // Add user message
+      const userMessage = {
+        id: generateId(),
+        role: 'user',
+        content: content.trim(),
+      };
+
+      const assistantMessage = {
+        id: generateId(),
+        role: 'assistant',
+        content: '',
+      };
+
+      setMessages((prev) => [...prev, userMessage, assistantMessage]);
       setInput('');
-      fetch('/api/mcp/chat-in', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: content.trim() }),
-      }).catch(() => {});
-      setLastAction('📤 Отправлено внешнему агенту (MCP) — жду ответа…');
-      return;
-    }
 
-    // free doesn't need API key
-    const isFree = aiProvider === 'free';
-    const isLocal = aiProvider === 'local';
-
-    // Get API key for current provider (не нужен для free; для local опционален)
-    const aiApiKey = isFree ? null :
-                     isLocal ? (settings.localApiKey || '') :
-                     aiProvider === 'openai' ? openaiApiKey :
-                     aiProvider === 'anthropic' ? anthropicApiKey :
-                     aiProvider === 'gemini' ? geminiApiKey :
-                     aiProvider === 'zai' ? settings.zaiApiKey :
-                     aiProvider === 'openrouter' ? settings.openrouterApiKey : '';
-
-    if (!isFree && !isLocal && !aiApiKey) {
-      setError(`API ключ для ${aiProvider} не установлен. Откройте настройки и добавьте ключ.`);
-      return;
-    }
-
-    setError(null);
-    setIsLoading(true);
-
-    // Add user message
-    const userMessage = {
-      id: generateId(),
-      role: 'user',
-      content: content.trim(),
-    };
-
-    const assistantMessage = {
-      id: generateId(),
-      role: 'assistant',
-      content: '',
-    };
-
-    setMessages(prev => [...prev, userMessage, assistantMessage]);
-    setInput('');
-
-    try {
-      // Get current code from editor
-      const editor = replContext?.editorRef?.current;
-      const currentCode = editor?.code || '';
-      const selectedCode = editor?.getSelection?.() || null;
-
-      // Prepare messages for API
-      const apiMessages = [...messages, userMessage].map(m => ({
-        role: m.role,
-        content: m.content,
-      }));
-
-      abortControllerRef.current = new AbortController();
-
-      let fullContent = '';
-      let thinkingContent = '';
-      let isThinking = false;
-      let actionsExecuted = [];
-
-      // бесплатный AI (OVHcloud): use client-side handler with real-time action parsing
-      if (isFree) {
-        // Build system prompt with code context
-        const codeContext = currentCode
-          ? (selectedCode
-              ? `\n\n## ТЕКУЩИЙ КОД В РЕДАКТОРЕ:\n\`\`\`javascript\n${currentCode}\n\`\`\`\n\n## ВЫДЕЛЕННЫЙ ФРАГМЕНТ:\n\`\`\`javascript\n${selectedCode}\n\`\`\``
-              : `\n\n## ТЕКУЩИЙ КОД В РЕДАКТОРЕ:\n\`\`\`javascript\n${currentCode}\n\`\`\``)
-          : '';
-
-        const freeMessages = [
-          { role: 'system', content: FREE_SYSTEM_PROMPT + codeContext },
-          ...apiMessages,
-        ];
-
+      try {
+        // Get current code from editor
         const editor = replContext?.editorRef?.current;
+        const currentCode = editor?.code || '';
+        const selectedCode = getSelectedCode(editor);
 
-        for await (const message of runFreeClientChat(freeMessages, aiModel, null, setLastAction)) {
-          if (message.type === 'text' && message.content) {
-            fullContent += message.content;
+        // Prepare messages for API
+        const apiMessages = [...messages, userMessage].map((m) => ({
+          role: m.role,
+          content: m.content,
+        }));
 
-            // Update displayed message during streaming (clean markers for display)
-            const displayContent = fullContent
-              .replace(/\[PLAY\]/gi, '')
-              .replace(/\[STOP\]/gi, '')
-              .trim();
+        abortControllerRef.current = new AbortController();
 
-            setMessages(prev => {
+        let fullContent = '';
+        let thinkingContent = '';
+        let isThinking = false;
+        let actionsExecuted = [];
+
+        // бесплатный AI (OVHcloud): use client-side handler with real-time action parsing
+        if (isFree) {
+          // Build system prompt with code context
+          const codeContext = currentCode
+            ? selectedCode
+              ? `\n\n## ТЕКУЩИЙ КОД В РЕДАКТОРЕ:\n\`\`\`javascript\n${currentCode}\n\`\`\`\n\n## ВЫДЕЛЕННЫЙ ФРАГМЕНТ:\n\`\`\`javascript\n${selectedCode}\n\`\`\``
+              : `\n\n## ТЕКУЩИЙ КОД В РЕДАКТОРЕ:\n\`\`\`javascript\n${currentCode}\n\`\`\``
+            : '';
+
+          const languageNote = currentLang() === 'en' ? '\n\nThe Bulka interface is in English: reply in English.' : '';
+          const freeMessages = [
+            { role: 'system', content: FREE_SYSTEM_PROMPT + codeContext + languageNote },
+            ...apiMessages,
+          ];
+
+          const editor = replContext?.editorRef?.current;
+
+          for await (const message of runFreeClientChat(freeMessages, aiModel, null, setLastAction)) {
+            if (message.type === 'text' && message.content) {
+              fullContent += message.content;
+
+              // Update displayed message during streaming (clean markers for display)
+              const displayContent = fullContent
+                .replace(/\[PLAY\]/gi, '')
+                .replace(/\[STOP\]/gi, '')
+                .trim();
+
+              setMessages((prev) => {
+                const updated = [...prev];
+                const lastIdx = updated.length - 1;
+                if (updated[lastIdx]?.role === 'assistant') {
+                  updated[lastIdx] = { ...updated[lastIdx], content: displayContent };
+                }
+                return updated;
+              });
+            } else if (message.type === 'error') {
+              throw new Error(message.error);
+            }
+          }
+
+          // === После завершения стриминга - обработка кода и действий ===
+          if (editor) {
+            // Применяем код
+            const codeBlocks = extractCodeBlocks(fullContent);
+            if (codeBlocks.length > 0) {
+              let code = codeBlocks[codeBlocks.length - 1];
+              // Add @model meta tag if not already present
+              if (!code.includes('// @model')) {
+                const modelTag = `// @model ${aiProvider}/${aiModel}`;
+                const lines = code.split('\n');
+                let lastMetaIdx = -1;
+                for (let i = 0; i < lines.length; i++) {
+                  if (/^\s*\/\/\s*@\w+/.test(lines[i])) {
+                    lastMetaIdx = i;
+                  } else if (lines[i].trim() !== '' && lastMetaIdx >= 0) {
+                    break;
+                  }
+                }
+                if (lastMetaIdx >= 0) {
+                  lines.splice(lastMetaIdx + 1, 0, modelTag);
+                  code = lines.join('\n');
+                }
+              }
+              editor.setCode(code);
+              actionsExecuted.push(t('summary.codeSet'));
+              setLastAction(t('action.codeSet'));
+            }
+
+            // Проверяем маркеры [PLAY]/[STOP]
+            const hasPlay = /\[PLAY\]/i.test(fullContent);
+            const hasStop = /\[STOP\]/i.test(fullContent);
+
+            if (hasStop) {
+              editor.stop();
+              actionsExecuted.push(t('summary.stopped'));
+              setLastAction(t('action.stopped'));
+            } else if (hasPlay) {
+              editor.evaluate();
+              actionsExecuted.push(t('summary.playing'));
+              setLastAction(t('action.playing'));
+            } else if (codeBlocks.length > 0) {
+              // Авто-плей если код есть но нет маркеров
+              editor.evaluate();
+              actionsExecuted.push(t('summary.playingAuto'));
+              setLastAction(t('action.playingAuto'));
+            }
+          }
+
+          // Final update with action summary (only once)
+          const cleanContent = fullContent
+            .replace(/\[PLAY\]/gi, '')
+            .replace(/\[STOP\]/gi, '')
+            .trim();
+
+          if (actionsExecuted.length > 0) {
+            const actionSummary = `\n\n✓ ${actionsExecuted.join(', ')}`;
+            setMessages((prev) => {
               const updated = [...prev];
               const lastIdx = updated.length - 1;
               if (updated[lastIdx]?.role === 'assistant') {
-                updated[lastIdx] = { ...updated[lastIdx], content: displayContent };
+                // Only add summary if not already present
+                const currentContent = updated[lastIdx].content || '';
+                if (!currentContent.includes('✓ ')) {
+                  updated[lastIdx] = { ...updated[lastIdx], content: cleanContent + actionSummary };
+                }
               }
               return updated;
             });
-          } else if (message.type === 'error') {
+          }
+
+          recordDone('agent_reply');
+          recordModel(aiProvider, aiModel);
+          // Done with free
+          setIsLoading(false);
+          return;
+        }
+
+        // Other providers: use server-side API
+        // Retry logic with exponential backoff for rate limits
+        let response;
+        let retryCount = 0;
+        const maxRetries = 3;
+        const baseDelay = 2000; // 2 seconds
+
+        // OpenRouter: strict-тулы только если выбранная модель поддерживает structured_outputs
+        // (метаданные модели лежат в кэше моделей ChatTab).
+        let openrouterStrictTools = false;
+        if (aiProvider === 'openrouter') {
+          try {
+            const cachedModels = JSON.parse(localStorage.getItem('bulka_cached_models') || '{}');
+            const mi = (cachedModels.openrouter || []).find((x) => x.value === aiModel);
+            openrouterStrictTools = !!(mi?.supportedParameters || []).includes('structured_outputs');
+          } catch {
+            /* no-op */
+          }
+        }
+
+        while (retryCount <= maxRetries) {
+          response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              messages: apiMessages,
+              lang: currentLang(),
+              apiKey: aiApiKey,
+              provider: aiProvider,
+              model: aiModel,
+              currentCode,
+              selectedCode, // Send selected code if any
+              // Параметры конкретной модели OpenRouter (temperature/reasoning_effort/top_p/max_tokens)
+              modelParams:
+                aiProvider === 'openrouter'
+                  ? settings.openrouterModelParams?.[aiModel] || {}
+                  : aiProvider === 'local'
+                    ? settings.localModelParams || {}
+                    : undefined,
+              // strict-тулы для OpenRouter — только для моделей с structured_outputs
+              strictTools: aiProvider === 'openrouter' ? openrouterStrictTools : undefined,
+              // Локальная модель: адрес OpenAI-совместимого сервера (LM Studio / Ollama)
+              localBaseUrl: aiProvider === 'local' ? settings.localBaseUrl || 'http://localhost:1234/v1' : undefined,
+            }),
+            signal: abortControllerRef.current.signal,
+          });
+
+          if (response.ok) break;
+
+          const errData = await response.json().catch(() => ({}));
+          const errorStr = errData.error || JSON.stringify(errData) || '';
+
+          // Check for rate limit error
+          if (response.status === 429 || errorStr.includes('rate_limit') || errorStr.includes('rate limit')) {
+            retryCount++;
+            if (retryCount <= maxRetries) {
+              const delay = baseDelay * Math.pow(2, retryCount - 1); // 2s, 4s, 8s
+              setLastAction(
+                t('action.rateLimitRetry', { seconds: delay / 1000, attempt: retryCount, max: maxRetries }),
+              );
+              await new Promise((resolve) => setTimeout(resolve, delay));
+              continue;
+            }
+          }
+
+          throw new Error(errData.error || `HTTP ${response.status}`);
+        }
+
+        if (!response.ok) {
+          const errData = await response.json().catch(() => ({}));
+          throw new Error(errData.error || `HTTP ${response.status}`);
+        }
+
+        // Parse streaming response from agent
+        const reader = response.body.getReader();
+
+        for await (const message of parseAgentStream(reader)) {
+          // Handle status messages (show what agent is doing)
+          if (message.type === 'status') {
+            setLastAction(message.message);
+            continue;
+          }
+
+          // Handle thinking start
+          if (message.type === 'thinking_start') {
+            isThinking = true;
+            thinkingContent = '';
+            setLastAction(t('action.thinking'));
+            continue;
+          }
+
+          // Handle thinking content (stream thinking process)
+          if (message.type === 'thinking' && message.content) {
+            thinkingContent += message.content;
+            // Update message with thinking content (показываем мысли)
+            setMessages((prev) => {
+              const updated = [...prev];
+              const lastIdx = updated.length - 1;
+              if (updated[lastIdx]?.role === 'assistant') {
+                updated[lastIdx] = {
+                  ...updated[lastIdx],
+                  content: `💭 *${thinkingContent}*`,
+                  isThinking: true,
+                };
+              }
+              return updated;
+            });
+            continue;
+          }
+
+          // Handle thinking end
+          if (message.type === 'thinking_end') {
+            isThinking = false;
+            // Clear thinking content from message, prepare for real response
+            setMessages((prev) => {
+              const updated = [...prev];
+              const lastIdx = updated.length - 1;
+              if (updated[lastIdx]?.role === 'assistant') {
+                updated[lastIdx] = {
+                  ...updated[lastIdx],
+                  content: '',
+                  thinking: thinkingContent, // Save thinking for reference
+                  isThinking: false,
+                };
+              }
+              return updated;
+            });
+            setLastAction(t('action.doneThinking'));
+            continue;
+          }
+
+          // Handle tool calls from agent
+          if (message.type === 'tool_call') {
+            const { name, args } = message;
+            const editor = replContext?.editorRef?.current;
+
+            if (!editor) continue;
+
+            // ЕДИНЫЙ исполнитель клиентских тулзов — тот же код, что у MCP-моста (agentToolsClient.mjs).
+            try {
+              const injectArgs =
+                name === 'setFullCode' ? { ...(args || {}), modelTag: `${aiProvider}/${aiModel}` } : args || {};
+              const res = await execClientTool(editor, name, injectArgs);
+              setLastAction(res.message);
+              actionsExecuted.push(res.message);
+              if (name === 'getAvailablePacks') message.packResult = res.data;
+              else if (name === 'getBankSamples') message.bankResult = res.data;
+              else if (name === 'getConsole') message.consoleResult = res.data;
+            } catch (e) {
+              setLastAction('⚠ ' + (e?.message || String(e)));
+              actionsExecuted.push(t('summary.toolError'));
+            }
+          }
+          // Handle text content
+          else if (message.type === 'text' && message.content) {
+            fullContent += message.content;
+            setMessages((prev) => {
+              const updated = [...prev];
+              const lastIdx = updated.length - 1;
+              if (updated[lastIdx]?.role === 'assistant') {
+                updated[lastIdx] = { ...updated[lastIdx], content: fullContent };
+              }
+              return updated;
+            });
+          }
+          // Handle errors from SSE stream
+          else if (message.type === 'error' && message.error) {
+            throw new Error(message.error);
+          }
+          // Handle legacy error format
+          else if (message.error) {
             throw new Error(message.error);
           }
         }
 
-        // === После завершения стриминга - обработка кода и действий ===
-        if (editor) {
-          // Применяем код
-          const codeBlocks = extractCodeBlocks(fullContent);
-          if (codeBlocks.length > 0) {
-            let code = codeBlocks[codeBlocks.length - 1];
-            // Add @model meta tag if not already present
-            if (!code.includes('// @model')) {
-              const modelTag = `// @model ${aiProvider}/${aiModel}`;
-              const lines = code.split('\n');
-              let lastMetaIdx = -1;
-              for (let i = 0; i < lines.length; i++) {
-                if (/^\s*\/\/\s*@\w+/.test(lines[i])) {
-                  lastMetaIdx = i;
-                } else if (lines[i].trim() !== '' && lastMetaIdx >= 0) {
-                  break;
-                }
-              }
-              if (lastMetaIdx >= 0) {
-                lines.splice(lastMetaIdx + 1, 0, modelTag);
-                code = lines.join('\n');
-              }
-            }
-            editor.setCode(code);
-            actionsExecuted.push('Код установлен');
-            setLastAction('✓ Код применён в редактор');
-          }
-
-          // Проверяем маркеры [PLAY]/[STOP]
-          const hasPlay = /\[PLAY\]/i.test(fullContent);
-          const hasStop = /\[STOP\]/i.test(fullContent);
-
-          if (hasStop) {
-            editor.stop();
-            actionsExecuted.push('Воспроизведение остановлено');
-            setLastAction('⏹ Воспроизведение остановлено');
-          } else if (hasPlay) {
-            editor.evaluate();
-            actionsExecuted.push('Воспроизведение запущено');
-            setLastAction('▶ Воспроизведение запущено');
-          } else if (codeBlocks.length > 0) {
-            // Авто-плей если код есть но нет маркеров
-            editor.evaluate();
-            actionsExecuted.push('Воспроизведение запущено (авто)');
-            setLastAction('▶ Воспроизведение запущено (авто)');
-          }
-        }
-
-        // Final update with action summary (only once)
-        const cleanContent = fullContent
-          .replace(/\[PLAY\]/gi, '')
-          .replace(/\[STOP\]/gi, '')
-          .trim();
-
-        if (actionsExecuted.length > 0) {
+        // Add action summary to message if tools were executed
+        if (actionsExecuted.length > 0 && fullContent) {
           const actionSummary = `\n\n✓ ${actionsExecuted.join(', ')}`;
-          setMessages(prev => {
-            const updated = [...prev];
-            const lastIdx = updated.length - 1;
-            if (updated[lastIdx]?.role === 'assistant') {
-              // Only add summary if not already present
-              const currentContent = updated[lastIdx].content || '';
-              if (!currentContent.includes('✓ ')) {
-                updated[lastIdx] = { ...updated[lastIdx], content: cleanContent + actionSummary };
-              }
-            }
-            return updated;
-          });
-        }
-
-        // Done with free
-        setIsLoading(false);
-        return;
-      }
-
-      // Other providers: use server-side API
-      // Retry logic with exponential backoff for rate limits
-      let response;
-      let retryCount = 0;
-      const maxRetries = 3;
-      const baseDelay = 2000; // 2 seconds
-
-      // OpenRouter: strict-тулы только если выбранная модель поддерживает structured_outputs
-      // (метаданные модели лежат в кэше моделей ChatTab).
-      let openrouterStrictTools = false;
-      if (aiProvider === 'openrouter') {
-        try {
-          const cachedModels = JSON.parse(localStorage.getItem('bulka_cached_models') || '{}');
-          const mi = (cachedModels.openrouter || []).find((x) => x.value === aiModel);
-          openrouterStrictTools = !!(mi?.supportedParameters || []).includes('structured_outputs');
-        } catch {
-          /* no-op */
-        }
-      }
-
-      while (retryCount <= maxRetries) {
-        response = await fetch('/api/chat', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            messages: apiMessages,
-            apiKey: aiApiKey,
-            provider: aiProvider,
-            model: aiModel,
-            currentCode,
-            selectedCode, // Send selected code if any
-            // Параметры конкретной модели OpenRouter (temperature/reasoning_effort/top_p/max_tokens)
-            modelParams: aiProvider === 'openrouter' ? (settings.openrouterModelParams?.[aiModel] || {})
-              : aiProvider === 'local' ? (settings.localModelParams || {})
-              : undefined,
-            // strict-тулы для OpenRouter — только для моделей с structured_outputs
-            strictTools: aiProvider === 'openrouter' ? openrouterStrictTools : undefined,
-            // Локальная модель: адрес OpenAI-совместимого сервера (LM Studio / Ollama)
-            localBaseUrl: aiProvider === 'local' ? (settings.localBaseUrl || 'http://localhost:1234/v1') : undefined,
-          }),
-          signal: abortControllerRef.current.signal,
-        });
-
-        if (response.ok) break;
-
-        const errData = await response.json().catch(() => ({}));
-        const errorStr = errData.error || JSON.stringify(errData) || '';
-
-        // Check for rate limit error
-        if (response.status === 429 || errorStr.includes('rate_limit') || errorStr.includes('rate limit')) {
-          retryCount++;
-          if (retryCount <= maxRetries) {
-            const delay = baseDelay * Math.pow(2, retryCount - 1); // 2s, 4s, 8s
-            setLastAction(`⏳ Rate limit, повтор через ${delay / 1000}с... (${retryCount}/${maxRetries})`);
-            await new Promise(resolve => setTimeout(resolve, delay));
-            continue;
-          }
-        }
-
-        throw new Error(errData.error || `HTTP ${response.status}`);
-      }
-
-      if (!response.ok) {
-        const errData = await response.json().catch(() => ({}));
-        throw new Error(errData.error || `HTTP ${response.status}`);
-      }
-
-      // Parse streaming response from agent
-      const reader = response.body.getReader();
-
-      for await (const message of parseAgentStream(reader)) {
-        // Handle status messages (show what agent is doing)
-        if (message.type === 'status') {
-          setLastAction(message.message);
-          continue;
-        }
-
-        // Handle thinking start
-        if (message.type === 'thinking_start') {
-          isThinking = true;
-          thinkingContent = '';
-          setLastAction('🧠 Думаю...');
-          continue;
-        }
-
-        // Handle thinking content (stream thinking process)
-        if (message.type === 'thinking' && message.content) {
-          thinkingContent += message.content;
-          // Update message with thinking content (показываем мысли)
-          setMessages(prev => {
-            const updated = [...prev];
-            const lastIdx = updated.length - 1;
-            if (updated[lastIdx]?.role === 'assistant') {
-              updated[lastIdx] = {
-                ...updated[lastIdx],
-                content: `💭 *${thinkingContent}*`,
-                isThinking: true,
-              };
-            }
-            return updated;
-          });
-          continue;
-        }
-
-        // Handle thinking end
-        if (message.type === 'thinking_end') {
-          isThinking = false;
-          // Clear thinking content from message, prepare for real response
-          setMessages(prev => {
-            const updated = [...prev];
-            const lastIdx = updated.length - 1;
-            if (updated[lastIdx]?.role === 'assistant') {
-              updated[lastIdx] = {
-                ...updated[lastIdx],
-                content: '',
-                thinking: thinkingContent, // Save thinking for reference
-                isThinking: false,
-              };
-            }
-            return updated;
-          });
-          setLastAction('✓ Готово думать');
-          continue;
-        }
-
-        // Handle tool calls from agent
-        if (message.type === 'tool_call') {
-          const { name, args } = message;
-          const editor = replContext?.editorRef?.current;
-
-          if (!editor) continue;
-
-          // ЕДИНЫЙ исполнитель клиентских тулзов — тот же код, что у MCP-моста (agentToolsClient.mjs).
-          try {
-            const injectArgs = name === 'setFullCode' ? { ...(args || {}), modelTag: `${aiProvider}/${aiModel}` } : (args || {});
-            const res = execClientTool(editor, name, injectArgs);
-            setLastAction(res.message);
-            actionsExecuted.push(res.message);
-            if (name === 'getAvailablePacks') message.packResult = res.data;
-            else if (name === 'getBankSamples') message.bankResult = res.data;
-            else if (name === 'getConsole') message.consoleResult = res.data;
-          } catch (e) {
-            setLastAction('⚠ ' + (e?.message || String(e)));
-            actionsExecuted.push('Ошибка инструмента');
-          }
-        }
-        // Handle text content
-        else if (message.type === 'text' && message.content) {
-          fullContent += message.content;
-          setMessages(prev => {
+          fullContent += actionSummary;
+          setMessages((prev) => {
             const updated = [...prev];
             const lastIdx = updated.length - 1;
             if (updated[lastIdx]?.role === 'assistant') {
@@ -729,44 +785,25 @@ export function useChatContext(replContext) {
             return updated;
           });
         }
-        // Handle errors from SSE stream
-        else if (message.type === 'error' && message.error) {
-          throw new Error(message.error);
+        recordDone('agent_reply');
+        recordModel(aiProvider, aiModel);
+      } catch (err) {
+        if (err.name === 'AbortError') {
+          console.log('[Chat] Aborted');
+        } else {
+          console.error('[Chat] Error:', err);
+          recordFailed('agent_reply', err.message);
+          setError(err.message);
+          // Remove empty assistant message
+          setMessages((prev) => prev.filter((m) => m.content));
         }
-        // Handle legacy error format
-        else if (message.error) {
-          throw new Error(message.error);
-        }
+      } finally {
+        setIsLoading(false);
+        abortControllerRef.current = null;
       }
-
-      // Add action summary to message if tools were executed
-      if (actionsExecuted.length > 0 && fullContent) {
-        const actionSummary = `\n\n✓ ${actionsExecuted.join(', ')}`;
-        fullContent += actionSummary;
-        setMessages(prev => {
-          const updated = [...prev];
-          const lastIdx = updated.length - 1;
-          if (updated[lastIdx]?.role === 'assistant') {
-            updated[lastIdx] = { ...updated[lastIdx], content: fullContent };
-          }
-          return updated;
-        });
-      }
-
-    } catch (err) {
-      if (err.name === 'AbortError') {
-        console.log('[Chat] Aborted');
-      } else {
-        console.error('[Chat] Error:', err);
-        setError(err.message);
-        // Remove empty assistant message
-        setMessages(prev => prev.filter(m => m.content));
-      }
-    } finally {
-      setIsLoading(false);
-      abortControllerRef.current = null;
-    }
-  }, [messages, isLoading, settings, replContext]);
+    },
+    [messages, isLoading, settings, replContext],
+  );
 
   const stop = useCallback(() => {
     abortControllerRef.current?.abort();
@@ -785,34 +822,43 @@ export function useChatContext(replContext) {
     setInput(e.target.value);
   }, []);
 
-  const handleSubmit = useCallback((e) => {
-    e?.preventDefault();
-    sendMessage(input);
-  }, [input, sendMessage]);
+  const handleSubmit = useCallback(
+    (e) => {
+      e?.preventDefault();
+      sendMessage(input);
+    },
+    [input, sendMessage],
+  );
 
-  const handleKeyDown = useCallback((e) => {
-    // Ctrl+Shift+Enter - отправить (для многострочного ввода)
-    if (e.key === 'Enter' && e.ctrlKey && e.shiftKey) {
-      e.preventDefault();
-      sendMessage(input);
-      return;
-    }
-    // Enter без модификаторов - отправить (если не в textarea или shift не нажат)
-    if (e.key === 'Enter' && !e.shiftKey && e.target.tagName !== 'TEXTAREA') {
-      e.preventDefault();
-      sendMessage(input);
-    }
-  }, [input, sendMessage]);
+  const handleKeyDown = useCallback(
+    (e) => {
+      // Ctrl+Shift+Enter - отправить (для многострочного ввода)
+      if (e.key === 'Enter' && e.ctrlKey && e.shiftKey) {
+        e.preventDefault();
+        sendMessage(input);
+        return;
+      }
+      // Enter без модификаторов - отправить (если не в textarea или shift не нажат)
+      if (e.key === 'Enter' && !e.shiftKey && e.target.tagName !== 'TEXTAREA') {
+        e.preventDefault();
+        sendMessage(input);
+      }
+    },
+    [input, sendMessage],
+  );
 
   /**
    * Отправить ошибку редактора в чат для исправления
    */
-  const sendEditorError = useCallback((errorMessage) => {
-    if (!errorMessage || isLoading) return;
-    setEditorError(errorMessage);
-    const prompt = `Произошла ошибка при выполнении кода:\n\`\`\`\n${errorMessage}\n\`\`\`\n\nПожалуйста, исправь код.`;
-    sendMessage(prompt);
-  }, [sendMessage, isLoading]);
+  const sendEditorError = useCallback(
+    (errorMessage) => {
+      if (!errorMessage || isLoading) return;
+      setEditorError(errorMessage);
+      const prompt = t('chat.fixCodeError', { error: errorMessage });
+      sendMessage(prompt);
+    },
+    [sendMessage, isLoading],
+  );
 
   /**
    * Получить текущее состояние воспроизведения
@@ -838,12 +884,20 @@ export function useChatContext(replContext) {
     handleSubmit,
     handleKeyDown,
     // Settings for UI - check current provider's key (free и mcp не нужен ключ)
-    hasApiKey: settings.aiProvider === 'free' || settings.aiProvider === 'mcp' || settings.aiProvider === 'local' ? true :
-               !!(settings.aiProvider === 'openai' ? settings.openaiApiKey :
-                  settings.aiProvider === 'anthropic' ? settings.anthropicApiKey :
-                  settings.aiProvider === 'gemini' ? settings.geminiApiKey :
-                  settings.aiProvider === 'zai' ? settings.zaiApiKey :
-                  settings.aiProvider === 'openrouter' ? settings.openrouterApiKey : ''),
+    hasApiKey:
+      settings.aiProvider === 'free' || settings.aiProvider === 'mcp' || settings.aiProvider === 'local'
+        ? true
+        : !!(settings.aiProvider === 'openai'
+            ? settings.openaiApiKey
+            : settings.aiProvider === 'anthropic'
+              ? settings.anthropicApiKey
+              : settings.aiProvider === 'gemini'
+                ? settings.geminiApiKey
+                : settings.aiProvider === 'zai'
+                  ? settings.zaiApiKey
+                  : settings.aiProvider === 'openrouter'
+                    ? settings.openrouterApiKey
+                    : ''),
     provider: settings.aiProvider,
     model: settings.aiModel,
     // Error handling

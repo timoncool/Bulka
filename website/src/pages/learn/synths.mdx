@@ -46,7 +46,7 @@ import { JsDoc } from '../../docs/JsDoc';
 
 <MiniRepl client:idle tune={`s("crackle*4").density("<0.01 0.04 0.2 0.5>".slow(2))._scope()`} />
 
-### Additive Synthesis
+### Аддитивный синтез
 
 Периодические waveforms состоят из нескольких [harmonics](https://en.wikipedia.org/wiki/Harmonic) выше основной частоты, расположенных на целых кратных. Эти обертоны объединяются, чтобы придать звуку его уникальное тембральное качество.
 
@@ -177,7 +177,7 @@ FM Synthesis — это техника, которая быстро изменя
 
 <JsDoc client:idle name="fmenv" h={0} />
 
-## Wavetable Synthesis
+## Волновой (wavetable) синтез
 
 Strudel также может использовать sampler для загрузки пользовательских waveforms в качестве замены waveforms по умолчанию, используемых WebAudio для базового synth. Набор по умолчанию из более чем 1000 wavetables доступен по умолчанию (из набора [AKWF](https://www.adventurekid.se/akrt/waveforms/adventure-kid-waveforms/)). Вы также можете импортировать/использовать свои собственные. Wavetable — это waveform одного цикла, которая затем повторяется для создания звука на желаемой частоте. Это классическая, но очень эффективная техника синтеза.
 

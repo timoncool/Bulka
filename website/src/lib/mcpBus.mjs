@@ -5,10 +5,31 @@
 let seq = 0;
 const subscribers = new Set(); // { send(cmd) }
 const pending = new Map(); // id -> { resolve, timer }
+const subscriberWaiters = new Set();
+
+// Окно подключается к SSE через пару секунд после старта и переподключается после перезагрузки страницы.
+const WINDOW_WAIT_MS = 8000;
 
 export function addSubscriber(sub) {
   subscribers.add(sub);
+  for (const wake of subscriberWaiters) wake();
+  subscriberWaiters.clear();
   return () => subscribers.delete(sub);
+}
+
+function windowConnected() {
+  if (subscribers.size > 0) return Promise.resolve(true);
+  return new Promise((resolve) => {
+    const wake = () => {
+      clearTimeout(timer);
+      resolve(true);
+    };
+    const timer = setTimeout(() => {
+      subscriberWaiters.delete(wake);
+      resolve(false);
+    }, WINDOW_WAIT_MS);
+    subscriberWaiters.add(wake);
+  });
 }
 
 export function subscriberCount() {
@@ -16,12 +37,11 @@ export function subscriberCount() {
 }
 
 // Отправить команду в окно Bulka и дождаться результата (или таймаут).
-export function callBridge(tool, args, timeoutMs = 20000) {
+export async function callBridge(tool, args, timeoutMs = 20000) {
+  if (!(await windowConnected())) {
+    return { error: 'Окно Bulka не подключено. Открой приложение Bulka и повтори.' };
+  }
   return new Promise((resolve) => {
-    if (subscribers.size === 0) {
-      resolve({ error: 'Окно Bulka не подключено. Открой приложение Bulka и повтори.' });
-      return;
-    }
     const id = `c${++seq}`;
     const timer = setTimeout(() => {
       pending.delete(id);

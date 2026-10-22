@@ -33,7 +33,7 @@ interface ModelInfo {
 async function fetchOpenAIModels(apiKey: string): Promise<ModelInfo[]> {
   try {
     const response = await fetch('https://api.openai.com/v1/models', {
-      headers: { 'Authorization': `Bearer ${apiKey}` },
+      headers: { Authorization: `Bearer ${apiKey}` },
     });
 
     if (!response.ok) return [];
@@ -80,9 +80,7 @@ async function fetchAnthropicModels(apiKey: string): Promise<ModelInfo[]> {
  */
 async function fetchGeminiModels(apiKey: string): Promise<ModelInfo[]> {
   try {
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`
-    );
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
 
     if (!response.ok) return [];
 
@@ -104,7 +102,7 @@ async function fetchGeminiModels(apiKey: string): Promise<ModelInfo[]> {
 async function fetchZaiModels(apiKey: string): Promise<ModelInfo[]> {
   try {
     const response = await fetch('https://api.z.ai/api/paas/v4/models', {
-      headers: { 'Authorization': `Bearer ${apiKey}` },
+      headers: { Authorization: `Bearer ${apiKey}` },
     });
 
     if (!response.ok) return [];
@@ -127,7 +125,7 @@ async function fetchZaiModels(apiKey: string): Promise<ModelInfo[]> {
 async function fetchOpenRouterModels(apiKey: string): Promise<ModelInfo[]> {
   try {
     const response = await fetch('https://openrouter.ai/api/v1/models', {
-      headers: { 'Authorization': `Bearer ${apiKey}` },
+      headers: { Authorization: `Bearer ${apiKey}` },
     });
 
     if (!response.ok) return [];
@@ -178,10 +176,10 @@ export const POST: APIRoute = async ({ request }) => {
 
     // free doesn't need server-side model fetching - uses client-side only
     if (provider === 'free') {
-      return new Response(
-        JSON.stringify({ error: 'free uses client-side models' }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
-      );
+      return new Response(JSON.stringify({ error: 'free uses client-side models' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
     }
 
     // Локальная модель (LM Studio / Ollama): список с localhost, ключ не нужен.
@@ -191,10 +189,10 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     if (!apiKey) {
-      return new Response(
-        JSON.stringify({ error: 'API key required' }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
-      );
+      return new Response(JSON.stringify({ error: 'API key required' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
     }
 
     let models: ModelInfo[] = [];
@@ -216,22 +214,18 @@ export const POST: APIRoute = async ({ request }) => {
         models = await fetchOpenRouterModels(apiKey);
         break;
       default:
-        return new Response(
-          JSON.stringify({ error: 'Unknown provider' }),
-          { status: 400, headers: { 'Content-Type': 'application/json' } }
-        );
+        return new Response(JSON.stringify({ error: 'Unknown provider' }), {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' },
+        });
     }
 
-    return new Response(
-      JSON.stringify({ models }),
-      { headers: { 'Content-Type': 'application/json' } }
-    );
-
+    return new Response(JSON.stringify({ models }), { headers: { 'Content-Type': 'application/json' } });
   } catch (error) {
     console.error('Models API error:', error);
-    return new Response(
-      JSON.stringify({ error: 'Failed to fetch models' }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
-    );
+    return new Response(JSON.stringify({ error: 'Failed to fetch models' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 };

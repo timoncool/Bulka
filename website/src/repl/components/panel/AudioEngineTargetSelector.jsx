@@ -1,6 +1,7 @@
 import React from 'react';
 import { audioEngineTargets } from '../../../settings.mjs';
 import { SelectInput } from './SelectInput';
+import { href, t } from '../../../i18n/index.mjs';
 
 // Allows the user to select an audio interface for Strudel to play through
 export function AudioEngineTargetSelector({ target, onChange, isDisabled }) {
@@ -17,9 +18,9 @@ export function AudioEngineTargetSelector({ target, onChange, isDisabled }) {
       {target === audioEngineTargets.osc && (
         <div>
           <p className="text-sm italic">
-            ⚠ Все события направляются в OSC, звук отключён! См.{' '}
-            <a className="text-blue-500" href="https://strudel.cc/learn/input-output/">
-              документацию
+            {t('osc.warning')}{' '}
+            <a className="text-blue-500" href={href('/learn/input-output/')}>
+              {t('osc.docs')}
             </a>
           </p>
         </div>
