@@ -419,6 +419,8 @@ dependencies = [
 name = "bulka-desktop"
 version = "0.3.0"
 dependencies = [
+ "reqwest",
+ "rustls",
  "serde",
  "serde_json",
  "studio-hub-client",
@@ -428,6 +430,7 @@ dependencies = [
  "tauri-plugin-opener",
  "tauri-plugin-shell",
  "tauri-plugin-updater",
+ "windows-registry",
 ]
 
 [[package]]

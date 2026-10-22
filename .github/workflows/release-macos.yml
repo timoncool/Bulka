@@ -5,11 +5,7 @@ name: macOS build
 # lives. Windows and Linux are built on the release machine: desktop/build.sh, desktop/build-linux-docker.sh.
 
 on:
-  # a pull request that touches the desktop app builds it for macOS too (no release upload without a tag)
-  pull_request:
-    paths:
-      - "desktop/**"
-      - ".github/workflows/release-macos.yml"
+  # builds on GitHub are for releases only: Actions storage of the account is small
   workflow_dispatch:
     inputs:
       tag:
@@ -57,6 +53,29 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Build
         run: bash desktop/build.sh
+      - name: Libraries and rpaths
+        run: |
+          set -e
+          app=desktop/src-tauri/target/release/bundle/macos/Bulka.app
+          bad=0
+          for bin in "$app"/Contents/MacOS/* "$app/Contents/Resources/app/node/node"; do
+            echo "== $bin"
+            otool -L "$bin"
+            # a path of the build machine is missing on the user's Mac: only macOS's own libraries or app-relative paths
+            while read -r lib; do
+              case "$lib" in
+                /System/Library/* | /usr/lib/* | @executable_path/* | @loader_path/* | @rpath/*) ;;
+                *) echo "::error::$bin links $lib"; bad=1 ;;
+              esac
+            done < <(otool -L "$bin" | tail -n +2 | awk '{print $1}')
+            while read -r rpath; do
+              case "$rpath" in
+                @executable_path/* | @loader_path/*) ;;
+                *) echo "::error::$bin has LC_RPATH $rpath"; bad=1 ;;
+              esac
+            done < <(otool -l "$bin" | awk '/cmd LC_RPATH/ { getline; getline; print $2 }')
+          done
+          exit $bad
       - name: Bundled node starts
         run: |
           set -e
@@ -75,6 +94,7 @@ jobs:
         with:
           name: bulka-macos-arm64
           path: out/*
+          retention-days: 1
       - name: Attach to the release
         if: ${{ inputs.tag != '' }}
         env:

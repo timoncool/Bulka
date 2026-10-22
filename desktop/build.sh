@@ -110,6 +110,14 @@ if [ "$OS" != darwin ]; then
 fi
 "$ROOT/node_modules/.bin/tauri" build
 
+if [ "$OS" != darwin ]; then
+  echo "[..] Проверка бинарей: импорты DLL и AVX-512"
+  SHELL_BIN="$DESK/src-tauri/target/release/bulka-desktop"
+  [ "$OS" = win ] && SHELL_BIN="$SHELL_BIN.exe"
+  node "$DESK/check-binaries.mjs" --shell "$SHELL_BIN" --map "$DESK/src-tauri/target/release/bulka-desktop.map" \
+    --node "$STAGE/node/$NODE_BIN"
+fi
+
 BUNDLE="desktop/src-tauri/target/release/bundle"
 echo ""
 case "$OS" in

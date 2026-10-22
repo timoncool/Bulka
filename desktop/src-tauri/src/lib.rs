@@ -11,6 +11,9 @@
 //! в AppImage/.deb — `/usr/lib/<app>`, в macOS — `Contents/Resources`. Данные (записи, лог сервера) — рядом с exe
 //! на Windows (портатив: ключи и localStorage WebView2 там же), на Linux и macOS — в каталоге данных приложения.
 
+#[cfg(windows)]
+mod webview2;
+
 use std::io::{Read, Write};
 use std::net::{Ipv4Addr, SocketAddrV4, TcpListener, TcpStream};
 use std::path::PathBuf;
@@ -33,6 +36,7 @@ struct ServerPort(u16);
 
 /// Страница релизов (обновление вручную: портатив Windows, .deb).
 const RELEASES_URL: &str = "https://github.com/timoncool/Bulka/releases/latest";
+const WEBVIEW2_URL: &str = "https://developer.microsoft.com/microsoft-edge/webview2/";
 
 /// Сколько окно отправляет статистику при закрытии, как у студий (`POST /v1/hub/flush`, до 8 с).
 const FLUSH_WAIT_MS: u64 = 8000;
@@ -91,14 +95,18 @@ fn data_dir(app: &tauri::AppHandle) -> Result<PathBuf, String> {
     Ok(dir)
 }
 
-/// Бандлёный node (`<app>/node/node.exe` или `<app>/node/node`), иначе системный `node` из PATH (дев).
-fn node_exe(app_dir: &PathBuf) -> String {
+/// Бандлёный node (`<app>/node/node.exe` или `<app>/node/node`). Системный `node` из PATH берётся только в
+/// отладочной сборке (запуск из исходников); в релизе его отсутствие — ошибка с путём.
+fn node_exe(app_dir: &PathBuf) -> Result<String, String> {
     let name = if cfg!(windows) { "node.exe" } else { "node" };
     let bundled = app_dir.join("node").join(name);
     if bundled.is_file() {
-        return bundled.to_string_lossy().into_owned();
+        return Ok(bundled.to_string_lossy().into_owned());
     }
-    "node".to_string()
+    if cfg!(debug_assertions) {
+        return Ok("node".to_string());
+    }
+    Err(format!("нет встроенного node: {}", bundled.display()))
 }
 
 /// Можно ли обновиться на месте: установленный NSIS на Windows, AppImage на Linux, .app на macOS.
@@ -153,7 +161,7 @@ fn spawn_server(app: &tauri::AppHandle, app_dir: &PathBuf, data: &PathBuf, port:
 
     let cmd = app
         .shell()
-        .command(node_exe(app_dir))
+        .command(node_exe(app_dir)?)
         .args(["--import", EXIT_WITH_SHELL, &entry])
         .env("HOST", "127.0.0.1")
         .env("PORT", port.to_string())
@@ -275,6 +283,20 @@ fn wait_for_flush(port: u16) {
     }
 }
 
+/// Нет WebView2 Runtime (портатив на чистой Windows 10) — ставим его, как установщик NSIS. Ход — в `webview2-install.log`.
+#[cfg(windows)]
+fn ensure_webview2(app: &tauri::AppHandle) -> Result<(), String> {
+    if webview2::installed_version().is_some() {
+        return Ok(());
+    }
+    let log_path = data_dir(app)?.join("webview2-install.log");
+    let mut log = std::fs::File::create(&log_path).map_err(|e| format!("{}: {e}", log_path.display()))?;
+    webview2::install(&mut log).map(|_| ()).map_err(|e| {
+        let _ = writeln!(log, "[ERROR] {e}");
+        e
+    })
+}
+
 fn fatal(app: &tauri::AppHandle, message: String) {
     app.dialog().message(message).title("Bulka не запустилась").kind(MessageDialogKind::Error).blocking_show();
     app.exit(1);
@@ -296,6 +318,17 @@ pub fn run() {
         .manage(ServerProc(Mutex::new(None)))
         .setup(move |app| {
             let handle = app.handle().clone();
+            #[cfg(windows)]
+            if let Err(e) = ensure_webview2(&handle) {
+                fatal(
+                    &handle,
+                    format!(
+                        "Для Bulka нужен Microsoft Edge WebView2 Runtime. Поставить его сама Bulka не смогла: {e}. \
+                         Установите его со страницы {WEBVIEW2_URL} и запустите Bulka снова."
+                    ),
+                );
+                return Ok(());
+            }
             let start = resolve_app_dir(&handle).and_then(|app_dir| data_dir(&handle).map(|data| (app_dir, data)));
             let (app_dir, data) = match start {
                 Ok(v) => v,
