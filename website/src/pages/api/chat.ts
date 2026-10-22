@@ -1779,6 +1779,11 @@ stack(
 ПРАВИЛЬНО: n("0 2 4").scale("C:major") / .euclidRot(3, 8, 2)
 ПОЧЕМУ: Bulka — это Strudel на JavaScript, а не TidalCycles на Haskell. Функций up, toScale, euclidOff, каналов d1…d16 и операторов $ и # в Strudel НЕТ — код падает с «up is not defined».
 
+#### ❌ #16: Функции из prebake-скрипта Switch Angel
+НЕПРАВИЛЬНО: note("c2*8").s("sawtooth").acidenv(.5) / .trancegate(1.5, 45, 1) / .rlpf(.5) / .dly(.3)
+ПРАВИЛЬНО: note("c2*8").s("sawtooth").lpf(100).lpenv(4.5).lps(.2).lpd(.12).lpq(2) — это и есть acidenv(.5)
+ПОЧЕМУ: acidenv, acid, trancegate, tgate, rlpf, rhpf, dly, pg, accent, grab, mpan, vstruct, stxt, voc и прочие из его видео — не Strudel, а его личный prebake-скрипт. В Bulka их НЕТ — код падает с «….acidenv is not a function». Пиши штатными функциями.
+
 </workflow_examples>
 
 <response_format>
@@ -1868,6 +1873,15 @@ const TOOL_STATUS_MESSAGES: Record<string, string> = {
   getAvailablePacks: '📦 Получаю список паков...',
   getBankSamples: '🎵 Получаю содержимое банка...',
 };
+
+// A provider that refuses the key (401/403) gets the same answer from every runner: what it said and where to fix it.
+function providerHttpError(provider: string, status: number, message: string, lang: Lang): string {
+  const text = `${provider}: ${String(message).replace(/[.\s]+$/, '')}`;
+  if (status !== 401 && status !== 403) return text;
+  return lang === 'en'
+    ? `${text}. The key was not accepted: paste a valid one in the AI settings.`
+    : `${text}. Ключ не принят: вставьте действующий в настройках AI.`;
+}
 
 // The browser runs client tools after this answer is streamed, so the model cannot learn here whether the code ran;
 // an eval error reaches it as the next user message.
@@ -2025,7 +2039,9 @@ async function runOpenAIAgent(
             errMsg = errJson.error?.message || errJson.error || errText;
           } catch (e) {}
           controller.enqueue(
-            encoder.encode(`data: ${JSON.stringify({ type: 'error', error: `OpenAI: ${errMsg}` })}\n\n`),
+            encoder.encode(
+              `data: ${JSON.stringify({ type: 'error', error: providerHttpError('OpenAI', response.status, errMsg, lang) })}\n\n`,
+            ),
           );
           controller.enqueue(encoder.encode('data: [DONE]\n\n'));
           controller.close();
@@ -2244,7 +2260,9 @@ async function runAnthropicAgent(
             errMsg = errJson.error?.message || errJson.error || errText;
           } catch (e) {}
           controller.enqueue(
-            encoder.encode(`data: ${JSON.stringify({ type: 'error', error: `Anthropic: ${errMsg}` })}\n\n`),
+            encoder.encode(
+              `data: ${JSON.stringify({ type: 'error', error: providerHttpError('Anthropic', response.status, errMsg, lang) })}\n\n`,
+            ),
           );
           controller.enqueue(encoder.encode('data: [DONE]\n\n'));
           controller.close();
@@ -2592,7 +2610,9 @@ async function runGeminiAgent(
             errMsg = errJson.error?.message || errJson.error?.status || errText;
           } catch (e) {}
           controller.enqueue(
-            encoder.encode(`data: ${JSON.stringify({ type: 'error', error: `Gemini: ${errMsg}` })}\n\n`),
+            encoder.encode(
+              `data: ${JSON.stringify({ type: 'error', error: providerHttpError('Gemini', response.status, errMsg, lang) })}\n\n`,
+            ),
           );
           controller.enqueue(encoder.encode('data: [DONE]\n\n'));
           controller.close();
@@ -2922,7 +2942,7 @@ async function runOpenAICompatibleAgent(
           } catch (e) {}
           controller.enqueue(
             encoder.encode(
-              `data: ${JSON.stringify({ type: 'error', error: `${config.providerName}: ${errMsg}` })}\n\n`,
+              `data: ${JSON.stringify({ type: 'error', error: providerHttpError(config.providerName, response.status, errMsg, lang) })}\n\n`,
             ),
           );
           controller.enqueue(encoder.encode('data: [DONE]\n\n'));

@@ -358,6 +358,12 @@ export default {
   'importSounds.button': 'import sounds folder',
   'error.prefix': 'Error:',
   'error.unknown': 'Unknown error :-/',
+  'hint.syntax':
+    'The code is not written right at line {line}, character {column}: check the brackets, commas and quotes around it.',
+  'hint.prebake':
+    "{name} comes from Switch Angel's prebake script; Strudel has no such function. How to load his script: the FAQ, /en/learn/faq (the question about trancegate).",
+  'hint.prebake.acidenv':
+    "acidenv comes from Switch Angel's prebake script; Strudel has no such function. The same in Strudel: .lpf(100).lpenv(x * 9).lps(.2).lpd(.12).lpq(2), where x is the number from acidenv(x).",
   'hint.tidal.up':
     'up is a TidalCycles function; Strudel has none. Transpose by semitones with .add(note(12)) or .transpose(12).',
   'hint.tidal.toScale':

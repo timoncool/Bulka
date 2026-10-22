@@ -11,7 +11,7 @@ import { AUDIO_LOCKED_MESSAGE, isAudioUnlocked } from './audioUnlock.mjs';
 import { selectText } from './editorSelection.mjs';
 import { $strudel_log_history } from './components/useLogger.jsx';
 import { beginRecording, endRecording } from './recordingState.mjs';
-import { errorWithHint } from './tidalHints.mjs';
+import { errorWithHint } from './codeHints.mjs';
 
 // Список клиентских тулзов (для маршрутизации: клиент vs сервер).
 export const CLIENT_TOOL_NAMES = [

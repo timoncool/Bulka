@@ -13,6 +13,15 @@
         "type": "other",
         "typeLabel": "Прочее",
         "emoji": "📦",
+        "description": "Remove the unused agent tools module",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "12581b878"
+      },
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
         "description": "Statistics send the AI provider and model as a model set, names kept as typed like used_models of the studios' client; the old short-name list mangled OpenRouter ids and the hub's model view never read it",
         "scope": null,
         "author": "Nerual Dreming",

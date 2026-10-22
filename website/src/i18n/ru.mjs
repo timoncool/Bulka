@@ -357,6 +357,11 @@ export default {
   'importSounds.button': 'импортировать папку звуков',
   'error.prefix': 'Ошибка:',
   'error.unknown': 'Неизвестная ошибка :-/',
+  'hint.syntax': 'Код записан с ошибкой: строка {line}, символ {column}. Проверьте рядом скобки, запятые и кавычки.',
+  'hint.prebake':
+    '{name} — функция из prebake-скрипта Switch Angel, в Strudel её нет. Как подключить его скрипт — в FAQ: /learn/faq (вопрос про trancegate).',
+  'hint.prebake.acidenv':
+    'acidenv — функция из prebake-скрипта Switch Angel, в Strudel её нет. Штатно то же самое: .lpf(100).lpenv(x * 9).lps(.2).lpd(.12).lpq(2), где x — число из acidenv(x).',
   'hint.tidal.up':
     'up — функция TidalCycles, в Strudel её нет. Транспонировать на полутоны: .add(note(12)) или .transpose(12).',
   'hint.tidal.toScale': 'toScale — функция TidalCycles, в Strudel её нет. Ступени гаммы: n("0 2 4").scale("C:major").',

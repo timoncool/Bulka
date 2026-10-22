@@ -23,7 +23,7 @@ import {
 } from '../../../settings.mjs';
 import { getRandomSuggestions } from '../../data/suggestions.js';
 import { t } from '../../../i18n/index.mjs';
-import { errorWithHint } from '../../tidalHints.mjs';
+import { errorWithHint } from '../../codeHints.mjs';
 
 // Common input styles matching SettingsTab
 const inputClass =
