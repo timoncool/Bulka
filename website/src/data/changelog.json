@@ -13,6 +13,15 @@
         "type": "other",
         "typeLabel": "Прочее",
         "emoji": "📦",
+        "description": "Format WelcomeTab",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "1b2bca34e"
+      },
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
         "description": "Remove the unused agent prompt module; the agent prompt no longer tells to add .note() after n().scale(), which nests the note and breaks it",
         "scope": null,
         "author": "Nerual Dreming",

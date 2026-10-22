@@ -590,7 +590,7 @@ export function useChatContext(replContext) {
           }
 
           recordDone('agent_reply');
-          recordModel(`${aiProvider} ${aiModel}`);
+          recordModel(aiProvider, aiModel);
           // Done with free
           setIsLoading(false);
           return;
@@ -785,7 +785,7 @@ export function useChatContext(replContext) {
           });
         }
         recordDone('agent_reply');
-        recordModel(`${aiProvider} ${aiModel}`);
+        recordModel(aiProvider, aiModel);
       } catch (err) {
         if (err.name === 'AbortError') {
           console.log('[Chat] Aborted');

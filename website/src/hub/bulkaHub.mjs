@@ -77,6 +77,7 @@ export function recordFailed(kind, reason) {
   hub.failed(kind, reason);
 }
 
-export function recordModel(name) {
-  hub?.usedModel(name);
+/** The AI provider as the set and the model id as its part, kept as typed (`openrouter`, `google/gemma-3:free`). */
+export function recordModel(provider, model) {
+  hub?.usedModels(provider, [model]);
 }

@@ -16,7 +16,8 @@ export function TelemetryPreview({ hub }) {
     ui_lang: hub.config.lang(),
     gpu: { vendor: 'none', vram_gb: '?', backend: hub.config.backend },
     counts: { pattern_play_done: 12, record_done: 1, agent_reply_done: 3 },
-    models: ['free gpt-oss-20b'],
+    models: [],
+    model_sets: [{ set: 'free', components: ['gpt-oss-20b'], count: 3 }],
     notices: {},
   };
   return (
