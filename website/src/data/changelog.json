@@ -13,6 +13,15 @@
         "type": "other",
         "typeLabel": "Прочее",
         "emoji": "📦",
+        "description": "What's New shows the hub's news on top, newest first, in Russian or English: date, picture, text and buttons; impressions and clicks go through StudioHub.count() of the notices script, and its absence is an error in the console",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "e0c045276"
+      },
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
         "description": "Profiles left on OpenAI without a key (the old default, stored on the first load) move to the free provider once; a version flag keeps a later own choice of OpenAI, and a profile with a key is not touched",
         "scope": null,
         "author": "Nerual Dreming",
