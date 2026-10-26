@@ -37,7 +37,8 @@ export const defaultSettings = {
   geminiApiKey: '',
   zaiApiKey: '',
   openrouterApiKey: '',
-  aiProvider: aiProviders.openai,
+  // новый человек начинает с бесплатного провайдера без ключа; однажды выбранный провайдер хранится и не меняется
+  aiProvider: aiProviders.free,
   aiModel: '', // Loaded dynamically from provider API
   // Локальная модель (LM Studio / Ollama): OpenAI-совместимый сервер на localhost.
   localBaseUrl: 'http://localhost:1234/v1', // LM Studio по умолчанию (Ollama: http://localhost:11434/v1)
