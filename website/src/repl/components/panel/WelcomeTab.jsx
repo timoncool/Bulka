@@ -45,8 +45,7 @@ function WelcomeRu() {
         <a href="https://t.me/bulka_app" target="_blank">
           Telegram-сообществу
         </a>
-        !
-        {' '}Нашли ошибку?{' '}
+        ! Нашли ошибку?{' '}
         <a href={issueReportUrl()} target="_blank">
           Сообщите о проблеме
         </a>
@@ -114,8 +113,7 @@ function WelcomeEn() {
         <a href="https://t.me/bulka_app" target="_blank">
           Telegram community
         </a>
-        !
-        {' '}Found a bug?{' '}
+        ! Found a bug?{' '}
         <a href={issueReportUrl()} target="_blank">
           Report a problem
         </a>
@@ -152,10 +150,25 @@ function WelcomeEn() {
  */
 function issueReportUrl() {
   const agent = navigator.userAgent;
-  const known = [['Edg', 'Edge'], ['OPR', 'Opera'], ['YaBrowser', 'Yandex'], ['Firefox', 'Firefox'], ['Chrome', 'Chrome'], ['Version', 'Safari']];
+  const known = [
+    ['Edg', 'Edge'],
+    ['OPR', 'Opera'],
+    ['YaBrowser', 'Yandex'],
+    ['Firefox', 'Firefox'],
+    ['Chrome', 'Chrome'],
+    ['Version', 'Safari'],
+  ];
   const found = known.map(([token, label]) => [label, agent.match(new RegExp(`${token}/(\\d+)`))]).find(([, m]) => m);
   const name = found ? `${found[0]} ${found[1][1]}` : '';
-  const os = /Windows/.test(agent) ? 'Windows' : /Mac OS X|Macintosh/.test(agent) ? 'macOS' : /Android/.test(agent) ? 'Android' : /Linux/.test(agent) ? 'Linux' : '';
+  const os = /Windows/.test(agent)
+    ? 'Windows'
+    : /Mac OS X|Macintosh/.test(agent)
+      ? 'macOS'
+      : /Android/.test(agent)
+        ? 'Android'
+        : /Linux/.test(agent)
+          ? 'Linux'
+          : '';
   const query = new URLSearchParams();
   const described = [name, os].filter(Boolean).join(', ');
   if (described) query.set('browser', described);

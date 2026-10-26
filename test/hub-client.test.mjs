@@ -5,6 +5,8 @@ import { StudioHub } from '../website/src/hub/studioHub.mjs';
 const UUID4 = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 const SHORT = /^[A-Za-z0-9 ._+-]{1,40}$/;
 const NAME = /^[a-z][a-z0-9_]{0,31}$/;
+// eslint-disable-next-line no-control-regex
+const PRINTABLE = /^[^\u0000-\u001f\u007f]+$/;
 
 function memoryStorage() {
   const data = new Map();
@@ -55,8 +57,8 @@ describe('studio hub client', () => {
     hub.count('pattern_play_done', 3);
     hub.count('pattern_play_failed');
     hub.failed('pattern_play', 'open C:\\Users\\Ivan\\x.wav: denied');
-    hub.usedModel('free gpt-oss-20b');
-    hub.usedModel('openrouter anthropic/claude-sonnet:beta');
+    hub.usedModels('free', ['gpt-oss-20b']);
+    hub.usedModels('openrouter', ['anthropic/claude-sonnet:beta']);
     await hub.sendReports();
     expect(fetch).toHaveBeenCalledTimes(1);
     const [url, init] = fetch.mock.calls[0];
@@ -71,10 +73,56 @@ describe('studio hub client', () => {
     expect(report.ui_lang).toMatch(/^[a-z]{2}$/);
     expect(report.gpu).toEqual({ vendor: 'none', vram_gb: '?', backend: 'web' });
     for (const name of Object.keys(report.counts)) expect(name).toMatch(NAME);
-    for (const model of report.models) expect(model).toMatch(SHORT);
+    expect(report.models).toEqual([]);
+    expect(report.model_sets).toEqual([
+      { set: 'free', components: ['gpt-oss-20b'], count: 1 },
+      { set: 'openrouter', components: ['anthropic/claude-sonnet:beta'], count: 1 },
+    ]);
     expect(report.failures).toEqual([{ kind: 'pattern_play', reason: 'open <path>: denied', count: 1 }]);
     await hub.sendReports();
     expect(fetch).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps model names as typed, like used_models of the Rust client', () => {
+    const hub = hubWith(vi.fn(ok));
+    hub.acknowledge(true);
+    const long = 'meta-llama/llama-3.3-70b-instruct:free-with-a-very-long-suffix-that-goes-on';
+    hub.usedModels('openrouter', [long]);
+    hub.usedModels(' openrouter ', [long, long]);
+    hub.usedModels('openrouter', ['x'.repeat(81)]);
+    hub.usedModels(null, ['b\u0007', 'a']);
+    hub.usedModels(null, ['', '  ']);
+    const report = hub.reportFor(new Date().toISOString().slice(0, 10));
+    expect(report.model_sets).toEqual([
+      { set: 'openrouter', components: [long], count: 2 },
+      { set: 'openrouter', components: [], count: 1 },
+      { set: null, components: ['a', 'b'], count: 1 },
+    ]);
+    for (const entry of report.model_sets) {
+      for (const name of [entry.set, ...entry.components].filter((n) => n !== null)) {
+        expect(name.length).toBeLessThanOrEqual(80);
+        expect(name).toMatch(PRINTABLE);
+      }
+    }
+  });
+
+  it('reads days stored before model sets and leaves their old model names out', () => {
+    const storage = memoryStorage();
+    const day = new Date().toISOString().slice(0, 10);
+    storage.setItem(
+      'bulka-studio-hub',
+      JSON.stringify({
+        install: '0b7f9a0e-6a8e-4c1e-9f1e-2d3c4b5a6f70',
+        acknowledged: true,
+        telemetry: true,
+        days: { [day]: { counts: { agent_reply_done: 1 }, models: ['free gpt-oss-20b'], failures: {}, dirty: true } },
+      }),
+    );
+    const hub = hubWith(vi.fn(ok), storage);
+    hub.usedModels('free', ['gpt-oss-20b']);
+    const report = hub.reportFor(day);
+    expect(report.models).toEqual([]);
+    expect(report.model_sets).toEqual([{ set: 'free', components: ['gpt-oss-20b'], count: 1 }]);
   });
 
   it('keeps the day when the network fails and tries the proxy, then remembers the address that answered', async () => {

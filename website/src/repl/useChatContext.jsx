@@ -229,7 +229,9 @@ const FREE_SYSTEM_PROMPT = `Ты Bulka AI - помощник для музыка
 ## ПРАВИЛА:
 - Всегда давай ПОЛНЫЙ рабочий код, не фрагменты
 - После написания кода ВСЕГДА добавляй [PLAY] чтобы запустить музыку
-- Код должен быть валидным Strudel/Tidal кодом
+- Код — JavaScript Strudel, а не TidalCycles: d1 $, # и функций up, toScale, euclidOff здесь НЕТ
+- Транспозиция: note("c3 e3").add(note(12)) или .transpose(12); гамма: n("0 2 4").scale("C:major")
+- Функций из скрипта Switch Angel (acidenv, trancegate, rlpf, dly и т.п.) здесь НЕТ: acidenv(.5) = .lpf(100).lpenv(4.5).lps(.2).lpd(.12).lpq(2)
 - Используй stack() для нескольких партий одновременно
 - Будь кратким в объяснениях (1-2 предложения)
 
@@ -589,7 +591,7 @@ export function useChatContext(replContext) {
           }
 
           recordDone('agent_reply');
-          recordModel(`${aiProvider} ${aiModel}`);
+          recordModel(aiProvider, aiModel);
           // Done with free
           setIsLoading(false);
           return;
@@ -784,7 +786,7 @@ export function useChatContext(replContext) {
           });
         }
         recordDone('agent_reply');
-        recordModel(`${aiProvider} ${aiModel}`);
+        recordModel(aiProvider, aiModel);
       } catch (err) {
         if (err.name === 'AbortError') {
           console.log('[Chat] Aborted');

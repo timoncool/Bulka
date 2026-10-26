@@ -6,9 +6,69 @@
     "changes": []
   },
   {
+    "date": "2026-10-22",
+    "dateFormatted": "22 октября 2026",
+    "changes": [
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "Remove the unused agent tools module",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "12581b878"
+      },
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "Statistics send the AI provider and model as a model set, names kept as typed like used_models of the studios' client; the old short-name list mangled OpenRouter ids and the hub's model view never read it",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "43e298f53"
+      },
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "Format WelcomeTab",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "1b2bca34e"
+      },
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "Remove the unused agent prompt module; the agent prompt no longer tells to add .note() after n().scale(), which nests the note and breaks it",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "1467b7eb2"
+      },
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "TidalCycles words in code (up, toScale, euclidOff, d1) get the Strudel way under the error; the agent prompts stop calling Bulka a Tidal fork and say what Strudel lacks; an editor error goes back to the agent again after a run that worked; the server no longer tells the model playMusic succeeded",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "eb58bf900"
+      }
+    ]
+  },
+  {
     "date": "2026-10-15",
     "dateFormatted": "15 октября 2026",
     "changes": [
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "The microphone asked for only to name the sound outputs is released at once",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "958d332f2"
+      },
       {
         "type": "other",
         "typeLabel": "Прочее",
