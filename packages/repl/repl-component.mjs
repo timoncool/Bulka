@@ -37,7 +37,7 @@ if (typeof HTMLElement !== 'undefined') {
       const drawContext = getDrawContext();
       const drawTime = [-2, 2];
       this.editor = new StrudelMirror({
-        defaultOutput: webaudioOutput,
+        onSchedule: webaudioOutput,
         getTime: () => getAudioContext().currentTime,
         transpiler,
         root: container,

@@ -12,7 +12,7 @@ registerSynthSounds();
 evalScope(import('@strudel/core'), import('@strudel/mini'), import('@strudel/webaudio'), import('@strudel/tonal'));
 
 const { evaluate } = repl({
-  defaultOutput: webaudioOutput,
+  onSchedule: webaudioOutput,
   getTime: () => ctx.currentTime,
   transpiler,
 });

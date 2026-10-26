@@ -39,15 +39,11 @@ const sliderTranspilerPlugin = {
       if (!isSliderFunction(node)) return;
       context.widgets ??= [];
       context.sliders ??= [];
-      const { options, widgets, sliders, nodeOffset } = context;
+      const { options, widgets, sliders } = context;
       const { emitWidgets } = options;
-      const from = node.arguments[0].start + nodeOffset;
-      const to = node.arguments[0].end + nodeOffset;
-      const id = `${from}:${to}`; // Range-based ID for stability
       const sliderConfig = {
-        from,
-        to,
-        id,
+        from: node.arguments[0].start,
+        to: node.arguments[0].end,
         value: node.arguments[0].raw, // don't use value!
         min: node.arguments[1]?.value ?? 0,
         max: node.arguments[2]?.value ?? 1,
@@ -56,7 +52,7 @@ const sliderTranspilerPlugin = {
       };
       emitWidgets && widgets.push(sliderConfig);
       sliders.push(sliderConfig);
-      return this.replace(sliderWithLocation(node, nodeOffset));
+      return this.replace(sliderWithLocation(node));
     },
   }),
 };
@@ -73,13 +69,8 @@ function isWidgetMethod(node) {
   return node.type === 'CallExpression' && widgetMethods.includes(node.callee.property?.name);
 }
 
-function sliderWithLocation(node, nodeOffset = 0) {
-  // Apply nodeOffset for block-based evaluation to generate correct range
-  const from = node.arguments[0].start + nodeOffset;
-  const to = node.arguments[0].end + nodeOffset;
-
-  // Use range-based ID for stability during block evaluation
-  const id = `${from}:${to}`;
+function sliderWithLocation(node) {
+  const id = 'slider_' + node.arguments[0].start; // use loc of first arg for id
 
   // add loc as identifier to first argument
   // the sliderWithID function is assumed to be sliderWithID(id, value, min?, max?)
@@ -95,26 +86,14 @@ function sliderWithLocation(node, nodeOffset = 0) {
 export function getWidgetID(widgetConfig) {
   // the widget id is used as id for the dom element + as key for eventual resources
   // for example, for each scope widget, a new analyser + buffer (large) is created
-  // Update: use range-based ID generation for better stability during block evaluation
-  // When we have both from and to, use them together for stability
-  // Otherwise fall back to position-based ID for backward compatibility
-  let uniqueIdentifier;
-  if (widgetConfig.from !== undefined && widgetConfig.to !== undefined) {
-    // Use range for more stable identification
-    uniqueIdentifier = `${widgetConfig.from}-${widgetConfig.to}`;
-  } else {
-    // Fallback to single position (for backward compatibility)
-    uniqueIdentifier = widgetConfig.to || widgetConfig.from || 0;
-  }
-  const baseId = `${widgetConfig.id || ''}_widget_${widgetConfig.type}`;
-  return `${baseId}_${widgetConfig.index}_${uniqueIdentifier}`;
+  // that means, if we use the index index of line position as id, less garbage is generated
+  // return `widget_${widgetConfig.to}`; // more gargabe
+  //return `widget_${widgetConfig.index}_${widgetConfig.to}`; // also more garbage
+  return `${widgetConfig.id || ''}_widget_${widgetConfig.type}_${widgetConfig.index}`; // less garbage
 }
 
 function widgetWithLocation(node, widgetConfig) {
   const id = getWidgetID(widgetConfig);
-  // Store the unique ID back into the config so it's available for widget management
-  // This is critical for block-based evaluation to match existing widgets with new ones
-  widgetConfig.id = id;
   // add loc as identifier to first argument
   // the sliderWithID function is assumed to be sliderWithID(id, value, min?, max?)
   node.arguments.unshift({

@@ -55,7 +55,8 @@ export function parseControlsFromHap(hap, cps) {
   return controls;
 }
 
-export async function oscTrigger(hap, currentTime, cps = 1, targetTime) {
+let timeOrigin = performance.timeOrigin;
+export async function oscOutput(hap, targetTime, cps = 1) {
   const ws = await connect();
 
   const timeMs = getClockBridge().getPerformanceTime(targetTime);
@@ -63,7 +64,15 @@ export async function oscTrigger(hap, currentTime, cps = 1, targetTime) {
     logger('[osc] clockbridge not ready');
     return;
   }
-  const ts = performance.timeOrigin + timeMs;
+  // when the system sleeps while the browser is open, performance.now() doesnt tick
+  // .. which means performance.timeOrigin + performance.now() doesnt land in the present
+  const deprivation = timeOrigin + performance.now() - Date.now();
+  if (Math.abs(deprivation) > 20) {
+    console.log(`[osc] snap with ${(deprivation / 1000).toFixed(2)}s deprivation`);
+    // shift time after microsleep
+    timeOrigin -= deprivation;
+  }
+  const ts = timeOrigin + timeMs;
 
   const controls = parseControlsFromHap(hap, cps);
   const keyvals = Object.entries(controls).flat();
@@ -90,5 +99,5 @@ export async function oscTrigger(hap, currentTime, cps = 1, targetTime) {
  */
 export const osc = register('osc', (pat) => {
   ensureMinimalOutput();
-  return pat.onTrigger(oscTrigger);
+  return pat.onSchedule(oscOutput);
 });

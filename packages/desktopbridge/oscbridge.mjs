@@ -1,12 +1,14 @@
 import { Pattern, ClockCollator } from '@strudel/core';
-import { parseControlsFromHap } from 'node_modules/@strudel/osc/osc.mjs';
+import { parseControlsFromHap } from '@strudel/osc/osc.mjs';
 import { Invoke } from './utils.mjs';
+import { getAudioContext } from '@strudel/webaudio/index.mjs';
 
 const collator = new ClockCollator({});
 
-export async function oscTriggerTauri(hap, currentTime, cps = 1, targetTime) {
+export async function tauriOscOutput(hap, targetTime, cps = 1) {
   const controls = parseControlsFromHap(hap, cps);
   const params = [];
+  const currentTime = getAudioContext().currentTime;
   const timestamp = collator.calculateTimestamp(currentTime, targetTime);
 
   Object.keys(controls).forEach((key) => {
@@ -32,5 +34,5 @@ export async function oscTriggerTauri(hap, currentTime, cps = 1, targetTime) {
   });
 }
 Pattern.prototype.osc = function () {
-  return this.onTrigger(oscTriggerTauri);
+  return this.onSchedule(tauriOscOutput);
 };

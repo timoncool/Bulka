@@ -22,13 +22,14 @@ let _fallbackName;
  *   stack(bd, hh, bass).record()   // весь микс, пока играет
  */
 export const record = register('record', (name, pat) => {
-  return pat.onTrigger((hap, deadline, duration, cps) => {
+  return pat.onSchedule((hap, time, cps) => {
+    const duration = Number(hap.duration) / cps;
     // Через общий стор → в UI загорается индикатор записи (как при кнопке REC).
     if (!$isRecording.get()) beginRecording();
     // Каждый хап продлевает «дедлайн остановки»: длина хапа + запас полцикла.
     // Когда хапы прекращаются (партия доиграла) — таймер срабатывает и останавливает запись.
     clearTimeout(_stopTimer);
-    const marginSec = 0.5 / (cps || 0.5);
+    const marginSec = 0.5 / cps;
     const ms = Math.max(200, (duration + marginSec) * 1000);
     const fname = typeof name === 'string' && name.length ? name : _fallbackName;
     _stopTimer = setTimeout(() => endRecording(fname), ms);

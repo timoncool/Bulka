@@ -29,10 +29,10 @@
   },
   "homepage": "https://codeberg.org/uzu/strudel/",
   "dependencies": {
-    "web-tree-sitter": "^0.24.7"
+    "web-tree-sitter": "^0.24.7",
+    "tree-sitter-haskell": "^0.23.1"
   },
   "devDependencies": {
-    "tree-sitter-haskell": "^0.23.1",
     "vite": "^6.0.11"
   },
   "engines": {

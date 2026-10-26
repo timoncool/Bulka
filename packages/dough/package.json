@@ -31,7 +31,7 @@
   "dependencies": {
     "@strudel/core": "workspace:*",
     "@strudel/webaudio": "workspace:*",
-    "dough-synth": "0.2.4"
+    "dough-synth": "0.4.1"
   },
   "devDependencies": {
     "vite": "^6.0.11"
