@@ -13,6 +13,15 @@
         "type": "other",
         "typeLabel": "Прочее",
         "emoji": "📦",
+        "description": "Profiles left on OpenAI without a key (the old default, stored on the first load) move to the free provider once; a version flag keeps a later own choice of OpenAI, and a profile with a key is not touched",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "0dd45b0f1"
+      },
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
         "description": "A new visitor starts the AI chat on the free provider, which needs no key; a provider already stored is kept",
         "scope": null,
         "author": "Nerual Dreming",
