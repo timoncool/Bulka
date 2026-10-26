@@ -11,6 +11,7 @@
 //! в AppImage/.deb — `/usr/lib/<app>`, в macOS — `Contents/Resources`. Данные (записи, лог сервера) — рядом с exe
 //! на Windows (портатив: ключи и localStorage WebView2 там же), на Linux и macOS — в каталоге данных приложения.
 
+mod host;
 #[cfg(windows)]
 mod webview2;
 
@@ -191,6 +192,23 @@ fn spawn_server(app: &tauri::AppHandle, app_dir: &PathBuf, data: &PathBuf, port:
     Ok(child)
 }
 
+/// Страница релизов в браузере системы. На Linux xdg-open — программа компьютера: из AppImage она получает путь
+/// библиотек без папок образа ([`host::outside_appimage`]).
+#[cfg_attr(target_os = "linux", allow(unused_variables))]
+fn open_releases_page(app: &tauri::AppHandle) -> Result<(), String> {
+    #[cfg(target_os = "linux")]
+    {
+        let mut child = host::host_command("xdg-open").arg(RELEASES_URL).spawn().map_err(|e| format!("xdg-open: {e}"))?;
+        std::thread::spawn(move || child.wait());
+        Ok(())
+    }
+    #[cfg(not(target_os = "linux"))]
+    {
+        use tauri_plugin_opener::OpenerExt;
+        app.opener().open_url(RELEASES_URL, None::<&str>).map_err(|e| e.to_string())
+    }
+}
+
 /// Проверка обновления на GitHub-релизе и (по согласию юзера) установка на месте или страница релизов.
 fn spawn_update_check(app: tauri::AppHandle) {
     use tauri_plugin_updater::UpdaterExt;
@@ -220,8 +238,7 @@ fn spawn_update_check(app: tauri::AppHandle) {
                 .buttons(MessageDialogButtons::OkCancelCustom("Открыть".into(), "Позже".into()))
                 .blocking_show();
             if open {
-                use tauri_plugin_opener::OpenerExt;
-                if let Err(e) = app.opener().open_url(RELEASES_URL, None::<&str>) {
+                if let Err(e) = open_releases_page(&app) {
                     eprintln!("Страница релизов не открылась: {e}");
                 }
             }
