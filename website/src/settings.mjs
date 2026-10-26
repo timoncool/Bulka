@@ -2,6 +2,7 @@ import { persistentMap } from '@nanostores/persistent';
 import { useStore } from '@nanostores/react';
 import { register } from '@strudel/core';
 import { isUdels } from './repl/util.mjs';
+import { migrateUnsetAiProvider } from './aiProviderMigration.mjs';
 
 export const audioEngineTargets = {
   webaudio: 'webaudio',
@@ -98,6 +99,10 @@ const instance = parseInt(search?.get('instance') ?? '0');
 const settings_key = `strudel-settings${instance > 0 ? instance : ''}`;
 
 export const settingsMap = persistentMap(settings_key, defaultSettings);
+
+if (typeof localStorage !== 'undefined') {
+  migrateUnsetAiProvider(settingsMap, localStorage, `${settings_key}-aiProviderMigration`);
+}
 
 export const parseBoolean = (booleanlike) => ([true, 'true'].includes(booleanlike) ? true : false);
 
