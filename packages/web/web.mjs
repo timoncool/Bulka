@@ -6,7 +6,7 @@ export * from '@strudel/mini';
 export * from '@strudel/edo';
 export * from '@strudel/tonal';
 export * from '@strudel/webaudio';
-import { Pattern, evalScope, setTime } from '@strudel/core';
+import { Pattern, evalScope, setTime, setClockTime } from '@strudel/core';
 import { initAudioOnFirstClick, registerSynthSounds, webaudioRepl } from '@strudel/webaudio';
 // import { registerSoundfonts } from '@strudel/soundfonts';
 import { evaluate as _evaluate, transpiler } from '@strudel/transpiler';
@@ -41,6 +41,7 @@ export function initStrudel(options = {}) {
     return repl;
   })();
   setTime(() => repl.scheduler.now());
+  setClockTime(() => repl.scheduler.getTime()); // TODO: refactor?
   return initDone;
 }
 

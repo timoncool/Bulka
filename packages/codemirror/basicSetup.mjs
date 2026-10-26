@@ -2,23 +2,13 @@ import {
   keymap,
   highlightSpecialChars,
   drawSelection,
-  highlightActiveLine,
   dropCursor,
   rectangularSelection,
   crosshairCursor,
-  lineNumbers,
-  highlightActiveLineGutter,
 } from '@codemirror/view';
-import {
-  defaultHighlightStyle,
-  syntaxHighlighting,
-  bracketMatching,
-  foldGutter,
-  foldKeymap,
-} from '@codemirror/language';
+import { defaultHighlightStyle, syntaxHighlighting } from '@codemirror/language';
 import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
-import { searchKeymap, highlightSelectionMatches } from '@codemirror/search';
-import { completionKeymap, closeBracketsKeymap } from '@codemirror/autocomplete';
+import { closeBracketsKeymap } from '@codemirror/autocomplete';
 
 // Taken + slightly modified from https://github.com/codemirror/basic-setup/blob/main/src/codemirror.ts
 

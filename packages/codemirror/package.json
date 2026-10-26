@@ -44,14 +44,10 @@
     "@replit/codemirror-emacs": "^6.1.0",
     "@replit/codemirror-vim": "^6.3.0",
     "@replit/codemirror-vscode-keymap": "^6.0.2",
-    "codemirror-helix": "^0.5.0",
     "@strudel/core": "workspace:*",
     "@strudel/draw": "workspace:*",
-    "@strudel/tonal": "workspace:*",
     "@strudel/transpiler": "workspace:*",
-    "@tonaljs/tonal": "^4.10.0",
-    "nanostores": "^0.11.3",
-    "superdough": "workspace:*"
+    "nanostores": "^0.11.3"
   },
   "devDependencies": {
     "vite": "^6.0.11"

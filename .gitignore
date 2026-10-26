@@ -47,20 +47,6 @@ tidal-drum-machines
 webaudiofontdata
 src-tauri/target
 
-
-
-### BEGIN Visual Studio Code ###
-# Blanket, recursive exclude for .vscode directory and files
-.vscode/**/*
-# Unexclude specific files and directories within .vscode
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-### END Visual Studio Code ###
-
-
-
 # BEGIN JetBrains -> END JetBrains
 
 # for JetBrains IDE users, e.g. WebStorm. Source: https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore

@@ -3,7 +3,7 @@ import { getAudioContext, registerSound } from '@strudel/webaudio';
 import { loadSoundfont as _loadSoundfont, startPresetNote } from 'sfumato';
 
 Pattern.prototype.soundfont = function (sf, n = 0) {
-  return this.onTrigger((h, ct, cps, targetTime) => {
+  return this.onSchedule((h, targetTime) => {
     const ctx = getAudioContext();
     const note = getPlayableNoteValue(h);
     const preset = sf.presets[n % sf.presets.length];

@@ -17,7 +17,7 @@ Besides a UI for playback control and meta information, the main part of the REP
 
 1. The user writes and updates code. Each update transpiles and evaluates it to create a `Pattern` instance
 2. While the REPL is running, the `Scheduler` queries the active `Pattern` by a regular interval, generating `Events` (also known as `Haps` in Strudel) for the next time span.
-3. For each scheduling tick, all generated `Events` are triggered by calling their `onTrigger` method, which is set by the output.
+3. For each scheduling tick, all generated `Events` are triggered by calling their `onSchedule` method, which is set by the output.
 
 <img src="https://codeberg.org/uzu/strudel/raw/branch/talk/talk/public/strudelflow.png" width="600" />
 
@@ -117,10 +117,6 @@ Here's an example AST for `c3 [e3 g3]`
 
 which translates to `seq(c3, seq(e3, g3))`
 
-## Vim Keybindings
-
-See the separate page on Vim shortcuts for a quick reference: [/technical-manual/vim](/technical-manual/vim)
-
 ## Scheduling Events
 
 After an instance of `Pattern` is obtained from the user code,
@@ -134,10 +130,7 @@ let minLatency = 0.1; // min time before a hap should trigger
 setInterval(() => {
   const haps = pattern.queryArc(time, time + interval);
   time += interval; // increment time
-  haps.forEach((hap) => {
-    const deadline = hap.whole.begin - time + minLatency;
-    onTrigger(hap, deadline, duration);
-  });
+  haps.forEach((hap) => onSchedule(hap, hap.whole.begin + minLatency));
 }, interval * 1000); // query each "interval" seconds
 ```
 
@@ -181,20 +174,19 @@ This example creates the custom control parameters `x` and `y` which are then us
 
 ### Outputs
 
-Now that we know how the value of an event is manipulated using control parameters, we can look at how outputs can use that value to generate anything. The scheduler above was calling the `onTrigger` function which is used to implement the output. A very simple version of the web audio output could look like this:
+Now that we know how the value of an hap is manipulated using control parameters, we can look at how outputs can use that value to generate anything. The scheduler above was calling the `onSchedule` function which is used to implement the output. A very simple version of the web audio output could look like this:
 
 ```js
-function onTrigger(hap, deadline, duration) {
+function onSchedule(hap, time, cps) {
   const { note } = hap.value;
-  const time = getAudioContext().currentTime + deadline;
   const o = getAudioContext().createOscillator();
   o.frequency.value = getFreq(note);
   o.start(time);
-  o.stop(time + event.duration);
+  o.stop(time + hap.duration / cps);
   o.connect(getAudioContext().destination);
 }
 ```
 
-The above example will create an `OscillatorNode` for each event, where the frequency is controlled by the `note` param. In essence, this is how the WebAudio API output of Strudel works, only with many more parameters to control synths, samples and effects.
+The above example will create an `OscillatorNode` for each hap, where the frequency is controlled by the `note` param. In essence, this is how the WebAudio API output of Strudel works, only with many more parameters to control synths, samples and effects.
 
 I want to help, how do I contribute to the [Docs](/technical-manual/docs)?

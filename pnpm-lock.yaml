@@ -251,24 +251,12 @@ importers:
       '@strudel/draw':
         specifier: workspace:*
         version: link:../draw
-      '@strudel/tonal':
-        specifier: workspace:*
-        version: link:../tonal
       '@strudel/transpiler':
         specifier: workspace:*
         version: link:../transpiler
-      '@tonaljs/tonal':
-        specifier: ^4.10.0
-        version: 4.10.0
-      codemirror-helix:
-        specifier: ^0.5.0
-        version: 0.5.0(@codemirror/commands@6.8.0)(@codemirror/language@6.10.8)(@codemirror/search@6.5.8)(@codemirror/state@6.5.1)(@codemirror/view@6.36.2)
       nanostores:
         specifier: ^0.11.3
         version: 0.11.3
-      superdough:
-        specifier: workspace:*
-        version: link:../superdough
     devDependencies:
       vite:
         specifier: ^6.0.11
@@ -308,6 +296,12 @@ importers:
       '@strudel/core':
         specifier: workspace:*
         version: link:../core
+      '@strudel/osc':
+        specifier: workspace:*
+        version: link:../osc
+      '@strudel/webaudio':
+        specifier: workspace:*
+        version: link:../webaudio
       '@tauri-apps/api':
         specifier: ^2.2.0
         version: 2.2.0
@@ -321,8 +315,8 @@ importers:
         specifier: workspace:*
         version: link:../webaudio
       dough-synth:
-        specifier: 0.2.4
-        version: 0.2.4
+        specifier: 0.4.1
+        version: 0.4.1
     devDependencies:
       vite:
         specifier: ^6.0.11
@@ -374,13 +368,13 @@ importers:
 
   packages/hs2js:
     dependencies:
+      tree-sitter-haskell:
+        specifier: ^0.23.1
+        version: 0.23.1(tree-sitter@0.21.1)
       web-tree-sitter:
         specifier: ^0.24.7
         version: 0.24.7
     devDependencies:
-      tree-sitter-haskell:
-        specifier: ^0.23.1
-        version: 0.23.1(tree-sitter@0.21.1)
       vite:
         specifier: ^6.0.11
         version: 6.0.11(@types/node@22.20.5)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(yaml@2.7.0)
@@ -621,18 +615,6 @@ importers:
         specifier: workspace:*
         version: link:../vite-plugin-bundle-audioworklet
 
-  packages/supradough:
-    devDependencies:
-      vite:
-        specifier: ^6.0.11
-        version: 6.0.11(@types/node@22.20.5)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(yaml@2.7.0)
-      vite-plugin-bundle-audioworklet:
-        specifier: workspace:*
-        version: link:../vite-plugin-bundle-audioworklet
-      wav-encoder:
-        specifier: ^1.3.0
-        version: 1.3.0
-
   packages/tidal:
     dependencies:
       '@strudel/core':
@@ -744,9 +726,6 @@ importers:
       superdough:
         specifier: workspace:*
         version: link:../superdough
-      supradough:
-        specifier: workspace:*
-        version: link:../supradough
     devDependencies:
       vite:
         specifier: ^6.0.11
@@ -4354,15 +4333,6 @@ packages:
     resolution: {integrity: sha512-FMabTRlc5t5zjdenF6mS0MBeFZm0XqHqeOkcskKFb/LYCcRQ5fVgLOHVc4Lq9CqABd9zhjwPjMBCJvMCziSVtA==}
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
 
-  codemirror-helix@0.5.0:
-    resolution: {integrity: sha512-hI56hf9VGz53H1YvL6H1GC7HtP6te8vX+MsIHaE9J7Q3PQ6KFapKtIRg6lqSH898ikHWpMCPu42r6HJN0IfVLA==}
-    peerDependencies:
-      '@codemirror/commands': ^6.0.0
-      '@codemirror/language': ^6.0.0
-      '@codemirror/search': ^6.0.0
-      '@codemirror/state': ^6.0.0
-      '@codemirror/view': ^6.0.0
-
   collapse-white-space@2.1.0:
     resolution: {integrity: sha512-loKTxY1zCOuG4j9f6EPnuyyYkf58RnhhWTvRoZEokgB+WbdXehfjFviyOVYkqzEWz1Q5kRiZdBYS5SwxbQYwzw==}
 
@@ -4821,8 +4791,8 @@ packages:
     resolution: {integrity: sha512-47qPchRCykZC03FhkYAhrvwU4xDBFIj1QPqaarj6mdM/hgUzfPHcpkHJOn3mJAufFeeAxAzeGsr5X0M4k6fLZQ==}
     engines: {node: '>=12'}
 
-  dough-synth@0.2.4:
-    resolution: {integrity: sha512-qMnMKVj1B2ivUgobNCwqJqNzZHOMN+5339OmCOk07zIDEK7iCYdufa+ZDE2BEgmKrWDyhGS7oTNFjHtTwzEv9w==}
+  dough-synth@0.4.1:
+    resolution: {integrity: sha512-hxBsfOBwTIlJMhSB/Pk2xNNc7YTAVTgexn5Y7GRv/Kn2qBkMxwLxHJNvhsUhklQhVvzny/aCihxb0EOq4tv5Bw==}
     hasBin: true
 
   dset@3.1.4:
@@ -8861,9 +8831,6 @@ packages:
   walk-up-path@3.0.1:
     resolution: {integrity: sha512-9YlCL/ynK3CTlrSRrDxZvUauLzAswPCrsaCgilqFevUYpeEW0/3ScEjaa3kbW/T0ghhkEr7mv+fpjqn1Y1YuTA==}
 
-  wav-encoder@1.3.0:
-    resolution: {integrity: sha512-FXJdEu2qDOI+wbVYZpu21CS1vPEg5NaxNskBr4SaULpOJMrLE6xkH8dECa7PiS+ZoeyvP7GllWUAxPN3AvFSEw==}
-
   wav@1.0.2:
     resolution: {integrity: sha512-viHtz3cDd/Tcr/HbNqzQCofKdF6kWUymH9LGDdskfWFoIy/HJ+RTihgjEcHfnsy1PO4e9B+y4HwgTwMrByquhg==}
 
@@ -9067,6 +9034,18 @@ packages:
 
   ws@8.18.3:
     resolution: {integrity: sha512-PEIGCY5tSlUt50cqyMXfCzX+oOPqN0vuGqWzbcJ2xvnkzkq46oOpz7dQaTDBdfICb4N14+GARUDw2XV2N4tvzg==}
+    engines: {node: '>=10.0.0'}
+    peerDependencies:
+      bufferutil: ^4.0.1
+      utf-8-validate: '>=5.0.2'
+    peerDependenciesMeta:
+      bufferutil:
+        optional: true
+      utf-8-validate:
+        optional: true
+
+  ws@8.22.0:
+    resolution: {integrity: sha512-Ydggc987+RO0AnWtZ/7Wq9FtNvcrL1b/RO0ud9mWjUPgDrsAAwQSF51sm2hm1XofbU/4jkpGEsLFsZZxU+1DOg==}
     engines: {node: '>=10.0.0'}
     peerDependencies:
       bufferutil: ^4.0.1
@@ -12802,14 +12781,6 @@ snapshots:
 
   cmd-shim@6.0.3: {}
 
-  codemirror-helix@0.5.0(@codemirror/commands@6.8.0)(@codemirror/language@6.10.8)(@codemirror/search@6.5.8)(@codemirror/state@6.5.1)(@codemirror/view@6.36.2):
-    dependencies:
-      '@codemirror/commands': 6.8.0
-      '@codemirror/language': 6.10.8
-      '@codemirror/search': 6.5.8
-      '@codemirror/state': 6.5.1
-      '@codemirror/view': 6.36.2
-
   collapse-white-space@2.1.0: {}
 
   color-convert@2.0.1:
@@ -13252,7 +13223,12 @@ snapshots:
 
   dotenv@16.4.7: {}
 
-  dough-synth@0.2.4: {}
+  dough-synth@0.4.1:
+    dependencies:
+      ws: 8.22.0
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
 
   dset@3.1.4: {}
 
@@ -18310,8 +18286,6 @@ snapshots:
 
   walk-up-path@3.0.1: {}
 
-  wav-encoder@1.3.0: {}
-
   wav@1.0.2(supports-color@7.2.0):
     dependencies:
       buffer-alloc: 1.2.0
@@ -18625,6 +18599,8 @@ snapshots:
   ws@8.18.0: {}
 
   ws@8.18.3: {}
+
+  ws@8.22.0: {}
 
   xml-naming@0.3.0: {}
 

@@ -10,6 +10,15 @@
     "dateFormatted": "22 октября 2026",
     "changes": [
       {
+        "type": "webview2",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "the download folder is a parameter; an ignored test runs Microsoft's real bootstrapper into a given folder and checks exit code 0, the log and an unchanged registry version",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "b999e3431"
+      },
+      {
         "type": "other",
         "typeLabel": "Прочее",
         "emoji": "📦",
