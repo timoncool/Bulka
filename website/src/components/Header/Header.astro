@@ -23,6 +23,14 @@ const { BASE_URL } = import.meta.env;
 const baseNoTrailing = BASE_URL.endsWith('/') ? BASE_URL.slice(0, -1) : BASE_URL;
 ---
 
+<div id="hub-notices"></div>
+<script is:inline>
+  (() => {
+    const slot = document.getElementById('hub-notices');
+    const height = () => document.documentElement.style.setProperty('--hub-notices-h', `${slot.offsetHeight}px`);
+    new ResizeObserver(height).observe(slot);
+  })();
+</script>
 <nav
   class="flex justify-between py-2 px-4 items-center h-14 max-h-14 bg-lineHighlight text-foreground"
   title={t('nav.main', undefined, langCode)}

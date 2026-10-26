@@ -13,6 +13,15 @@
         "type": "other",
         "typeLabel": "Прочее",
         "emoji": "📦",
+        "description": "bulka-1: the Linux build's library check takes the first ldconfig match without stopping awk early: under pipefail ldconfig got SIGPIPE and the build ended with 141 after the packages were made",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "b5f063ef0"
+      },
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
         "description": "bulka-1: from the AppImage, xdg-open (opening the recordings folder, the releases page) gets the library path without the image's folders, as dub_core::proc::outside_appimage does; the image's glib broke the computer's programs on systems newer than Ubuntu 22.04",
         "scope": null,
         "author": "Nerual Dreming",
