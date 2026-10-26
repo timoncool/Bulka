@@ -6,6 +6,21 @@
     "changes": []
   },
   {
+    "date": "2026-10-27",
+    "dateFormatted": "27 октября 2026",
+    "changes": [
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "bulka-1: the Linux build in Docker gets CARGO_BUILD_JOBS (8 unless set), so the container does not take every core",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "8040e77e2"
+      }
+    ]
+  },
+  {
     "date": "2026-10-26",
     "dateFormatted": "26 октября 2026",
     "changes": [
