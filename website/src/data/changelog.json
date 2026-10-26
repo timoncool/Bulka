@@ -6,9 +6,33 @@
     "changes": []
   },
   {
+    "date": "2026-10-26",
+    "dateFormatted": "26 октября 2026",
+    "changes": [
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "Merge remote-tracking branch 'origin/main' into desktop-compat-checks",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "7880d5407"
+      }
+    ]
+  },
+  {
     "date": "2026-10-22",
     "dateFormatted": "22 октября 2026",
     "changes": [
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "Strudel synced to upstream e00b6f621: outputs use onSchedule (record() moved to it), cyclist fixes, open and close signals, dough 0.4.1; supradough, block-based evaluation, Helix keys and the Vim page are gone as upstream removed them; reference regenerated, three new entries translated",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "c3c508e5d"
+      },
       {
         "type": "webview2",
         "typeLabel": "Прочее",
