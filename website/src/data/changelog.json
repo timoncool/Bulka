@@ -13,6 +13,15 @@
         "type": "other",
         "typeLabel": "Прочее",
         "emoji": "📦",
+        "description": "Statistics name the host of a sample map that failed to load instead of a scrubbed address; a provider that retired the model (404) or is overloaded (503/529) says to choose another model in the AI settings",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "37475fd04"
+      },
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
         "description": "Desktop 0.4.0",
         "scope": null,
         "author": "Nerual Dreming",
