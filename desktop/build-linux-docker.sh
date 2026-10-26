@@ -95,6 +95,6 @@ secrets="${BULKA_SECRETS:-$HOME/.claude/secrets/bulka.env}"
 [ -f "$repo/website/.env" ] || { echo "[ERROR] нет $repo/website/.env (ключи Supabase)"; exit 1; }
 mkdir -p "$out" "$cache"
 cp "$repo/desktop/build-linux-docker.sh" "$out/.build-linux-docker.sh"
-docker run --rm -v "$repo:/src:ro" -v "$(cd "$out" && pwd):/out" -v "$cache:/cache" \
+docker run --rm -e CARGO_BUILD_JOBS="${CARGO_BUILD_JOBS:-8}" -v "$repo:/src:ro" -v "$(cd "$out" && pwd):/out" -v "$cache:/cache" \
   -v "$key:/keys/bulka-updater.key:ro" -v "$secrets:/keys/bulka.env:ro" -v "$repo/website/.env:/keys/website.env:ro" \
   ubuntu:22.04 bash /out/.build-linux-docker.sh --inside

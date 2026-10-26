@@ -3,6 +3,7 @@ import { writeFile, mkdir, access } from 'node:fs/promises';
 import { spawn } from 'node:child_process';
 import { extname, join } from 'node:path';
 import { recordingsDir } from '../../lib/appDir';
+import { hostEnv } from '../../lib/hostProcess.mjs';
 
 export const prerender = false;
 
@@ -43,7 +44,7 @@ function revealInFolder(filePath: string, dir: string) {
       : process.platform === 'darwin'
         ? ['open', ['-R', filePath]]
         : ['xdg-open', [dir]];
-  const child = spawn(cmd, args, { detached: true, stdio: 'ignore' });
+  const child = spawn(cmd, args, { detached: true, stdio: 'ignore', env: hostEnv(cmd) });
   child.on('error', (e) => console.error(`[save-file] ${cmd} не открыл папку ${dir}:`, e.message));
   child.unref();
 }

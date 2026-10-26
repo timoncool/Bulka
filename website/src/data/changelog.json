@@ -6,9 +6,42 @@
     "changes": []
   },
   {
+    "date": "2026-10-27",
+    "dateFormatted": "27 октября 2026",
+    "changes": [
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "bulka-1: .gitattributes keeps .sh in LF and .cmd/.bat in CRLF on any checkout, not only under the global git attributes",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "cf62f5948"
+      },
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "bulka-1: the Linux build in Docker gets CARGO_BUILD_JOBS (8 unless set), so the container does not take every core",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "8040e77e2"
+      }
+    ]
+  },
+  {
     "date": "2026-10-26",
     "dateFormatted": "26 октября 2026",
     "changes": [
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "What's New shows the hub's news on top, newest first, in Russian or English: date, picture, text and buttons; impressions and clicks go through StudioHub.count() of the notices script, and its absence is an error in the console",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "e0c045276"
+      },
       {
         "type": "other",
         "typeLabel": "Прочее",
