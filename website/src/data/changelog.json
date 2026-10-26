@@ -10,6 +10,51 @@
     "dateFormatted": "22 октября 2026",
     "changes": [
       {
+        "type": "webview2",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "the download folder is a parameter; an ignored test runs Microsoft's real bootstrapper into a given folder and checks exit code 0, the log and an unchanged registry version",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "b999e3431"
+      },
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "check-binaries: an ELF is not read as PE; lld link maps (rust-lld, the Linux default) name functions too",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "8589e7aa4"
+      },
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "Node for the desktop build is checked against a pinned sha256 of the nodejs.org archive (desktop/node-pins.sh): a cached archive with another hash is downloaded again, a download with another hash fails the build; the cached node binary is no longer trusted for being there",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "e025fe4c2"
+      },
+      {
+        "type": "webview2",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "the install decision is a pure function over the two registry values, unit-tested on missing, empty, 0.0.0.0 and real versions; the bootstrapper call is its own function with installer.nsi's arguments",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "af6871199"
+      },
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "Desktop compatibility checks and the portable WebView2",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "a84033177"
+      },
+      {
         "type": "other",
         "typeLabel": "Прочее",
         "emoji": "📦",

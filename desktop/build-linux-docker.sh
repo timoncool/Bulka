@@ -8,9 +8,30 @@
 set -euo pipefail
 
 PNPM_VER=11.22.0
-NODE_VER=v24.21.0
+
+# Every library the binaries need comes with the .deb dependencies (glibc and libstdc++ are always there).
+check_needed_libs() {
+  local deb="$1" bin lib path pkg allowed
+  shift
+  allowed="$( (dpkg-deb -f "$deb" Depends | tr ',' '\n' | sed 's/([^)]*)//g; s/|.*//; s/ //g'; printf '%s\n' libc6 libgcc-s1 libstdc++6) \
+    | grep -v '^$' | xargs apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks \
+      --no-replaces --no-enhances | grep -v '^ ' | sed 's/:amd64$//' | sort -u)"
+  for bin in "$@"; do
+    for lib in $(objdump -p "$bin" | awk '$1 == "NEEDED" {print $2}'); do
+      path="$(ldconfig -p | awk -v l="$lib" '$1 == l && /x86-64/ {print $NF; exit}')"
+      [ -n "$path" ] || { echo "[ERROR] $(basename "$bin") needs $lib, which the build system does not have"; exit 1; }
+      pkg="$(dpkg -S "$path" 2>/dev/null || dpkg -S "$(readlink -f "$path")" 2>/dev/null)" \
+        || { echo "[ERROR] $(basename "$bin") needs $lib ($path), which no package owns"; exit 1; }
+      pkg="${pkg%%:*}"
+      grep -qx "$pkg" <<<"$allowed" || { echo "[ERROR] $(basename "$bin") needs $lib ($pkg), not a dependency of the .deb"; exit 1; }
+    done
+    echo "[..] $(basename "$bin"): every library comes with the .deb dependencies"
+  done
+}
 
 if [ "${1:-}" = "--inside" ]; then
+  # shellcheck source=node-pins.sh
+  . /src/desktop/node-pins.sh
   export DEBIAN_FRONTEND=noninteractive APPIMAGE_EXTRACT_AND_RUN=1 RUSTUP_TOOLCHAIN=stable CARGO_TERM_COLOR=never
   export CARGO_HOME=/cache/cargo RUSTUP_HOME=/cache/rustup PATH=/cache/cargo/bin:/cache/node/bin:$PATH
   echo "[..] packages"
@@ -20,8 +41,9 @@ if [ "${1:-}" = "--inside" ]; then
     gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-libav >/dev/null
   if [ ! -x /cache/node/bin/node ] || [ "$(/cache/node/bin/node -v)" != "$NODE_VER" ]; then
     echo "[..] node $NODE_VER"
+    archive="$(fetch_node_archive linux-x64 /cache/node-dist)"
     rm -rf /cache/node && mkdir -p /cache/node
-    curl -fsSL "https://nodejs.org/dist/$NODE_VER/node-$NODE_VER-linux-x64.tar.xz" | tar -xJ -C /cache/node --strip-components=1
+    tar -xJf "$archive" -C /cache/node --strip-components=1
   fi
   if [ ! -x /cache/node/bin/pnpm ] || [ "$(/cache/node/bin/pnpm -v)" != "$PNPM_VER" ]; then
     echo "[..] pnpm $PNPM_VER"
@@ -55,6 +77,7 @@ if [ "${1:-}" = "--inside" ]; then
     echo "[..] $(basename "$bin"): $newest"
     [ "$(printf '%s\nGLIBC_2.35\n' "$newest" | sort -V | tail -n 1)" = "GLIBC_2.35" ] || { echo "[ERROR] $bin needs $newest"; exit 1; }
   done
+  check_needed_libs "$deb" /cache/target/release/bulka-desktop desktop/src-tauri/staging/app/node/node
   rm -f /out/Bulka_*_amd64.*
   cp "$appimage" "$appimage.sig" "$deb" /out/
   ls -la /out/Bulka_*
