@@ -348,6 +348,8 @@ export default {
   'whatsnew.intro': 'История всех изменений Bulka.',
   'whatsnew.types': 'Типы:',
   'whatsnew.github': 'GitHub репозиторий',
+  'news.title': '📰 Новости',
+  'news.ad': 'Реклама',
   'header.switchLang': 'EN',
   'header.switchLangTitle': 'English version',
   'recorder.stop': 'остановить запись',

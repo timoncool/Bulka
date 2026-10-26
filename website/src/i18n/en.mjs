@@ -349,6 +349,8 @@ export default {
   'whatsnew.intro': 'The history of every Bulka change.',
   'whatsnew.types': 'Types:',
   'whatsnew.github': 'GitHub repository',
+  'news.title': '📰 News',
+  'news.ad': 'Ad',
   'header.switchLang': 'RU',
   'header.switchLangTitle': 'Русская версия',
   'recorder.stop': 'stop recording',
