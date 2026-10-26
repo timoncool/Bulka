@@ -18,7 +18,7 @@ check_needed_libs() {
       --no-replaces --no-enhances | grep -v '^ ' | sed 's/:amd64$//' | sort -u)"
   for bin in "$@"; do
     for lib in $(objdump -p "$bin" | awk '$1 == "NEEDED" {print $2}'); do
-      path="$(ldconfig -p | awk -v l="$lib" '$1 == l && /x86-64/ {print $NF; exit}')"
+      path="$(ldconfig -p | awk -v l="$lib" '$1 == l && /x86-64/ && !found {print $NF; found = 1}')"
       [ -n "$path" ] || { echo "[ERROR] $(basename "$bin") needs $lib, which the build system does not have"; exit 1; }
       pkg="$(dpkg -S "$path" 2>/dev/null || dpkg -S "$(readlink -f "$path")" 2>/dev/null)" \
         || { echo "[ERROR] $(basename "$bin") needs $lib ($path), which no package owns"; exit 1; }
