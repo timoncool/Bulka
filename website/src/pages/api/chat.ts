@@ -1877,10 +1877,24 @@ const TOOL_STATUS_MESSAGES: Record<string, string> = {
 // A provider that refuses the key (401/403) gets the same answer from every runner: what it said and where to fix it.
 function providerHttpError(provider: string, status: number, message: string, lang: Lang): string {
   const text = `${provider}: ${String(message).replace(/[.\s]+$/, '')}`;
-  if (status !== 401 && status !== 403) return text;
-  return lang === 'en'
-    ? `${text}. The key was not accepted: paste a valid one in the AI settings.`
-    : `${text}. Ключ не принят: вставьте действующий в настройках AI.`;
+  const en = lang === 'en';
+  if (status === 401 || status === 403) {
+    return en
+      ? `${text}. The key was not accepted: paste a valid one in the AI settings.`
+      : `${text}. Ключ не принят: вставьте действующий в настройках AI.`;
+  }
+  // 404 is a model the provider no longer serves (Gemini retires models this way); 503/529 is an overloaded one
+  if (status === 404) {
+    return en
+      ? `${text}. This model is not available any more: choose another one in the AI settings.`
+      : `${text}. Эта модель больше недоступна: выберите другую в настройках AI.`;
+  }
+  if (status === 503 || status === 529) {
+    return en
+      ? `${text}. The provider is overloaded right now: try again in a minute or choose another model in the AI settings.`
+      : `${text}. Провайдер сейчас перегружен: повторите через минуту или выберите другую модель в настройках AI.`;
+  }
+  return text;
 }
 
 // The browser runs client tools after this answer is streamed, so the model cannot learn here whether the code ran;
@@ -2658,7 +2672,7 @@ async function runGeminiAgent(
               if (parsed.error) {
                 controller.enqueue(
                   encoder.encode(
-                    `data: ${JSON.stringify({ type: 'error', error: `Gemini: ${parsed.error.message || parsed.error}` })}\n\n`,
+                    `data: ${JSON.stringify({ type: 'error', error: providerHttpError('Gemini', Number(parsed.error.code) || 0, parsed.error.message || parsed.error, lang) })}\n\n`,
                   ),
                 );
                 continue;
@@ -2992,7 +3006,7 @@ async function runOpenAICompatibleAgent(
               if (parsed.error) {
                 controller.enqueue(
                   encoder.encode(
-                    `data: ${JSON.stringify({ type: 'error', error: `${config.providerName}: ${parsed.error.message || parsed.error}` })}\n\n`,
+                    `data: ${JSON.stringify({ type: 'error', error: providerHttpError(config.providerName, Number(parsed.error.code) || 0, parsed.error.message || parsed.error, lang) })}\n\n`,
                   ),
                 );
                 continue;

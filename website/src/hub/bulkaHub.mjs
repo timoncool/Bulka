@@ -74,7 +74,21 @@ export function recordDone(kind) {
 export function recordFailed(kind, reason) {
   if (!hub) return;
   hub.count(`${kind}_failed`);
-  hub.failed(kind, reason);
+  hub.failed(kind, loadFailureHost(reason));
+}
+
+/**
+ * The engine names a sample map or wavetable it could not load in quotes (`error loading "<url>"`), and the scrub
+ * removes quoted text whole; the host is not personal, so the reason keeps it.
+ */
+export function loadFailureHost(reason, base = globalThis.location?.href) {
+  const quoted = /^error loading "([^"]*)"$/.exec(String(reason ?? ''));
+  if (!quoted) return reason;
+  try {
+    return `error loading ${new URL(quoted[1], base).host || '(no host)'}`;
+  } catch {
+    return 'error loading (invalid address)';
+  }
 }
 
 /** The AI provider as the set and the model id as its part, kept as typed (`openrouter`, `google/gemma-3:free`). */
