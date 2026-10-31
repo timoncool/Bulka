@@ -24,7 +24,7 @@ const lang = langFromPath(currentPage);
       <header class="max-w-full fixed top-0 w-full z-[100]">
         <Header currentPage={currentPage} />
       </header>
-      <main class="relative pt-16">
+      <main class="relative pt-[calc(4rem_+_var(--hub-notices-h,0px))]">
         <div class="h-full top-0 overflow-auto min-w-[300px] flex xl:justify-center pr-4 pl-4 md:pl-[300px] xl:pl-0">
           <aside title="Site Navigation" class="w-[300px] px-6 left-0 hidden md:block fixed h-full">
             <LeftSidebar currentPage={currentPage} />
