@@ -10,6 +10,15 @@
     "dateFormatted": "3 ноября 2026",
     "changes": [
       {
+        "type": "settings",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "link to the open telemetry stats page by the statistics toggle",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "6b32787d2"
+      },
+      {
         "type": "other",
         "typeLabel": "Прочее",
         "emoji": "📦",
