@@ -141,7 +141,7 @@ Bulka может отправлять **анонимную статистику*
 |--------|----------|
 | [ACE-Step Studio](https://github.com/timoncool/ACE-Step-Studio) | AI-студия музыки — песни, вокал, каверы, клипы |
 | [VideoSOS](https://github.com/timoncool/videosos) | AI-видеопродакшн в браузере |
-| [Foundation Music Lab](https://github.com/timoncool/Foundation-Music-Lab) | Генерация музыки + редактор таймлайна |
+| [YuE2 Studio](https://github.com/timoncool/YuE2-Studio) | Полные песни с вокалом и редактируемой партитурой |
 | [GitLife](https://github.com/timoncool/gitlife) | Жизнь в неделях — интерактивный календарь |
 | [telegram-api-mcp](https://github.com/timoncool/telegram-api-mcp) | Telegram Bot API как MCP-сервер |
 | [tg-challenge-bot](https://github.com/timoncool/tg-challenge-bot) | AI антиспам-бот для Telegram |
