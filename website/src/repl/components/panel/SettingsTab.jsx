@@ -144,6 +144,13 @@ function TelemetrySetting() {
       >
         {t('telemetry.what')}
       </button>
+      <button
+        type="button"
+        className="text-xs underline opacity-70 hover:opacity-100 text-left"
+        onClick={() => window.open('https://timoncool.github.io/Bulka/stats.html', '_blank', 'noreferrer')}
+      >
+        {t('telemetry.stats')}
+      </button>
       {preview && <TelemetryPreview hub={hub} />}
     </FormItem>
   );

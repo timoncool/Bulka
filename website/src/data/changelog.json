@@ -6,9 +6,72 @@
     "changes": []
   },
   {
+    "date": "2026-11-03",
+    "dateFormatted": "3 ноября 2026",
+    "changes": [
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "Remove links to projects that are no longer developed (#203)",
+        "scope": null,
+        "author": "Ilya (Nerual Dreming) Timonin",
+        "hash": "9ae9cbb3b"
+      }
+    ]
+  },
+  {
+    "date": "2026-10-29",
+    "dateFormatted": "29 октября 2026",
+    "changes": [
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "Donation page: the card option is just Bank card",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "e4e02f34e"
+      },
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "Donation page: the same content as the studio sites",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "a1de01922"
+      }
+    ]
+  },
+  {
+    "date": "2026-10-28",
+    "dateFormatted": "28 октября 2026",
+    "changes": [
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "star-history: once a day on schedule, not on every star — the watch trigger spent an Actions run per star",
+        "scope": null,
+        "author": "Ilya (Nerual Dreming) Timonin",
+        "hash": "e30e69d99"
+      }
+    ]
+  },
+  {
     "date": "2026-10-27",
     "dateFormatted": "27 октября 2026",
     "changes": [
+      {
+        "type": "other",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "bulka-1: the Linux build's library check takes the first ldconfig match without stopping awk early: under pipefail ldconfig got SIGPIPE and the build ended with 141 after the packages were made",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "b5f063ef0"
+      },
       {
         "type": "other",
         "typeLabel": "Прочее",
