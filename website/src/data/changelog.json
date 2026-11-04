@@ -6,6 +6,21 @@
     "changes": []
   },
   {
+    "date": "2026-11-04",
+    "dateFormatted": "4 ноября 2026",
+    "changes": [
+      {
+        "type": "pages",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": ".nojekyll so the stats page is served as static",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "53483f052"
+      }
+    ]
+  },
+  {
     "date": "2026-11-03",
     "dateFormatted": "3 ноября 2026",
     "changes": [
