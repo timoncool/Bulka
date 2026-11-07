@@ -18,7 +18,9 @@ const hubTest = import.meta.env.DEV || process.env.STUDIO_HUB_TEST === '1';
 // the computer id the shell derives (studio-hub-client `machine::id`), so Bulka and the studios count one person once
 const machine = desktop && process.env.BULKA_MACHINE ? process.env.BULKA_MACHINE : undefined;
 const build = { desktop, version: desktop ? desktopConf.version : websitePackage.version, hubUrl, machine };
-const notice = { app: 'bulka', lang, version: build.version, ...(hubTest ? { test: '1' } : {}) };
+// Pages with the fixed docs header keep the strips inside it (#hub-notices in Header.astro); elsewhere the hub's
+// script puts them first in the body.
+const notice = { app: 'bulka', lang, version: build.version, target: '#hub-notices', ...(hubTest ? { test: '1' } : {}) };
 ---
 
 <!-- Global Metadata -->
