@@ -53,6 +53,10 @@ export function SupportTab() {
           <a className="underline" href="https://t.me/nerual_dreming" target="_blank" rel="noopener">
             Nerual Dreming
           </a>
+          ,{' '}
+          <a className="underline" href="https://x.com/nerualdreming" target="_blank" rel="noopener">
+            X
+          </a>
           ) and I make open source AI tools you can run locally: free, no cloud, no subscriptions. Bulka is free too.
           Servers, domains, test hardware and time are not. Donations let me keep building instead of looking for a way
           to pay the bills.
@@ -62,6 +66,10 @@ export function SupportTab() {
           Я Илья (
           <a className="underline" href="https://t.me/nerual_dreming" target="_blank" rel="noopener">
             Nerual Dreming
+          </a>
+          ,{' '}
+          <a className="underline" href="https://x.com/nerualdreming" target="_blank" rel="noopener">
+            X
           </a>
           ) — делаю опенсорс AI-инструменты, которые можно запускать локально: бесплатно, без облака и подписок. Bulka
           тоже бесплатна. Серверы, домены, железо для тестов и время — нет. Донат позволяет мне пилить дальше, а не

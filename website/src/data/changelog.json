@@ -10,6 +10,15 @@
     "dateFormatted": "4 ноября 2026",
     "changes": [
       {
+        "type": "site",
+        "typeLabel": "Прочее",
+        "emoji": "📦",
+        "description": "fix stats bars not filling (display:block on .fill)",
+        "scope": null,
+        "author": "Nerual Dreming",
+        "hash": "3a0841000"
+      },
+      {
         "type": "pages",
         "typeLabel": "Прочее",
         "emoji": "📦",

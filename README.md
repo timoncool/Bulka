@@ -107,7 +107,7 @@ pnpm dev    # сайт откроется на localhost:4321
 
 ## Автор
 
-Проект развивается [Nerual Dreming](https://t.me/nerual_dreming) — основателем [ArtGeneration.me](https://artgeneration.me/), [техноблогером](https://www.youtube.com/@nerual_dreming) и нейро-евангелистом.
+Проект развивается [Nerual Dreming](https://t.me/nerual_dreming) ([X](https://x.com/nerualdreming)) — основателем [ArtGeneration.me](https://artgeneration.me/), [техноблогером](https://www.youtube.com/@nerual_dreming) и нейро-евангелистом.
 
 ## Благодарности
 

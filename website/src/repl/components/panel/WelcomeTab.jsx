@@ -62,6 +62,11 @@ function WelcomeRu() {
         <a href="https://t.me/nerual_dreming" target="_blank">
           Nerual Dreming
         </a>{' '}
+        (
+        <a href="https://x.com/nerualdreming" target="_blank">
+          X
+        </a>
+        ){' '}
         — основателем{' '}
         <a href="https://artgeneration.me/" target="_blank">
           ArtGeneration.me
@@ -129,8 +134,12 @@ function WelcomeEn() {
         Bulka is developed by{' '}
         <a href="https://t.me/nerual_dreming" target="_blank">
           Nerual Dreming
+        </a>{' '}
+        (
+        <a href="https://x.com/nerualdreming" target="_blank">
+          X
         </a>
-        , founder of{' '}
+        ), founder of{' '}
         <a href="https://artgeneration.me/" target="_blank">
           ArtGeneration.me
         </a>
